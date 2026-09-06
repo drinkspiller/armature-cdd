@@ -72,7 +72,7 @@ if "%FLAGS_uninstall%"=="1" goto :do_uninstall
 if not exist "%SOURCE_ASSETS_DIR%\workflow_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\workflow_template.md & exit /b 1 )
 if not exist "%SOURCE_ASSETS_DIR%\adr_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\adr_template.md & exit /b 1 )
 if not exist "%SOURCE_ASSETS_DIR%\manual_testing_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\manual_testing_template.md & exit /b 1 )
-for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat) do (
+for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
     if not exist "%SCRIPT_DIR%\skills\%%S\SKILL.md" ( echo [ERROR] Missing %SCRIPT_DIR%\skills\%%S\SKILL.md & exit /b 1 )
 )
 
@@ -118,7 +118,7 @@ if exist "%SCRIPT_DIR%\.claude-plugin\marketplace.json" call :install_file "%SCR
 :: Sub-Skills
 echo.
 echo --- Installing Armature Command Skills ---
-for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat) do (
+for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
     call :install_file "%SCRIPT_DIR%\skills\%%S\SKILL.md" "%TARGET_SKILLS_ROOT%\%%S\SKILL.md"
 )
 
