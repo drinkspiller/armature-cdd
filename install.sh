@@ -25,7 +25,10 @@
 #     │   ├── arm-review/SKILL.md
 #     │   ├── arm-revert/SKILL.md
 #     │   ├── arm-drift/SKILL.md
-#     │   └── arm-chat/SKILL.md
+#     │   ├── arm-chat/SKILL.md
+#     │   ├── arm-new-bug-bash/SKILL.md
+#     │   ├── arm-bash/SKILL.md
+#     │   └── arm-bug-bash-triage/SKILL.md
 #     └── rules/
 #         ├── armature_protocol.md
 #         ├── armature_antigravity.md
@@ -46,28 +49,29 @@ DEFINE_bool() {
   else
     eval "FLAGS_${name}=${FLAGS_FALSE}"
   fi
-  _DEFINED_FLAGS+=("$name")
+  _DEFINED_FLAGS+=("${name}|${default}|${desc}")
 }
 
 DEFINE_string() {
   local name="$1" default="$2" desc="$3"
-  eval "FLAGS_${name}='${default}'"
-  _DEFINED_STRING_FLAGS+=("$name")
+  eval "FLAGS_${name}=\"${default}\""
+  _DEFINED_STRING_FLAGS+=("${name}|${default}|${desc}")
 }
 
 parse_flags() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --help|-h|--helpfull)
-        for flag in "${_DEFINED_FLAGS[@]}"; do
-          eval "local val=\${FLAGS_${flag}}"
-          local default_str="false"
-          [[ "$val" -eq "${FLAGS_TRUE}" ]] && default_str="true"
-          printf "  --%-20s (default: %s)\n" "${flag}" "${default_str}"
+      --help|-h)
+        echo "Usage: install.sh [OPTIONS]"
+        echo ""
+        echo "Options:"
+        for f in "${_DEFINED_FLAGS[@]}"; do
+          IFS='|' read -r fname fdef fdesc <<< "$f"
+          printf "  --%-16s %s (default: %s)\n" "$fname" "$fdesc" "$fdef"
         done
-        for flag in "${_DEFINED_STRING_FLAGS[@]}"; do
-          eval "local val=\${FLAGS_${flag}}"
-          printf "  --%-20s (default: '%s')\n" "${flag}=<value>" "${val}"
+        for f in "${_DEFINED_STRING_FLAGS[@]}"; do
+          IFS='|' read -r fname fdef fdesc <<< "$f"
+          printf "  --%-16s %s (default: %s)\n" "${fname}=<val>" "$fdesc" "$fdef"
         done
         exit 0
         ;;
@@ -80,13 +84,17 @@ parse_flags() {
         local flag_name="${1%%=*}"
         flag_name="${flag_name#--}"
         flag_name="${flag_name//-/_}"
-        local flag_value="${1#*=}"
-        eval "FLAGS_${flag_name}='${flag_value}'"
+        local flag_val="${1#*=}"
+        eval "FLAGS_${flag_name}=\"${flag_val}\""
         ;;
       --*)
         local flag_name="${1#--}"
         flag_name="${flag_name//-/_}"
         eval "FLAGS_${flag_name}=${FLAGS_TRUE}"
+        ;;
+      *)
+        echo "Unknown argument: $1"
+        exit 1
         ;;
     esac
     shift
@@ -109,7 +117,7 @@ VERSION="0.22.2"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_ASSETS_DIR="${SCRIPT_DIR}/skills/arm-setup/assets"
 # Sub-skill names (each has its own directory under skills/)
-SUB_SKILL_NAMES=(arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat)
+SUB_SKILL_NAMES=(arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage)
 # Rules files (always-on rule files for MVC architecture)
 SOURCE_RULES_DIR="${SCRIPT_DIR}/rules"
 RULE_FILE_NAMES=(armature_protocol.md armature_antigravity.md)
