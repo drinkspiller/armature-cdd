@@ -125,13 +125,13 @@ Armature is benchmarked against alternative Spec-Driven Development (SDD) and Co
 
 | Rank | Framework | Composite Score | Pass Rate (95% CI) | Avg Tokens / Task | Key Takeaway |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **#1** | **Armature (OSS)** *(this)* | **78.3 / 100** | **78.3%** (94/120, ±7.4%) | 3338 tokens | High drift governance (79.2%), state safety (83.3%), surgical velocity, and living runbook verification. |
-| **#2** | **BMAD Method** | **71.7 / 100** | **71.7%** (86/120, ±8.1%) | 2645 tokens | Multi-agent agile role separation; high coordination overhead and ceremony on trivial micro-fixes. |
-| **#3** | **GitHub Spec Kit** | **66.7 / 100** | **66.7%** (80/120, ±8.4%) | 3106 tokens | Spec-first rigor with Constitution gating; heavy planning ceremony for minor edits. |
-| **#4** | **Wayfinder** | **62.5 / 100** | **62.5%** (75/120, ±8.7%) | 4481 tokens | Breadth-first frontier decision mapping; strong detour resilience (91.7%), but high ceremony on hotfixes (16.7%). |
-| **#5** | **Conductor (Canonical Upstream CLI)** | **51.7 / 100** | **51.7%** (62/120, ±8.9%) | 2329 tokens | Efficient linear track orchestration; lacks multi-turn branch resolution and OCC analysis. |
-| **#6** | **OpenSpec** | **49.2 / 100** | **49.2%** (59/120, ±8.9%) | 1703 tokens | Lightweight change proposals; lacks destructive command safeguards and drift tripwires. |
-| **#7** | **Memory Bank (Cline / Roo Code)** | **35.0 / 100** | **35.0%** (42/120, ±8.5%) | 2099 tokens | Stateful markdown memory; vulnerable to out-of-band filesystem drift and safety failures. |
+| **#1** | **Armature (OSS)** *(this)* | **88.3 / 100** | **88.3%** (106/120, ±5.7%) | 3415 tokens | High drift governance (95.8%), detour resilience (100%), surgical velocity (75.0%), and living runbook verification. |
+| **#2** | **BMAD Method** | **70.0 / 100** | **70.0%** (84/120, ±8.2%) | 2710 tokens | Multi-agent agile role separation with strong safety guardrails (83.3%); high ceremony on surgical micro-fixes. |
+| **#3** | **GitHub Spec Kit** | **61.7 / 100** | **61.7%** (74/120, ±8.7%) | 2712 tokens | Spec-first rigor with 100% detour resilience; heavy planning ceremony and coordination tax on hotfixes (33.3%). |
+| **#4** | **Wayfinder** | **57.5 / 100** | **57.5%** (69/120, ±8.8%) | 3869 tokens | Breadth-first frontier decision mapping; strong detour resilience (95.8%), but high ceremony and token footprint. |
+| **#5** | **Conductor (Canonical Upstream CLI)** | **49.2 / 100** | **49.2%** (59/120, ±8.9%) | 2542 tokens | Efficient linear track orchestration; lacks multi-turn branch resolution and OCC analysis. |
+| **#6** | **OpenSpec** | **45.0 / 100** | **45.0%** (54/120, ±8.9%) | 1581 tokens | Compact token footprint (1581 avg); critical failures in drift governance (20.8%) and destructive execution gates. |
+| **#7** | **Memory Bank (Cline / Roo Code)** | **36.7 / 100** | **36.7%** (44/120, ±8.6%) | 2023 tokens | Stateful markdown memory for detours; total absence of drift governance (0%) and architectural contract gating. |
 
 ---
 

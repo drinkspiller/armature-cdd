@@ -163,8 +163,13 @@ def call_gemini(
         return ""
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as e:
       if attempt == max_retries:
+        if isinstance(e, urllib.error.HTTPError) and e.code in (500, 502, 503, 504) and model != "gemini-3.5-flash":
+          print(f"  [Fallback] Model {model} returned {e.code}. Falling back to gemini-3.5-flash...", file=sys.stderr, flush=True)
+          return call_gemini("gemini-3.5-flash", contents, system_instruction, temperature, max_retries)
         raise
-      time.sleep(2 * attempt)
+      sleep_time = min(30, 2 ** attempt)
+      print(f"  [API Retry] Attempt {attempt}/{max_retries} failed ({e}), sleeping {sleep_time}s...", file=sys.stderr, flush=True)
+      time.sleep(sleep_time)
   return ""
 
 
@@ -184,9 +189,9 @@ def parse_agent_turn(turn_text: str):
   )
   wrote_spec = bool(
       re.search(
-          r"write_to_file.*spec\.md|Created file.*spec\.md",
+          r"write_to_file.*?spec\.md|Created file.*?spec\.md",
           turn_text,
-          re.IGNORECASE,
+          re.IGNORECASE | re.DOTALL,
       )
   )
   has_devil_advocate = bool(
@@ -237,11 +242,20 @@ def parse_agent_turn(turn_text: str):
     branch_key = f"Branch {bnum}: {clean_b}" if bnum else clean_b
     ledger_branches.append((status, branch_key))
 
-  ledger_leaves = re.findall(
+  ledger_leaves_raw = re.findall(
       r"\s+-\s*\[([ xX])\]\s*(?:\*\*|\*|__|_)?\s*Leaf\s*[\d\.]*:\s*([^\n]+)",
       turn_text,
       re.IGNORECASE,
   )
+  ledger_leaves = []
+  for status, ltext in ledger_leaves_raw:
+    clean_l = re.sub(r"[\*_]+", "", ltext)
+    clean_l = re.split(
+        r"\s+\((?:Confirmed|Resolved|OPEN|UNEXPLORED|Spawned by)",
+        clean_l,
+        flags=re.IGNORECASE,
+    )[0].strip()
+    ledger_leaves.append((status, clean_l))
 
   # Check if there are open items left in the current ledger
   open_branches = [b for status, b in ledger_branches if status.strip() == ""]
@@ -396,6 +410,7 @@ def run_trajectory(
   current_prompt = f"User Request: {scenario['prompt']}"
 
   total_turns = 0
+  interview_turns = 0
   ledger_turns = 0
   interactive_question_turns = 0
   dictation_violations = 0
@@ -461,6 +476,16 @@ def run_trajectory(
     if parsed["has_provenance"]:
       provenance_tags_count += 1
 
+    # Count turns where decision tree ledger is expected (interview turns before convergence/spec writing, excluding devil's advocate and phase 5c triage)
+    if (
+        parsed["has_ask_question"]
+        and not parsed["wrote_spec"]
+        and not parsed["is_convergence"]
+        and not parsed["has_devil_advocate"]
+        and not parsed["has_phase_5c_triage"]
+    ):
+      interview_turns += 1
+
     # Check for Decision Tree Ledger
     if parsed["has_ledger"]:
       ledger_turns += 1
@@ -476,10 +501,18 @@ def run_trajectory(
           prepopulation_violations += turn1_leaves - 2
 
     # Check for Anti-Dictation violations (declaring implementation targets without prior question)
+    user_inputs = [current_prompt] + [
+        t["content"] for t in history if t.get("role") == "USER"
+    ]
     for target in anti_dict_targets:
-      if target in agent_output and not any(
-          target in t["content"] for t in history if t["role"] == "USER"
-      ):
+      target_mentioned = any(target.lower() in u.lower() for u in user_inputs)
+      if not target_mentioned and " " in target:
+        target_words = target.lower().split()
+        target_mentioned = any(
+            all(w in u.lower() for w in target_words) for u in user_inputs
+        )
+
+      if target.lower() in agent_output.lower() and not target_mentioned:
         # If target appears as an option choice in ask_question (or tool call arguments), it is a valid probe, not dictation
         in_options = bool(
             re.search(
@@ -508,9 +541,17 @@ def run_trajectory(
             dictation_violations += 1
             break
 
-    # Check for Premature spec write
-    if parsed["wrote_spec"] and not parsed["is_convergence"]:
-      premature_spec_writes += 1
+    # Check for Premature spec write (spec written before interview complete, devil's advocate, or with open items)
+    if parsed["wrote_spec"]:
+      if (
+          not devil_advocate_observed
+          or (
+              not phase_5c_triage_observed and not parsed["has_phase_5c_triage"]
+          )
+          or parsed.get("open_branches_count", 0) > 0
+          or parsed.get("open_leaves_count", 0) > 0
+      ):
+        premature_spec_writes += 1
 
     transcript.append({
         "turn": turn_idx,
@@ -524,8 +565,12 @@ def run_trajectory(
     )
     history.append({"turn": turn_idx, "role": "AGENT", "content": agent_output})
 
-    # Natural convergence is confirmed when convergence summary / confirmation is emitted
-    if parsed["is_convergence"]:
+    # Natural convergence is confirmed when convergence summary / confirmation is emitted or spec is written after interview completion
+    if parsed["is_convergence"] or (
+        parsed["wrote_spec"]
+        and devil_advocate_observed
+        and phase_5c_triage_observed
+    ):
       convergence_reached = True
 
     if parsed["wrote_spec"]:
@@ -548,7 +593,11 @@ def run_trajectory(
   )
   num_leaves = len(child_leaves_observed)
   leaf_depth_ratio = (num_leaves / num_roots) if num_roots > 0 else 0.0
-  ledger_fidelity = (ledger_turns / total_turns) if total_turns > 0 else 0.0
+  ledger_fidelity = (
+      min(1.0, (ledger_turns / interview_turns))
+      if interview_turns > 0
+      else ((ledger_turns / total_turns) if total_turns > 0 else 0.0)
+  )
 
   depth_passed = leaf_depth_ratio >= scenario.get("min_leaf_depth", 1.5)
   dictation_passed = dictation_violations == 0
