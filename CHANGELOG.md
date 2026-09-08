@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.4] - 2026-09-08
+
+### Added
+
+-   **Upfront Execution Mode Selection Gate & Local Playwright CDP (`skills/arm-bash/SKILL.md`)**:
+    -   **Execution Mode Selection Prompt**: Added Step 1.4 Upfront Mode Gate prompting the participant to choose between `Manual Interactive Guided Mode` (step-by-step co-pilot with exploratory HUD) and `Automated / Assisted Browser Mode (Playwright CDP)` before scenario claiming.
+    -   **Playwright CDP (`localhost:9222`) Runner**: Standardized on Playwright (`playwright.chromium.connectOverCDP('http://localhost:9222')`) as the single opinionated open-source browser automation driver for authenticated web applications.
+    -   **Mandatory Port 9222 Connectivity Probe**: Added pre-flight `curl -s --max-time 3 http://localhost:9222/json/version` probe with interactive recovery prompt before connecting Playwright.
+    -   **Failure-Handling Policy Gate (`--on-fail=log|prompt|fix`)**: Configures batch failure handling across `Log & Continue Sweep`, `Pause & Prompt on Failure`, and `Autonomous Self-Fix & Re-Verify`.
+    -   **Workstation Neutrality**: Standardized all environment guidance on `Local Development Workstation (Linux/macOS)`, eliminating platform-specific tunnel boilerplate.
+    -   **Validation Task (`evals/skillopt/tasks/val.jsonl`)**: Added `VAL_26_UPFRONT_MODE_GATE_AND_PLAYWRIGHT_CDP` to benchmark validation battery.
+
 ## [0.22.3] - 2026-09-08
 
 ### Added
