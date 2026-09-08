@@ -110,3 +110,40 @@ When creating Armature artifacts (spec.md, plan.md, etc.):
     VCS)
 2.  Create a **symlink** in the Antigravity artifact directory pointing to the
     canonical file for interactive review
+
+## Asynchronous Subagent Delegation & Conversational Responsiveness
+
+Synchronous tool execution suspends the model thread until all tools in the turn
+return. For heavy operations (e.g., video/screencast decoding via `view_file`,
+deep multi-repository search, or lengthy compilation/benchmarks), running
+synchronously on the main thread locks the chat UI and traps queued user
+messages in the inbox for minutes or tens of minutes.
+
+Follow these operational standards:
+
+1.  **Immediate Dispatch & Turn Yield (Orchestrator-Worker Primacy):** When
+    encountering heavy multimodal inputs (e.g., screencast `.webm` files), broad
+    codebase discovery, or indeterminate tasks (>30s), the primary conversational
+    agent MUST dispatch a background worker and immediately conclude its turn
+    with a visible chat message confirming the worker has been started:
+    -   **Claude Code**: Dispatch via `Task(prompt="...", subagent_type="explorer")`.
+    -   **OpenCode**: Route deep codebase exploration to `@explore` or `@scout`.
+    -   **OpenAI Codex**: Delegate discovery work to `explorer` (`role="explorer"`).
+    -   **Antigravity**: Dispatch via `invoke_subagent(TypeName='DeepInvestigator', ...)` (or configured worker agent).
+    -   **Single-Threaded Harnesses (Cursor, Aider)**: Execute long-running jobs in the
+        background (`run_in_background` or terminal `command & > /tmp/task.log`) with
+        proactive status logging.
+2.  **Conversational Availability:** Because background subagents and processes
+    return immediately to the dispatching loop, the primary conversational agent
+    remains unblocked. When the user asks for progress (e.g., `"status?"`,
+    `"what are you doing?"`), the agent inspects worker state in seconds
+    (e.g., `manage_subagents(Action='list')` in Antigravity, step inspection
+    in Claude Code, or checking background logs/process table in single-threaded
+    setups) rather than letting the user wait in silence.
+3.  **Context Window Hygiene:** Isolating heavy multimodal frame extraction,
+    compiler logs, or sprawling search traces inside a subagent worker keeps
+    thousands of transient tokens from polluting the primary conversation's
+    context window.
+4.  **Reactive Re-engagement:** When the subagent or background task completes,
+    synthesize the worker's findings and present them to the user in the main
+    conversational thread.

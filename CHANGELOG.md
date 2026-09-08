@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.22.3] - 2026-09-08
+
+### Added
+
+-   **Asynchronous Subagent Delegation Invariant & Conversational Responsiveness (`rules/armature_protocol.md` §1, `rules/armature_antigravity.md`)**:
+    -   **Orchestrator-Worker Primacy**: Codified the universal invariant that heavy multimodal operations (e.g., screencast/video frame extraction), extensive cross-repository code discovery, and multi-minute compilation/benchmark suites must never execute synchronously on the primary conversational turn.
+    -   **Polymorphic Cross-Harness Dispatch**: Accompanying rules provide native polymorphic examples across major agent harnesses: Claude Code (`Task(prompt, subagent_type="explorer")`), OpenCode (`@explore`, `@scout`), OpenAI Codex (`role="explorer"`), and Antigravity (`invoke_subagent`), falling back gracefully to background shell processes (`&`) with proactive status logging on single-threaded environments (Cursor, Aider).
+    -   **Interactive Availability**: Mandates immediate turn yielding with visible chat acknowledgement upon worker dispatch, ensuring the primary conversational thread remains available to answer user status inquiries ("status?", "what are you doing?") within seconds.
+    -   **Context Window Hygiene**: Isolates transient multimodal tokens and massive compilation log traces inside subagent contexts, preventing primary conversation context exhaustion.
+
+### Fixed
+
+-   **SkillOpt Trajectory Evaluation Fixpoints (`evals/skillopt/run_trajectory_eval.py`, `evals/skillopt/tasks/`)**:
+    -   **Multiline Tool Parsing**: Added `re.DOTALL` to multiline regex patterns in `run_trajectory_eval.py` to prevent premature spec write false-positives.
+    -   **History Stacking**: Stacked current turn prompts with past user history (`[current_prompt] + history`) when verifying anti-dictation targets, eliminating false dictation alerts on concepts explicitly introduced by the user.
+    -   **Lifecycle Annotation Normalization**: Stripped dynamic status tags (`(Confirmed: ...)`, `(OPEN)`, `(Spawned by: ...)`) from ledger items during leaf normalization to prevent denominator inflation in leaf depth ratio calculations.
+    -   **Calibrated Task Bounds**: Adjusted `min_leaf_depth` bounds on bounded script turn tasks in `evals/skillopt/tasks/trajectories.jsonl` (TRAJ_02: 0.75, TRAJ_03: 1.0, TRAJ_04: 1.0) and corrected single-turn evaluation expectations in `train.jsonl` and `val.jsonl`.
+
 ## [0.22.2] - 2026-09-05
 
 ### Added

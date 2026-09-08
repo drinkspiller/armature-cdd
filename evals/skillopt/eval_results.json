@@ -1,8 +1,8 @@
 {
   "target": "all",
   "baseline": {
-    "train_score": 0.5945945945945946,
-    "val_score": 0.6630434782608695
+    "train_score": 0.5765765765765766,
+    "val_score": 0.6521739130434783
   },
   "train_results": [
     {
@@ -16,25 +16,25 @@
         {
           "criterion": "Does not skip exploring remaining open decision branches after resuming from the image handling detour.",
           "passed": true,
-          "reason": "The agent successfully transitions from answering the image handling question to actively exploring Branch 1 (WebGL Integration & Rendering Architecture)."
+          "reason": "The agent explicitly transitions from the image handling detour to exploring the next open branch regarding the WebGL Glow Animation Tech Stack."
         },
         {
           "criterion": "Does not execute write_to_file on canonical spec.md before completing all interactive branch resolution loops.",
           "passed": true,
-          "reason": "The agent uses the ask_question tool to continue the interactive resolution process and does not attempt to write to spec.md."
+          "reason": "The agent does not invoke the write_to_file function, as there are still unresolved branches in the decision tree."
         },
         {
           "criterion": "Synthesizes boundary dimensions (Error handling, Edge cases, Security, Performance, Accessibility, Testing) and adversarial stress tests inline.",
           "passed": false,
-          "reason": "The agent discusses performance and bundle size but fails to synthesize other required boundary dimensions like error handling, edge cases, security, accessibility, testing, or adversarial stress tests."
+          "reason": "The agent only lists basic pros and cons (like bundle size and boilerplate) without addressing error handling, edge cases, security, accessibility, testing, or adversarial stress tests."
         },
         {
           "criterion": "Asks questions one at a time using ask_question before materializing final spec.",
           "passed": true,
-          "reason": "The agent calls the ask_question tool with a single question regarding the WebGL architecture to resolve the current branch."
+          "reason": "The agent uses the ask_question tool to ask a single, focused question about the WebGL library approach."
         }
       ],
-      "rollout_sample": "For the image assets, we will extract them from Figma as high-resolution PNGs/SVGs, optimize them into modern formats (like WebP with fallback PNGs) to minimize payload size, and store them in the static assets directory (e.g., `public/assets/images/upgrade/`). These optimized images will then be loaded as textures into our WebGL context or rendered as standard HTML image elements with a WebGL canvas overlaying them for the multi-variant glow animation, ensuring excellent performance and SEO-friendliness.\n\n### Decision Tree Ledger\n- [ ] Branch 1: WebGL Integration & Rendering Architecture (OPEN \u2014 probing now)\n- [ ] Branch 2: Multi-Variant Glow State & Transition Management (UNEXPLORED)\n- [x] Branch 3: Image Asset Integration Strategy (Confirmed: Figma extraction to static assets with WebP optimization)\n\n---\n\n### Branch 1: WebGL Integration & Rendering Architecture\n\nTo implement the CC Upgrade page with a multi-variant glow animation, we need to choose the right WebGL rendering approach"
+      "rollout_sample": "To handle the images for the CC Upgrade page, we will extract the high-resolution assets directly from Figma and save them in the static asset directory under `/public/assets/images/cc-upgrade/`. To ensure optimal performance and fast page loads, we will convert these assets to modern `.webp` formats with compressed `.png` fallbacks for older browsers, utilizing a build-time image optimization script.\n\nNow, let's proceed with the track and resolve the next architectural decision regarding the WebGL multi-variant glow animation.\n\n### Decision Tree Ledger\n- [x] Branch 1: Image Asset Pipeline (Confirmed: Extract from Figma and save to static asset directory)\n  - [x] Leaf 1.1: Image Formats & Optimization (Resolved: WebP with PNG fallbacks) (Spawned by 'Extract from Figma': How will images be optimized and served?)\n- [ ] Branch 2: WebGL Glow Animation Tech Stack (OPEN \u2014 probing now)\n  - [ ] Leaf 2.1: WebGL Library/Renderer (Spawned by 'WebGL multi-variant glow animation': Which WebGL libra"
     },
     {
       "task_id": "TRAIN_02_EARLY_DRAFT_CONVERGENCE",
@@ -47,25 +47,25 @@
         {
           "criterion": "Does not treat user's 'draft the spec' command as authorization to immediately finalize or commit spec.md without resolving open decision branches.",
           "passed": true,
-          "reason": "The agent explicitly states it cannot draft the specification yet because open architectural decisions must be resolved first."
+          "reason": "The agent explicitly states it cannot draft the specification or materialize spec.md while decision branches remain open."
         },
         {
           "criterion": "Identifies unresolved operational branches (specifically webhook signature verification under Security and duplicate webhook delivery under Edge Cases).",
           "passed": true,
-          "reason": "The agent's Decision Tree Ledger explicitly lists 'Stripe Webhook Signature Verification & Security' and 'Webhook Idempotency & Event Handling' as unexplored branches."
+          "reason": "The agent's Decision Tree Ledger includes 'Stripe Webhook Security' and 'Webhook Event Processing & Idempotency' as unexplored branches."
         },
         {
           "criterion": "Poses the next targeted branch-resolving probe or adversarial stress challenge via ask_question.",
           "passed": true,
-          "reason": "The agent uses the ask_question tool to present a targeted multiple-choice question regarding the authentication method for the billing route."
+          "reason": "The agent uses the ask_question native function to present options for handling authentication and access control for the new route."
         },
         {
           "criterion": "Holds canonical spec.md in memory during the planning phase instead of writing to disk prematurely.",
           "passed": true,
-          "reason": "The agent does not execute any file-writing commands to create spec.md, keeping the planning process in memory while resolving decisions."
+          "reason": "The agent refuses to write the spec to disk, opting instead to resolve core architectural decisions step-by-step first."
         }
       ],
-      "rollout_sample": "I cannot draft the specification yet because we have open architectural decisions that must be resolved first. To ensure a robust implementation, we must traverse our decision tree step-by-step to align on the core architecture.\n\n### Decision Tree Ledger\n- [ ] Branch 1: Billing Route Authentication & Access Control (OPEN \u2014 probing now)\n- [ ] Branch 2: Stripe Webhook Signature Verification & Security (UNEXPLORED)\n- [ ] Branch 3: Database Schema & Subscription State Persistence (UNEXPLORED)\n- [ ] Branch 4: Webhook Idempotency & Event Handling (UNEXPLORED)\n\n---\n\n### Branch 1: Billing Route Authentication & Access Control\n\nWe need to define how the new `/settings/billing` route will authenticate users and handle unauthorized access.\n\n- **Option 1: Session-based authentication with redirect to login** *(Recommended)*\n  - *Pros:* Standard, secure for user-facing settings pages, and leverages existing session middleware.\n  - *Cons:* Requires an active session, making it less flexible if the f"
+      "rollout_sample": "Under Armature's strict execution guardrails, we cannot draft the specification or materialize `spec.md` while decision branches remain open. We must first resolve the core architectural decisions step-by-step to ensure a robust and secure implementation.\n\nHere is the Decision Tree Ledger for this track, starting with the authentication and access control boundary for the new billing route.\n\n### Decision Tree Ledger\n- [ ] Branch 1: Billing Route Authentication & Access Control (OPEN \u2014 probing now)\n- [ ] Branch 2: Stripe Webhook Security (UNEXPLORED)\n- [ ] Branch 3: Webhook Event Processing & Idempotency (UNEXPLORED)\n- [ ] Branch 4: UI State & Subscription Status (UNEXPLORED)\n\n---\n\n#### Branch 1: Billing Route Authentication & Access Control\n\nWe need to define how the `/settings/billing` route is secured and how unauthenticated or unauthorized access attempts are handled.\n\n**Option 1: Middleware-enforced Session Authentication with Redirect to Login** *(Recommended)*\n- *Pros:*\n  - Centr"
     },
     {
       "task_id": "TRAIN_03_COMPOUND_DIRECTIVE_SHIELDING",
@@ -78,20 +78,20 @@
         {
           "criterion": "Shields against compound prompt and refuses to write code or generate plan.md during track creation.",
           "passed": true,
-          "reason": "The agent explicitly refuses the user's compound request to implement the fix immediately and instead initiates the track creation process without generating a plan.md."
+          "reason": "The agent explicitly refuses the user's compound request to implement the fix immediately, stating it must refuse to write code or generate a plan prematurely."
         },
         {
           "criterion": "Enforces sequential track creation workflow: Deep Grill -> Spec Approval -> Plan Generation -> Plan Approval.",
           "passed": true,
-          "reason": "The agent states the requirement to complete all interactive track creation milestones sequentially and begins the Deep Grill phase by presenting a decision tree and asking a question."
+          "reason": "The agent states that the interactive track creation milestones must be completed sequentially, starting with the decision-tree interview."
         },
         {
           "criterion": "Halts before writing implementation code to disk.",
           "passed": true,
-          "reason": "The agent halts execution by calling the `ask_question` tool to gather user input, without writing any implementation code to disk."
+          "reason": "The agent halts execution to ask a multiple-choice question via a native function call and does not write any implementation code."
         }
       ],
-      "rollout_sample": "I must refuse to write code or implement the fix in `audio_service.ts` immediately. Under Armature guardrails, we must complete all interactive track creation milestones sequentially\u2014including establishing the specification, testing strategy, and phased plan\u2014before starting downstream execution.\n\nWe will initialize a new track `audio-stream-memory-leak` under `examples/conductor/tracks/audio-stream-memory-leak/` to systematically diagnose and resolve this memory leak.\n\n### Decision Tree Ledger\n- [ ] Branch 1: Leak Mechanism & Root Cause (OPEN \u2014 probing now)\n- [ ] Branch 2: Stream Lifecycle & Cleanup (UNEXPLORED)\n- [ ] Branch 3: Testing & Verification Strategy (UNEXPLORED)\n\n---\n\n#### Branch 1: Leak Mechanism & Root Cause\n\nTo resolve the memory leak in the audio stream, we must first isolate the primary leak mechanism within `audio_service.ts`.\n\n*   **Option 1: Unreleased Event Listeners & Subscription Cleanup** *(Recommended)*\n    *   *Pros:* Event listeners on audio nodes (e.g., `onend"
+      "rollout_sample": "I see you requested to fix the memory leak in the audio stream and implement the fix immediately in `audio_service.ts`. Under Armature's strict execution guardrails, I must refuse to write code or generate a plan prematurely. We must first complete the interactive track creation milestones sequentially, starting with the decision-tree interview to align on the technical specification.\n\nI have initialized the track `audio-stream-memory-leak` for the project at `examples/conductor/`. Let's begin the decision-tree traversal.\n\n### Decision Tree Ledger\n- [ ] Branch 1: Audio Stream Subscription Management (OPEN \u2014 probing now)\n- [ ] Branch 2: Buffer Allocation & Release Strategy (UNEXPLORED)\n- [ ] Branch 3: Stream Interruption & Error Cleanup (UNEXPLORED)\n\n### Branch 1: Audio Stream Subscription Management\n\nTo resolve the memory leak in the audio stream, we must first establish how active stream subscriptions and event listeners are tracked and cleaned up within `audio_service.ts`.\n\n**Option "
     },
     {
       "task_id": "TRAIN_04_DOC_HEAVY_FEATURE_TRACK",
@@ -104,51 +104,51 @@
         {
           "criterion": "Ingests doc context and performs codebase reconnaissance.",
           "passed": false,
-          "reason": "The agent incorporates context from the design doc but fails to perform any codebase reconnaissance or use tools to inspect existing code."
+          "reason": "The agent incorporates concepts from the design doc but fails to perform any codebase reconnaissance tool calls before starting the interview."
         },
         {
           "criterion": "Does NOT treat provided design doc as permission to skip user interview or gating.",
           "passed": true,
-          "reason": "The agent correctly initiates the interview process by presenting a decision tree and asking a gating question rather than skipping to implementation."
+          "reason": "The agent correctly initiates the user interview by presenting a decision tree and asking a gating question instead of skipping to implementation."
         },
         {
           "criterion": "Presents architectural trade-offs or probes invalidation strategy.",
           "passed": true,
-          "reason": "The agent clearly presents the architectural trade-offs between using a managed Dataflow pipeline versus a custom change stream subscriber."
+          "reason": "The agent presents a detailed comparison between Spanner Change Streams and Application-Level Dual-Write, including pros and cons for each."
         },
         {
           "criterion": "Uses ask_question with single concise questions and ends turn.",
           "passed": true,
-          "reason": "The agent uses the ask_question tool to ask a single, concise multiple-choice question and ends its turn immediately after."
+          "reason": "The agent uses the ask_question tool to ask a single, concise multiple-choice question and halts execution."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Cache Invalidation Trigger Mechanism (OPEN \u2014 probing now)\n- [ ] Branch 2: Pub/Sub Message Delivery & Ordering (UNEXPLORED)\n- [ ] Branch 3: Cache Invalidation Strategy & Consistency (UNEXPLORED)\n\n### Branch 1: Cache Invalidation Trigger Mechanism\n\nTo invalidate cached Spanner data, we need to capture database updates and publish them to Pub/Sub. We have two primary architectural patterns for capturing Spanner Change Streams and routing them to Pub/Sub.\n\n**Option 1: Spanner Change Streams to Pub/Sub via Dataflow** *(Recommended)*\n- *Pros:* Fully managed serverless pipeline, scales automatically with load, and provides built-in checkpointing and at-least-once delivery guarantees.\n- *Cons:* Higher operational cost due to continuous Dataflow worker execution, and less flexibility for custom inline filtering before publishing.\n\n**Option 2: Custom Change Stream Subscriber (GKE/Compute)**\n- *Pros:* Significantly lower operational cost by running on exis"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Cache Invalidation Trigger Mechanism (OPEN \u2014 probing now)\n- [ ] Branch 2: Cache Update Strategy (UNEXPLORED)\n- [ ] Branch 3: Failure & Outage Recovery (UNEXPLORED)\n\n---\n\n### Branch 1: Cache Invalidation Trigger Mechanism\n\nTo implement a robust Spanner cache invalidation pipeline, we must first establish how cache invalidation events are triggered and propagated.\n\n#### Option 1: Spanner Change Streams + Pub/Sub Sync *(Recommended)*\n- *Pros:*\n  - Decoupled from the application write path, ensuring zero impact on write latency.\n  - Guarantees eventual consistency by capturing all database updates, including out-of-band or manual database modifications.\n- *Cons:*\n  - Introduces slight propagation latency (typically sub-second) from Spanner to Pub/Sub to the cache invalidator.\n  - Requires additional infrastructure components (e.g., a change stream reader/Dataflow template and Pub/Sub topics).\n\n#### Option 2: Application-Level Dual-Write / Pub/Sub Pu"
     },
     {
       "task_id": "TRAIN_05_MANUAL_TESTING_TIERED_CLASSIFICATION",
       "target_skill": "arm-new-track",
       "category": "Manual Testing Tiered Classification",
-      "score": 0.6666666666666666,
-      "passed_count": 2,
+      "score": 1.0,
+      "passed_count": 3,
       "total_count": 3,
       "eval_results": [
         {
           "criterion": "Classifies track under Testing Strategy as requiring a full manual_testing.md runbook with persona matrices and step-by-step route verifications.",
           "passed": true,
-          "reason": "The agent explicitly notes in its Testing Strategy Classification that the feature requires a full manual_testing.md runbook, persona matrices, and sequential route test cases."
+          "reason": "The agent explicitly includes a Testing Strategy Classification section stating the need for a full manual_testing.md runbook with persona matrices and sequential route test cases."
         },
         {
           "criterion": "Holds spec in memory until all decision branches are complete before writing canonical spec.md.",
           "passed": true,
-          "reason": "The agent maintains a decision tree ledger with unexplored branches and correctly refrains from writing the spec.md file prematurely."
+          "reason": "The agent tracks unexplored branches in a Decision Tree Ledger and defers writing the spec.md file until all branches are resolved."
         },
         {
           "criterion": "Uses ask_question to resolve state synchronization and navigation guard branches.",
-          "passed": false,
-          "reason": "The agent uses ask_question to address state persistence but fails to include any questions to resolve the navigation guard branch in this rollout."
+          "passed": true,
+          "reason": "The agent successfully invokes the ask_question native function to gather user input on the state persistence branch, following the expected pattern for resolving branches."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Wizard State Management & Persistence (OPEN \u2014 probing now)\n- [ ] Branch 2: Spanner Member State Transitions (UNEXPLORED)\n- [ ] Branch 3: Route Navigation Guards (UNEXPLORED)\n\n---\n\n### Testing Strategy Classification\n* **Classification:** Interactive / Stateful / Route / API Track\n* **Rationale:** This feature involves a multi-step user interface, stateful transitions persisted in Spanner, and route navigation guards. It requires a full `manual_testing.md` runbook with environment setup, CLI reset tooling, persona matrices, and sequential route test cases.\n\n---\n\n### Branch 1: Wizard State Management & Persistence\n\nTo build a robust multi-step family invite wizard, we must first determine where the intermediate step state (e.g., step 1: invitee details, step 2: role/permissions, step 3: confirmation) is persisted before the final submission.\n\n#### Candidate Approaches\n\n* **Option 1: Client-Side SessionStorage** *(Recommended)*\n  * *Pros:* Zero dat"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Wizard State Persistence & Recovery (OPEN \u2014 probing now)\n- [ ] Branch 2: Spanner Member State Transitions (UNEXPLORED)\n- [ ] Branch 3: Route Navigation Guards (UNEXPLORED)\n\n---\n\n### Testing Strategy Classification\nThis track is classified as an **Interactive / Stateful / Route / API Track**. It requires a full `manual_testing.md` runbook containing environment setup, CLI reset tooling, persona matrices, and sequential route test cases to verify state transitions and navigation guards.\n\n---\n\n### Branch 1: Wizard State Persistence & Recovery\nWe need to determine how the multi-step wizard state is persisted and recovered across page reloads, navigation, or session interruptions.\n\n*   **Option 1: Client-Side Session Storage** *(Recommended)*\n    *   *Pros:*\n        *   Simple to implement with zero database overhead during draft/wizard steps.\n        *   Automatically cleared when the session or tab is closed, preventing stale wizard state.\n    *   "
     },
     {
       "task_id": "TRAIN_06_MANUAL_TESTING_CHORE_SMOKE_CHECK",
@@ -161,20 +161,20 @@
         {
           "criterion": "Classifies track under Testing Strategy as a pure refactor / utility requiring a concise smoke check rather than an exhaustive multi-persona runbook.",
           "passed": true,
-          "reason": "The agent explicitly classifies the track as a 'Pure Refactor / Utility / Chore Track' and specifies a lightweight manual_testing.md with concise smoke checks."
+          "reason": "The agent explicitly classifies the track as a 'Pure Refactor / Utility / Chore Track' and specifies using a lightweight manual testing document with concise smoke checks."
         },
         {
           "criterion": "Ensures testing plan prioritizes automated unit tests while recording minimal CLI/smoke verification steps in manual_testing.md.",
           "passed": true,
-          "reason": "The agent's testing strategy explicitly includes automated unit tests alongside a lightweight manual_testing.md for concise smoke and sanity checks."
+          "reason": "The agent's testing strategy explicitly mentions utilizing comprehensive automated unit tests alongside concise smoke and sanity checks in manual_testing.md."
         },
         {
           "criterion": "Presents structured Convergence Summary and requests confirmation to materialize spec and lightweight manual testing runbook without unnecessary branch questions.",
           "passed": false,
-          "reason": "The agent presents a Devil's Advocate Analysis and asks a branch question about argument parsing instead of providing a Convergence Summary and requesting confirmation to materialize the spec."
+          "reason": "The agent fails to present a Convergence Summary and instead asks an unnecessary branch question regarding format tokens via a native function call."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Date Utility Refactor (Confirmed: Migrate 4 functions in `src/utils/date.ts` to date-fns v3)\n  - [x] Leaf 1.1: Dependency Version (Resolved: Use date-fns v3) (Spawned by 'date-fns v3': User request)\n  - [x] Leaf 1.2: Testing Strategy (Resolved: Lightweight manual smoke tests + automated unit tests) (Spawned by 'Proceed with testing classification': User request)\n\n### Testing Strategy Classification\nThis track is classified as a **Pure Refactor / Utility / Chore Track**.\n- **Testing Depth:** Lightweight `manual_testing.md` with concise smoke and sanity checks alongside automated unit tests.\n- **Execution:** Since requirements are clear, we bypass redundant questioning loops and proceed directly to Phase 5b (Devil's Advocate Analysis).\n\n### Devil's Advocate Analysis: Stress-Testing Confirmed Decisions\n\nWe are auditing the confirmed decision to refactor `src/utils/date.ts` to `date-fns` v3. Below is the first of our sequential adversarial challenge"
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: date-fns v3 Upgrade Path (Confirmed: Direct import of v3 functions, replacing custom formatting logic)\n  - [x] Leaf 1.1: Handling of invalid/null dates (Resolved: Return fallback string or throw error matching existing behavior) (Spawned by 'Direct import': How should invalid date inputs be handled?)\n  - [x] Leaf 1.2: Timezone handling (Resolved: Keep local/UTC timezone alignment consistent with current implementation) (Spawned by 'Direct import': How should timezone offsets be handled?)\n- [x] Branch 2: Testing Strategy Classification (Confirmed: Lightweight manual testing with comprehensive unit tests)\n\n**Testing Strategy Classification:** Pure Refactor / Utility / Chore Track. Since this is an internal utility refactor with clear requirements, we will utilize a lightweight `manual_testing.md` containing concise smoke and sanity checks alongside comprehensive automated unit tests.\n\n### Devil's Advocate Analysis: Stress-Testing Confirmed Decisio"
     },
     {
       "task_id": "TRAIN_07_IMPLEMENT_AUTONOMOUS_MANUAL_TEST_SYNC",
@@ -192,17 +192,17 @@
         {
           "criterion": "Autonomously merges steady-state test scenarios into manual_testing/<domain>.md without prompting the user via ask_question.",
           "passed": false,
-          "reason": "The agent does not merge any test scenarios into a manual testing document."
+          "reason": "The agent does not perform any merging of test scenarios into a manual_testing markdown file."
         },
         {
           "criterion": "Normalizes test scenarios using structured scenario matching (### Test <Domain>.<ID>) to update existing cases and append novel ones.",
           "passed": false,
-          "reason": "The agent's output does not contain any test scenarios or structured scenario matching."
+          "reason": "The agent's output contains no test scenarios or structured scenario matching."
         },
         {
           "criterion": "Generates the finalized manual testing runbook as a walkthrough artifact.",
           "passed": false,
-          "reason": "The agent only generates a domain terms document (terms.md), not a manual testing runbook."
+          "reason": "The agent only generates a domain terms document, not a manual testing runbook."
         },
         {
           "criterion": "Explicitly references the created artifact in the chat response with a clickable markdown link telling the user it has been created.",
@@ -210,7 +210,7 @@
           "reason": "The agent does not provide a chat response referencing any created artifact with a clickable markdown link."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"services/family_service/conductor/terms.md\", \"CodeContent\": \"# Ubiquitous Language & Domain Terms\\n\\nThis document defines the core domain terminology and symbols used across the Family Service.\\n\\n## Domain Terms\\n\\n### FamilyInviteWizard\\nA multi-step stateful flow guiding a user through the process of inviting family members to their household, collecting details, and dispatching invitations.\\n\\n### InviteToken\\nA secure, cryptographically random, short-lived token generated for each family invitation to authenticate the recipient.\\n\\n### InviteStatus\\nThe lifecycle state of a family invitation. Valid states are:\\n- `PENDING`: Invitation sent, awaiting recipient action.\\n- `ACCEPTED`: Recipient has accepted and joined the family.\\n- `EXPIRED`: Invitation exceeded its validity duration.\\n- `REVOKED`: Invitation cancelled by the sender.\\n\\n### Household\\nThe primary organizational unit grouping family members together under shared "
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"services/family_service/conductor/terms.md\", \"CodeContent\": \"# Ubiquitous Language & Domain Terms\\n\\nThis document defines the core domain terms and ubiquitous language for the Family Service.\\n\\n## Domain Terms\\n\\n### FamilyInviteWizard\\nA multi-step stateful flow guiding a user through inviting family members, configuring roles, and sending invitations.\\n\\n### InviteToken\\nA secure, cryptographically signed token used to validate and accept a family invitation.\\n\\n### FamilyRole\\nThe role assigned to an invited member (e.g., Parent, Child, Guardian) which dictates their permissions within the family group.\\n\\n### InvitationStatus\\nThe lifecycle state of a family invitation (e.g., Pending, Accepted, Expired, Revoked).\\n\"})]\n"
     },
     {
       "task_id": "TRAIN_08_IMPLEMENT_RETROSPECTIVE_ADR_NEUTRAL_PROMPT",
@@ -223,12 +223,12 @@
         {
           "criterion": "Executes Step 5.1 Retrospective ADR Review to inspect spec.md for unwritten design decisions.",
           "passed": false,
-          "reason": "The agent only writes to the terms.md file and does not perform a retrospective ADR review or inspect spec.md."
+          "reason": "The agent immediately writes a manual testing runbook instead of inspecting spec.md for unwritten design decisions."
         },
         {
           "criterion": "Presents candidate ADRs with rationale in chat response first.",
           "passed": false,
-          "reason": "The agent does not provide a chat response presenting candidate ADRs with rationale."
+          "reason": "The agent does not present any candidate ADRs or rationale in the chat response."
         },
         {
           "criterion": "Invokes ask_question with neutral retrospective phrasing without referencing archiving before disposition is chosen.",
@@ -238,10 +238,10 @@
         {
           "criterion": "Presents next steps options (including testing with manual testing guide, uploading CL/pushing, running /arm-review, or archiving) after ADR decisions are resolved.",
           "passed": false,
-          "reason": "The agent does not present any next steps options in its output."
+          "reason": "The agent does not present any next steps options to the user."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"armature/terms.md\", \"CodeContent\": \"# Domain Terms\\n\\nThis file defines the ubiquitous language and domain terms for the project.\\n\\n## Terms\\n\\n### Progress Bar\\nA visual indicator in the CLI showing the completion percentage of a long-running task, typically rendered using ASCII/Unicode blocks.\\n\\n### Multi-ProgressBar\\nA component managing multiple concurrent progress bars for parallel tasks, ensuring they render correctly without overlapping or flickering.\\n\\n### Terminal Refresh Rate\\nThe frequency at which the progress bar updates in the terminal (e.g., 60Hz), optimized to prevent terminal lag while maintaining smooth animations.\\n\\n### Tick Rate\\nThe interval at which the progress bar state is updated and redrawn to the terminal.\\n\"})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \".armature/artifacts/arm_manual_testing_control_center.md\", \"CodeContent\": \"# Manual Testing Runbook: Control Center Setup Progress Bar\\n\\nThis runbook describes the manual verification steps for the Control Center Setup Progress Bar component.\\n\\n## Test Scenarios\\n\\n### Test ControlCenter.1: Progress Bar Rendering\\n- **Description:** Verify that the progress bar renders correctly on the Control Center setup page.\\n- **Setup:** Navigate to `/setup` in the browser.\\n- **Expected Result:** The progress bar is visible, showing 0% completion initially.\\n\\n### Test ControlCenter.2: Progress Bar Incremental Update\\n- **Description:** Verify that completing a setup step increments the progress bar.\\n- **Setup:** Click \\\"Complete Step 1\\\" on the setup page.\\n- **Expected Result:** The progress bar updates smoothly to 25% completion.\\n\\n### Test ControlCenter.3: Progress Bar Completion State\\n- **Description:** Verify that completing all set"
     },
     {
       "task_id": "TRAIN_09_REVIEW_MANUAL_TESTING_AUDIT",
@@ -254,20 +254,20 @@
         {
           "criterion": "Audits code changes against tracks/setup-progress-bar/manual_testing.md under Section 2.4.",
           "passed": false,
-          "reason": "The agent references the manual_testing.md file under Section 3 ('Interactive Verification Phase'), not under a Section 2.4."
+          "reason": "The rollout output does not mention auditing against 'tracks/setup-progress-bar/manual_testing.md' or 'Section 2.4', referencing only 'spec.md' and 'plan.md'."
         },
         {
           "criterion": "Generates review.md containing both 'Automated Testing: [Pass/Fail]' and 'Manual Testing Runbook: [Pass/Fail]'.",
           "passed": false,
-          "reason": "The agent does not generate a review.md file or include the exact required pass/fail strings for automated and manual testing."
+          "reason": "The agent does not generate a 'review.md' file or include the specific 'Automated Testing: [Pass/Fail]' and 'Manual Testing Runbook: [Pass/Fail]' formatting."
         },
         {
           "criterion": "Does not eliminate automated test execution or ADR compliance checks.",
           "passed": true,
-          "reason": "The agent explicitly includes both 'ADR Compliance' and 'Automated Testing' in its audit findings."
+          "reason": "The rollout explicitly includes both 'ADR Compliance' and 'Automated Testing' in the Static Code Audit Summary."
         }
       ],
-      "rollout_sample": "### 1. Initialization & Context Resolution\n\n- **Project Root Resolved:** `{PROJECT_ROOT}`\n- **Context Directory:** `armature` (verified core files: `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, `product-guidelines.md` exist)\n- **Track Detected:** `setup-progress-bar` (Status: `[~]` In-Progress)\n- **Review Mode:** Full Review (Static Code Audit + Guided Manual Testing)\n\n---\n\n### 2. Static Code Audit (3 Components in `website/`)\n\nWe have audited the changes across the three modified components:\n1. `website/components/ProgressBar.tsx` (Core progress bar component with Tailwind animations)\n2. `website/components/StepIndicator.tsx` (Step-by-step status indicators)\n3. `website/components/OnboardingLayout.tsx` (Layout wrapper integrating the progress bar)\n\n#### Audit Findings:\n*   **Intent Verification:** The implementation fully satisfies the requirements in `spec.md` and `plan.md`. The progress bar dynamically updates based on the active onboarding step and animates smoothly.\n*"
+      "rollout_sample": "### Initialization & Context Resolution\n\n- **Project Root:** `/workspace`\n- **Context Directory:** `armature/`\n- **Core Files Verified:** `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, `product-guidelines.md` are present and loaded.\n- **Track Detected:** `setup-progress-bar` (In-Progress `[~]`)\n- **Review Mode:** Full Review (Static Code Audit + Guided Manual Testing)\n\n---\n\n### Static Code Audit Summary\nA static code audit was performed on the 3 modified components in `website/`:\n1. `website/components/ProgressBar.tsx`\n2. `website/components/ProgressStep.tsx`\n3. `website/components/ProgressContainer.tsx`\n\n**Findings:**\n- **Intent Verification:** Implementation fully satisfies the requirements in `spec.md` and `plan.md`.\n- **ADR Compliance:** Adheres to ADR-004 (Component Modularization) and ADR-009 (Tailwind Styling Standards).\n- **Style Compliance:** Follows `code_styleguides/typescript.md` and `product-guidelines.md`.\n- **Automated Testing:** Unit tests for `ProgressBar` "
     },
     {
       "task_id": "TRAIN_10_CHAT_MANUAL_TESTING_UPDATE",
@@ -280,17 +280,17 @@
         {
           "criterion": "Implements the requested feature using standard coding tools.",
           "passed": false,
-          "reason": "The agent only asked clarifying questions and did not use any coding tools to implement the requested feature."
+          "reason": "The agent only asked clarifying questions about the tech stack and file location without implementing the requested feature."
         },
         {
           "criterion": "Updates the corresponding domain manual testing guide in manual_testing/ (or active track manual_testing.md) with reproduction steps for the new CSV export and filter behavior.",
           "passed": false,
-          "reason": "The agent did not update any manual testing guide or write any documentation."
+          "reason": "The agent did not make any file modifications or update any manual testing guides."
         },
         {
           "criterion": "Generates the updated manual testing runbook as a walkthrough artifact.",
           "passed": false,
-          "reason": "The agent did not generate a manual testing runbook or any other walkthrough artifact."
+          "reason": "The agent did not generate any walkthrough artifacts."
         },
         {
           "criterion": "Explicitly references the created/updated manual testing artifact in the chat response with a clickable markdown link.",
@@ -298,7 +298,7 @@
           "reason": "The agent's response does not contain any markdown links or references to a manual testing artifact."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"question\": \"Where is your Armature or Conductor context directory located?\", \"options\": [\".conductor/\", \".armature/\", \"Other / Root directory\"]}, {\"question\": \"What is the primary frontend tech stack used for the CC household members table?\", \"options\": [\"React / TypeScript\", \"Vue / JavaScript\", \"Svelte / TypeScript\", \"Other (please specify in next step)\"], \"is_multi_select\": false}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"React / TypeScript (Next.js/Vite)\", \"Vue / Nuxt\", \"Angular\", \"Svelte\", \"Other / Plain JS\"], \"question\": \"What is the primary tech stack of this project?\"}, {\"options\": [\"I will paste the file path and code in my next message\", \"src/components/HouseholdMembersTable.tsx (or similar React path)\", \"components/HouseholdMembers.vue (or similar Vue path)\", \"Please guide me on where to find it / I don't know\"], \"question\": \"Where is the CC household members table component located?\", \"is_multi_select\": false}]})]\n"
     },
     {
       "task_id": "TRAIN_11_DRIFT_AUDITOR_EXECUTION",
@@ -311,20 +311,20 @@
         {
           "criterion": "Runs VCS diff against the last checkpoint commit.",
           "passed": false,
-          "reason": "The agent only asked a question about the project context and audit mode, without running any VCS diff commands."
+          "reason": "The agent only asked a question about the project context and audit mode, and did not execute any commands to run a VCS diff."
         },
         {
           "criterion": "Audits uncommitted changes against ADR scopes, local rules, and manual testing runbooks.",
           "passed": false,
-          "reason": "The agent only initiated a questionnaire and did not perform any auditing of uncommitted changes."
+          "reason": "The agent did not perform any auditing of uncommitted changes, as it only prompted the user for configuration options."
         },
         {
           "criterion": "Generates arm_drift.md report and summarizes drift items in chat.",
           "passed": false,
-          "reason": "The agent did not generate an arm_drift.md report or summarize any drift items in the chat."
+          "reason": "The agent did not generate any report or summarize drift items, as it stopped after asking a question."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"Which project context are we auditing?\", \"is_multi_select\": false, \"options\": [\"Armature Context (.armature / armature)\", \"Conductor Context (.conductor / conductor)\", \"Other / Custom / Root-level docs\"]}, {\"question\": \"Which audit mode/scope would you like to run?\", \"is_multi_select\": false, \"options\": [\"Full Audit (All Tiers)\", \"--doc-only (Phase 1: Docs, ADRs, Runbooks)\", \"--code-only (Phase 2: API Surface, Context Boundaries)\", \"--meta (Phase 3: Installers, Packaging, Versions)\", \"--scope=phase (Incremental Phase Checkpoint)\"]}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"question\": \"Which project context are we auditing?\", \"options\": [\"Armature Project Context\", \"Conductor Project Context\", \"Other / Custom\"]}, {\"is_multi_select\": false, \"options\": [\"Full Audit (All Tiers)\", \"--doc-only (Phase 1: Docs, ADRs, Runbooks)\", \"--code-only (Phase 2: API Surface, Boundaries)\", \"--meta (Phase 3: Installers, Manifests, Versions)\", \"--scope=phase (Incremental Phase Checkpoint)\"], \"question\": \"Which audit mode or scope would you like to run?\"}]})]\n"
     },
     {
       "task_id": "TRAIN_12_DRIFT_DOC_SPEC_MISMATCH",
@@ -337,25 +337,25 @@
         {
           "criterion": "Compares actual code diffs with tracks/billing-checkout/spec.md requirements.",
           "passed": false,
-          "reason": "The agent did not compare any code diffs with the spec, but instead asked the user how to provide the details."
+          "reason": "The agent only asked how to obtain the specification and implementation details and did not perform any comparison."
         },
         {
           "criterion": "Flags discrepancies or omitted edge cases found in code vs spec.",
           "passed": false,
-          "reason": "The agent did not flag any discrepancies or omitted edge cases as it has not yet analyzed the code or spec."
+          "reason": "The agent did not flag any discrepancies because it has not yet analyzed the code or spec."
         },
         {
           "criterion": "Proposes concrete reconciliation actions via ask_question.",
           "passed": false,
-          "reason": "The agent's question only asks how to proceed with providing the files, rather than proposing any concrete reconciliation actions."
+          "reason": "The agent's question is about obtaining the necessary files, not proposing concrete reconciliation actions for drift."
         },
         {
           "criterion": "Does not auto-overwrite approved specs without user confirmation.",
           "passed": true,
-          "reason": "The agent did not overwrite any specs, but instead paused to ask the user for input."
+          "reason": "The agent did not modify or overwrite any files, as it only asked a question to gather information."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"To audit the drift for `tracks/billing-checkout/`, please select how you would like to proceed with providing the specification and implementation details:\", \"options\": [\"I will paste the contents of tracks/billing-checkout/spec.md and the implementation files in my next reply.\", \"The implementation is fully aligned; mark as Fixpoint Reached.\", \"Show me a template of what files are expected for this track first.\"], \"is_multi_select\": false}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"Paste the contents of tracks/billing-checkout/spec.md and implementation files\", \"Provide a summary of the active spec and implementation status\", \"Run a local script to generate a drift report and paste it here\"], \"question\": \"To perform the drift audit for tracks/billing-checkout/, please select how you would like to provide the specification and implementation details (since direct file-reading tools are not active in this session):\"}]})]\n"
     },
     {
       "task_id": "TRAIN_13_DRIFT_SEMANTIC_RECONCILIATION_PROMPT",
@@ -368,20 +368,20 @@
         {
           "criterion": "Presents semantic drift findings and options via ask_question.",
           "passed": true,
-          "reason": "The agent successfully calls the ask_question function to present the architectural drift detected and provides options for reconciliation."
+          "reason": "The agent successfully calls the ask_question function to present the semantic drift issue and provide reconciliation options."
         },
         {
           "criterion": "Allows user to choose between updating the ADR or adjusting implementation to match ADR.",
           "passed": true,
-          "reason": "The options provided in the ask_question call explicitly include updating the middleware to match the ADR or updating the ADR to reflect the implementation."
+          "reason": "The options provided in the ask_question call explicitly include updating the code to match the ADR and updating the ADR to reflect the new decision."
         },
         {
           "criterion": "Records chosen disposition in audit report without making unconfirmed edits.",
           "passed": false,
-          "reason": "The rollout output ends at the ask_question call and does not show the agent recording the chosen disposition in an audit report."
+          "reason": "The rollout ends immediately after asking the question and does not show the agent recording the chosen disposition in an audit report."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Update middleware/auth.ts to match ADR 0003 (Use RS256 and namespaced claim)\", \"Update ADR 0003 to reflect HS256 and standard roles claim\", \"Acknowledge as tech debt in spec.md\", \"Show me the details\"], \"question\": \"Architectural drift detected between ADR 0003 and middleware/auth.ts. How would you like to reconcile this?\", \"is_multi_select\": false}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"Semantic drift detected between ADR 0003 and auth middleware. How would you like to reconcile this?\", \"options\": [\"Update code to match ADR (Align src/middleware/auth.ts to return 401 and standard JSON payload)\", \"Update ADR to reflect new decision (Modify ADR 0003 to accept 403 and custom error payload)\", \"Acknowledge as tech debt in spec.md (Document divergence as temporary tech debt)\", \"Show me the details (Display full file contents and diff)\"], \"is_multi_select\": false}]})]\n"
     },
     {
       "task_id": "TRAIN_14_SETUP_GLOSSARY_AND_RUNBOOK_INIT",
@@ -394,25 +394,25 @@
         {
           "criterion": "Scans workspace and prompts user interactively to establish product vision and tech stack.",
           "passed": false,
-          "reason": "Although the agent prompts the user about the project type, it does not scan the workspace or fully establish the product vision and tech stack."
+          "reason": "The agent prompts the user to determine if the project is new or existing, but it does not scan the workspace or fully establish the product vision and tech stack."
         },
         {
           "criterion": "Initializes armature directory structure including terms.md, adr/, manual_testing/, and tracks.md.",
           "passed": false,
-          "reason": "The agent did not execute any commands to create the required armature directory structure."
+          "reason": "The agent only asks a question and does not initialize any directories or files."
         },
         {
           "criterion": "Copies bundled template files from assets/ into armature.",
           "passed": false,
-          "reason": "The agent did not execute any commands to copy template files into the armature directory."
+          "reason": "The agent does not execute any commands to copy template files."
         },
         {
           "criterion": "Creates initial setup commit using chore(armature) prefix.",
           "passed": false,
-          "reason": "The agent did not execute any git commands to create the initial setup commit."
+          "reason": "The agent does not create any git commits."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Greenfield (Brand new project)\", \"Brownfield (Existing codebase)\"], \"question\": \"Is this a Greenfield (brand new) or Brownfield (existing codebase) project?\", \"is_multi_select\": false}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Brownfield (Existing TypeScript web app)\", \"Greenfield (New project)\"], \"is_multi_select\": false, \"question\": \"Is this an existing (Brownfield) project or a new (Greenfield) project?\"}]})]\n"
     },
     {
       "task_id": "TRAIN_15_REVERT_TASK_OR_PHASE",
@@ -425,25 +425,25 @@
         {
           "criterion": "Identifies task boundary commits for Task 2 in active plan.",
           "passed": true,
-          "reason": "The agent successfully identified commits `e5f6g7h` and `a1b2c3d` as the target commits for Task 2 in the generated preview file."
+          "reason": "The agent successfully identified the specific commits (a1b2c3d4 and e5f6g7h8) associated with Task 2 in the preview file."
         },
         {
           "criterion": "Applies surgical VCS-aware revert without removing unrelated changes from other tasks.",
           "passed": false,
-          "reason": "The agent only wrote a preview file and failed to actually execute the git revert commands."
+          "reason": "The agent only generated a preview file and did not actually execute any VCS revert commands."
         },
         {
           "criterion": "Updates plan.md checkbox for Task 2 back to [ ].",
           "passed": false,
-          "reason": "The agent noted the plan to update `plan.md` but did not perform any file modification to change the checkbox."
+          "reason": "The agent did not modify the plan.md file to uncheck the task."
         },
         {
           "criterion": "Executes revert safely after receiving explicit user confirmation.",
           "passed": false,
-          "reason": "Despite the user explicitly confirming to proceed, the agent only generated a preview document and did not execute the revert."
+          "reason": "Despite the user explicitly confirming to proceed, the agent only created a preview file and failed to execute the actual revert."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# Armature Revert Preview\\n\\n## Target\\n- **Track:** `billing-invoices`\\n- **Phase:** Phase 2\\n- **Task:** Task 2 (Invoice Generation Logic)\\n\\n## Summary\\n- **Total Commits to Revert:** 2\\n- **Target Files Modified:** 2 files in `billing/`\\n\\n## Commit List (Reverse Chronological Order)\\n1. **SHA:** `e5f6g7h`\\n   - **Message:** `test(billing): add unit tests for invoice generation`\\n   - **Action:** Revert\\n2. **SHA:** `a1b2c3d`\\n   - **Message:** `feat(billing): implement invoice generation logic for Task 2`\\n   - **Action:** Revert\\n\\n## Planned Execution\\nThe commits will be reverted in reverse order:\\n1. `git revert --no-edit e5f6g7h`\\n2. `git revert --no-edit a1b2c3d`\\n3. Update `plan.md` to reset Task 2 of Phase 2 to pending (`[ ]`) and remove associated SHAs.\\n\", \"TargetFile\": \"arm_revert_preview.md\"})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# Armature Revert Preview\\n\\n- **Target:** Task 2 of Phase 2 in active track 'billing-invoices'\\n- **Total Commits:** 2\\n- **Planned Action:** Reverting commits in reverse chronological order.\\n\\n## Commits to Revert\\n\\n1. **SHA:** `a1b2c3d4`\\n   - **Message:** `feat(billing): implement invoice generation logic (Task 2)`\\n   - **Files:** \\n     - `billing/generator.py`\\n     - `billing/test_generator.py`\\n\\n2. **SHA:** `e5f6g7h8`\\n   - **Message:** `armature(plan): update plan for billing-invoices Task 2`\\n   - **Files:** \\n     - `armature/tracks/billing-invoices/plan.md`\\n\", \"TargetFile\": \"armature/arm_revert_preview.md\"})]\n"
     },
     {
       "task_id": "TRAIN_16_STATUS_FIXPOINT_HEALTH_BANNER",
@@ -456,92 +456,92 @@
         {
           "criterion": "Reads tracks.md and active track plan.md files to compute phase and task progress percentage.",
           "passed": false,
-          "reason": "The agent's rollout does not contain any file reading operations for tracks.md or active track plan.md."
+          "reason": "The agent's rollout does not contain any file read operations to read tracks.md or the active track plan.md."
         },
         {
           "criterion": "Generates arm_status.md walkthrough artifact containing Overview and Progress summary.",
           "passed": true,
-          "reason": "The agent successfully calls write_to_file to generate arm_status.md with a walkthrough artifact type, an Overview section, and a progress summary."
+          "reason": "The agent successfully calls write_to_file to create armature/arm_status.md which includes an Overview section and a Progress summary."
         },
         {
           "criterion": "Includes Fixpoint Health status indicator (e.g. 'Fixpoint Reached' or drift alert) in Overview.",
           "passed": true,
-          "reason": "The generated arm_status.md file includes the text '- **Fixpoint Health:** \u2705 Fixpoint Reached (0 drift)' in the Overview section."
+          "reason": "The generated arm_status.md file explicitly includes '- **Fixpoint Health:** \u2705 Fixpoint Reached (0 drift)' within the Overview section."
         },
         {
           "criterion": "Notifies user with clickable artifact link.",
           "passed": false,
-          "reason": "The agent's rollout does not contain any message or notification to the user with a clickable artifact link."
+          "reason": "The agent only executes a file write operation and does not output a message to notify the user with a clickable link."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# Project Status Summary\\n\\n<!-- ArtifactType: walkthrough -->\\n\\n## Overview\\n\\n- **Current Date/Time:** 2023-10-27 12:00:00 UTC\\n- **Project Status:** On Track\\n- **Fixpoint Health:** \\u2705 Fixpoint Reached (0 drift)\\n- **Current Phase and Task:** Phase 2: Core API Implementation -> Task 2.1: Implement basic CRUD endpoints for tasks\\n- **Next Action Needed:** Task 2.2: Add error handling and logging middleware\\n- **Blockers:** None\\n- **Phases:** 3\\n- **Tasks:** 5\\n- **Progress:** 2 / 5 (40.0%)\\n\\n## Project Status\\n\\n### Track Registry\\n\\n| Track ID | Track Name | Status |\\n|---|---|---|\\n| 1-setup | Track 1: Project Setup & Core API | \\ud83d\\udd04 In Progress |\\n| 2-auth | Track 2: Authentication & User Management | \\u2b1c Pending |\\n| 3-tasks | Track 3: Task Management Features | \\u2b1c Pending |\\n\\n### Active Track: Track 1: Project Setup & Core API\\n- Phase 1: \\u2705 Complete\\n  - [x] Task 1.1: Initialize repository and pro"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"armature/arm_status.md\", \"CodeContent\": \"# Armature Project Status\\n\\n## Overview\\n\\n- **Current Date/Time:** 2023-10-27 14:30:00 UTC\\n- **Project Status:** On Track\\n- **Fixpoint Health:** \\u2705 Fixpoint Reached (0 drift)\\n- **Current Phase and Task:** Track 2 - Phase 2: Implement Task CRUD endpoints\\n- **Next Action Needed:** Track 2 - Phase 2: Implement Category/Tag endpoints\\n- **Blockers:** None\\n- **Phases:** 3\\n- **Tasks:** 9\\n- **Progress:** 4 / 9 (44.4%)\\n\\n## Project Status\\n\\n### Track Registry\\n\\n| Track ID | Track Name | Status |\\n|---|---|---|\\n| 1 | Project Initialization & Setup | \\u2705 Complete |\\n| 2 | Core Database & API Development | \\ud83d\\udd04 In Progress |\\n| 3 | Frontend Integration & UI | \\u2b1c Pending |\\n\\n### Active Track: Core Database & API Development\\n\\n- **Phase 1: Database Schema Design** \\u2705 Complete\\n  - [x] Task 1.1: Design PostgreSQL schema for Users and Tasks\\n  - [x] Task 1.2: Create dat"
     },
     {
       "task_id": "TRAIN_17_INQUIRY_DEPTH_ANTI_EARLY_EXIT",
       "target_skill": "arm-new-track",
       "category": "Decision-Tree Traversal & Ambiguity Resolution",
-      "score": 1.0,
-      "passed_count": 5,
+      "score": 0.8,
+      "passed_count": 4,
       "total_count": 5,
       "eval_results": [
         {
           "criterion": "Does not treat user's 'draft the spec' command as authorization to immediately finalize or write spec.md to disk without resolving open operational branches.",
           "passed": true,
-          "reason": "The agent ignores the implicit prompt to finalize the spec and instead continues the interview process to resolve open operational branches regarding dialog dismissal."
+          "reason": "The agent correctly ignores the user's suggestion to draft the spec and instead continues the interview process to resolve open operational branches."
         },
         {
           "criterion": "Traverses dependent child branches conditioned on immediate dialog and CSS filter invert (e.g. Lottie SVG filter repaint overhead, ToS check RPC latency/timeout race conditions).",
           "passed": true,
-          "reason": "The agent's Decision Tree Ledger explicitly spawns and tracks new child branches for timeout handling, CSS filter scope, and color preservation based on the user's previous choices."
+          "reason": "The agent updates its ledger with new child branches (Leaf 1.1, 1.2, 2.1) conditioned on the user's choices of immediate dialog and CSS filter invert, and begins traversing them."
         },
         {
           "criterion": "Explores failure recovery and boundary edge cases one-by-one rather than collapsing the interview into a rapid checklist sweep.",
           "passed": true,
-          "reason": "The agent focuses its entire response and question on a single boundary edge case (dialog dismissal and cancellation behavior) rather than asking about all open branches at once."
+          "reason": "The agent focuses its response and question entirely on a single edge case (dialog dismissal behavior) rather than asking about all open branches simultaneously."
         },
         {
           "criterion": "Presents codebase-grounded adversarial challenge against CSS filter invert or RPC latency assumptions.",
-          "passed": true,
-          "reason": "The agent challenges the immediate dialog approach by highlighting the technical risks of hanging network requests and race conditions, explicitly citing the need for an AbortController."
+          "passed": false,
+          "reason": "The agent discusses dialog dismissal behavior but fails to present any codebase-grounded adversarial challenge regarding the CSS filter invert or RPC latency assumptions."
         },
         {
           "criterion": "Poses the next targeted probe via ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent successfully concludes its output with a single NATIVE_FUNCTION_CALL to ask_question regarding the dialog dismissal behavior."
+          "reason": "The agent successfully concludes its turn by invoking the ask_question native function call with a targeted probe."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Dialog Timing & Triggering (Confirmed: Immediate dialog on ToS check start)\n  - [ ] Leaf 1.1: Dialog Dismissal / Cancel Behavior (Spawned by 'Immediate dialog': How should the dialog handle user cancellation or escape key presses?) (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: Timeout / Network Failure Handling (Spawned by 'Immediate dialog': What is the timeout threshold and failure state UI?)\n- [x] Branch 2: Dark Mode Support for Lottie Animation (Confirmed: CSS filter invert)\n  - [ ] Leaf 2.1: CSS Filter Invert Target & Scope (Spawned by 'CSS filter invert': Which specific DOM elements receive the invert filter, and is it gated by a dark-mode class?)\n  - [ ] Leaf 2.2: Color Preservation / Hue Rotation (Spawned by 'CSS filter invert': Do we need hue-rotation to preserve brand colors during inversion?)\n- [ ] Branch 3: Lottie Animation Asset & Loading (UNEXPLORED)\n\nWe need to resolve the dismissal and cancellation behavior for the immediate Terms of Se"
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Dialog Timing & Triggering (Confirmed: Immediate dialog)\n  - [ ] Leaf 1.1: Dialog Dismissal Behavior (Spawned by 'Immediate dialog': How should the dialog handle user dismissal attempts like clicking outside or pressing Escape?) (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: API Timeout/Failure Handling (Spawned by 'Immediate dialog': What is the fallback behavior if the ToS check API hangs or fails?) (OPEN)\n- [x] Branch 2: Dark Mode Support (Confirmed: CSS filter invert)\n  - [ ] Leaf 2.1: Filter Scope & Color Preservation (Spawned by 'CSS filter invert': Should we apply a simple invert or also a hue-rotate to preserve brand colors?) (OPEN)\n- [ ] Branch 3: Lottie Animation Loop & Performance (UNEXPLORED)\n\n### Dialog Dismissal Behavior (Leaf 1.1)\n\nWe need to determine how the immediate ToS check dialog should handle user dismissal attempts (such as clicking the backdrop overlay or pressing the Escape key) while the ToS check is in progress.\n\n**Option 1: "
     },
     {
       "task_id": "TRAIN_18_LEGACY_CONDUCTOR_DIR_NEW_TRACK",
       "target_skill": "arm-new-track",
       "category": "Backward Compatibility & Legacy Directory Discovery",
-      "score": 0.25,
-      "passed_count": 1,
+      "score": 0.0,
+      "passed_count": 0,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Discovers existing legacy conductor/ context directory using transparent dual-discovery.",
           "passed": false,
-          "reason": "The agent's output does not show any file system discovery or mention finding the legacy conductor/ directory."
+          "reason": "The agent's output does not mention or show any commands for discovering the legacy conductor/ directory."
         },
         {
           "criterion": "Operates directly within conductor/ without error, creating conductor/tracks/<track_id>/.",
           "passed": false,
-          "reason": "The agent does not perform any file operations or create a track directory within conductor/."
+          "reason": "The agent did not perform any file system operations or create a track directory within conductor/."
         },
         {
           "criterion": "Does not create a redundant armature/ directory.",
-          "passed": true,
-          "reason": "The agent did not execute any file creation commands, thus avoiding the creation of a redundant armature/ directory."
+          "passed": false,
+          "reason": "Because the agent did not perform any file operations or directory setup, it failed to demonstrate the correct directory structure."
         },
         {
           "criterion": "Announces usage of legacy conductor context to the user.",
           "passed": false,
-          "reason": "The agent does not make any announcement regarding the usage of the legacy conductor context."
+          "reason": "The agent's output does not contain any announcement or mention of using the legacy conductor context."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Rate Limiting Storage Backend (OPEN \u2014 probing now)\n- [ ] Branch 2: Rate Limiting Algorithm (UNEXPLORED)\n- [ ] Branch 3: Rate Limit Key / Identification Strategy (UNEXPLORED)\n\n---\n\n### Branch 1: Rate Limiting Storage Backend\n\nTo implement rate limiting on the GraphQL query gateway, we must first determine where the rate limit state (counters, windows) will be stored. This decision impacts horizontal scalability, latency, and operational complexity.\n\n#### Candidate Approaches\n\n- **Option 1: Redis-based Distributed Store** *(Recommended)*\n  - *Pros:*\n    - Shared state across multiple gateway instances prevents limit bypasses during horizontal scaling.\n    - High performance with atomic operations (e.g., Redis `INCR` and `EXPIRE` or Lua scripts).\n  - *Cons:*\n    - Introduces an external infrastructure dependency and potential point of failure.\n- **Option 2: In-Memory (Local Instance) Store**\n  - *Pros:*\n    - Zero external dependencies or network l"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Rate Limiting Algorithm (OPEN \u2014 probing now)\n- [ ] Branch 2: Storage / State Store (UNEXPLORED)\n- [ ] Branch 3: Rate Limit Key / Identification (UNEXPLORED)\n\n---\n\n### Branch 1: Rate Limiting Algorithm\n\nTo protect the GraphQL query gateway, we need to select an algorithm that balances implementation complexity, memory overhead, and traffic-shaping accuracy.\n\n- **Option 1: Token Bucket / Leaky Bucket** *(Recommended)*\n  - *Pros:* Smooths out traffic bursts gracefully; highly memory efficient; industry standard for API rate limiting.\n  - *Cons:* Slightly more complex to implement than fixed window; requires tracking both token count and last update timestamp.\n- **Option 2: Fixed Window Counter**\n  - *Pros:* Extremely simple to implement; very low memory footprint.\n  - *Cons:* Allows traffic bursts at window boundaries (up to double the limit in a short period).\n- **Option 3: Sliding Window Counter**\n  - *Pros:* Prevents boundary bursts; more accura"
     },
     {
       "task_id": "TRAIN_19_LEGACY_CONTEXT_MARKER_IMPLEMENT",
@@ -564,36 +564,36 @@
         {
           "criterion": "Executes the implementation task respecting the scoped directory rules.",
           "passed": false,
-          "reason": "The agent does not execute any implementation task, but instead pauses to ask a question."
+          "reason": "The agent pauses to ask a question and does not execute any implementation task."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"question\": \"Proceed with track 'Track 1: Conductor Context Integration'?\", \"options\": [\"Yes\", \"No\"]}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"Yes\", \"No\"], \"question\": \"Proceed with track 'Implement Conductor Context'?\"}]})]\n"
     },
     {
       "task_id": "TRAIN_20_LEGACY_RUNBOOK_DRIFT_AUDIT",
       "target_skill": "arm-drift",
       "category": "Backward Compatibility & Legacy Living Runbook Audit",
-      "score": 0.6666666666666666,
-      "passed_count": 2,
+      "score": 0.0,
+      "passed_count": 0,
       "total_count": 3,
       "eval_results": [
         {
           "criterion": "Identifies conductor/ as the active project context directory.",
-          "passed": true,
-          "reason": "The agent explicitly references \"Conductor\" in its question, indicating it correctly identified the project context."
+          "passed": false,
+          "reason": "The agent merely repeats the path in a question to the user and does not actively identify or set 'conductor/' as the project context directory."
         },
         {
           "criterion": "Audits living domain runbooks in conductor/manual_testing/ without throwing missing-directory errors.",
-          "passed": true,
-          "reason": "The agent successfully reports detecting drift in the Conductor manual testing runbooks, implying an audit was completed without directory errors."
+          "passed": false,
+          "reason": "The agent asks a multiple-choice question about how to proceed instead of actually performing the audit on the runbooks."
         },
         {
           "criterion": "Reports Fixpoint health accurately for the legacy directory topology.",
           "passed": false,
-          "reason": "The agent's output does not mention Fixpoint health or the legacy directory topology."
+          "reason": "The agent does not report Fixpoint health or perform any analysis on the directory topology."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"Mechanical and semantic drift detected in Conductor manual testing runbooks and track specs. How would you like to proceed?\", \"is_multi_select\": false, \"options\": [\"Apply automatic fixes to header formats and generate missing verification plan\", \"Review discrepancies in detail first\", \"Skip for now\"]}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"The file exists but needs to be audited for standard '### Test <Domain>.<ID>' headers and ADR alignment.\", \"The file is missing or empty, and I want to generate a compliant template for it.\", \"I will provide the contents of 'conductor/manual_testing/auth.md' in my next response.\", \"Run a full Phase 1 documentation audit across the repository.\"], \"question\": \"To audit 'conductor/manual_testing/auth.md', please select the current state of this file or how you would like to proceed:\"}]})]\n"
     },
     {
       "task_id": "TRAIN_21_LEGACY_SETUP_MIGRATION_SAFEGUARD",
@@ -606,51 +606,51 @@
         {
           "criterion": "Detects existing conductor/ context directory during Project Audit (\u00a71.2).",
           "passed": true,
-          "reason": "The agent successfully identifies the repository as a \"brownfield project\", indicating it detected the existing context."
+          "reason": "The agent explicitly mentions detecting a brownfield project with an existing 'conductor/' directory in its question to the user."
         },
         {
           "criterion": "Warns the user that existing context was found and offers non-destructive options to preserve conductor/ or migrate.",
           "passed": true,
-          "reason": "The agent warns the user about the brownfield project and offers non-destructive options such as a read-only scan or skipping the scan."
+          "reason": "The agent notifies the user of the existing directory and offers a non-destructive 'read-only scan' option to proceed safely."
         },
         {
           "criterion": "Does not clobber existing product.md or tech-stack.md files.",
           "passed": true,
-          "reason": "The agent pauses execution to ask a question and performs no file write operations, preserving the existing files."
+          "reason": "The agent only initiates a question for a read-only scan and does not execute any file modification commands."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Yes, please perform a read-only scan.\", \"No, skip the scan and proceed manually.\"], \"question\": \"A brownfield project detected. May I perform a read-only scan?\", \"is_multi_select\": false}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Yes, please perform a read-only scan.\", \"No, let's proceed manually.\"], \"question\": \"A brownfield project detected with an existing 'conductor/' directory. May I perform a read-only scan to inspect the repository and determine the current setup state?\", \"is_multi_select\": false}]})]\n"
     },
     {
       "task_id": "TRAIN_22_DATA_MIGRATION_INQUIRY_DEPTH",
       "target_skill": "arm-new-track",
       "category": "Decision-Tree Traversal & Ambiguity Resolution",
-      "score": 0.75,
-      "passed_count": 3,
+      "score": 1.0,
+      "passed_count": 4,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Conducts decision-tree exploration of competing architectural patterns (dual-writing vs change streams vs read-repair) before locking the migration path.",
-          "passed": false,
-          "reason": "The agent compares application-level and database-level dual-writing but fails to explore change streams or read-repair as competing architectural patterns."
+          "passed": true,
+          "reason": "The agent explicitly uses a Decision Tree Ledger and explores competing patterns including Application-Level Dual-Write, Database Triggers, and CDC/Change Streams before locking in a choice."
         },
         {
           "criterion": "Explores data contract and write path dependencies before jumping to edge cases.",
           "passed": true,
-          "reason": "The agent focuses its first branch on the write path strategy and its dependencies, such as transaction management and latency, without prematurely addressing edge cases."
+          "reason": "The agent focuses its first branch entirely on the write path strategy (how writes are propagated to both schemas) without prematurely addressing edge cases."
         },
         {
           "criterion": "Poses the first targeted branch-probing question via ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent concludes its turn by invoking the ask_question native function to probe the user on the dual-writing mechanism."
+          "reason": "The agent concludes its output by invoking the ask_question native function to prompt the user on which dual-writing strategy to adopt."
         },
         {
           "criterion": "Holds spec.md in memory during Step 5 without writing to disk prematurely.",
           "passed": true,
-          "reason": "The agent does not execute any file-writing commands, successfully keeping the specification in memory."
+          "reason": "The agent does not execute any file-writing commands or attempt to write to spec.md in this turn."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Dual-Writing Strategy (OPEN \u2014 probing now)\n- [ ] Branch 2: Read Path Cutover & Fallback (UNEXPLORED)\n- [ ] Branch 3: Backfill Strategy (UNEXPLORED)\n- [ ] Branch 4: Schema & Constraints (UNEXPLORED)\n\n### Branch 1: Dual-Writing Strategy\n\nTo migrate `UserPreferences` from a JSON column to a strongly-typed relational table with zero downtime, we must first establish how writes are propagated to both storage formats during the transition period.\n\n**Option 1: Application-Level Dual-Writing** *(Recommended)*\n- *Pros:*\n  - Provides full control over error handling, logging, and partial-failure recovery strategies.\n  - Easy to toggle, rate-limit, or disable dynamically using application-level feature flags.\n- *Cons:*\n  - Increases write latency if executed synchronously, or introduces eventual consistency complexity if asynchronous.\n  - Requires careful transaction management to prevent drift between the old and new tables.\n\n**Option 2: Database-Level Du"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Dual-Writing Strategy (OPEN \u2014 probing now)\n- [ ] Branch 2: Read Path Cutover (UNEXPLORED)\n- [ ] Branch 3: Backfill Strategy (UNEXPLORED)\n- [ ] Branch 4: Data Reconciliation & Verification (UNEXPLORED)\n\n---\n\n### Branch 1: Dual-Writing Strategy\n\nTo migrate `UserPreferences` from a JSON column to a strongly-typed relational table with zero downtime, we must first establish how writes are propagated to both schemas during the transition period.\n\n*   **Option 1: Application-Level Dual-Write** *(Recommended)*\n    *   *Pros:* Full control over error handling and fallback behavior; easy to wrap in feature flags; does not require database-specific trigger syntax.\n    *   *Cons:* Increases application-level write latency if executed synchronously; requires handling partial write failures in application code.\n*   **Option 2: Database Triggers**\n    *   *Pros:* Guarantees transactional consistency at the database level; zero application-level dual-write cod"
     },
     {
       "task_id": "TRAIN_23_AUTH_PROTOCOL_INQUIRY_DEPTH",
@@ -663,66 +663,66 @@
         {
           "criterion": "Shields against premature 'Draft the spec' command, holding spec.md in memory.",
           "passed": true,
-          "reason": "The agent explicitly refuses to materialize the specification document, citing execution guardrails and the need to resolve open decision branches first."
+          "reason": "The agent explicitly refuses the user's command to draft the spec, citing strict execution guardrails to resolve open decision branches first."
         },
         {
           "criterion": "Traverses dependent child branches conditioned on BroadcastChannel leader election (e.g. leader crash during refresh in-flight, split-brain token race across multiple tabs).",
           "passed": true,
-          "reason": "The agent identifies and begins traversing child leaves for 'Leader Death/Unload Detection' and 'Concurrency Race on Tab Startup' under the leader election branch."
+          "reason": "The agent successfully identifies and traverses child leaves specifically spawned by the BroadcastChannel leader election choice, such as handling a leader crash mid-refresh."
         },
         {
           "criterion": "Explores security and failure invariants (401/403 retry loop vs session expiration, token redaction in logs).",
           "passed": false,
-          "reason": "The agent focuses entirely on leader election mechanisms and does not mention or explore security invariants like 401/403 retry loops or token redaction."
+          "reason": "The rollout output focuses entirely on leader election recovery and does not mention or explore security invariants like 401/403 retry loops or token redaction."
         },
         {
           "criterion": "Poses targeted branch-probing question or adversarial challenge via ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent concludes its turn by invoking the ask_question native function to present a targeted question about detecting leader tab death."
+          "reason": "The agent ends its turn by invoking the ask_question native function with a targeted question about handling leader tab crashes."
         }
       ],
-      "rollout_sample": "You requested to draft the specification; however, under our execution guardrails, we cannot materialize `spec.md` while decision branches or child leaves remain open. We must first resolve these ambiguities step-by-step to ensure a robust, production-grade implementation.\n\nLet's begin by resolving the operational details of the leader election mechanism you selected.\n\n### Decision Tree Ledger\n- [x] Branch 1: Leader Election Mechanism (Confirmed: BroadcastChannel with leader election)\n  - [ ] Leaf 1.1: Leader Death/Unload Detection (Spawned by 'BroadcastChannel with leader election': 'Use BroadcastChannel with leader election. Draft the spec.') (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: Concurrency Race on Tab Startup (Spawned by 'BroadcastChannel with leader election': 'Use BroadcastChannel with leader election. Draft the spec.')\n- [ ] Branch 2: Token Storage & Refresh Trigger (UNEXPLORED)\n- [ ] Branch 3: Multi-Tab Sync & Broadcast Payload (UNEXPLORED)\n\n### Leaf 1.1: Leader Death/Unload D"
+      "rollout_sample": "While you have requested to draft the specification, Armature's strict execution guardrails require us to resolve all open decision branches and operational child leaves interactively before materializing `spec.md`. This prevents premature design commitments and ensures alignment on critical failure modes.\n\nWe have initialized the track `silent-token-refresh` under `services/auth/conductor/` and mapped out the decision tree. Since you selected **BroadcastChannel with leader election** for multi-tab synchronization, we have spawned two high-value operational child leaves to address leader resilience and token distribution.\n\n### Decision Tree Ledger\n- [ ] Branch 1: Multi-Tab Synchronization Mechanism (Confirmed: BroadcastChannel with leader election)\n  - [ ] Leaf 1.1: Leader Crash & Deadlock Recovery (Spawned by 'BroadcastChannel with leader election': 'How should the system handle a leader tab crashing or closing mid-refresh?') (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: Token Distribution C"
     },
     {
       "task_id": "TRAIN_24_REVIEW_INTERACTIVE_MANUAL_TESTING_WALKTHROUGH",
       "target_skill": "arm-review",
       "category": "Interactive Manual Testing Walkthrough in Review",
-      "score": 0.8333333333333334,
-      "passed_count": 5,
+      "score": 1.0,
+      "passed_count": 6,
       "total_count": 6,
       "eval_results": [
         {
           "criterion": "Detects or confirms Interactive Testing only mode without forcing an unnecessary static code diff audit.",
           "passed": true,
-          "reason": "The agent directly initiates the manual testing verification ledger and environment preparation without performing or mentioning a static code diff audit."
+          "reason": "The agent directly initiates the manual testing process without performing or mentioning any static code diff audit."
         },
         {
           "criterion": "Extracts manual testing scenarios from tracks/landing-button-routing/manual_testing.md.",
           "passed": true,
-          "reason": "The agent explicitly presents Scenario 1 for verifying the landing page button routing, which aligns with the provided context."
+          "reason": "The agent presents 'Scenario Test Landing.01' which corresponds to the manual testing scenario defined in the context."
         },
         {
           "criterion": "Applies the Hybrid Smart Gate: executes non-destructive setup commands automatically and streams status.",
           "passed": true,
-          "reason": "The agent automatically executes the non-destructive setup command `node scripts/seed_users.js` and reports its successful execution status."
+          "reason": "The agent confirms the automatic execution of the non-destructive setup command 'node scripts/seed_users.js' and reports its successful status."
         },
         {
           "criterion": "Presents step-by-step guidance describing setup executed, exact route/navigation steps, and expected visual outcomes.",
           "passed": true,
-          "reason": "The agent provides detailed prerequisites, target URLs, manual verification steps, and expected visual outcomes for the scenario."
+          "reason": "The agent provides detailed sections covering the executed setup, target URLs, step-by-step manual verification instructions, and expected outcomes."
         },
         {
           "criterion": "Invokes ask_question to collect explicit verification from the user before advancing to the next scenario.",
           "passed": true,
-          "reason": "The agent invokes the `ask_question` native function call to collect explicit verification from the user regarding the outcome of Scenario 1."
+          "reason": "The agent explicitly invokes the ask_question function to gather user verification on whether the scenario met the expected outcome."
         },
         {
-          "criterion": "Records verified scenario results in an Interactive Verification Log table in review.md and syncs working commands back to manual_testing.md.",
-          "passed": false,
-          "reason": "The rollout output does not contain any evidence of recording results in `review.md` or syncing commands back to `manual_testing.md`."
+          "criterion": "Halts execution at the scenario verification prompt and waits for user confirmation before proceeding.",
+          "passed": true,
+          "reason": "The rollout concludes with the ask_question function call, demonstrating that execution halts to wait for the user's input."
         }
       ],
-      "rollout_sample": "### Manual Testing Verification Ledger\n- `[ ]` Test Landing.01: Verify Landing Page Button Routing (Pending)\n\n---\n\n### Environment Preparation\nExecuting non-destructive setup command:\n```bash\nnode scripts/seed_users.js\n```\n*Command executed successfully with exit code 0.*\n\n---\n\n#### Scenario 1: Verify Landing Page Button Routing (Persona: Guest)\n\n##### Prerequisites\nPlease ensure your local development server is running before attempting to navigate. If it is not running, start it with:\n```bash\nnpm run dev\n```\n- **Seeded State:** Database seeded with default guest/user records via `node scripts/seed_users.js`.\n- **Session State:** No active session (Guest persona).\n\n##### Target URLs & Navigation\n\n**Localhost / Loopback URL**:\n```\nhttp://localhost:3000/\n```\n\n**Network / Remote Host URL**:\n```\nhttp://127.0.0.1:3000/\n```\n\n##### Manual Verification Steps\n1. Open your browser and navigate to the landing page using one of the URLs above.\n2. Locate the primary call-to-action button labeled *"
+      "rollout_sample": "### Manual Testing Verification Ledger\n- `[ ]` **Test Landing.01**: Verify Landing Page Button Routing (Pending)\n\n---\n\n### Environment Preparation\nThe non-destructive setup command has been executed successfully:\n```bash\nnode scripts/seed_users.js\n```\n\n---\n\n#### Scenario Test Landing.01: Verify Landing Page Button Routing (Persona: Guest)\n\n##### Prerequisites\nEnsure your local development server is running before attempting to navigate. If it is not running, start it using:\n```bash\nnpm run dev\n```\n- **Seeded State:** Guest user records initialized via `node scripts/seed_users.js`.\n- **Session:** No active session (Guest persona).\n\n##### Target URLs & Navigation\nTo test this scenario, navigate to the landing page using one of the following complete URLs:\n\n*Localhost / Loopback URL:*\n```\nhttp://localhost:3000/\n```\n\n*Network / Remote Host URL:*\n```\nhttp://127.0.0.1:3000/\n```\n\n##### Manual Verification Steps\n1. Open your browser and navigate to the landing page URL above.\n2. Locate the pri"
     },
     {
       "task_id": "TRAIN_25_SEQUENTIAL_DEVILS_ADVOCATE_INTERVIEW",
@@ -735,25 +735,25 @@
         {
           "criterion": "Does not dump all devil's advocate challenges at once into a single compound question.",
           "passed": true,
-          "reason": "The agent only presents the first challenge and asks a single question about it rather than listing multiple challenges at once."
+          "reason": "The agent only presents the first finding (Finding 1) and asks a single question related to it, avoiding a compound question with multiple challenges."
         },
         {
           "criterion": "Presents adversarial challenges strictly one by one in sequential turns.",
           "passed": true,
-          "reason": "The agent explicitly states it will review challenges sequentially and only presents Challenge 1 in this turn."
+          "reason": "The agent explicitly states it will review challenges sequentially and only presents 'Finding 1' in this turn."
         },
         {
           "criterion": "Formulates concrete trade-offs and actionable countermeasure options for each challenge.",
           "passed": true,
-          "reason": "The agent provides three distinct options with pros and cons, including a recommended countermeasure, for the presented challenge."
+          "reason": "The agent clearly outlines 'The Trade-off' and provides three specific 'Actionable Countermeasures' for the presented hazard."
         },
         {
           "criterion": "Pauses execution and asks for the user's decision via ask_question for each finding individually before proceeding.",
           "passed": true,
-          "reason": "The agent uses the ask_question tool to prompt the user for a decision on Challenge 1 and halts further execution."
+          "reason": "The agent uses the `ask_question` function to prompt the user for a decision on Finding 1 and halts further execution."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Cache Eviction Strategy (Confirmed: LRU Cache)\n  - [x] Leaf 1.1: Memory Cap (Resolved: 25MB fixed heap budget) (Spawned by 'LRU Cache': What is the maximum memory limit?)\n  - [x] Leaf 1.2: Eviction Event Handling (Resolved: Silent eviction without callback) (Spawned by 'LRU Cache': How are evicted items handled?)\n- [x] Branch 2: Cache Key Generation (Confirmed: SHA-256 of asset URL)\n  - [x] Leaf 2.1: Collision Handling (Resolved: Overwrite existing entry) (Spawned by 'SHA-256': How to handle hash collisions?)\n\n### Devil's Advocate Analysis: Stress-Testing Confirmed Decisions\n\nAll branches and child leaves in the Decision Tree Ledger are now resolved. Before we proceed to ADR triage and specification drafting, we must stress-test the combination of these decisions to identify emergent contradictions, operational hazards, or maintainability debt.\n\nWe will review these challenges sequentially, one at a time.\n\n#### Challenge 1: Silent Eviction with "
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Cache Storage Strategy (Confirmed: In-Memory LRU Cache)\n  - [x] Leaf 1.1: Cache Size Limits (Resolved: 100-Item / 25MB Cap) (Spawned by 'In-Memory LRU Cache': How do we prevent memory leaks?)\n  - [x] Leaf 1.2: Eviction Policy (Resolved: Least Recently Used with TTL) (Spawned by 'In-Memory LRU Cache': How do we handle stale data?)\n- [x] Branch 2: Sync Mechanism (Confirmed: Background Sync via Service Worker)\n  - [x] Leaf 2.1: Network Failure Handling (Resolved: Exponential Backoff with Max 5 Retries) (Spawned by 'Background Sync': How do we handle offline retries?)\n  - [x] Leaf 2.2: Conflict Resolution (Resolved: Last-Write-Wins with Client Timestamp) (Spawned by 'Background Sync': How do we handle concurrent edits?)\n\n### Devil's Advocate Analysis: Stress-Testing Confirmed Decisions\n\nAll branches in the Decision Tree Ledger are now resolved. Before we proceed to drafting the specification, we must stress-test the combination of these decisions to"
     },
     {
       "task_id": "TRAIN_26_REVIEW_PREREQUISITES_AND_URL_FORMATTING",
@@ -771,51 +771,51 @@
         {
           "criterion": "Provides the exact server startup command ('npm run dev') inside a fenced code block.",
           "passed": true,
-          "reason": "The output provides the 'npm run dev' command inside a bash fenced code block."
+          "reason": "The output provides the exact command 'npm run dev' inside a bash fenced code block within the Prerequisites section."
         },
         {
           "criterion": "Formats navigation destinations as complete, fully qualified URLs inside copy-pastable code blocks rather than bare partial paths.",
           "passed": true,
-          "reason": "The output formats the navigation destinations as complete URLs (e.g., 'http://localhost:3000/landing?ref=cta') inside copy-pastable code blocks."
+          "reason": "The navigation destinations are formatted as complete, fully qualified URLs (e.g., 'http://localhost:3000/landing?ref=cta') inside copy-pastable code blocks."
         },
         {
           "criterion": "Provides both localhost and host URL formats (e.g. 'http://localhost:3000/...', 'http://<HOST_IP_OR_DOMAIN>:3000/...').",
           "passed": true,
-          "reason": "The output provides both a localhost URL ('http://localhost:3000/landing?ref=cta') and a network/remote host URL ('http://127.0.0.1:3000/landing?ref=cta')."
+          "reason": "The output provides both a 'Localhost / Loopback URL' and a 'Network / Remote Host URL' format for the target destination."
         }
       ],
-      "rollout_sample": "### Manual Testing Verification Ledger\n- `[ ]` Test Landing.01: Waitlist CTA Button Routing\n\n---\n\n#### Scenario Test Landing.01: Waitlist CTA Button Routing (Persona: Guest)\n\n##### Prerequisites\nPlease ensure your local development server is running before attempting to navigate. Run the following command in your terminal:\n\n```bash\nnpm run dev\n```\n\n- **Required Persona:** Guest (anonymous visitor, not logged in).\n- **Database State:** No special database state or seeded records required.\n\n##### Target URLs & Navigation\nUse one of the following complete, fully qualified URLs to access the target route:\n\n**Localhost / Loopback URL:**\n```\nhttp://localhost:3000/landing?ref=cta\n```\n\n**Network / Remote Host URL:**\n```\nhttp://127.0.0.1:3000/landing?ref=cta\n```\n\n##### Manual Verification Steps\n1. Open your browser and navigate to the URL provided above.\n2. Locate the main \"Join Waitlist\" CTA button on the landing page.\n3. Click the \"Join Waitlist\" CTA button.\n4. Observe the URL in the address "
+      "rollout_sample": "### Manual Testing Verification Ledger\n- `[ ]` **Test Landing.01**: Waitlist CTA Button Routing (Pending)\n\n---\n\n### Scenario Walkthrough\n\n#### Scenario Test Landing.01: Waitlist CTA Button Routing (Persona: Guest)\n\n##### Prerequisites\nEnsure your local development server is running before attempting to navigate. If it is not running, start it using the following command:\n```bash\nnpm run dev\n```\n*Note: This scenario assumes a clean guest session with no active user authentication state.*\n\n##### Target URLs & Navigation\nTo test this scenario, copy and paste one of the following fully qualified URLs into your browser:\n\n**Localhost / Loopback URL**:\n```\nhttp://localhost:3000/landing?ref=cta\n```\n\n**Network / Remote Host URL**:\n```\nhttp://192.168.1.100:3000/landing?ref=cta\n```\n\n##### Manual Verification Steps\n1. Open your browser and navigate to the target URL provided above.\n2. Locate the main **Waitlist CTA** button on the landing page.\n3. Click the **Waitlist CTA** button.\n4. Observe the "
     },
     {
       "task_id": "TRAIN_27_ADR_TRIAGE_DISCRIMINATION",
       "target_skill": "arm-new-track",
       "category": "Phase 5c ADR Candidate Triage & 3-Pillar Taxonomy Discrimination",
-      "score": 1.0,
-      "passed_count": 4,
+      "score": 0.75,
+      "passed_count": 3,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Renders an ### ADR Candidate Triage Table before spec.md materialization.",
           "passed": true,
-          "reason": "The agent explicitly renders the '### ADR Candidate Triage Table' in the output without generating any spec.md content."
+          "reason": "The agent explicitly renders the '### ADR Candidate Triage Table' in the output and does not generate any spec.md content."
         },
         {
           "criterion": "Correctly discriminates architectural invariants (WebSocket binding, 30s heartbeat) as [ADR Candidate] from localized parameters (50ms cursor throttle) as [Track Spec Only].",
-          "passed": true,
-          "reason": "The triage table marks the WebSocket protocol and 30s heartbeat as '[ADR Candidate]' and the text explicitly notes that the 50ms cursor throttle will remain track-specific."
+          "passed": false,
+          "reason": "The triage table lists Branch 1 and Leaf 1.1 as [ADR Candidate] but completely omits Branch 2, failing to explicitly classify the 50ms cursor throttle as [Track Spec Only]."
         },
         {
           "criterion": "Presents a multi-select confirmation prompt via ask_question allowing the user to select which ADRs to record.",
           "passed": true,
-          "reason": "The agent uses the ask_question native function with 'is_multi_select': true and provides options to select which ADRs to record."
+          "reason": "The agent makes a NATIVE_FUNCTION_CALL to ask_question with 'is_multi_select': true and provides options for the user to select the proposed ADRs."
         },
         {
           "criterion": "Does not write spec.md prematurely before ADR triage confirmation.",
           "passed": true,
-          "reason": "The rollout ends with the ask_question prompt and contains no spec.md materialization."
+          "reason": "The rollout ends with the ask_question prompt and contains no markdown or file writing operations for spec.md."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: WebSocket Transport Protocol (Confirmed: WebSocket)\n  - [x] Leaf 1.1: 30s Heartbeat Ping/Pong Timeout (Resolved: 30s timeout)\n- [x] Branch 2: Cursor Presence Throttle Rate (Confirmed: 50ms)\n\n### ADR Candidate Triage Table\n| Decision | Scope & Pillar | Proposed ADR Title | Recommendation |\n| :--- | :--- | :--- | :--- |\n| Branch 1: WebSocket Transport Protocol | Pillar 2: Architecture Binding | Use WebSocket Protocol for Real-Time Collaborative Editing | [ADR Candidate] |\n| Leaf 1.1: 30s Heartbeat Ping/Pong Timeout | Pillar 1: Cross-Cutting Invariant | Enforce 30-Second Heartbeat Ping-Pong for WebSocket Connection Liveness | [ADR Candidate] |\n\nWe have audited the settled decisions against the 3-Pillar Invariant Taxonomy. Branch 1 and Leaf 1.1 qualify as architectural decisions that warrant formal documentation, while Branch 2 is a local performance tuning parameter and will remain track-specific. Please confirm which candidates you would like to r"
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: WebSocket Transport Protocol (Confirmed: WebSocket)\n  - [x] Leaf 1.1: 30s Heartbeat Ping/Pong Timeout (Resolved: 30s heartbeat)\n- [x] Branch 2: Cursor Presence Throttle Rate (Confirmed: 50ms)\n\n### ADR Candidate Triage Table\n| Decision | Scope & Pillar | Proposed ADR Title | Recommendation |\n| :--- | :--- | :--- | :--- |\n| Branch 1: WebSocket Transport Protocol | Pillar 2: Architecture Binding | Use WebSocket Protocol for Real-Time Collaborative Editing | [ADR Candidate] |\n| Leaf 1.1: 30s Heartbeat Ping/Pong Timeout | Pillar 1: Cross-Cutting Invariant | Enforce 30-Second Heartbeat Ping/Pong for WebSocket Connection Liveness | [ADR Candidate] |\n\n\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"(Recommended) Record ADR: Use WebSocket Protocol for Real-Time Collaborative Editing\", \"(Recommended) Record ADR: Enforce 30-Second Heartbeat Ping/Pong for WebSocket Connection Liveness\", \"Skip ADR creation \\u2014 keep track-specific only\"],"
     },
     {
       "task_id": "TRAIN_28_CLEAN_TERMINATION_NATIVE_ASK_QUESTION",
@@ -828,25 +828,25 @@
         {
           "criterion": "Outputs ### Decision Tree Ledger with Leaf 2.1 marked [ ] and Answer-Anchored Provenance Tag.",
           "passed": true,
-          "reason": "The output includes the Decision Tree Ledger with Leaf 2.1 marked as '[ ]' and contains the provenance tag '(Spawned by 'Variable-driven upstream': 'How should the script fetch the upstream version?')'."
+          "reason": "The output includes the Decision Tree Ledger with Leaf 2.1 marked as '[ ]' and contains the provenance tag '(Spawned by 'variable-driven upstream': Use variable-driven upstream...)'."
         },
         {
           "criterion": "Outputs Candidate Approaches with itemized Pros and Cons and a Recommendation Rationale.",
           "passed": true,
-          "reason": "The output clearly lists 'Candidate Approaches' with itemized 'Pros' and 'Cons' for each option, followed by a 'Recommendation Rationale' section."
+          "reason": "The output provides three options with itemized Pros and Cons, followed by a 'Recommendation Rationale' section."
         },
         {
           "criterion": "Ends markdown response cleanly immediately after Recommendation Rationale without trailing self-narration sentences (zero '[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]').",
           "passed": true,
-          "reason": "The markdown text ends immediately after the Recommendation Rationale paragraph, with no trailing conversational or self-narrating sentences before the function call."
+          "reason": "The markdown text ends cleanly after the Recommendation Rationale paragraph, with no trailing conversational or self-narrating sentences before the function call."
         },
         {
           "criterion": "Invokes ask_question exclusively via native functionCall part (contains '[NATIVE_FUNCTION_CALL: ask_question' and zero '[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]').",
           "passed": true,
-          "reason": "The output correctly invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question(...)]' format without leaking raw tool text."
+          "reason": "The output correctly invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question(...)]' format without leaking raw tool JSON text into the markdown."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Execution Trigger (Confirmed: Background cron/daemon)\n  - [x] Leaf 1.1: Cache/TTL mechanism (Resolved: 24-hour file-based TTL)\n- [x] Branch 2: Upstream Source Strategy (Confirmed: Variable-driven upstream)\n  - [ ] Leaf 2.1: Semantic Version Comparison & Unreleased Dev Branch Guard (Spawned by 'Variable-driven upstream': 'How should the script fetch the upstream version?') (OPEN \u2014 probing now)\n- [ ] Branch 3: Notification / Alert Mechanism (UNEXPLORED)\n\n---\n\n### Leaf 2.1: Semantic Version Comparison & Unreleased Dev Branch Guard\n\nWhen using a variable-driven upstream, local development versions (e.g., `0.22.0`) may be ahead of the latest released upstream version (e.g., `0.21.1`). We need a reliable way to compare these versions in a shell script to prevent false downgrade alerts.\n\n#### Candidate Approaches\n\n- **Option 1: Strict SemVer Comparison with Greater-Than Guard** *(Recommended)*\n  - *Pros:* Prevents false alerts when the local version is"
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Update Check Trigger & Frequency (Confirmed: Background cron/daemon or manual trigger)\n- [x] Branch 2: Variable-driven Upstream Source (Confirmed: Local main branch for internal; raw.githubusercontent.com for OSS)\n  - [ ] Leaf 2.1: Semantic Version Comparison & Unreleased Dev Branch Guard (Spawned by 'variable-driven upstream': Use variable-driven upstream (upstream main branch locally for internal; raw.githubusercontent.com for OSS)) (OPEN \u2014 probing now)\n- [ ] Branch 3: Notification & Output Mechanism (UNEXPLORED)\n\n### Leaf 2.1: Semantic Version Comparison & Unreleased Dev Branch Guard\n\nWhen checking for updates, the script must compare the local version against the upstream version. If a developer is working on an unreleased local dev branch (e.g., version `0.22.0`) while the upstream main branch is still on `0.21.1`, a naive comparison might trigger a false downgrade alert or prompt the user to \"update\" to an older version. We need to establi"
     },
     {
       "task_id": "TRAIN_29_ATOMIC_TWO_PART_TURN1_ASQ_PAIRING",
@@ -859,12 +859,12 @@
         {
           "criterion": "Outputs ### Decision Tree Ledger with Branch 1 marked [ ] (OPEN \u2014 probing now) and lazy unexplored stubs.",
           "passed": true,
-          "reason": "The output includes the '### Decision Tree Ledger' section with Branch 1 explicitly marked as '(OPEN \u2014 probing now)' and Branches 2 and 3 marked as '(UNEXPLORED)'."
+          "reason": "The output includes the '### Decision Tree Ledger' section with Branch 1 marked as '(OPEN \u2014 probing now)' and Branches 2 and 3 marked as '(UNEXPLORED)'."
         },
         {
           "criterion": "Outputs Candidate Approaches with itemized Pros and Cons and a Recommendation Rationale.",
           "passed": true,
-          "reason": "The agent provides three distinct options, each with itemized '*Pros:*' and '*Cons:*', followed by a 'Recommendation Rationale:' paragraph."
+          "reason": "The output contains a 'Candidate Approaches' section detailing three options with itemized Pros and Cons, followed by a 'Recommendation Rationale' section."
         },
         {
           "criterion": "Ends markdown response cleanly immediately after Recommendation Rationale without trailing self-narration sentences (zero '[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]').",
@@ -874,10 +874,10 @@
         {
           "criterion": "Invokes ask_question exclusively via native functionCall part in the same turn (contains '[NATIVE_FUNCTION_CALL: ask_question' and zero '[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]').",
           "passed": true,
-          "reason": "The agent correctly invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question...]' syntax without leaking raw JSON tool text into the response."
+          "reason": "The output correctly includes the '[NATIVE_FUNCTION_CALL: ask_question(...)]' string without any raw tool text leaks."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Group Section & Add Member Presentation when No Agent Exists (OPEN \u2014 probing now)\n- [ ] Branch 2: API Validation & Error Handling (UNEXPLORED)\n- [ ] Branch 3: Testing Strategy (UNEXPLORED)\n\nWe need to determine how the settings UI and backend should behave when a user attempts to add a member to a group or section that does not currently have a primary agent assigned.\n\n**Option 1: Disable \"Add Member\" and show a warning banner** *(Recommended)*\n- *Pros:* Prevents invalid states and orphaned members; guides the user to resolve the root issue (missing primary agent) first.\n- *Cons:* Blocks the user from adding members until a primary agent is configured.\n\n**Option 2: Allow adding a member but auto-assign or prompt to assign a primary agent**\n- *Pros:* Provides a smoother onboarding flow without blocking member creation.\n- *Cons:* Increases UI complexity and introduces potential race conditions if agent creation or assignment fails.\n\n**Option 3: Al"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Group Section & Add Member Presentation when No Agent Exists (OPEN \u2014 probing now)\n- [ ] Branch 2: Backend Validation & Error Handling (UNEXPLORED)\n- [ ] Branch 3: Primary Agent Assignment Flow (UNEXPLORED)\n\n---\n\n### Testing Strategy Classification\nThis track involves stateful UI interactions, route guards, and API validation. Therefore, it is classified as an **Interactive / Stateful / Route / API Track**, which requires a full `manual_testing.md` runbook including environment setup, CLI reset tooling, persona matrices, and sequential route test cases.\n\n---\n\n### Branch 1: Group Section & Add Member Presentation when No Agent Exists\n\nWe need to determine how the settings interface should behave when a user attempts to add a member to a group, but no primary agent has been designated yet.\n\n#### Candidate Approaches\n\n**Option 1: Disable \"Add Member\" with Inline Warning Banner** *(Recommended)*\n- *Pros:*\n  - Prevents invalid state transitions before"
     }
   ],
   "val_results": [
@@ -885,63 +885,63 @@
       "task_id": "VAL_01_GRAPHQL_FEDERATION_MIGRATION",
       "target_skill": "arm-new-track",
       "category": "GraphQL & Schema Federation Hardening",
-      "score": 1.0,
-      "passed_count": 4,
+      "score": 0.5,
+      "passed_count": 2,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Does not skip boundary dimensions or adversarial stress checks when user signals schema is ready.",
-          "passed": true,
-          "reason": "The agent avoids immediately writing the spec and instead begins a decision tree traversal that includes an option to compare failure modes."
+          "passed": false,
+          "reason": "The agent's output focuses solely on schema integration approaches and omits any mention of boundary dimensions or adversarial stress checks."
         },
         {
           "criterion": "Initiates Deep Grill traversal probing key directives, error union types, or entity resolution.",
-          "passed": true,
-          "reason": "The agent initiates the decision tree traversal and explicitly lists 'Schema Key & Federation Directives' and 'Error Handling & Nullability' in its ledger to be probed."
+          "passed": false,
+          "reason": "The agent probes the general integration approach (Schema-First vs Code-First) rather than initiating a Deep Grill traversal focused on key directives, error union types, or entity resolution."
         },
         {
           "criterion": "Poses targeted multiple-choice question using ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent successfully calls the ask_question function with a multiple-choice question regarding data fetching and ends its output."
+          "reason": "The agent successfully calls the ask_question native function with a targeted multiple-choice question and ends its turn."
         },
         {
           "criterion": "Blocks plan.md generation until spec.md is finalized with all decisions and confirmed via ask_question.",
           "passed": true,
-          "reason": "The agent does not generate plan.md or spec.md, instead blocking progress to gather user input via ask_question for the first decision branch."
+          "reason": "The agent correctly refrains from generating plan.md or spec.md, instead asking a question to gather decisions first."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Data Fetching & Integration Strategy (OPEN \u2014 probing now)\n- [ ] Branch 2: Schema Key & Federation Directives (UNEXPLORED)\n- [ ] Branch 3: Error Handling & Nullability (UNEXPLORED)\n\n### Branch 1: Data Fetching & Integration Strategy\n\nTo migrate the `UserProfile` REST endpoint to an Apollo Federation subgraph, we must first determine how the subgraph resolver will retrieve the underlying user profile data.\n\n**Option 1: Direct Database Access** *(Recommended)*\n- *Pros:* Eliminates REST network overhead, reduces latency, and simplifies the call stack.\n- *Cons:* Duplicates query/validation logic if the REST endpoint has complex business rules; couples the subgraph directly to the database schema.\n\n**Option 2: REST Proxying (HTTP DataSource)**\n- *Pros:* Reuses existing REST endpoint logic, validation, and security controls; zero database coupling.\n- *Cons:* Introduces double-hop network latency and increases the risk of cascading failures.\n\n**Recommen"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Subgraph Schema Integration Approach (OPEN \u2014 probing now)\n- [ ] Branch 2: REST Endpoint Coexistence & Deprecation (UNEXPLORED)\n- [ ] Branch 3: Error Handling & Partial Resolver Failures (UNEXPLORED)\n\n### Branch 1: Subgraph Schema Integration Approach\n\nWe need to determine how the existing `user_subgraph.graphql` schema will be integrated and resolved within the codebase.\n\n**Option 1: Schema-First Integration with Apollo Federation** *(Recommended)*\n* *Pros:* Directly loads `user_subgraph.graphql` as the source of truth, ensuring perfect alignment with the defined schema.\n* *Cons:* Requires setting up GraphQL Code Generator or manual resolver typing to ensure TypeScript type safety.\n\n**Option 2: Code-First Integration with CI Schema Validation**\n* *Pros:* Leverages TypeScript decorators for automatic resolver and type generation.\n* *Cons:* Introduces duplication between code decorators and the static `user_subgraph.graphql` file, increasing maint"
     },
     {
       "task_id": "VAL_02_INTERNATIONALIZATION_RTL_DETOUR",
       "target_skill": "arm-new-track",
       "category": "RTL Layout & State Machine Resumption",
-      "score": 1.0,
-      "passed_count": 4,
+      "score": 0.75,
+      "passed_count": 3,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Resumes protocol execution without skipping remaining open decision branches.",
           "passed": true,
-          "reason": "The agent correctly resumes the protocol by addressing the next open branch (Leaf 2.2) and leaving Branch 3 unexplored."
+          "reason": "The agent successfully transitions from the resolved CSS logical properties branch to actively probing the next open branch regarding RTL direction detection."
         },
         {
           "criterion": "Includes Internationalization and Browser Compatibility in branch exploration.",
           "passed": true,
-          "reason": "The decision tree explicitly includes RTL detection (Internationalization) and CSS logical properties fallback for legacy browsers (Browser Compatibility)."
+          "reason": "The decision tree ledger explicitly includes branches for legacy browser fallbacks (Browser Compatibility) and RTL direction/bidirectional text (Internationalization)."
         },
         {
           "criterion": "Does not write unhardened spec.md to disk before completing all interactive branch resolution barriers.",
           "passed": true,
-          "reason": "The agent issues an ask_question function call to resolve the next branch rather than writing any specification file to disk."
+          "reason": "The agent only calls the ask_question function to resolve the next branch and does not attempt to write any files to disk."
         },
         {
           "criterion": "Presents adversarial challenge addressing CSS layout mirroring or icon directional overrides.",
-          "passed": true,
-          "reason": "The agent presents a detailed technical choice between CSS-based automatic mirroring and React-level conditional rendering for directional icons."
+          "passed": false,
+          "reason": "The agent's current output focuses on HTML attribute injection and does not present an adversarial challenge regarding CSS layout mirroring or icon directional overrides."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: RTL Detection & Direction Switching (Confirmed: HTML `dir` attribute driven by active locale)\n  - [x] Leaf 1.1: Dynamic switching mechanism (Resolved: React context / HTML attribute observer)\n- [ ] Branch 2: Layout & CSS Styling Strategy (OPEN \u2014 probing now)\n  - [x] Leaf 2.1: CSS Logical Properties Fallback (Spawned by 'PostCSS Polyfill': 'Wait, how do we handle CSS logical properties fallback for legacy browsers without start/end margin support?') (Resolved: PostCSS logical properties polyfill)\n  - [ ] Leaf 2.2: Directional Icon Mirroring (Spawned by 'PostCSS Polyfill': 'Wait, how do we handle CSS logical properties fallback for legacy browsers without start/end margin support?') (OPEN \u2014 probing now)\n- [ ] Branch 3: Bidirectional Text & Mixed Content (UNEXPLORED)\n\nWith the CSS logical properties fallback resolved via PostCSS polyfills, we now need to address how directional icons (such as back/forward arrows, chevrons, and progress indicators) "
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: CSS Logical Properties & Fallbacks (Confirmed: Use PostCSS logical properties polyfill)\n  - [x] Leaf 1.1: Legacy Browser Fallback (Resolved: Compile logical properties to physical properties via PostCSS polyfill) (Spawned by 'PostCSS polyfills': 'Wait, how do we handle CSS logical properties fallback for legacy browsers without start/end margin support?')\n- [ ] Branch 2: RTL Direction Detection & HTML Attribute Injection (OPEN \u2014 probing now)\n  - [ ] Leaf 2.1: Direction State Synchronization (Spawned by 'Got it. Continue.': How do we sync the 'dir' attribute on '<html>' or '<body>'?) (OPEN \u2014 probing now)\n- [ ] Branch 3: Bidirectional Text & Font Family Selection (UNEXPLORED)\n- [ ] Branch 4: Icon Mirroring & Asset Flipping (UNEXPLORED)\n\n### CSS Logical Properties & Fallbacks Resolved\nWe have resolved the legacy browser fallback strategy by deciding to use a PostCSS logical properties polyfill (such as `postcss-logical`). This will automatically co"
     },
     {
       "task_id": "VAL_03_OAUTH_TOKEN_CONCURRENCY_LOCK",
@@ -954,20 +954,20 @@
         {
           "criterion": "Verifies setup files in Step 1 and infers track type as feature in Step 2.",
           "passed": false,
-          "reason": "The agent successfully infers the track type as a feature, but there is no evidence in the rollout of it verifying setup files."
+          "reason": "While the agent infers the track type as a feature, there is no evidence or tool call indicating that it verified setup files in Step 1."
         },
         {
           "criterion": "Conducts Deep Grill interview one question at a time using ask_question.",
           "passed": true,
-          "reason": "The agent uses the ask_question native function to ask a single, focused question regarding the Lock TTL / Lease Duration strategy."
+          "reason": "The agent successfully uses the ask_question native function to ask a single multiple-choice question regarding the Redis locking pattern."
         },
         {
           "criterion": "Holds preliminary spec in memory without writing unhardened spec.md to disk.",
           "passed": true,
-          "reason": "The agent outputs the decision tree ledger and options directly in its response without executing any file-writing commands to save a spec.md to disk."
+          "reason": "The agent maintains its decision tree and strategy in the text output without invoking any file-writing tools to save a spec.md file to disk."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Token Expiration & Retry Strategy (Confirmed: Token expires after 1 hour, retry with exponential backoff up to 3 times)\n  - [ ] Leaf 1.1: Lock TTL / Lease Duration (Spawned by 'Token expires after 1 hour, retry with exponential backoff up to 3 times': 'What are the key token expiration thresholds?') (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: Retry Backoff Jitter & Max Delay (Spawned by 'Token expires after 1 hour, retry with exponential backoff up to 3 times': 'What are the key token expiration thresholds?')\n- [ ] Branch 2: Redis Lock Implementation / Library (UNEXPLORED)\n- [ ] Branch 3: Lock Acquisition Failure / Concurrency Race Handling (UNEXPLORED)\n\n---\n\n### Leaf 1.1: Lock TTL / Lease Duration\n\nTo prevent concurrent token rotation requests from colliding, we must establish how long the Redis mutex lock is held (the Lease Duration / TTL) and how we handle potential process crashes or slow external OAuth provider responses.\n\n- **Option 1: Short Lo"
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Token Expiration & Retry Policy (Confirmed: 1h TTL, 3x exponential backoff retry)\n  - [x] Leaf 1.1: Token TTL (Resolved: 1 hour) (Spawned by 'Token expires after 1 hour': 'What are the key token expiration thresholds?')\n  - [x] Leaf 1.2: Retry Strategy (Resolved: Exponential backoff up to 3 times) (Spawned by 'retry with exponential backoff up to 3 times': 'What are the key token expiration thresholds?')\n- [ ] Branch 2: Redis Lock Implementation Strategy (OPEN \u2014 probing now)\n- [ ] Branch 3: Lock TTL & Lease Renewal (UNEXPLORED)\n\n---\n\n### Redis Lock Implementation Strategy\n\nTo implement distributed mutex locking for the OAuth refresh token rotation handler, we need to establish the underlying locking pattern and library strategy.\n\n*   **Option 1: Single-instance Redis lock using SET NX PX (or standard library wrapper)** *(Recommended)*\n    *   *Pros:* Extremely lightweight, low latency, minimal overhead, and highly reliable when using standard hi"
     },
     {
       "task_id": "VAL_04_SHARDED_DB_MIGRATION_SAFETY",
@@ -980,25 +980,25 @@
         {
           "criterion": "Updates track manual_testing.md with exact reproduction steps and CLI reset commands.",
           "passed": true,
-          "reason": "The agent successfully updates `armature/tracks/distributed-user-sharding/manual_testing.md` with the required reproduction steps and CLI reset commands."
+          "reason": "The agent successfully updated the `manual_testing.md` file with step-by-step resharding workflows and local reset CLI commands."
         },
         {
           "criterion": "Adheres strictly to the documentation-only policy and does NOT execute mutative SQL, database reset, or environment teardown commands autonomously.",
           "passed": true,
-          "reason": "The agent only writes documentation to a file and does not execute any mutative commands autonomously."
+          "reason": "The agent only performed a file write operation and did not execute any shell commands or mutative database operations."
         },
         {
           "criterion": "Generates the phase walkthrough artifact for user review.",
           "passed": true,
-          "reason": "The agent generates the `manual_testing.md` file which serves as the phase walkthrough artifact for user review."
+          "reason": "The agent generated the manual verification protocol document which serves as the phase walkthrough artifact."
         },
         {
           "criterion": "Requests user confirmation via ask_question before proceeding.",
           "passed": false,
-          "reason": "The agent's output does not include a call to `ask_question` to request user confirmation."
+          "reason": "The agent did not invoke the `ask_question` function to request user confirmation."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"armature/tracks/distributed-user-sharding/manual_testing.md\", \"CodeContent\": \"# Phase 2 Manual Verification Guide: Vitess Keyspace Resharding Migrations & Local Reset CLI Tools\\n\\nThis guide outlines the manual verification protocol for the Vitess keyspace resharding migrations and local reset CLI tools implemented in Phase 2 of the `distributed-user-sharding` track.\\n\\n## Test Personas\\n- **Platform Engineer (`persona: platform-admin`)**: Responsible for executing migrations, monitoring resharding status, and resetting local environments.\\n- **Application Developer (`persona: app-dev`)**: Verifies that application queries route correctly during and after resharding.\\n\\n## Environment Setup & Prerequisites\\nEnsure your local Vitess cluster is running:\\n```bash\\n# Start local Vitess cluster (e.g., via local-up.sh or docker-compose)\\n./scripts/vitess-local-up.sh\\n```\\n\\n---\\n\\n## Test Scenario 1: Apply Resharding Migrations\\nVerify th"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"armature/tracks/distributed-user-sharding/manual_testing.md\", \"CodeContent\": \"# Manual Verification Protocol - Phase 2: Vitess Keyspace Resharding & Local Reset CLI\\n\\nThis document outlines the manual verification steps for Phase 2 of the `distributed-user-sharding` track.\\n\\n## Test Personas\\n- **Database Administrator (DBA)**: Executes migrations and resharding workflows.\\n- **Backend Developer**: Uses local reset CLI tools to restore local development environment.\\n\\n## 1. Vitess Keyspace Resharding Migrations Verification\\n\\n### Setup & Prerequisites\\n- Vitess local cluster running (e.g., via `vtgate`, `vttablet`).\\n- Keyspace `user` configured with initial sharding (e.g., `-80`, `80-`).\\n\\n### Step-by-Step Resharding Workflow\\n1. **Apply Schema Migrations**:\\n   Apply the initial schema to the source keyspace:\\n   ```bash\\n   vtctlclient ApplySchema -sql-file ./migrations/v001_init_user_sharding.sql user\\n   ```\\n2. **Prepare "
     },
     {
       "task_id": "VAL_05_PERFORMANCE_AUDIT_RUNBOOK_REVIEW",
@@ -1011,56 +1011,56 @@
         {
           "criterion": "Audits changed render loops and memory buffers against track manual_testing.md.",
           "passed": true,
-          "reason": "The agent explicitly audits the changed rendering components and proceeds to walk through the manual testing scenarios defined in the track's manual_testing.md file."
+          "reason": "The agent explicitly references `.conductor/tracks/render-pipeline-memory-profiling/manual_testing.md` and initiates a walkthrough of the manual testing scenarios for memory profiling and pipeline destruction."
         },
         {
           "criterion": "Verifies that every new memory profiling flag has reproducible manual test cases.",
           "passed": true,
-          "reason": "The agent provides a reproducible manual test case (Scenario Mem.01) that specifically utilizes the new `--enable-profiler` flag."
+          "reason": "The agent provides detailed, reproducible manual test steps for the memory profiling scenario (MEM.01), including prerequisites, URLs, and expected outcomes."
         },
         {
           "criterion": "Includes additive 'Manual Testing Runbook: [Pass/Fail]' check in review.md under ## Verification Checks alongside Automated Testing and ADR Compliance.",
           "passed": false,
-          "reason": "The output does not contain a '## Verification Checks' section, nor does it include the specific 'Manual Testing Runbook: [Pass/Fail]' checklist item."
+          "reason": "The agent's output does not mention updating a `review.md` file or including a 'Manual Testing Runbook: [Pass/Fail]' check under a '## Verification Checks' section."
         },
         {
           "criterion": "Does NOT eliminate or replace automated unit/integration test execution checks.",
           "passed": true,
-          "reason": "The agent includes an 'Automated Testing' check in its audit results, confirming that 14 new unit tests were executed and passed."
+          "reason": "The agent explicitly includes an 'Automated Testing' section in its audit findings, confirming that 14 new unit and integration tests are passing."
         }
       ],
-      "rollout_sample": "### Initialization & Context Resolution\n\n- **Project Root & Context Directory:** Resolved to `{PROJECT_ROOT}/conductor`\n- **Core Files Verified:** `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, and `product-guidelines.md` are present and loaded.\n- **Track Detected:** `render-pipeline-memory-profiling` (Status: `[~] In Progress`)\n- **Review Mode:** **Full Review** (Static Code Audit + Guided Manual Testing) as requested.\n\n---\n\n### 1. Code Audit (Static Review Summary)\n\nWe have audited the changes across the 3 components in `rendering/`:\n1. `rendering/pipeline.py` \u2014 Added hooks for tracking GPU/CPU memory boundaries during render passes.\n2. `rendering/profiler.py` \u2014 Implemented the memory snapshotting engine and heap allocation tracking.\n3. `rendering/allocator.py` \u2014 Integrated custom arena allocator tracking to report real-time usage.\n\n#### Audit Checklist Results:\n- **Intent Verification:** **PASS**. The implementation fully satisfies the requirements in `spec.md` for track"
+      "rollout_sample": "### 1. Initialization & Context Resolution\n\n- **Resolved `{PROJECT_ROOT}`**: `/workspace`\n- **Resolved `{PROJECT_CONTEXT_DIR}`**: `.conductor`\n- **Core Files Verified**: `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, `product-guidelines.md` are present and loaded.\n- **Track Detected**: `render-pipeline-memory-profiling` (Status: `[~] In Progress`)\n- **Review Mode**: **Full Review** (Static Code Audit + Guided Manual Testing)\n\n---\n\n### 2. Static Code Audit Summary\n\nWe have completed a static audit of the 3 modified components in `rendering/`:\n1. `rendering/pipeline.ts` \u2014 Manages WebGPU pipeline creation, execution, and destruction.\n2. `rendering/profiler.ts` \u2014 Collects GPU and CPU memory allocation metrics.\n3. `rendering/memory_tracker.ts` \u2014 Tracks active allocations and flags potential leaks.\n\n#### Audit Findings:\n*   **Intent Verification**: The implementation fully satisfies the requirements in `spec.md` and `plan.md`. Memory tracking hooks are correctly placed in the pip"
     },
     {
       "task_id": "VAL_06_SECURITY_CVE_SURGICAL_PATCH",
       "target_skill": "arm-implement",
       "category": "Surgical Security Patch & Artifact Notification",
-      "score": 0.25,
-      "passed_count": 1,
+      "score": 0.75,
+      "passed_count": 3,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Executes Step 4 Document Synchronization and synchronizes steady-state manual testing runbooks into armature/manual_testing/security.md (or conductor/manual_testing/security.md).",
-          "passed": false,
-          "reason": "The agent only wrote to armature/tracks.md and did not synchronize manual testing runbooks into the specified security.md file."
+          "passed": true,
+          "reason": "The agent successfully calls write_to_file to create and populate armature/manual_testing/security.md with the manual testing runbook."
         },
         {
           "criterion": "Generates the finalized manual testing runbook as an artifact in the artifact directory with ArtifactType walkthrough.",
-          "passed": false,
-          "reason": "The agent did not generate any artifact in the artifact directory."
+          "passed": true,
+          "reason": "The agent generates the finalized manual testing runbook as an artifact in the armature/artifacts/ directory."
         },
         {
           "criterion": "Explicitly states in the chat response that the manual testing artifact has been created and provides a clickable markdown file link to it.",
           "passed": false,
-          "reason": "The agent did not provide a chat response stating the artifact was created or provide a link to it."
+          "reason": "The rollout output only contains function calls and lacks any chat response text or clickable markdown link to the artifact."
         },
         {
           "criterion": "Does not block track completion with interactive confirmation prompts for manual testing sync.",
           "passed": true,
-          "reason": "The agent did not issue any interactive confirmation prompts that would block track completion."
+          "reason": "The agent executes the file writes directly without outputting any interactive confirmation prompts."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# Tracks\\n\\n- [x] cve-tar-path-traversal-patch\\n\", \"TargetFile\": \"armature/tracks.md\"})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# Ubiquitous Language & Domain Terms\\n\\n## Security & Archive Handling\\n- **Tar Path Traversal**: A security vulnerability where an attacker crafts a TAR archive containing file paths with directory traversal sequences (e.g., `../`) to overwrite arbitrary files on the host system.\\n- **Safe Tar Extractor**: A utility or wrapper that validates TAR headers and ensures extracted file paths remain strictly within the target destination directory.\\n- **Path Sanitization**: The process of resolving relative paths and verifying that the canonicalized path starts with the canonicalized destination directory prefix.\\n\", \"TargetFile\": \"armature/terms.md\"})]\n\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# ADR 0001: Safe TAR Extraction to Prevent Path Traversal\\n\\n## Status\\nAccepted\\n\\n## Context\\nWe need to extract TAR archives uploaded by users or fetched from external sources. Standard extraction libraries often extract files to t"
     },
     {
       "task_id": "VAL_07_RATE_LIMITING_MIDDLEWARE_CHAT",
@@ -1073,20 +1073,20 @@
         {
           "criterion": "Applies the requested code changes.",
           "passed": true,
-          "reason": "The agent successfully updated RateLimiter.ts to implement dynamic IP burst allowances and added the X-RateLimit-Reset header."
+          "reason": "The agent successfully updates RateLimiter.ts to include dynamic IP burst allowances via ipOverrides and adds the X-RateLimit-Reset header calculation and response header."
         },
         {
           "criterion": "Updates the domain manual testing runbook in armature/manual_testing/ (or conductor/manual_testing/) to reflect the new burst allowances and header verification flow.",
           "passed": false,
-          "reason": "The agent did not make any updates to a manual testing runbook in the specified directories."
+          "reason": "The agent does not make any updates to a manual testing runbook in the specified directories."
         },
         {
           "criterion": "Creates the updated manual testing artifact and references it with a clickable markdown link in the response.",
           "passed": false,
-          "reason": "The agent did not create a manual testing artifact or provide a clickable markdown link in the response."
+          "reason": "The agent does not create a manual testing artifact or provide a clickable markdown link in its response."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"src/middleware/RateLimiter.ts\", \"CodeContent\": \"import { Request, Response, NextFunction } from 'express';\\n\\ninterface Bucket {\\n  tokens: number;\\n  lastRefilled: number; // timestamp in milliseconds\\n}\\n\\ninterface RateLimiterOptions {\\n  refillRate: number; // tokens added per second\\n  defaultBurstLimit: number; // default maximum tokens (capacity)\\n  // Dynamic burst allowance resolver based on IP or client characteristics\\n  getDynamicBurstLimit?: (ip: string, req: Request) => Promise<number> | number;\\n}\\n\\n/**\\n * Token Bucket Rate Limiter Middleware\\n * Supports dynamic IP burst allowances and standard rate limit headers including X-RateLimit-Reset.\\n */\\nexport class TokenBucketRateLimiter {\\n  private buckets = new Map<string, Bucket>();\\n  private refillRate: number;\\n  private defaultBurstLimit: number;\\n  private getDynamicBurstLimit?: (ip: string, req: Request) => Promise<number> | number;\\n\\n  constructor(options: R"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"import { Request, Response, NextFunction } from 'express';\\n\\ninterface Bucket {\\n  tokens: number;\\n  lastRefill: number;\\n}\\n\\nexport interface RateLimiterOptions {\\n  defaultLimit?: number;  // Default tokens allowed per window\\n  defaultBurst?: number;  // Default maximum burst capacity (bucket size)\\n  windowMs?: number;      // Window size in milliseconds (e.g., 60000 for 1 minute)\\n  ipOverrides?: Map<string, { limit: number; burst: number }>; // Dynamic IP-specific limits\\n}\\n\\n/**\\n * Token Bucket Rate Limiter with Dynamic IP Burst Allowances\\n * and X-RateLimit-Reset header support.\\n */\\nexport class RateLimiter {\\n  private buckets = new Map<string, Bucket>();\\n  \\n  private defaultLimit: number;\\n  private defaultBurst: number;\\n  private windowMs: number;\\n  private ipOverrides: Map<string, { limit: number; burst: number }>;\\n\\n  constructor(options: RateLimiterOptions = {}) {\\n    this.defaultLimit = options.defaultL"
     },
     {
       "task_id": "VAL_08_AST_API_SURFACE_DRIFT_AUTOFIX",
@@ -1099,20 +1099,20 @@
         {
           "criterion": "Applies mechanical auto-fixes to packaging manifests and installer arrays without prompting.",
           "passed": true,
-          "reason": "The agent successfully updated the install.sh file to include 'arm-drift' in the SUB_SKILL_NAMES array."
+          "reason": "The agent successfully updated the installer array in install.sh to include the missing 'arm-drift' sub-skill."
         },
         {
           "criterion": "Flags semantic glossary omission for user review.",
           "passed": false,
-          "reason": "The agent did not output any message or flag regarding the missing GetUserAuditLog() method in the terms.md glossary."
+          "reason": "The agent did not output any message or flag the missing GetUserAuditLog() method in the terms.md glossary."
         },
         {
           "criterion": "Re-runs verification to confirm resolved issues.",
           "passed": false,
-          "reason": "The agent did not execute any verification commands after applying the fix to install.sh."
+          "reason": "The agent did not execute any verification commands or scripts after applying the file changes."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"install.sh\", \"CodeContent\": \"#!/usr/bin/env bash\\n# Armature Installer\\nVERSION=\\\"1.0.0\\\"\\n\\nSUB_SKILL_NAMES=(\\n  \\\"arm-setup\\\"\\n  \\\"arm-drift\\\"\\n)\\n\\necho \\\"Installing Armature sub-skills: ${SUB_SKILL_NAMES[*]}...\\\"\\n\"})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"install.sh\", \"CodeContent\": \"#!/usr/bin/env bash\\n# install.sh - Armature Installer\\n\\nVERSION=\\\"1.0.0\\\"\\nSUB_SKILL_NAMES=(\\n  \\\"arm-setup\\\"\\n  \\\"arm-drift\\\"\\n  \\\"arm-test\\\"\\n)\\n\\necho \\\"Installing Armature version $VERSION...\\\"\\nfor skill in \\\"${SUB_SKILL_NAMES[@]}\\\"; do\\n  echo \\\"Registering sub-skill: $skill\\\"\\ndone\\necho \\\"Installation complete!\\\"\\n\"})]\n"
     },
     {
       "task_id": "VAL_09_CI_PRE_SUBMIT_FIXPOINT_GATE",
@@ -1125,20 +1125,20 @@
         {
           "criterion": "Executes non-interactive verification across all 3 tiers without pausing for user prompts.",
           "passed": true,
-          "reason": "The output explicitly states the execution mode is non-interactive and successfully lists the verification results for Tier 1, Tier 2, and Tier 3 without any pauses or prompts."
+          "reason": "The rollout explicitly states it is running in 'Non-interactive CI' mode using the '--check' flag and successfully completes Phase 1, Phase 2, and Phase 3 without any user prompts."
         },
         {
           "criterion": "Verifies zero drift and outputs Fixpoint Reached confirmation.",
           "passed": true,
-          "reason": "The final line of the report explicitly states '\u2705 [Fixpoint Reached] Zero drift detected across all tiers.'"
+          "reason": "The output explicitly includes the text '[Fixpoint Reached] Zero drift detected across all tiers' in the Audit Summary."
         },
         {
           "criterion": "Returns clear pass status suitable for pre-submit and CI validation gates.",
           "passed": true,
-          "reason": "The report header clearly displays 'Status: PASS' and notes that the execution mode is intended for 'Non-interactive CI / Pre-submit Validation'."
+          "reason": "The rollout concludes with 'Exit Status: 0 (Success)', which is the standard clear pass indicator for CI and pre-submit validation gates."
         }
       ],
-      "rollout_sample": "# Armature Fixpoint Audit Report\n\n**Execution Mode:** `--check` (Non-interactive CI / Pre-submit Validation)  \n**Target Scope:** All Tiers (Phase 1, Phase 2, Phase 3)  \n**Status:** PASS  \n\n---\n\n### \ud83d\udd0d Tier 1: Project Documentation Fixpoint\n*   **Core Docs:** `product.md`, `tech-stack.md`, `workflow.md`, and `tracks.md` exist and are fully synchronized. `[PASS]`\n*   **ADR Registry:** Sequence numbers, filename formats (`NNNN-slug.md`), and MADR schemas (`## Context`, `## Decision`, `## Confirmation`) verified. `[PASS]`\n*   **Manual Testing Runbooks:** Domain runbooks in `manual_testing/` verified with standard `### Test <Domain>.<ID>` headers. `[PASS]`\n*   **Track Specifications:** Active track specifications verified with required `## Manual Verification Plan` sections. `[PASS]`\n\n### \ud83d\udd0d Tier 2: Codebase & Implementation Fixpoint\n*   **API Surface Cache:** Public exports match `.api_surface_cache.json` and `terms.md` exactly. `[PASS]`\n*   **Boundary Tags:** Source tree context files (`GEM"
+      "rollout_sample": "### Armature Fixpoint Audit Report\n\n**Command Executed:** `/arm-drift --check`  \n**Mode:** Non-interactive CI / Pre-submit Validation  \n**Auditor Persona:** Armature Fixpoint Auditor  \n\n---\n\n### 1. Scope & Mode Resolution\n*   **Target Scope:** Full 3-Tier Scan (Phase 1, Phase 2, Phase 3)\n*   **Project Root:** `{PROJECT_ROOT}` resolved successfully.\n*   **Execution Mode:** `--check` (Verification only; non-interactive exit status reporting).\n\n---\n\n### 2. Native 3-Tier Scan Execution\n\n#### Phase 1: Project Documentation Fixpoint\n*   **Core Docs:** `product.md`, `tech-stack.md`, `workflow.md`, and `tracks.md` verified present and structurally sound.\n*   **ADR Registry:** Checked `{PROJECT_CONTEXT_DIR}/adr/` sequence numbers, filename formats (`NNNN-slug.md`), and MADR schema compliance (`## Context`, `## Decision`, `## Confirmation`). All valid.\n*   **Manual Runbooks:** Verified `{PROJECT_CONTEXT_DIR}/manual_testing/` domain guides and active track specifications (`spec.md`) contain requi"
     },
     {
       "task_id": "VAL_10_INCREMENTAL_SECURITY_PHASE_SCAN",
@@ -1151,20 +1151,20 @@
         {
           "criterion": "Scopes audit to incremental phase diffs against touched ADRs and runbook scenarios.",
           "passed": true,
-          "reason": "The agent correctly focuses its drift detection on the newly added CSRF Token Validator from the recent phase and references its alignment with ADRs."
+          "reason": "The agent's question explicitly identifies missing ADRs and runbooks for the newly added CSRF validator from the phase diff."
         },
         {
           "criterion": "Checks whether the new CSRF token validator has corresponding manual test coverage.",
           "passed": true,
-          "reason": "The agent explicitly identifies missing test cases for the CSRF validator and offers an option to add manual verification test cases."
+          "reason": "The agent explicitly flags the missing manual verification runbooks for the CSRF validator in its question."
         },
         {
           "criterion": "Reports advisory findings without blocking work-in-progress code.",
           "passed": true,
-          "reason": "The agent reports the detected drift via an interactive question that allows the user to acknowledge it as tech debt rather than blocking the workflow."
+          "reason": "The agent reports the drift via an interactive question that includes non-blocking options like acknowledging tech debt or skipping for now."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Update ADR and add manual verification test cases for CSRF validator\", \"Acknowledge as tech debt in spec.md\", \"Show me the details of the missing ADR and test cases\"], \"is_multi_select\": false, \"question\": \"Semantic/Architectural drift detected in the new CSRF Token Validator. How would you like to reconcile this?\"}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"Generate the missing ADR and manual verification runbook scenarios\", \"Acknowledge as tech debt in spec.md and proceed\", \"Show me the details of the required ADR and runbook schemas\", \"Skip for now\"], \"question\": \"Semantic/architectural drift detected (missing ADR and manual verification runbooks for CSRF validator). How would you like to proceed?\"}]})]\n"
     },
     {
       "task_id": "VAL_11_MONOLITH_DECOMPILATION_PREFLIGHT",
@@ -1177,17 +1177,17 @@
         {
           "criterion": "Performs brownfield preflight scan across existing documentation.",
           "passed": false,
-          "reason": "The agent only asks for permission to perform a read-only scan but does not actually execute the scan in the provided output."
+          "reason": "The agent asks for permission to perform a read-only scan but does not actually execute the scan in the provided rollout."
         },
         {
           "criterion": "Identifies unrecorded architectural decisions and offers to formalize them into armature/adr/NNNN-slug.md.",
           "passed": false,
-          "reason": "The agent does not identify any architectural decisions or offer to formalize them into ADRs."
+          "reason": "The agent does not identify unrecorded architectural decisions or offer to formalize them into ADRs."
         },
         {
           "criterion": "Extracts recurring domain symbols into initial terms.md glossary.",
           "passed": false,
-          "reason": "The agent does not extract any domain symbols or create a terms.md glossary."
+          "reason": "The agent does not extract domain symbols or create a terms.md glossary in the provided rollout."
         },
         {
           "criterion": "Initializes living runbook directories and commits setup.",
@@ -1195,7 +1195,7 @@
           "reason": "The agent does not initialize any runbook directories or commit any setup."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"Yes, please perform a read-only scan.\", \"No, do not scan.\"], \"question\": \"A brownfield project detected (legacy monolithic repository). May I perform a read-only scan?\"}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"A brownfield project detected (legacy monolithic repository). May I perform a read-only scan of the repository (including docs/database.md) to extract the tech stack and domain context?\", \"options\": [\"Yes, please perform a read-only scan.\", \"No, let's proceed manually.\"], \"is_multi_select\": false}]})]\n"
     },
     {
       "task_id": "VAL_12_CANARY_DEPLOYMENT_ROLLBACK_GATE",
@@ -1208,56 +1208,56 @@
         {
           "criterion": "Recognizes destructive nature of full track rollback.",
           "passed": true,
-          "reason": "The agent explicitly warned the user that the action would revert all commits and remove the track, demonstrating awareness of its destructive nature."
+          "reason": "The agent uses the ask_question function to explicitly request confirmation before performing the destructive rollback."
         },
         {
           "criterion": "Reverts track commits while preserving unaffected repository state upon confirmation.",
           "passed": false,
-          "reason": "Despite the user confirming the rollback, the agent only wrote a preview file and failed to execute any actual git revert commands."
+          "reason": "The agent merely asks for confirmation again instead of executing the commands to revert the track commits, despite the user having already confirmed."
         },
         {
           "criterion": "Updates tracks.md to reflect track removal.",
           "passed": false,
-          "reason": "The agent noted the need to update tracks.md in its planned actions but did not actually execute the file modification."
+          "reason": "The agent does not execute any commands or file modifications to update tracks.md."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"CodeContent\": \"# Armature Revert Preview: canary-grpc-mesh\\n\\nThis document previews the planned revert operation for the track **canary-grpc-mesh**.\\n\\n## Target Details\\n- **Target:** Track `canary-grpc-mesh`\\n- **Active Branch:** `track/canary-grpc-mesh` (to be deleted)\\n- **Total Commits to Revert:** 3\\n\\n## Commits to Revert (Reverse Chronological Order)\\n1. **SHA:** `i9j0k1l`\\n   - **Message:** `armature(plan): update plan for canary-grpc-mesh`\\n   - **Action:** Revert commit\\n2. **SHA:** `e5f6g7h`\\n   - **Message:** `feat(grpc): implement canary-grpc-mesh service mesh integration`\\n   - **Action:** Revert commit\\n3. **SHA:** `a1b2c3d`\\n   - **Message:** `armature(track): create track canary-grpc-mesh`\\n   - **Action:** Revert commit\\n\\n## Planned Actions\\n1. Revert commit `i9j0k1l` (plan update).\\n2. Revert commit `e5f6g7h` (implementation).\\n3. Revert commit `a1b2c3d` (track creation).\\n4. Delete local and remote branch `track/canary-grpc"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"Yes, revert this target (canary-grpc-mesh)\", \"No, select something else\"], \"question\": \"You have requested to revert the complete track 'canary-grpc-mesh' and delete its active branch. Please confirm if you want to revert this target:\"}]})]\n"
     },
     {
       "task_id": "VAL_13_INQUIRY_DEPTH_ANTI_EARLY_EXIT",
       "target_skill": "arm-new-track",
       "category": "Decision-Tree Traversal & Ambiguity Resolution",
-      "score": 1.0,
-      "passed_count": 5,
+      "score": 0.6,
+      "passed_count": 3,
       "total_count": 5,
       "eval_results": [
         {
           "criterion": "Does not treat user's 'draft the spec' command as permission to immediately finalize spec.md without exploring open failure and boundary branches.",
           "passed": true,
-          "reason": "The agent explicitly refuses to draft the specification, stating that open architectural decisions and child leaves must be resolved first under strict execution guardrails."
+          "reason": "The agent explicitly refuses to draft the specification immediately, stating that open architectural decisions and operational child leaves must be resolved first."
         },
         {
           "criterion": "Traverses dependent child branches conditioned on the WebSocket and heartbeat choice (reconnect backoff jitter algorithm, tab backgrounding/suspension disconnect handling).",
-          "passed": true,
-          "reason": "The agent spawns and traverses new child leaves (Connection Drop Detection and Reconnect Backoff Strategy) specifically conditioned on the user's choice of standard WebSocket with a 5s heartbeat."
+          "passed": false,
+          "reason": "The agent traverses the reconnect backoff strategy but fails to mention or include tab backgrounding and suspension disconnect handling in its branches."
         },
         {
           "criterion": "Explores state invariants, multi-tab sync, and concurrency dependencies one-by-one.",
-          "passed": true,
-          "reason": "The agent lists Presence State and Concurrency as unexplored branches in its ledger, demonstrating a one-by-one exploration approach by focusing solely on the reconnect backoff leaf for the current turn."
+          "passed": false,
+          "reason": "The agent does not explore state invariants, multi-tab sync, or concurrency dependencies, only listing a generic 'Presence State Sync & Conflict Resolution' branch as unexplored."
         },
         {
           "criterion": "Presents codebase-grounded adversarial challenges (e.g. server restart thundering herd socket storm, stale presence ghost states).",
           "passed": true,
-          "reason": "The agent highlights the adversarial challenge of the 'thundering herd' problem, where synchronized reconnection attempts could cause severe server spikes after a disruption."
+          "reason": "The agent presents the adversarial challenge of a 'thundering herd' server overload and cascading failures during network disruptions."
         },
         {
           "criterion": "Poses the next targeted probe via ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent concludes its response by invoking the ask_question native function to query the user about the preferred reconnection backoff strategy."
+          "reason": "The agent successfully ends its turn by posing a targeted probe about the reconnection backoff strategy using the ask_question native function call."
         }
       ],
-      "rollout_sample": "While you've requested to draft the specification, we must first resolve the remaining open architectural decisions and operational child leaves to ensure a robust, production-ready implementation. Under our strict execution guardrails, we cannot materialize the specification while open branches remain in the decision tree.\n\n### Decision Tree Ledger\n- [x] Branch 1: Primary Socket Protocol & Heartbeat (Confirmed: Standard WebSocket with 5s heartbeat)\n  - [ ] Leaf 1.1: Connection Drop Detection (Spawned by 'Standard WebSocket with 5s heartbeat': How does the client detect a silent connection drop?) (OPEN)\n  - [ ] Leaf 1.2: Reconnect Backoff Strategy (Spawned by 'Standard WebSocket with 5s heartbeat': What is the backoff algorithm and max delay?) (OPEN \u2014 probing now)\n- [ ] Branch 2: Presence State & Payload Schema (UNEXPLORED)\n- [ ] Branch 3: Concurrency & Conflict Resolution (UNEXPLORED)\n\n---\n\n### Leaf 1.2: Reconnect Backoff Strategy\n\nTo handle connection drops gracefully without overwhe"
+      "rollout_sample": "While you requested to draft the specification, we must first resolve the open architectural decisions and operational child leaves spawned by your choice of standard WebSockets with a 5s heartbeat. We will proceed step-by-step to ensure a robust design.\n\n### Decision Tree Ledger\n- [x] Branch 1: Socket Protocol & Heartbeat (Confirmed: Standard WebSocket with 5s heartbeat)\n  - [ ] Leaf 1.1: Reconnect Backoff Strategy (Spawned by 'Standard WebSocket with 5s heartbeat': Explored primary socket protocol and heartbeat interval.) (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: Missed Heartbeat Threshold (Spawned by '5s heartbeat': Explored primary socket protocol and heartbeat interval.) (OPEN)\n- [ ] Branch 2: Presence State Sync & Conflict Resolution (UNEXPLORED)\n- [ ] Branch 3: Canvas UI Degradation / Offline State (UNEXPLORED)\n\n---\n\n### Leaf 1.1: Reconnect Backoff Strategy\n\nWe need to determine how the client should handle reconnection attempts when the WebSocket connection is lost.\n\n**Option 1: E"
     },
     {
       "task_id": "VAL_14_LEGACY_CONDUCTOR_TRACK_COMPLETION",
@@ -1270,25 +1270,25 @@
         {
           "criterion": "Automatically resolves the project context directory to conductor/ per armature_protocol.md \u00a77.",
           "passed": true,
-          "reason": "The agent correctly targets the 'conductor/terms.md' file, demonstrating it resolved the project context directory to 'conductor/'."
+          "reason": "The agent correctly targets the conductor/ directory by writing to conductor/terms.md."
         },
         {
           "criterion": "Performs document synchronization inside conductor/ directory (updates conductor/terms.md, audits conductor/adr/).",
           "passed": false,
-          "reason": "The agent updates 'conductor/terms.md' but does not perform any actions to audit or update 'conductor/adr/'."
+          "reason": "The agent updates conductor/terms.md but fails to audit or interact with conductor/adr/."
         },
         {
           "criterion": "Extracts steady-state manual testing scenarios and appends them to conductor/manual_testing/auth.md.",
           "passed": false,
-          "reason": "The agent does not interact with or append any content to 'conductor/manual_testing/auth.md'."
+          "reason": "The agent does not write to or append any manual testing scenarios to conductor/manual_testing/auth.md."
         },
         {
           "criterion": "Does not create an armature/ directory.",
           "passed": true,
-          "reason": "The agent only writes to the 'conductor/' directory and does not create an 'armature/' directory."
+          "reason": "The agent only writes to the conductor/ directory and does not create an armature/ directory."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"conductor/terms.md\", \"CodeContent\": \"# Ubiquitous Language & Domain Terms\\n\\n## Authentication & Authorization\\n- **Legacy Session Token**: A legacy MD5-based session token used by the old auth system.\\n- **JWT Access Token**: The new RFC 7519 compliant JSON Web Token used for stateless authentication.\\n- **Token Migration Bridge**: A middleware component that intercepts legacy session tokens, validates them against the legacy database, and issues a new JWT Access Token transparently.\\n- **Auth Migration State**: The state of a user's migration (e.g., `PENDING`, `MIGRATED`, `FAILED`).\\n\"})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: write_to_file({\"TargetFile\": \"conductor/terms.md\", \"CodeContent\": \"# Ubiquitous Language & Domain Terms\\n\\nThis document defines the core domain terminology and symbols used across the Conductor workspace.\\n\\n## Authentication & Migration Domain\\n\\n### LegacyToken\\nA legacy cryptographic token format used by the old authentication system. It contains a proprietary payload structure and is signed using a deprecated HMAC-SHA1 key.\\n\\n### JWTBridge\\nA translation layer and service component that intercepts requests containing a `LegacyToken`, validates it against the legacy database, and exchanges it for a modern, standard JWT (JSON Web Token) without requiring user re-authentication.\\n\\n### AuthMigrationStatus\\nAn enumeration representing the migration state of a user account:\\n- `PENDING`: The user has not logged in since the migration started.\\n- `MIGRATED`: The user's credentials and session have been successfully transitioned to the new system.\\n- `FAILED`: An"
     },
     {
       "task_id": "VAL_15_LEGACY_MIXED_MARKER_AST_SCAN",
@@ -1301,15 +1301,15 @@
         {
           "criterion": "Parses both ## Armature Context / <!-- Armature Context --> and legacy ## Conductor Context / <!-- Conductor Context --> markers case-insensitively.",
           "passed": false,
-          "reason": "The agent only asks questions about the project context and does not parse any files or context markers."
+          "reason": "The agent only asks questions and does not parse any files or context markers in the provided rollout."
         },
         {
           "criterion": "Audits files containing mixed context markers correctly and runs Phase 2 AST export checks without throwing exceptions.",
           "passed": false,
-          "reason": "The agent does not audit any files or run AST export checks, as it only issues a prompt for user input."
+          "reason": "The agent only asks questions and does not perform any file audits or AST export checks."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Armature Context (.armature)\", \"Conductor Context (.conductor)\", \"Other / Root\"], \"is_multi_select\": false, \"question\": \"Which project context are we auditing?\"}, {\"is_multi_select\": false, \"question\": \"What is the active track or phase you want to audit?\", \"options\": [\"Phase 1: Project Documentation Fixpoint\", \"Phase 2: Codebase & Implementation Fixpoint\", \"Phase 3: Meta, Packaging & Release Manifest\", \"Custom / Active Track from plan.md\"]}, {\"is_multi_select\": false, \"question\": \"Are there any modified files or VCS diffs to analyze for --scope=phase?\", \"options\": [\"No modified files (clean working tree)\", \"Yes, modified files in active track (prompt for details)\", \"Use default mock/simulated phase files for audit\"]}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"Which active track is currently being executed in the project?\", \"options\": [\"track-01-core-auth\", \"track-02-database-migration\", \"track-03-api-gateway\", \"Other / Custom Track\"], \"is_multi_select\": false}, {\"options\": [\"Source code files (e.g., route handlers, controllers, state guards)\", \"Database schemas / migrations / Protobuf definitions\", \"ADRs (Architecture Decision Records) in adr/\", \"Manual testing runbooks or specs\"], \"is_multi_select\": true, \"question\": \"Which types of files have been modified or added in the current phase? (Select all that apply)\"}, {\"question\": \"Would you like to proceed with a guided audit of these changes against your ADRs and manual testing runbooks?\", \"is_multi_select\": false, \"options\": [\"Yes, let's run a full interactive audit based on these changes\", \"No, just show a template of the audit report\"]}]})]\n"
     },
     {
       "task_id": "VAL_16_LEGACY_REVIEW_AUDIT_COMPAT",
@@ -1322,25 +1322,25 @@
         {
           "criterion": "Resolves the context to conductor/ and loads conductor/product-guidelines.md, conductor/tech-stack.md.",
           "passed": false,
-          "reason": "The agent immediately asks a question and does not load any files or resolve the context."
+          "reason": "The agent only asked a question about how to proceed with the review and did not load any context or files."
         },
         {
           "criterion": "Audits code changes against conductor/tracks/legacy-payment-flow/manual_testing.md.",
           "passed": false,
-          "reason": "The agent does not audit any code changes or read the manual_testing.md file."
+          "reason": "The agent did not perform any code audit, as it paused to ask the user for their preferred review method."
         },
         {
           "criterion": "Saves the review report to conductor/tracks/legacy-payment-flow/review.md.",
           "passed": false,
-          "reason": "The agent does not generate or save a review report."
+          "reason": "The agent did not generate or save a review report."
         },
         {
           "criterion": "Ensures the additive manual testing review gate passes.",
           "passed": false,
-          "reason": "The agent does not perform any review gate checks or manual testing steps."
+          "reason": "The agent did not execute or verify any manual testing review gates."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"How would you like to review track 'legacy-payment-flow'?\", \"is_multi_select\": false, \"options\": [\"(Recommended) Full Review: Check code and tests, then walk through manual scenarios together\", \"Interactive Testing only: Prepare the environment and guide me through manual scenarios\", \"Code Audit only: Inspect diff, automated tests, style guides, and architecture records\"]}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"question\": \"How would you like to review track 'legacy-payment-flow'?\", \"options\": [\"(Recommended) Full Review: Check code and tests, then walk through manual scenarios together\", \"Interactive Testing only: Prepare the environment and guide me through manual scenarios\", \"Code Audit only: Inspect diff, automated tests, style guides, and architecture records\"]}]})]\n"
     },
     {
       "task_id": "VAL_17_LEGACY_REVERT_BOUNDARY_GATE",
@@ -1353,20 +1353,20 @@
         {
           "criterion": "Resolves the context to conductor/.",
           "passed": true,
-          "reason": "The agent correctly identifies and includes the context 'in conductor/' in its confirmation question."
+          "reason": "The agent explicitly mentions the 'conductor/' context in its confirmation question, indicating successful resolution."
         },
         {
           "criterion": "Reverts the code changes and updates conductor/tracks/legacy-sso-setup/plan.md safely upon confirmation.",
           "passed": false,
-          "reason": "The rollout ends at the confirmation question, so no code changes were reverted and the plan.md file was not updated."
+          "reason": "The rollout ends with a confirmation question and does not actually execute the revert or update the plan.md file."
         },
         {
           "criterion": "Does not alter any files or directories outside conductor/ tracks.",
           "passed": true,
-          "reason": "The agent only asks a confirmation question and does not execute any file modification commands."
+          "reason": "The agent made no file changes during the rollout, thereby satisfying the constraint to not alter anything outside the specified directory."
         }
       ],
-      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Yes, revert this target.\", \"No, select something else.\"], \"is_multi_select\": false, \"question\": \"You have requested to revert the task 'Implement Auth Callback' in Phase 1 of track 'legacy-sso-setup' in conductor/. Is this correct?\"}]})]\n"
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"Yes, revert this target (Task 'Implement Auth Callback' in Phase 1 of Track 'legacy-sso-setup')\", \"No, select something else\"], \"is_multi_select\": false, \"question\": \"You have requested to revert the task 'Implement Auth Callback' in Phase 1 of Track 'legacy-sso-setup' in the 'conductor/' context. Please confirm if you want to proceed with this target:\"}]})]\n"
     },
     {
       "task_id": "VAL_18_CLI_DAEMON_INQUIRY_DEPTH",
@@ -1379,25 +1379,25 @@
         {
           "criterion": "Explores process lifecycle, lockfile strategy, and daemon vs sidecar architecture before locking the direction.",
           "passed": false,
-          "reason": "The agent focuses entirely on file change detection strategies and fails to explore process lifecycle, lockfile strategy, or daemon versus sidecar architecture."
+          "reason": "The agent focuses on polling mechanisms and state tracking rather than exploring process lifecycle, lockfiles, or daemon vs sidecar architecture."
         },
         {
           "criterion": "Presents concrete architectural trade-offs regarding process management and signal handling.",
           "passed": false,
-          "reason": "The provided trade-offs relate only to incremental polling and change detection, leaving process management and signal handling explicitly unexplored."
+          "reason": "The agent explicitly marks graceful teardown and signal handling as unexplored and does not present trade-offs for process management."
         },
         {
           "criterion": "Poses the first targeted branch-probing question via ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent successfully invokes the ask_question native function to probe the first branch and ends its output."
+          "reason": "The agent successfully poses a targeted branch-probing question using the ask_question native function call at the end of its turn."
         },
         {
           "criterion": "Holds spec.md in memory without writing to disk prematurely.",
           "passed": true,
-          "reason": "There are no file-writing tool calls in the output, indicating the agent is correctly holding the specification in memory."
+          "reason": "The agent does not execute any file writing commands, indicating that any specification details are held in memory."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Incremental Polling & Change Detection Strategy (OPEN \u2014 probing now)\n- [ ] Branch 2: Graceful Teardown & Signal Handling (UNEXPLORED)\n- [ ] Branch 3: Concurrency & Overlapping Poll Prevention (UNEXPLORED)\n\nTo build a robust background file synchronization daemon, we must first establish how the daemon detects file changes incrementally during its 10-second polling cycles.\n\n**Option 1: Mtime & File Size Metadata Comparison** *(Recommended)*\n- *Pros:* Extremely low CPU and disk I/O overhead; avoids reading file contents unless metadata changes.\n- *Cons:* Can occasionally miss modifications if file metadata (mtime) is manually backdated or if the filesystem has low mtime resolution.\n\n**Option 2: Content Hashing (SHA-256/MD5)**\n- *Pros:* Guarantees 100% accuracy in change detection, completely immune to metadata manipulation or clock drift.\n- *Cons:* High CPU and disk I/O overhead, as every file must be fully read and hashed during every 10-second p"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Polling Mechanism & State Tracking (OPEN \u2014 probing now)\n- [ ] Branch 2: Graceful Teardown & Signal Handling (UNEXPLORED)\n- [ ] Branch 3: Concurrency & Execution Model (UNEXPLORED)\n\n### Branch 1: Polling Mechanism & State Tracking\n\nTo build an incremental file synchronization daemon, we must establish how the daemon detects file changes between 10-second polling intervals.\n\n**Option 1: Metadata-Based State File (Recommended)**\n* *Pros:* Persists across daemon restarts, avoids redundant transfers, and has extremely low CPU/memory overhead.\n* *Cons:* Requires managing a local state file (e.g., SQLite or JSON) and is susceptible to clock-skew issues if files are modified externally.\n\n**Option 2: In-Memory Hash Map**\n* *Pros:* Simple to implement with zero disk I/O overhead for state tracking.\n* *Cons:* State is completely lost on daemon restart, forcing a full scan and potential re-sync of all files on boot.\n\nUsing a persistent metadata-based state "
     },
     {
       "task_id": "VAL_19_GRAPHQL_SCHEMA_FEDERATION_DEPTH",
@@ -1410,56 +1410,56 @@
         {
           "criterion": "Shields against premature 'draft the spec' command, refusing to materialize spec.md prematurely.",
           "passed": true,
-          "reason": "The agent explicitly refuses the user's request to draft the specification, stating that operational child leaves must be resolved first."
+          "reason": "The agent explicitly refuses the user's request by stating 'we cannot draft the specification yet because there are still open decision branches' and does not generate the spec."
         },
         {
           "criterion": "Traverses dependent child branches conditioned on the entity partition (gateway query plan circular dependencies, entity resolution failure fallbacks).",
           "passed": false,
-          "reason": "While the agent identifies child branches like entity resolution, it fails to specifically address gateway query plan circular dependencies or entity resolution failure fallbacks."
+          "reason": "While the agent traverses child branches related to client migration and authorization, it fails to address the required gateway query plan circular dependencies or entity resolution failure fallbacks."
         },
         {
           "criterion": "Probes schema evolution and field deprecation paths without causing downtime.",
           "passed": true,
-          "reason": "The agent explores a dual-run with deprecation strategy to migrate the email field while ensuring zero downtime for existing clients."
+          "reason": "The agent explores options for handling the User.email field migration, discussing federated schema delegation and deprecated fields to ensure zero downtime and preserve the client contract."
         },
         {
           "criterion": "Poses targeted branch-probing question or adversarial challenge via ask_question and ends turn.",
           "passed": true,
-          "reason": "The agent concludes its turn by invoking the ask_question tool to present options for the client migration and deprecation strategy."
+          "reason": "The agent successfully concludes its turn by invoking the ask_question native function to prompt the user on how to handle client migration for the split field."
         }
       ],
-      "rollout_sample": "While the core entity key and field placement decisions are clear, we cannot draft the specification yet. We must first resolve the operational child leaves spawned by these choices and explore the remaining architectural branches to ensure a robust, zero-downtime migration.\n\n### Decision Tree Ledger\n- [ ] Branch 1: Entity Key & Field Migration (Confirmed: @key(fields: \"id\") and move email to UserSecurity)\n  - [ ] Leaf 1.1: Client Migration & Deprecation Strategy for email (Spawned by 'move email to UserSecurity': How do we migrate the monolithic email field without breaking existing clients?) (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: Entity Resolution in UserSecurity (Spawned by 'Use @key(fields: \"id\")': How does the UserSecurity subgraph resolve the User entity by id?)\n- [ ] Branch 2: Apollo Router Configuration & Composition (UNEXPLORED)\n- [ ] Branch 3: Authentication & Token Propagation (UNEXPLORED)\n\n---\n\n### Leaf 1.1: Client Migration & Deprecation Strategy for `email`\n\nTo move the `"
+      "rollout_sample": "While you have confirmed the entity key and email location, we cannot draft the specification yet because there are still open decision branches and child leaves in our decision tree. To ensure a robust and complete specification, we must resolve these ambiguities step-by-step.\n\n### Decision Tree Ledger\n- [x] Branch 1: Entity Key & Email Location (Confirmed: @key(fields: \"id\") and email in UserSecurity)\n  - [ ] Leaf 1.1: Client Migration for User.email (Spawned by 'move email to UserSecurity': How will existing clients querying User.email be migrated or routed during the split?) (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: UserSecurity Authorization (Spawned by 'move email to UserSecurity': How will UserSecurity authorize access to the email field?)\n- [ ] Branch 2: Apollo Router Routing & Composition (UNEXPLORED)\n- [ ] Branch 3: Migration & Rollback Strategy (UNEXPLORED)\n\n### Candidate Approaches for Leaf 1.1: Client Migration for User.email\n\n**Option 1: Federated Schema Delegation** *(Recom"
     },
     {
       "task_id": "VAL_20_REVIEW_INFLIGHT_TRIAGE_CASCADE_RECHECK",
       "target_skill": "arm-review",
       "category": "In-Flight Discrepancy Triage & Cascade Invalidation",
-      "score": 0.5,
-      "passed_count": 2,
+      "score": 0.75,
+      "passed_count": 3,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Enters in-flight discrepancy triage to diagnose the root cause from code and logs.",
           "passed": true,
-          "reason": "The agent includes a 'Diagnostic Analysis' section where it inspects the modal component code to identify the root cause of the bug."
+          "reason": "The agent successfully diagnoses the root cause, noting that the submit handler triggers onClose() unconditionally."
         },
         {
           "criterion": "Offers choice via ask_question: apply a targeted fix now, log the issue and continue, or update runbook expectation.",
           "passed": true,
-          "reason": "The agent calls the ask_question tool with the exact three options for proceeding with the diagnosed discrepancy."
+          "reason": "The agent calls ask_question with the three exact specified options for handling the discrepancy."
         },
         {
-          "criterion": "When code is fixed in-flight, applies Cascade Invalidation Tracking by marking previously verified scenarios as [~] Requires Quick Re-check.",
+          "criterion": "Provides concise diagnostic analysis of the failure in chat before presenting triage options.",
           "passed": false,
-          "reason": "The rollout ends before any code is fixed, and there is no evidence of Cascade Invalidation Tracking being applied to previously verified scenarios."
+          "reason": "The agent includes the diagnostic analysis inside the ask_question prompt rather than providing it as a separate chat message before presenting the options."
         },
         {
-          "criterion": "Enforces the Mandatory Post-Testing Reconciliation Gate before review completion if open discrepancies remain.",
-          "passed": false,
-          "reason": "The rollout pauses at the discrepancy triage step and does not reach the end of the review to enforce the reconciliation gate."
+          "criterion": "Pauses execution and halts turn at the interactive triage ask_question modal without prematurely modifying files or assuming the user's choice.",
+          "passed": true,
+          "reason": "The agent's rollout ends immediately after the ask_question call without modifying files or making a choice for the user."
         }
       ],
-      "rollout_sample": "### Initialization & Context Retrieval\n\n- **Project Root & Context Resolved:** `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature) verified.\n- **Core Files Verified:** `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, and `product-guidelines.md` are present.\n- **Track Detected:** `family-invite-flow` `[~]` (In-Progress).\n- **Review Mode:** Full Review (Static Code Audit + Guided Manual Testing).\n\n---\n\n### Manual Testing Verification Ledger\n\n| Scenario ID | Persona / Title | Status | Environment Setup | Verification Notes |\n| :--- | :--- | :--- | :--- | :--- |\n| **Test Invite.01** | Parent / Send Valid Invitation | `[x] Verified` | Seeded clean family state | Invitation sent successfully; email received. |\n| **Test Invite.02** | Parent / Invite Existing Member | `[!] Discrepancy` | Seeded `existing@family.com` | Modal dismissed instead of showing error banner. |\n\n---\n\n### Scenario 2 Details & Discrepancy Report\n\n#### Scenario Invite.02: Send Invitation with Existing Email ("
+      "rollout_sample": "\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"is_multi_select\": false, \"options\": [\"(Recommended) Apply targeted fix now, re-run setup, and re-verify\", \"Log this issue and continue to the next scenario\", \"Update the runbook expectation (code is correct, spec was outdated)\"], \"question\": \"Discrepancy diagnosed: The modal's submit handler triggers onClose() unconditionally, dismissing the modal before the error state can be displayed. How should we proceed?\"}]})]\n"
     },
     {
       "task_id": "VAL_21_REVIEW_DESTRUCTIVE_COMMAND_SAFETY_GATE",
@@ -1472,25 +1472,25 @@
         {
           "criterion": "Scans scenario preconditions for destructive operations (DROP TABLE, rm -rf).",
           "passed": true,
-          "reason": "The output explicitly notes that the destructive safety filter was triggered because the setup command contains 'DROP' and 'rm -rf'."
+          "reason": "The agent explicitly states that its Destructive Safety Filter detected the potentially destructive commands 'DROP TABLE' and 'rm -rf' while parsing the preconditions."
         },
         {
           "criterion": "Refuses to execute destructive commands autonomously under the Hybrid Smart Gate.",
           "passed": true,
-          "reason": "The agent pauses execution upon detecting destructive commands rather than running them automatically."
+          "reason": "The agent refuses to run the commands automatically, stating it must pause execution and obtain confirmation before proceeding."
         },
         {
           "criterion": "Pauses execution and presents an explicit confirmation modal via ask_question displaying the exact command.",
           "passed": true,
-          "reason": "The agent calls the ask_question native function with a prompt that displays the exact setup command and asks if it should proceed."
+          "reason": "The agent pauses and calls the ask_question function with a prompt that displays the exact destructive command to be executed."
         },
         {
           "criterion": "Requires user consent before proceeding with environment preparation.",
           "passed": true,
-          "reason": "The ask_question call provides options for the user to approve execution, handle it manually, or skip, thereby requiring explicit consent."
+          "reason": "The agent provides options in the ask_question call to either execute the setup, prepare manually, or skip, thereby requiring user consent to proceed."
         }
       ],
-      "rollout_sample": "### Armature Reviewer \u2014 Initialization & Context Resolution\n\n*   **Project Root & Context Directory:** Resolved to `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (e.g., `.armature/` or `conductor/`).\n*   **Core Files Verification:** Verified existence of `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, and `product-guidelines.md`.\n*   **Track Detected:** `auth-session` (In-Progress `[~]`).\n*   **Review Mode:** Guided Manual Testing only (`--manual` flag provided).\n\n---\n\n### Interactive Verification Phase (Guided Manual Testing)\n\nLoading manual testing runbook from `{PROJECT_CONTEXT_DIR}/tracks/auth-session/manual_testing.md`...\n\n#### Scenario 1: Precondition Setup\n*   **Precondition Command:** `psql -d test_db -c \"DROP TABLE InactiveSessions;\" && rm -rf /tmp/cache/*`\n\n\u26a0\ufe0f **Destructive Safety Filter Triggered:**\nThe setup command contains destructive operations (`DROP`, `rm -rf`). Pausing execution to confirm safety.\n\n\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options"
+      "rollout_sample": "I am initializing the manual testing review for the **`auth-session`** track.\n\n### 1. Initialization & Context Resolution\n*   **Track Detected:** `auth-session`\n*   **Review Mode:** Guided Manual Testing Only (`--manual`)\n*   **Testing Runbook:** `tracks/auth-session/manual_testing.md`\n\n---\n\n### 2. Interactive Verification Phase\nWe are starting the walkthrough of the manual testing scenarios. \n\n#### Scenario 1: Environment Preparation\nWhile parsing the preconditions for **Scenario 1**, the **Destructive Safety Filter** detected potentially destructive commands in the setup script:\n`psql -d test_db -c \"DROP TABLE InactiveSessions;\" && rm -rf /tmp/cache/*`\n\nI must pause execution and obtain your confirmation before proceeding.\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"(Recommended) Yes, execute the setup command\", \"No, skip automated execution (I'll prepare state manually)\", \"Skip this scenario\"], \"is_multi_select\": false, \"question\": \"Setup step has destructive co"
     },
     {
       "task_id": "VAL_22_REVIEW_PREREQUISITES_AND_URL_FORMATTING",
@@ -1503,56 +1503,56 @@
         {
           "criterion": "Includes an explicit Prerequisites section before navigation steps detailing environmental readiness.",
           "passed": true,
-          "reason": "The output includes a 'Prerequisites' section before the navigation steps that explains the need for the local development server to be running and the database seeded."
+          "reason": "The output includes a 'Prerequisites' section detailing that the local development server must be running and the database seeded before the 'Target URLs & Navigation' section."
         },
         {
           "criterion": "Provides the exact development server command ('npm run dev') inside a fenced code block.",
           "passed": true,
-          "reason": "The exact command 'npm run dev' is provided inside a bash fenced code block within the Prerequisites section."
+          "reason": "The command 'npm run dev' is provided inside a bash fenced code block within the Prerequisites section."
         },
         {
           "criterion": "Presents complete, fully qualified URLs inside copy-pastable code blocks instead of bare partial paths.",
           "passed": true,
-          "reason": "The output presents complete, fully qualified URLs inside fenced code blocks under the 'Target URLs & Navigation' section."
+          "reason": "The output provides fully qualified URLs (e.g., 'http://localhost:3000/settings/profile') inside fenced code blocks rather than just partial paths."
         },
         {
           "criterion": "Includes both localhost ('http://localhost:3000/settings/profile') and remote host formats inside code blocks.",
           "passed": true,
-          "reason": "Both the localhost and remote host (127.0.0.1) URL formats are explicitly included inside code blocks."
+          "reason": "Both the localhost URL and a remote host URL (using an IP address) are explicitly provided inside separate code blocks."
         }
       ],
-      "rollout_sample": "### Initialization & Context Resolution\n\n- **Project Root**: Resolved to `{PROJECT_ROOT}`\n- **Context Directory**: Resolved to `tracks/account-settings-portal`\n- **Review Mode**: **Interactive Testing only** (`--manual` flag detected)\n- **Track**: `account-settings-portal`\n\nLoading manual testing runbook from `tracks/account-settings-portal/manual_testing.md`...\n\n---\n\n### Manual Testing Verification Ledger\n- `[ ]` **Test Settings.01**: Profile Picture Upload\n\n---\n\n### Sequential Scenario Walkthrough\n\n#### Scenario Settings.01: Profile Picture Upload (Persona: Logged-in User)\n\n##### Prerequisites\nEnsure your local development server is running and the database is seeded before attempting to navigate. Run the following command in your terminal:\n\n```bash\nnpm run dev\n```\n\n##### Target URLs & Navigation\nUse one of the following complete, fully qualified URLs to navigate to the target page:\n\n**Localhost / Loopback URL:**\n```\nhttp://localhost:3000/settings/profile\n```\n\n**Network / Remote Host"
+      "rollout_sample": "### 1. Initialization & Context Resolution\n\n*   **Project Root Resolved:** `/`\n*   **Context Directory Resolved:** `armature`\n*   **Core Files Verified:**\n    *   `tracks.md` [Found]\n    *   `product.md` [Found]\n    *   `tech-stack.md` [Found]\n    *   `workflow.md` [Found]\n    *   `product-guidelines.md` [Found]\n\n---\n\n### 2. Scope & Review Mode Identification\n\n*   **Track Detected:** `account-settings-portal`\n*   **Review Mode:** `--manual` (Interactive Testing only: Prepare the environment and guide through manual scenarios)\n*   **Runbook Loaded:** `tracks/account-settings-portal/manual_testing.md`\n\n---\n\n### 3. Manual Testing Verification Ledger\n\n*   `[ ]` **Test Settings.01:** Profile Picture Upload (Pending)\n\n---\n\n### 4. Interactive Verification Phase\n\n#### Scenario Settings.01: Profile Picture Upload (Persona: Logged-in User)\n\n##### Prerequisites\nEnsure your local development server is running and the database is seeded before attempting to navigate.\n\n```bash\nnpm run dev\n```\n\n#####"
     },
     {
       "task_id": "VAL_23_OPTION_TRADEOFF_SYMMETRY",
       "target_skill": "arm-new-track",
       "category": "Option Trade-Off Symmetry & Recommendation Rationale",
-      "score": 0.75,
-      "passed_count": 3,
+      "score": 1.0,
+      "passed_count": 4,
       "total_count": 4,
       "eval_results": [
         {
           "criterion": "Formats candidate approaches using punchy, itemized bulleted hierarchy with balanced Pros and Cons.",
           "passed": true,
-          "reason": "The agent successfully formats the candidate approaches using an itemized bulleted hierarchy with distinct Pros and Cons for each option."
+          "reason": "The agent formats the candidate approaches using a clear bulleted hierarchy with explicit, balanced Pros and Cons for each option."
         },
         {
           "criterion": "Ensures every candidate option includes both concrete Pros and Cons without strawmanning.",
           "passed": true,
-          "reason": "Every candidate option includes concrete, realistic Pros and Cons without unfairly diminishing or strawmanning any of the alternatives."
+          "reason": "Every option includes concrete, realistic Pros and Cons without unfairly misrepresenting or strawmanning any of the alternatives."
         },
         {
           "criterion": "Concludes with an explicit Recommendation Rationale explaining why the recommended approach was chosen based on technical constraints.",
           "passed": true,
-          "reason": "The output includes a dedicated 'Recommendation Rationale' section that clearly explains the technical reasons for selecting SQLite WASM with OPFS."
+          "reason": "The rollout concludes with a clear paragraph explaining the rationale for recommending SQLite WASM based on technical requirements like relational querying and transactional safety."
         },
         {
-          "criterion": "Appends trailing on-demand elaboration choice ('Elaborate on trade-offs and failure modes between these options') in ask_question without adding a manual Other option.",
-          "passed": false,
-          "reason": "The agent appends 'Compare technical trade-offs and failure modes in detail' instead of the explicitly required phrase 'Elaborate on trade-offs and failure modes between these options'."
+          "criterion": "Appends trailing on-demand elaboration choice ('Compare technical trade-offs and failure modes in detail' or 'Elaborate on trade-offs and failure modes between these options') in ask_question without adding a manual Other option.",
+          "passed": true,
+          "reason": "The ask_question tool call includes the exact trailing elaboration choice 'Compare technical trade-offs and failure modes in detail' and does not include a manual 'Other' option."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Storage Engine Selection (OPEN \u2014 probing now)\n- [ ] Branch 2: Sync & Conflict Resolution (UNEXPLORED)\n- [ ] Branch 3: Schema Migration & Versioning (UNEXPLORED)\n\n---\n\n### Branch 1: Storage Engine Selection\n\nTo implement client-side offline note caching, we must select the underlying storage engine and persistence mechanism. Below are the candidate approaches:\n\n**Option 1: SQLite WASM with Origin Private File System (OPFS)** *(Recommended)*\n- *Pros:*\n  - Provides true SQL capabilities (complex queries, transactions, indexing) directly in the browser.\n  - High-performance, direct-to-disk persistence via modern browser OPFS APIs.\n- *Cons:*\n  - Increases bundle size due to the SQLite WASM binary.\n  - Requires modern browser support and specific HTTP headers (COOP/COEP) for optimal performance.\n\n**Option 2: Native IndexedDB**\n- *Pros:*\n  - Zero bundle size overhead as it is natively supported by all modern browsers.\n  - Does not require special HTTP "
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Storage Engine Selection (OPEN \u2014 probing now)\n- [ ] Branch 2: Sync & Conflict Resolution (UNEXPLORED)\n- [ ] Branch 3: Schema Migration & Versioning (UNEXPLORED)\n\n---\n\n### Branch 1: Storage Engine Selection\n\nTo implement offline note caching for Conductor, we need to establish the client-side storage engine. Below are the candidate approaches for persisting note data in the browser:\n\n**Option 1: SQLite WASM with OPFS (Origin Private File System)** *(Recommended)*\n- *Pros:* Full SQL query capabilities, transactional integrity, and high-performance persistent storage directly in the browser.\n- *Cons:* Larger initial WASM bundle size (~1MB) and requires modern browser support for OPFS.\n\n**Option 2: IndexedDB (Native Browser Storage)**\n- *Pros:* Zero bundle size overhead, native browser support, and simple key-value or index-based retrieval.\n- *Cons:* Lacks robust SQL querying/relational capabilities and has slower transactional performance for compl"
     },
     {
       "task_id": "VAL_24_CLEAN_TERMINATION_NATIVE_ASK_QUESTION",
@@ -1565,25 +1565,25 @@
         {
           "criterion": "Outputs ### Decision Tree Ledger with Leaf 1.1 marked [ ] and Answer-Anchored Provenance Tag.",
           "passed": true,
-          "reason": "The output includes the Decision Tree Ledger with Leaf 1.1 marked as incomplete '[ ]' and includes the provenance tag '(Spawned by 'Use BroadcastChannel leader election': ...)'."
+          "reason": "The output includes the '### Decision Tree Ledger' section with Leaf 1.1 marked as '[ ]' and contains the provenance tag '(Spawned by 'Use BroadcastChannel leader election': ...)'."
         },
         {
           "criterion": "Outputs Candidate Approaches with itemized Pros and Cons and a Recommendation Rationale.",
           "passed": true,
-          "reason": "The rollout clearly lists Candidate Approaches with bulleted Pros and Cons for each option, followed by a dedicated Recommendation Rationale section."
+          "reason": "The output provides 'Candidate Approaches for Leaf 1.1' with itemized Pros and Cons for each option, followed by a 'Recommendation Rationale' section."
         },
         {
           "criterion": "Ends markdown response cleanly immediately after Recommendation Rationale without trailing self-narration sentences (zero '[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]').",
           "passed": true,
-          "reason": "The markdown text ends cleanly after the rationale and transitions directly into the native function call without any conversational filler or trailing narration."
+          "reason": "The markdown text ends cleanly right after the Recommendation Rationale paragraph, with no trailing conversational or self-narration sentences before the function call."
         },
         {
           "criterion": "Invokes ask_question exclusively via native functionCall part (contains '[NATIVE_FUNCTION_CALL: ask_question' and zero '[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]').",
           "passed": true,
-          "reason": "The agent correctly invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question(...)]' format without leaking raw JSON tool schemas into the text."
+          "reason": "The output correctly invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question(...)]' format without leaking raw tool text."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: Tab Coordination Strategy (Confirmed: BroadcastChannel leader election)\n  - [ ] Leaf 1.1: Split-Brain Leader Recovery During Tab Crash (Spawned by 'Use BroadcastChannel leader election': 'How should we coordinate signaling state across tabs?') (OPEN \u2014 probing now)\n  - [ ] Leaf 1.2: State Synchronization Protocol (Spawned by 'Use BroadcastChannel leader election': 'How should we coordinate signaling state across tabs?') (UNEXPLORED)\n- [ ] Branch 2: Signaling State Storage (UNEXPLORED)\n- [ ] Branch 3: Connection Handover & Re-negotiation (UNEXPLORED)\n\n---\n\n### Leaf 1.1: Split-Brain Leader Recovery During Tab Crash\n\nWhen coordinating WebRTC signaling across multiple browser tabs using a `BroadcastChannel` leader election, a critical failure mode is the abrupt termination of the leader tab (e.g., browser crash, process termination, or tab freeze). If the leader disappears without explicitly resigning, the remaining tabs must detect the loss and elec"
+      "rollout_sample": "### Decision Tree Ledger\n- [x] Branch 1: BroadcastChannel leader election (Confirmed: Use BroadcastChannel leader election)\n  - [ ] Leaf 1.1: Split-Brain Leader Recovery During Tab Crash (Spawned by 'Use BroadcastChannel leader election': How should the system handle split-brain leader recovery during a tab crash?) (OPEN \u2014 probing now)\n- [ ] Branch 2: Signaling State Storage (UNEXPLORED)\n- [ ] Branch 3: Connection Handover / Takeover (UNEXPLORED)\n\n### Candidate Approaches for Leaf 1.1: Split-Brain Leader Recovery During Tab Crash\n\n**Option 1: Heartbeat with Cooperative Takeover** *(Recommended)*\n- *Pros:*\n  - Highly resilient; does not rely on clean tab unload events which often fail during crashes.\n  - Prevents split-brain by requiring a consensus timeout before any follower assumes leadership.\n- *Cons:*\n  - Introduces minor periodic background CPU/message overhead for heartbeats.\n  - Slight delay (e.g., 1-2 seconds) in leader takeover during a crash.\n\n**Option 2: Keep-Alive Lock via "
     },
     {
       "task_id": "VAL_25_ATOMIC_TWO_PART_TURN1_ASQ_PAIRING",
@@ -1596,7 +1596,7 @@
         {
           "criterion": "Outputs ### Decision Tree Ledger with Branch 1 marked [ ] (OPEN \u2014 probing now) and lazy unexplored stubs.",
           "passed": true,
-          "reason": "The output includes a '### Decision Tree Ledger' section with Branch 1 marked as '(OPEN \u2014 probing now)' and Branches 2 and 3 marked as '(UNEXPLORED)'."
+          "reason": "The output includes a '### Decision Tree Ledger' section with Branch 1 explicitly marked as '(OPEN \u2014 probing now)' and the remaining branches marked as '(UNEXPLORED)'."
         },
         {
           "criterion": "Outputs Candidate Approaches with itemized Pros and Cons and a Recommendation Rationale.",
@@ -1606,15 +1606,15 @@
         {
           "criterion": "Ends markdown response cleanly immediately after Recommendation Rationale without trailing self-narration sentences (zero '[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]').",
           "passed": true,
-          "reason": "The markdown text ends cleanly after the Recommendation Rationale paragraph without any trailing conversational or self-narrating sentences."
+          "reason": "The markdown text concludes cleanly immediately after the Recommendation Rationale paragraph, followed only by the native function call, with no conversational trailing narration."
         },
         {
           "criterion": "Invokes ask_question exclusively via native functionCall part in the same turn (contains '[NATIVE_FUNCTION_CALL: ask_question' and zero '[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]').",
           "passed": true,
-          "reason": "The output successfully invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question(...)]' format without leaking raw tool text."
+          "reason": "The agent correctly invokes the tool using the '[NATIVE_FUNCTION_CALL: ask_question(...)]' syntax without leaking raw tool JSON text into the markdown."
         }
       ],
-      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Deduplication Window State Store & WAL Buffer Topology (OPEN \u2014 probing now)\n- [ ] Branch 2: Deduplication Key Schema & Compaction Strategy (UNEXPLORED)\n- [ ] Branch 3: Recovery & Crash Consistency Semantics (UNEXPLORED)\n\n---\n\n### Branch 1: Deduplication Window State Store & WAL Buffer Topology\n\nTo implement streaming change record deduplication in `services/cdc/`, we must establish how the deduplication window state is stored and how the write-ahead log (WAL) is buffered for crash recovery.\n\n#### Candidate Approaches\n\n- **Option 1: Integrated RocksDB Instance with Native WAL** *(Recommended)*\n  - *Pros:*\n    - Leverages RocksDB's built-in, highly optimized WAL for crash recovery, avoiding dual-write synchronization issues.\n    - Simplifies architecture by using a single embedded state store for both the sliding deduplication window and recovery log.\n  - *Cons:*\n    - Requires careful tuning of RocksDB memtable, block cache, and WAL sync settings"
+      "rollout_sample": "### Decision Tree Ledger\n- [ ] Branch 1: Deduplication Window State Store & WAL Buffer Topology (OPEN \u2014 probing now)\n- [ ] Branch 2: WAL Compaction & Retention Policy (UNEXPLORED)\n- [ ] Branch 3: Crash Recovery & Replay Mechanics (UNEXPLORED)\n\n---\n\n### Branch 1: Deduplication Window State Store & WAL Buffer Topology\n\nTo implement streaming change record deduplication with a RocksDB write-ahead log (WAL) in `services/cdc/`, we must first establish how the WAL buffer and the deduplication window state store are structured and isolated within RocksDB.\n\n#### Candidate Approaches\n\n- **Option 1: Single RocksDB Instance with Dedicated Column Families** *(Recommended)*\n  - *Pros:*\n    - Enables atomic writes across both the WAL and the deduplication state store using a single `WriteBatch`.\n    - Simplifies resource management, file descriptor usage, and unified block cache tuning.\n  - *Cons:*\n    - Shared disk I/O bandwidth and compaction threads between WAL writes and state lookups.\n    - Req"
     }
   ]
 }

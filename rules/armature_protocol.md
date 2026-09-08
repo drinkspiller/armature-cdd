@@ -90,6 +90,15 @@ commands in skill protocols.
 -   **Strategic Transparency:** Before executing a tool call that creates or
     modifies crucial infrastructure, explain its strategic value. Don't just
     execute; act as a mentor guiding the user through the 'Why'.
+-   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes):**
+    Long-running, indeterminate, or heavy multimodal operations—such as video or
+    screencast frame extraction (`view_file`), extensive multi-repository code
+    sweeps, or multi-minute test suites—must NEVER be executed synchronously on
+    the primary conversational agent turn when background delegation
+    capabilities exist. The primary agent MUST act as an orchestrator: dispatch
+    a background worker, yield its turn immediately with a visible
+    acknowledgement in chat, and remain interactively available to answer user
+    status inquiries, accept steering commands, or process cancellations.
 
 ## 1a. Multi-Perspective Persona Reasoning
 
