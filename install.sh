@@ -23,7 +23,7 @@
 #     │   ├── arm-implement/SKILL.md
 #     │   ├── arm-status/SKILL.md
 #     │   ├── arm-review/SKILL.md
-#     │   ├── arm-revert/SKILL.md
+#     │   ├── arm-undo/SKILL.md
 #     │   ├── arm-drift/SKILL.md
 #     │   ├── arm-chat/SKILL.md
 #     │   ├── arm-new-bug-bash/SKILL.md
@@ -111,13 +111,13 @@ DEFINE_bool release_notes false "Show release notes for the current version"
 parse_flags "$@"
 
 
-VERSION="0.22.4"
+VERSION="0.23.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_ASSETS_DIR="${SCRIPT_DIR}/skills/arm-setup/assets"
 # Sub-skill names (each has its own directory under skills/)
-SUB_SKILL_NAMES=(arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage)
+SUB_SKILL_NAMES=(arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage)
 # Rules files (always-on rule files for MVC architecture)
 SOURCE_RULES_DIR="${SCRIPT_DIR}/rules"
 RULE_FILE_NAMES=(armature_protocol.md armature_antigravity.md)
@@ -767,6 +767,15 @@ echo ""
 for sub_skill in "${SUB_SKILL_NAMES[@]}"; do
   install_file "${SCRIPT_DIR}/skills/${sub_skill}/SKILL.md" "${TARGET_SKILLS_ROOT}/${sub_skill}/SKILL.md"
 done
+
+if [[ -d "${TARGET_SKILLS_ROOT}/arm-revert" ]]; then
+  if [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]]; then
+    msg_info "${YELLOW}[dry-run]${NC} Would remove deprecated skill directory: ${CYAN}${TARGET_SKILLS_ROOT}/arm-revert${NC}"
+  else
+    rm -rf "${TARGET_SKILLS_ROOT}/arm-revert"
+    msg_success "Removed deprecated skill directory: ${CYAN}${TARGET_SKILLS_ROOT}/arm-revert${NC}"
+  fi
+fi
 
 # --- Rules ---
 section "📏 Installing Armature Rules"
