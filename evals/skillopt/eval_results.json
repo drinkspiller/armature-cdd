@@ -416,7 +416,7 @@
     },
     {
       "task_id": "TRAIN_15_REVERT_TASK_OR_PHASE",
-      "target_skill": "arm-revert",
+      "target_skill": "arm-undo",
       "category": "Surgical Task & Phase Rollback",
       "score": 0.25,
       "passed_count": 1,
@@ -1199,7 +1199,7 @@
     },
     {
       "task_id": "VAL_12_CANARY_DEPLOYMENT_ROLLBACK_GATE",
-      "target_skill": "arm-revert",
+      "target_skill": "arm-undo",
       "category": "Destructive Rollback Confirmation Barrier",
       "score": 0.3333333333333333,
       "passed_count": 1,
@@ -1344,7 +1344,7 @@
     },
     {
       "task_id": "VAL_17_LEGACY_REVERT_BOUNDARY_GATE",
-      "target_skill": "arm-revert",
+      "target_skill": "arm-undo",
       "category": "Backward Compatibility - Legacy Revert Boundary",
       "score": 0.6666666666666666,
       "passed_count": 2,

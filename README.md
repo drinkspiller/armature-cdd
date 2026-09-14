@@ -115,7 +115,7 @@ Once installed, the `/arm-*` commands are available globally in chat:
 | `/arm-review` | Multi-dimensional review against living runbooks and ADRs |
 | `/arm-drift` | Continuous 3-tier drift tripwire across docs, interfaces, and code |
 | `/arm-chat` | Ceremony-free context ingestion with automatic glossary sync |
-| `/arm-revert` | VCS-aware surgical task, phase, or track rollback |
+| `/arm-undo` | VCS-aware surgical task, phase, or track rollback |
 
 ---
 
@@ -154,7 +154,7 @@ Armature installs as a modular plugin bundle containing skills, rule protocols, 
 | `arm-implement/` | `skills/arm-implement/` | Armature Implementer | `/arm-implement` — Execute plan tasks sequentially with phase checkpoint drift audits |
 | `arm-status/` | `skills/arm-status/` | Armature Observer | `/arm-status` — View project trajectory with ambient contract health monitoring |
 | `arm-review/` | `skills/arm-review/` | Armature Reviewer | `/arm-review` — Multi-dimensional code audit and guided interactive manual verification walkthroughs |
-| `arm-revert/` | `skills/arm-revert/` | Armature Surgeon | `/arm-revert` — Surgical rollbacks with destructive operation shielding |
+| `arm-undo/` | `skills/arm-undo/` | Armature Surgeon | `/arm-undo` — Surgical rollbacks with destructive operation shielding |
 | `arm-drift/` | `skills/arm-drift/` | Armature Drift Auditor | `/arm-drift` — Continuous 3-tier drift auditing across docs, interfaces, and packaging |
 | `arm-chat/` | `skills/arm-chat/` | Armature Guide | `/arm-chat` — Ceremony-free context ingestion with automatic glossary sync |
 

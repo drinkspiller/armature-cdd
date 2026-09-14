@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.23.0] - 2026-09-14
+
+### Changed
+
+-   **Renamed `/arm-revert` to `/arm-undo` (`skills/arm-undo/SKILL.md`, `install.sh`, `install.bat`, `README.md`)**:
+    -   **Collision & Safety Mitigation**: Renamed command to eliminate the severe 7-character prefix collision (`/arm-rev...`) and typo blast-radius hazard between `/arm-review` (read-only QA audit & inspection) and `/arm-revert` (destructive VCS commit reversal and state reset).
+    -   **Sub-Skill Architecture**: Renamed skill directory to `skills/arm-undo/` with persona `Armature Surgeon`, preview artifact `arm_undo_preview.md`, and commit prefix `armature(undo):`.
+    -   **Installer & Legacy Migration**: Updated `SUB_SKILL_NAMES` in `install.sh` and `install.bat`, and added automated cleanup for deprecated `arm-revert` directories upon update.
+    -   **Evaluation Benchmark Alignment**: Updated SkillOpt evaluation tasks in `evals/skillopt/tasks/train.jsonl` and `val.jsonl` to target `arm-undo`.
+
 ## [0.22.4] - 2026-09-08
 
 ### Added

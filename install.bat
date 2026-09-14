@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 :: Armature (OSS) Skills & Rules Installer (Windows)
 :: =============================================================================
 
-set "VERSION=0.22.4"
+set "VERSION=0.23.0"
 set "FLAGS_dry_run=0"
 set "FLAGS_force=0"
 set "FLAGS_uninstall=0"
@@ -72,7 +72,7 @@ if "%FLAGS_uninstall%"=="1" goto :do_uninstall
 if not exist "%SOURCE_ASSETS_DIR%\workflow_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\workflow_template.md & exit /b 1 )
 if not exist "%SOURCE_ASSETS_DIR%\adr_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\adr_template.md & exit /b 1 )
 if not exist "%SOURCE_ASSETS_DIR%\manual_testing_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\manual_testing_template.md & exit /b 1 )
-for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
+for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
     if not exist "%SCRIPT_DIR%\skills\%%S\SKILL.md" ( echo [ERROR] Missing %SCRIPT_DIR%\skills\%%S\SKILL.md & exit /b 1 )
 )
 
@@ -118,8 +118,17 @@ if exist "%SCRIPT_DIR%\.claude-plugin\marketplace.json" call :install_file "%SCR
 :: Sub-Skills
 echo.
 echo --- Installing Armature Command Skills ---
-for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-revert arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
+for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
     call :install_file "%SCRIPT_DIR%\skills\%%S\SKILL.md" "%TARGET_SKILLS_ROOT%\%%S\SKILL.md"
+)
+
+if exist "%TARGET_SKILLS_ROOT%\arm-revert" (
+    if "%FLAGS_dry_run%"=="1" (
+        echo Would remove deprecated directory: %TARGET_SKILLS_ROOT%\arm-revert
+    ) else (
+        rmdir /s /q "%TARGET_SKILLS_ROOT%\arm-revert"
+        echo Removed deprecated directory: %TARGET_SKILLS_ROOT%\arm-revert
+    )
 )
 
 :: Rules
