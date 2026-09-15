@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.24.0] - 2026-09-15
+
+### Added
+
+-   **Legacy-Boundary Context Fences (`rules/armature_protocol.md`, `skills/arm-chat/SKILL.md`, `skills/arm-implement/SKILL.md`, `skills/arm-new-track/SKILL.md`, `skills/arm-drift/SKILL.md`, `skills/arm-review/SKILL.md`)**:
+    -   **Dual-Tiered Fence Registry & HUD Banner**: Establishes repository-wide exclusion boundaries via a `## Legacy & Deprecated Boundaries` table in `armature/tech-stack.md` and track-scoped overrides in `metadata.json`. Renders an active `🚧 Legacy Fence Active` HUD banner whenever legacy paths are excluded.
+    -   **Proactive Query-Time Exclusion**: Enforces negative exclusion filters and `Excludes` globs across search tools so deprecated files never consume search result caps. Implements a Zero-Match Fallback protocol when modern searches return zero hits.
+    -   **Direct Cross-Boundary Import Read Exemption**: Permits non-blocking Read-Only Reference Mode inspection (`view_file`) when an active modern file explicitly imports a legacy file (`import`, `require`, `#include`), surfacing an inline `[Legacy Dependency Read: <path>]` badge while keeping mutations blocked.
+    -   **Intent-Aware Override Gates & Subagent Inheritance**: Separates session-scoped `READ` unlocks from explicit `WRITE` warning modals (`"WARNING: Modifying files in legacy-fenced directory..."`). Propagates `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]` blocks into subagent worker prompts with fail-closed escalation.
+    -   **Reactive Steering & Decommissioning Exemptions**: Adds a Self-Healing Steering Hook in `arm-chat` to persist newly discovered legacy boundaries at turn end. Configures `arm-drift` and `arm-review` to block unauthorized additions (`+N lines`) in fenced directories while exempting whole-file deletions (`status D` / `status R`) and pure line removals (`0` added lines), alongside 1-click garbage collection for deleted directories.
+    -   **SkillOpt Verification Suite (`evals/skillopt/`)**: Added 10-scenario evaluation battery (`TRAIN_LF_01`–`06`, `VAL_LF_01`–`04`) verified at 100.0% accuracy across K=3 stochastic seeds (0 Invariant Vetoes).
+
 ## [0.23.0] - 2026-09-14
 
 ### Changed

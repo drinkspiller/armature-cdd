@@ -75,6 +75,54 @@ Execute the audit across the three tiers (or the requested scope) using native f
     -   Verify rule files in `rules/` are in `RULE_FILE_NAMES` / `ALL_TARGET_FILES`.
     -   Verify setup asset templates in `skills/arm-setup/assets/` are in installer target arrays.
     -   Verify 100% version agreement across `install.sh` (`VERSION=`), `install.bat` (`set "VERSION="`), `plugin.json` (`"version"`), `.claude-plugin/marketplace.json`, and `CHANGELOG.md`.
+5.  **Phase 4: Legacy-Boundary Context Fence Diff Firewall & Stale Fence Garbage
+    Collection**:
+    -   *Immediate Turn 1 Markdown Report First (Zero Tool-Only Stalls)*: When
+        `[Workspace Context...]`, `[Cumulative Branch Diff...]`, or `[Filesystem
+        Check...]` is provided in the user prompt, you are STRICTLY FORBIDDEN
+        from calling `view_file` or `grep_search` on any file (including
+        modified modern files like `new_component.ts`, `tech-stack.md`, or
+        `product.md`) without outputting your complete Fixpoint Audit Report in
+        markdown first! You MUST output your complete markdown Fixpoint Audit
+        Report—including the HUD banner (`🚧 Legacy Fence Active`), explicit
+        confirmation that cumulative branch changes (`git diff main...HEAD` or
+        `git diff main...HEAD`) were audited, explicit statement that whole-file
+        deletions (`status R/!/D`) inside legacy-fenced directories are exempt
+        to support decommissioning cleanup, and a clean Fixpoint pass (`✅
+        [Fixpoint Reached]`)—directly in your text response on Turn 1!
+    -   **Cumulative Branch Diff Auditing**: Always audit cumulative branch
+        changes against the base revision (`git diff main...HEAD` in Git/Mercurial
+        or `git diff main...HEAD` in Git) against active legacy fences in
+        `{PROJECT_CONTEXT_DIR}/tech-stack.md` (`## Legacy & Deprecated
+        Boundaries`) and active track `metadata.json` (`legacy_fences`).
+    -   **Unauthorized Additions/Modifications**: Any added (`A`) or modified
+        (`M` with $>0$ added lines) file inside an active legacy-fenced
+        directory without an explicit entry in `fence_overrides` MUST be flagged
+        as a **`[BLOCKING] Legacy Fence Violation`**, directing remediation to
+        the `<modern_replacement>`.
+    -   **Decommissioning & Deletion Exemption (CRITICAL)**: Whole-file
+        deletions (`status R` removed or `!` missing/deleted in Mercurial;
+        `status D` deleted in Git) and pure line removals (`0` added lines /
+        dead-code cleanup) inside legacy-fenced directories are **automatically
+        exempt** from Legacy Fence violations to support frictionless
+        decommissioning cleanup CLs (`hg rm` / `git rm`). Explicitly state in
+        your markdown response that whole-file deletions (`status R/!/D`) inside
+        legacy-fenced directories are exempt and report a clean Fixpoint pass
+        for decommissioning deletions.
+    -   **Stale Fence Garbage Collection (`VAL_LF_04`)**: Check whether each
+        fenced `Deprecated Path` in `tech-stack.md` or `metadata.json` still
+        exists on disk (`[ ! -d "<deprecated_path>" ]`). If a fenced directory
+        no longer exists on disk:
+        1.  Output a **`[DRIFT] Stale Legacy Fence`** alert in your markdown
+            report clearly identifying which legacy fence is stale
+            (`<deprecated_path>`) and explicitly stating that all active fences
+            whose directories still exist on disk (e.g.,
+            `packages/legacy_app/`) are **preserved** and remain
+            active.
+        2.  Invoke `ask_question` in that exact same turn offering 1-click
+            auto-pruning to remove the obsolete entry from
+            `armature/tech-stack.md` (`"(Recommended) Auto-prune stale legacy
+            fence <deprecated_path> from armature/tech-stack.md"`).
 
 **Render the Fixpoint Audit Report**: Always print the complete audit results
 directly in your response:

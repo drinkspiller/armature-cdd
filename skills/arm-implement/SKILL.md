@@ -1,13 +1,15 @@
 ---
 name: arm-implement
-description: Execute the plan for the current active track, working through tasks sequentially with TDD lifecycle and phase checkpointing. Use when asked to implement, execute the plan, work on the next task, or run /arm-implement.
-persona: Armature Implementer
+description: Execute the plan for the current active track via autonomous subagent delegation, streaming active progress every 20s, with TDD lifecycle and phase checkpointing. Use when asked to implement, execute the plan, work on the next task, or run /arm-implement.
+persona: Armature Orchestrator
 ---
 
 # /arm-implement — Execute the Plan
 
-**Purpose:** Execute the plan for the current active track, working through
-tasks sequentially, synchronizing documentation, and managing track cleanup.
+**Purpose:** Execute the plan for the current active track via autonomous
+subagent delegation (`worker`), actively streaming progress updates every 20
+seconds, verifying phase deliverables, synchronizing documentation, and managing
+track cleanup.
 
 ## Protocol
 
@@ -26,12 +28,17 @@ tasks sequentially, synchronizing documentation, and managing track cleanup.
 2.  Otherwise, read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`.
 3.  If a track name was provided:
     -   Find the exact match in `tracks.md`.
-    -   Use `ask_question` to confirm the selection: "Proceed with track '{Track
-        Name}'?" [Yes] / [No]
+    -   **Autonomous Execution Invariant (Zero-Permission Turn 1 Dispatch)**:
+        When a track name is provided or an active track is requested, you are
+        STRICTLY FORBIDDEN from prompting the user with an `ask_question` modal
+        to confirm starting. Immediately proceed to Step 3, audit `plan.md`, and
+        dispatch Phase 1 (or parallel disjoint phases) via `invoke_subagent` on
+        Turn 1.
 4.  If no track name was provided:
     -   Find the first non-completed track (marked `[ ]` or `[~]`).
-    -   Use `ask_question` to confirm the selection: "Proceed with track '{Track
-        Name}'?" [Yes] / [No]
+    -   If an active track (`[~]`) exists, autonomously resume it without prompting.
+    -   Only if multiple ambiguous tracks exist and none was specified, prompt
+        via `ask_question`: "Which track would you like to implement?"
 5.  If no incomplete tracks exist, announce that all tracks are complete and
     halt.
 
@@ -40,22 +47,135 @@ tasks sequentially, synchronizing documentation, and managing track cleanup.
 1.  Before starting tasks, update the selected track's status to `[~]` in
     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`.
 2.  Load the track context (`spec.md`, `plan.md`, `workflow.md`).
-3.  Execute tasks sequentially as defined in `plan.md`. For each uncompleted
-    task (`[ ]`):
-    -   **Per-Directory Context**: Before modifying files in a directory for the
-        first time in this track, check case-insensitively for `GEMINI.md`,
-        `CLAUDE.md`, `AGENTS.md`, or `AGENT.md`. If present with `## Armature Context`
-        or `## Conductor Context`, load it. If multiple or none exist and architectural
-        justification exists, prompt via `ask_question` for the preferred
-        filename. If simple, proceed without prompting.
-    -   **Lifecycle Execution**: Follow TDD Red/Green/Refactor.
-    -   **ADR Capture**: If an invariant or behavioral contract is introduced,
-        capture via ADR.
-    -   **Mark Complete**: Update the task to `[x]` in `plan.md` and record
-        commit SHA.
-4.  **Phase Checkpointing**: When the last task in a phase is completed (or when
-    explicitly asked to execute a Phase checkpoint):
-    -   Run the automated test suite.
+3.  **Execution Topology & Dependency Audit**:
+    -   *Fast-Path Solo Exception (Ceremony Scaling)*: If the task is a
+        verified micro-task (≤5 lines of code, single-file hotfix, single-line
+        configuration, timeout, constant update, or typo fix with zero
+        architectural ripple and no schema changes), the agent MUST bypass
+        subagent delegation and execute the change directly in Solo mode on the
+        main thread. Run the targeted test and finish cleanly.
+    -   *Autonomous Delegation Routine (Default)*: All standard implementation
+        tracks (multi-task, multi-phase, >5 lines) MUST execute via autonomous
+        subagent delegation. The primary agent acts as orchestrator: it decomposes
+        the implementation plan by phase and delegates execution to background
+        `worker` workers rather than executing file mutations on the main
+        thread.
+    -   *Disjoint Phase Concurrency Audit*: The orchestrator audits the
+        uncompleted phases in `plan.md` to map touched file scopes and interface
+        dependencies:
+        *   **Disjoint Phases (Parallel Execution)**: If two or more phases touch
+            completely disjoint file sets with zero contract dependencies (e.g.,
+            Phase 1 touches `landing/` and Phase 2 touches `settings/`), the
+            orchestrator dispatches separate `worker` subagents
+            simultaneously, specifying `Workspace: "share"` for each to isolate
+            working copies.
+        *   **Coupled Phases (Continuous Pipelined Execution)**: If Phase N+1
+            imports or depends on symbols produced by Phase N (or imports types
+            defined in Phase 1's package), the orchestrator strictly refuses
+            parallel dispatch and executes them pipelined: it dispatches Phase N
+            first. Upon successful phase completion and automated test pass, the
+            orchestrator autonomously advances to Phase N+1 without halting for
+            intermediate confirmation modals.
+4.  **Phase Worker Dispatch (`worker` & `explorer`) & Legacy Fence
+    Propagation**:
+
+    -   **Intent-Aware Write Escalation Gate (Mandatory Pre-Mutation Check)**:
+        Even if session `READ` access was previously unlocked by the user for a
+        legacy-fenced directory (`tech-stack.md` under `## Legacy & Deprecated
+        Boundaries` or track `metadata.json` under `legacy_fences`), session
+        `READ` access NEVER authorizes write mutations (`replace_file_content`,
+        `write_to_file`). If the user requests modifying, updating, or fixing a
+        file inside a legacy-fenced directory (`<deprecated_path>`), you MUST
+        NOT call `replace_file_content` or `write_to_file` on that file. Halt
+        immediately and invoke `ask_question`:
+        -   Prompt: `"WARNING: Modifying files in legacy-fenced directory
+            (<deprecated_path>). Are you sure you want to proceed?"`
+        -   Options:
+            1.  `"(Recommended) Apply changes to modern replacement
+                (<modern_replacement>) instead"`
+            2.  `"Yes, authorize WRITE modifications to <deprecated_path> for
+                this task"`
+            3.  `"Cancel modification"`
+    -   **Context Preparation**: Collect the track root, spec path, plan path,
+        specific phase task numbers (e.g. `Tasks 1.1, 1.2, 1.3`), detailed
+        requirements, and any local directory rules (`GEMINI.md` / `AGENTS.md`).
+    -   **Subagent Fence Injection (`[ACTIVE_LEGACY_FENCES &
+        SESSION_UNLOCKS]`)**: When dispatching background workers via
+        `invoke_subagent`, you MUST inject an explicit `[ACTIVE_LEGACY_FENCES &
+        SESSION_UNLOCKS]` block inside the subagent `Prompt`:
+
+        ```markdown
+        [ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]
+        - Fenced Paths (Excluded from Search & Edit): <deprecated_path> -> Replacement: <modern_replacement>
+        - Session Read Unlocks: [None | <unlocked_paths>]
+        - Subagent Rule: NEVER call ask_question from a background worker. Never modify fenced files (<deprecated_path>). If unapproved fence access or write access is required, halt immediately and return a structured escalation request to the parent orchestrator.
+        ```
+    -   **Immediate Turn 1 Dispatch (Zero Redundant Search)**: When track plan
+        and legacy fence context are provided in the user prompt (e.g. `[Active
+        Track Plan - Phase 1]: ...`), NEVER call `grep_search` or `view_file` to
+        search for the track name or `tracks.md`. Immediately in Turn 1:
+
+        1.  Output markdown chat text confirming delegation of the phase to
+            `worker` and displaying the active legacy fence HUD status (`🚧
+            Legacy Fence Active: [<deprecated_path>] excluded ──► Target:
+            [<modern_replacement>]`).
+        2.  Invoke `invoke_subagent` with `TypeName: "worker"` whose `Prompt`
+            contains the literal `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`
+            block:
+        ```json
+        invoke_subagent(Subagents=[{
+          "TypeName": "worker",
+          "Role": "worker",
+          "Workspace": "share",
+          "Prompt": "Task: Execute Phase N of the implementation plan for track '<track_id>'.\n\n[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]\n- Fenced Paths (Excluded from Search & Edit): <deprecated_path> -> Replacement: <modern_replacement>\n- Session Read Unlocks: <unlocked_paths>\n- Subagent Rule: NEVER call ask_question from a background worker. Never modify fenced files (<deprecated_path>). If unapproved fence access or write access is required, halt immediately and return a structured escalation request to the parent orchestrator.\n\nContext:\n1. Follow TDD Red/Green/Refactor. Mark completed tasks [x] in plan.md."
+        }])
+        ```
+
+        3.  Concurrently invoke `schedule(DurationSeconds=20, Prompt="Check
+            subagent progress and stream a visible status update",
+            TimerCondition="worker")` in that exact same turn!
+5.  **Mandatory Active Heartbeat & Progress Streaming Loop (20-Second Cadence)**:
+    -   **Proactive Heartbeat Timer**: Concurrently with or immediately upon
+        dispatching the subagent, schedule a 20-second heartbeat timer:
+        `schedule(DurationSeconds=20,
+        TimerCondition="<subagent-conversation-id>", Prompt="Check subagent
+        progress and stream a visible status update")`.
+    -   **Periodic Status Updates**: The orchestrator is strictly forbidden from
+        waiting in silence. On each timer wake-up:
+        1. Call `manage_subagents(Action='list')` to inspect worker state and
+           `stateDetail`.
+        2. Inspect recent tool calls from the subagent's transcript log.
+        3. Output a concise, visible progress update in chat following the canonical 4-element telemetry structure:
+           - **How Far Along (Dynamic Altitude & Task Progress)**:
+             * Calculate and display an advancing progress bar, percentage, and active task count across the track: `[▓▓▓▓░░░░░░] 45%` **Phase N/M (X/Y tasks):** `<track_id>`
+             * **Never use static combined headers** like `Progress Update (Phases 2–4)`—this makes execution appear frozen. The header MUST resolve and display the *single currently active phase* and sub-task count so progress moves visually on every 20-second tick.
+             * Omit redundant chat boilerplate like "Next update in 20 seconds." (the UI timer already signals liveness).
+           - **High-Level Task**: The deliverable/capability achieved (`The subagent finished <functional capability> in <TargetComponent> (<target_file>):`).
+           - **Specific Updates Made**: Light-level bullets explaining what was done and why, avoiding raw variable names and low-level code mechanics.
+           - **Forward Transition**: Natural, varied forward-looking transition to the next step (e.g., "Next up: ...", "Switching focus to ...", "Now moving on to ...", "Advancing to ...").
+           ```markdown
+           `[▓▓▓▓░░░░░░] 45%` **Phase 2/4 (3/7 tasks):** `simplify-conductor-routes`
+
+           The subagent finished container verification in `CcGroups`:
+           * Bootstrapped the component with proper Angular injection context to fix isolated test failures.
+           * Verified that all state test cases in `cc_groups_test` now pass cleanly.
+
+           Switching focus to Phase 3: removing legacy setup route guards in `routes.ts`.
+
+           ```
+        4. **Mandatory Two-Part Heartbeat Turn**: Every heartbeat turn MUST output
+           the visible 4-element markdown progress card in chat AND concurrently
+           call `schedule` to re-arm the 20-second timer. You are STRICTLY
+           FORBIDDEN from emitting `schedule` in isolation without printing the
+           visible progress card in the chat response.
+        5. If the subagent remains active, immediately reschedule the 20-second
+           heartbeat timer before ending the turn.
+    -   **Automatic Timer Cancellation**: When the subagent completes or sends a
+        message, the timer is automatically cancelled by `TimerCondition`.
+6.  **Phase Checkpointing & Autonomous Continuous Advance**:
+    When `worker` completes all tasks in a phase:
+    -   Inspect resulting workspace changes (`hg status`, `hg diff`).
+    -   Run the automated test suite (`blaze test ...`).
     -   **API Surface Extraction**: Extract public symbols for changed files and
         update `.api_surface_cache.json`.
     -   **Per-Directory Rule Reconciliation**: Reconcile local directory rules
@@ -74,11 +194,18 @@ tasks sequentially, synchronizing documentation, and managing track cleanup.
     -   **Walkthrough Artifact**: Write
         `{ARTIFACT_DIR}/arm_implement_phase_N_verification.md` using
         `write_to_file`.
-    -   **Turn-Ending Barrier**: Notify the user with `PathsToReview` and pause
-        via `ask_question`: "Phase N implementation complete. Please review the
-        manual verification guide and confirm to proceed." (`["(Recommended)
-        Proceed to next phase", "I need to test first", "Revise verification
-        steps"]`). End your turn and wait for confirmation.
+    -   **Autonomous Continuous Pipelining (Zero Intermediate Modals)**:
+        -   If automated tests pass and zero drift is detected: Output a concise
+            phase completion confirmation in chat with a link to
+            `arm_implement_phase_N_verification.md`, and **immediately advance
+            to dispatch the next phase**. Do NOT pause with an interactive
+            `ask_question` modal between phases. Human verification modals are
+            reserved strictly for track completion (Step 5.2).
+        -   *Escalation Exception*: If automated tests fail or drift is
+            detected, pause execution and prompt the user via `ask_question`:
+            "Phase N tests failed or drift was detected. How should we proceed?"
+            (`["(Recommended) Triage and fix failure in-flight", "Revise phase
+            implementation", "Roll back phase"]`).
 
 ### Step 4: Document Synchronization
 
@@ -143,7 +270,7 @@ This step occurs **only** after all plan tasks are marked `[x]` and Document
 Synchronization has been handled.
 
 1.  **Stage 2 Living ADR Reconciliation & Code Diff Harvest**:
-    -   Audit the final code diff (`git diff`), touched directories,
+    -   Audit the final code diff (`hg diff` / `git diff`), touched directories,
         and completed `spec.md` against the **3-Pillar Invariant Taxonomy**:
         1.  *Cross-Cutting Invariant:* New conventions, state invariants, or
             safety guards extending beyond this track.
@@ -170,7 +297,7 @@ Synchronization has been handled.
     -   *Options:*
         *   `"(Recommended) Test the implementation with the manual testing
             guide ([<domain>.md](file://...))"`
-        *   `"Push changes to remote / Open PR"`
+        *   `"Upload CL to system / Push changes"`
         *   `"Run full code review (/arm-review)"`
         *   `"Archive completed track and finish"`
         *   `"Keep track active and finish"`
@@ -179,8 +306,8 @@ Synchronization has been handled.
     -   If **Test with Manual Testing Guide**: Present the specific verification
         scenarios from `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`
         with CLI setup/reset commands and walk the user through testing.
-    -   If **Push / Create PR**: Execute project formatters/linters, verify
-        clean working tree status, and push changes to remote or open a pull request for review.
+    -   If **Upload CL / Push**: Execute formatting checks (`hg fix`), verify
+        `hg status`, and upload to system via `hg upload` (or git push).
     -   If **Review**: Transition directly into `/arm-review`.
     -   If **Archive**: Move track folder to `{PROJECT_CONTEXT_DIR}/archive/`, remove from
         `tracks.md`, and commit.
@@ -188,13 +315,19 @@ Synchronization has been handled.
 
 ## Guardrails
 
--   **Sequential Task Execution**: Implement tasks one at a time. Do not batch
-    multiple plan tasks into a single unreviewed turn.
+-   **Autonomous Delegation Default**: Multi-phase or multi-task tracks must
+    always delegate phase execution to `worker` subagents. The primary agent
+    operates as an orchestrator, never monopolizing the main conversational
+    thread for heavy code edits.
+-   **Mandatory 20-Second Active Heartbeat Streaming**: The orchestrator must
+    never remain silent while subagents execute. Maintain an active 20-second
+    `schedule` heartbeat loop, streaming visible status updates in chat on every
+    interval.
 -   **Documentation-Only Manual Testing Invariant**: Document exact setup, seed,
     and reset commands in manual testing runbooks, but NEVER execute mutative
     database, environment reset, or teardown commands autonomously.
 -   **Mandatory Completion Next-Steps Barrier**: When all plan tasks are `[x]`
     and document synchronization is complete, you MUST NOT go silent after
     printing summaries or draft CL descriptions. You MUST invoke `ask_question`
-    to offer the user clear next steps (Manual testing with the guide, Pushing
-    changes / Opening a PR, Running `/arm-review`, or Archiving the track).
+    to offer the user clear next steps (Manual testing with the guide, Uploading
+    the CL / Pushing, Running `/arm-review`, or Archiving the track).
