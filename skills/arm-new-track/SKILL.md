@@ -12,8 +12,21 @@ resolving all open branches and ambiguities.
 
 ## Mandatory Execution Guardrails
 
--   **File Path Sanitization:** When resolving `{PROJECT_ROOT}` or constructing file paths for tools (e.g., `write_to_file`, `read_file`), you MUST aggressively strip any `file://` prefix. Use standard absolute or relative paths to prevent tool execution errors (e.g., use `/path/to/project or `/usr/local/go...` instead of `file:///path/to/project or `file:///usr/local/go...`). NEVER pass a `file://` URI to a file operation tool.
--   **Raw/Truncated Input Handling:** If the user request contains raw JSON, HTML snippets, or truncated text dumps (e.g., `{"activeScroller": "HTML", "mainScrollbarWidth": 15, "mainScrollHeight":` or `@[Quote] nalyzer description: Lint warnings. Owner: [linter-team@google.com](mailto:l)`), treat it purely as contextual description. Do not crash, do not attempt to parse it as a command, and do not fail if it is malformed. If the description is incomplete, gracefully ask for clarification via `ask_question` before proceeding.
+-   **File Path Sanitization:** When resolving `{PROJECT_ROOT}` or constructing
+    file paths for tools (e.g., `write_to_file`, `read_file`), you MUST
+    aggressively strip any `file://` prefix. Use standard absolute or relative
+    paths to prevent tool execution errors (e.g., use `/google/src/c...` or
+    `/usr/local/go...` instead of `file:///google/src/c...` or
+    `file:///usr/local/go...`). NEVER pass a `file://` URI to a file operation
+    tool.
+-   **Raw/Truncated Input Handling:** If the user request contains raw JSON,
+    HTML snippets, or truncated text dumps (e.g., `{"activeScroller": "HTML",
+    "mainScrollbarWidth": 15, "mainScrollHeight":` or `@[Quote] nalyzer
+    description: Lint warnings. Owner: [linter-team@google.com](mailto:l)`),
+    treat it purely as contextual description. Do not crash, do not attempt to
+    parse it as a command, and do not fail if it is malformed. If the
+    description is incomplete, gracefully ask for clarification via
+    `ask_question` before proceeding.
 -   **Strict Interactive Discipline:** You MUST NEVER generate track artifacts
     (`spec.md`, `plan.md`) or write code in a single autonomous turn. Every
     track requires step-by-step user alignment.
@@ -57,14 +70,15 @@ resolving all open branches and ambiguities.
     the end of your text (e.g., *"I will now ask for your decision on..."* or
     *"Let's call ask_question..."*), which cause token concatenation and break
     tool parsing. Invoke `ask_question` exclusively as a native structured tool
-    call in that exact same turn—never emit raw `call:ask_question{...}` strings
-    in the markdown stream, and NEVER end your turn after markdown without calling
-    `ask_question`. In `ask_question`, list the recommended choice first with
-    `(Recommended)` and append a trailing choice: `"Elaborate on trade-offs and
-    failure modes between these options"` (systems and architecture decisions
-    only). Never add a manual "Other" option (the UI modal natively provides a
-    write-in field). If the user selects elaboration, provide a deep-dive
-    analysis and re-prompt the concrete options.
+    call in that exact same turn—never emit raw
+    `call:default_api:ask_question{...}` strings in the markdown stream, and
+    NEVER end your turn after markdown without calling `ask_question`. In
+    `ask_question`, list the recommended choice first with `(Recommended)` and
+    append a trailing choice: `"Elaborate on trade-offs and failure modes
+    between these options"` (systems and architecture decisions only). Never add
+    a manual "Other" option (the UI modal natively provides a write-in field).
+    If the user selects elaboration, provide a deep-dive analysis and re-prompt
+    the concrete options.
 -   **Compound Directive Shielding:** If the user invokes `/arm-new-track`
     alongside other instructions (e.g., `/diagnose`, `Fix`, or implementation
     tasks), you MUST explicitly refuse to write code or generate `plan.md`
@@ -103,7 +117,11 @@ resolving all open branches and ambiguities.
 ## Protocol
 
 1.  **Context Resolution & Setup Check:**
-    -   Resolve `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature or conductor) per `armature_protocol.md` §7. **CRITICAL:** Strip any `file://` prefix from `{PROJECT_ROOT}` before using it in any file operations (e.g., `/path/to/project or `/usr/local/go...`).
+
+    -   Resolve `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature or
+        conductor) per `armature_protocol.md` §7. **CRITICAL:** Strip any
+        `file://` prefix from `{PROJECT_ROOT}` before using it in any file
+        operations (e.g., `/google/src/c...` or `/usr/local/go...`).
     -   Verify that the following files exist:
         -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md`
         -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md`
@@ -113,7 +131,10 @@ resolving all open branches and ambiguities.
 
 2.  **Get Description & Infer Type:**
 
-    -   If a description was provided in the initial prompt, use it. (Note: Handle raw JSON, HTML, or truncated text dumps gracefully as context. Do not fail on malformed input like `{"activeScroller": "HTML"...` or `@[Quote] nalyzer...`).
+    -   If a description was provided in the initial prompt, use it. (Note:
+        Handle raw JSON, HTML, or truncated text dumps gracefully as context. Do
+        not fail on malformed input like `{"activeScroller": "HTML"...` or
+        `@[Quote] nalyzer...`).
     -   If no description was provided, ask via `ask_question`: "What feature or
         bug would you like to work on? Describe it in 1-2 sentences."
     -   Analyze the description to infer the track type (Feature vs. Bug/Chore).
@@ -122,25 +143,44 @@ resolving all open branches and ambiguities.
 3.  **Duplicate Track Check & Initialization:**
 
     -   Before generating a track ID, check the
-        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/` directory to ensure no existing track
-        has a conflicting name.
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/` directory to ensure no
+        existing track has a conflicting name.
     -   Generate a unique, short, descriptive `track_id` based on the
         description (e.g., `dark-mode-toggle`).
-    -   Create the directory: `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/`
+    -   Create the directory:
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/`
 
 4.  **Codebase Reconnaissance:**
 
     -   Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md` and
-        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` for architectural context.
-    -   Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/terms.md` (if it exists) to ground term
-        usage and prevent symbol/concept drift.
-    -   Scan the `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/` directory listing (filenames
-        only) to build awareness of existing architectural decisions.
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` for architectural
+        context.
+    -   Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/terms.md` (if it exists) to
+        ground term usage and prevent symbol/concept drift.
+    -   Scan the `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/` directory listing
+        (filenames only) to build awareness of existing architectural decisions.
     -   Read ALL existing track specs by scanning
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/` for `*/spec.md` files.
     -   If the user's description references specific code areas, scan those
         files/directories to understand existing patterns, interfaces, and
         constraints.
+    -   **Proactive Legacy Boundary Discovery (Migration Detection & Immediate
+        Turn 1 Ledger)**: If `[Codebase Reconnaissance Context...]` is provided
+        in the user prompt or if the user's description reveals parallel
+        legacy/modern directories (e.g., migrating from `<legacy_dir>/` to
+        `<modern_dir>/`), DO NOT call `grep_search` or `view_file` to search for
+        `product.md` or `tech-stack.md`. Immediately in Turn 1:
+        1.  Output a visible `### Decision Tree Ledger` containing a Tier 1
+            Operational Child Leaf (or root branch) probing the Legacy-Boundary
+            Context Fence scope (`<legacy_dir>/` -> `<modern_dir>/`).
+        2.  Output Markdown Option Trade-Off Analysis (Candidate Approaches with
+            Pros/Cons + Recommendation Rationale) proposing to record
+            `legacy_fences` in `armature/tech-stack.md` (`## Legacy & Deprecated
+            Boundaries` for repo-wide enforcement) or in track `metadata.json`
+            (`legacy_fences` for track-scoped enforcement).
+        3.  Invoke `ask_question` in that exact same turn asking the user to
+            confirm the legacy fence scope. Never write `spec.md` or `plan.md`
+            prematurely.
     -   Use findings to inform the spec questions in the next step — questions
         must reference specific codebase context.
 
@@ -228,9 +268,11 @@ resolving all open branches and ambiguities.
 
         -   **Questioning Mechanics & Option Trade-Off Analysis**:
 
-            -   **Report First, Ask Second:** In EVERY turn where choices are
-                presented, you MUST output the markdown analysis and candidate
-                breakdown BEFORE calling `ask_question`.
+            -   **Report First, Ask Second (Atomic Two-Part Response Contract):**
+                In EVERY turn where choices are presented, you MUST output the
+                markdown analysis and candidate breakdown FIRST, followed
+                immediately by the native `ask_question` tool call in that same
+                turn.
             -   **Itemized Bulleted Hierarchy:** Format candidate approaches
                 using punchy, high-signal bullets:
                 -   `**Option 1: <Name>** *(Recommended)*`
@@ -243,14 +285,15 @@ resolving all open branches and ambiguities.
                 sentences explaining why the recommended option was chosen,
                 grounded in codebase constraints, latency, memory budgets,
                 schema migrations, or failure resilience.
-            -   **Clean Markdown Termination & Mandatory Native Tool Call Pairing (Zero Trailing Narration & Zero Text-Only Stalls):**
-                End your markdown prose immediately after the `Recommendation
-                Rationale` paragraph. NEVER append transitional self-narration
-                sentences at the end of your prose (e.g., *"I will now ask for
-                your decision on..."* or *"Let's call ask_question..."*), which
-                cause token concatenation and break tool parsing. Immediately
-                invoke `ask_question` exclusively as a native structured tool
-                call in the same turn—never emit raw `call:ask_question{...}`
+            -   **Clean Markdown Termination & Mandatory Native Tool Call Pairing
+                (Zero Trailing Narration & Zero Text-Only Stalls):** End your
+                markdown prose immediately after the `Recommendation Rationale`
+                paragraph. NEVER append transitional self-narration sentences at
+                the end of your prose (e.g., *"I will now ask for your decision
+                on..."* or *"Let's call ask_question..."*), which cause token
+                concatenation and break tool parsing. Immediately invoke
+                `ask_question` exclusively as a native structured tool call in
+                the same turn—never emit raw `call:default_api:ask_question{...}`
                 text in the markdown stream, and NEVER end your turn after
                 markdown without calling `ask_question` when presenting choices,
                 branches, or trade-offs.
@@ -258,14 +301,22 @@ resolving all open branches and ambiguities.
                 -   Ask questions **strictly one at a time**.
                 -   List the recommended option first with `(Recommended)` and
                     provide 2–4 calibrated domain options.
-                -   **Trailing Elaboration Option (Systems & Architecture Only):**
-                    Append a trailing on-demand elaboration option (`"Compare technical trade-offs and failure modes in detail"`) **ONLY** when evaluating complex systems, data model, or infrastructure architecture decisions where deep-dive performance or failure analysis adds value. **NEVER** append an elaboration option to `ask_question` for UX copywriting, visual presentation, layout styling, or simple product preferences.
-                -   **Native Write-In Field:** Never add a manual "Other" option;
-                    the UI modal natively provides a write-in text field.
+                -   **Trailing Elaboration Option (Systems & Architecture
+                    Only):** Append a trailing on-demand elaboration option
+                    (`"Compare technical trade-offs and failure modes in
+                    detail"`) **ONLY** when evaluating complex systems, data
+                    model, or infrastructure architecture decisions where
+                    deep-dive performance or failure analysis adds value.
+                    **NEVER** append an elaboration option to `ask_question` for
+                    UX copywriting, visual presentation, layout styling, or
+                    simple product preferences.
+                -   **Native Write-In Field:** Never add a manual "Other"
+                    option; the UI modal natively provides a write-in text
+                    field.
             -   **Elaboration Detour:** If the user selects the elaboration
-                option, output a deep-dive analysis (comparative trade-off matrix,
-                failure cascades, memory bounds, migration costs) and re-prompt the
-                concrete choices.
+                option, output a deep-dive analysis (comparative trade-off
+                matrix, failure cascades, memory bounds, migration costs) and
+                re-prompt the concrete choices.
             -   **MANDATORY:** End your turn after each `ask_question` call to
                 wait for the user's answer. Never end your turn before calling
                 `ask_question` when choices, branches, or decisions are presented.
@@ -331,23 +382,25 @@ resolving all open branches and ambiguities.
                 error-envelope schemas, multi-tab sync).
             2.  *Architecture / Dependency Binding:* Binds the repository to a
                 storage engine, transport protocol, or third-party library that
-                would be costly to rip out later (e.g., SQLite WAL, WebSocket vs.
-                SSE, Protobuf vs. JSON).
+                would be costly to rip out later (e.g., SQLite WAL, WebSocket
+                vs. SSE, Protobuf vs. JSON).
             3.  *Negative Constraint (Discarded Alternative):* Rejects an
                 obvious, standard pattern due to a subtle project gotcha or race
                 condition (e.g., forbidding `sessionStorage` because it does not
                 sync across tabs).
-            -   Decisions failing all three (local component markup, single route
-                slugs, error strings, styling) are classified as `[Track Spec
-                Only]`.
+            4.  Decisions failing all three (local component markup, single
+                route slugs, error strings, styling) are classified as `[Track
+                Spec Only]`.
         -   **Silent Zero-Candidate Bypass**:
             -   If zero settled decisions qualify under the 3-Pillar Taxonomy,
                 the agent MUST silently bypass Phase 5c directly to Step 6 Spec
                 Materialization without generating an extra modal prompt or
                 callout note.
         -   **Interactive Triage Gate (when $\ge 1$ candidates qualify)**:
-            -   Render an `### ADR Candidate Triage Table` mapping each qualifying
-                decision to its pillar, proposed title, and one-line rationale:
+
+            -   Render an `### ADR Candidate Triage Table` mapping each
+                qualifying decision to its pillar, proposed title, and one-line
+                rationale:
 
                 ```markdown
                 ### ADR Candidate Triage Table
@@ -358,54 +411,98 @@ resolving all open branches and ambiguities.
                 ```
             -   Call `ask_question` with a multi-select prompt allowing the user
                 to confirm which ADRs to materialize:
-                -   `question`: "Confirm which architectural decisions to record as ADRs:"
-                -   `options`: Checkboxes for each candidate ADR (e.g., `"(Recommended) Record ADR: Use In-Memory LRU with TTL"`, `"(Recommended) Record ADR: Enforce 25MB Fixed Heap Budget"`, `"Skip ADR creation — keep track-specific only"`).
+
+                -   `question`: "Confirm which architectural decisions to record
+                    as ADRs:"
+                -   `options`: Checkboxes for each candidate ADR (e.g.,
+                    `"(Recommended) Record ADR: Use In-Memory LRU with TTL"`,
+                    `"(Recommended) Record ADR: Enforce 25MB Fixed Heap
+                    Budget"`, `"Skip ADR creation — keep track-specific only"`).
             -   **MANDATORY:** End your turn and wait for the user's response.
             -   For each confirmed candidate:
-                -   Determine the next sequential number (e.g., `adr/0004-slug.md`).
-                -   Draft the ADR in standard MADR format (`Status: ACCEPTED`, `Context`, `Decision`, `Consequences`, `Confirmation` checklist).
-                -   Write to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md` using `write_to_file`.
+
+                -   Determine the next sequential number (e.g.,
+                    `adr/0004-slug.md`).
+                -   Draft the ADR in standard MADR format (`Status: ACCEPTED`,
+                    `Context`, `Decision`, `Consequences`, `Confirmation`
+                    checklist).
+                -   Write to
+                    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md`
+                    using `write_to_file`.
 
 6.  **Spec & Manual Testing Materialization & Final Confirmation:**
 
-    -   ONLY NOW, write the canonical specification to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md` using `write_to_file`.
-    -   Write `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md` based on `manual_testing_template.md` tailored to the classified testing depth.
-    -   Present `spec.md` and `manual_testing.md` via `notify_user` with `PathsToReview`.
-    -   Present options using `ask_question`: "Approve" (Proceed to planning), "Revise" (Suggest manual edits).
-    -   **MANDATORY:** End your turn and wait for explicit user approval before proceeding to plan generation.
+    -   ONLY NOW, write the canonical specification to
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md` using
+        `write_to_file`.
+    -   Write
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
+        based on `manual_testing_template.md` tailored to the classified testing
+        depth.
+    -   Present `spec.md` and `manual_testing.md` via `notify_user` with
+        `PathsToReview`.
+    -   Present options using `ask_question`: "Approve" (Proceed to planning),
+        "Revise" (Suggest manual edits).
+    -   **MANDATORY:** End your turn and wait for explicit user approval before
+        proceeding to plan generation.
 
 7.  **Interactive Plan Generation:**
 
     -   Verify the spec is approved.
-    -   Read confirmed spec and `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md`.
-    -   Generate hierarchical plan with Phases, Tasks, and Sub-tasks with `[ ]` checkboxes.
-    -   **Developer Test Tooling Tasks**: If new routes, state guards, or flags are added, ensure Phase 1 includes explicit tasks for developer reset tooling, CLI scripts, or fixture seeding needed by `manual_testing.md`.
-    -   **Verification Bridge**: For each verification checkbox `[ ]` defined in an ADR's Confirmation section, inject a corresponding explicit verification task into `plan.md`.
-    -   **Phase Checkpointing**: If `workflow.md` defines phase checkpointing, inject Phase Completion meta-tasks at the end of each Phase.
-    -   Write to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/plan.md` using `write_to_file`.
-    -   Present via `notify_user` with `PathsToReview` and `ask_question`: "Approve", "Revise".
+    -   Read confirmed spec and
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md`.
+    -   Generate hierarchical plan with Phases, Tasks, and Sub-tasks with `[ ]`
+        checkboxes.
+    -   **Developer Test Tooling Tasks**: If new routes, state guards, or flags
+        are added, ensure Phase 1 includes explicit tasks for developer reset
+        tooling, CLI scripts, or fixture seeding needed by `manual_testing.md`.
+    -   **Verification Bridge**: For each verification checkbox `[ ]` defined in
+        an ADR's Confirmation section, inject a corresponding explicit
+        verification task into `plan.md`.
+    -   **Phase Checkpointing**: If `workflow.md` defines phase checkpointing,
+        inject Phase Completion meta-tasks at the end of each Phase.
+    -   Write to
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/plan.md` using
+        `write_to_file`.
+    -   Present via `notify_user` with `PathsToReview` and `ask_question`:
+        "Approve", "Revise".
     -   **MANDATORY:** End your turn and wait for explicit user approval.
 
 8.  **Generate Remaining Track Artifacts:**
 
-    -   Create `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/metadata.json` containing: `track_id`, inferred `type`, `status` (`planned`), timestamps, and `description`.
-    -   Write `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/index.md` containing summary and relative links to `spec.md`, `plan.md`, `manual_testing.md`, and `metadata.json`.
-    -   Append new track to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`: `- [ ] **Track: <Track Title>** _Link: [./tracks/<track_id>/](./tracks/<track_id>/)_`
+    -   Create
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/metadata.json`
+        containing: `track_id`, inferred `type`, `status` (`planned`),
+        timestamps, and `description`.
+    -   Write `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/index.md`
+        containing summary and relative links to `spec.md`, `plan.md`,
+        `manual_testing.md`, and `metadata.json`.
+    -   Append new track to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`: `-
+        [ ] **Track: <Track Title>** _Link:
+        [./tracks/<track_id>/](./tracks/<track_id>/)_`
 
 9.  **Commit Changes:**
 
-    -   Commit the new track directory and updated `tracks.md` using VCS commands.
+    -   Commit the new track directory and updated `tracks.md` using VCS
+        commands.
     -   Commit message: `chore(armature): Add new track '<description>'`
 
 10. **Confirm Completion:**
 
-    -   Display: "✅ Track `<track_id>` created! Run `/arm-implement` to start working through the plan."
+    -   Display: "✅ Track `<track_id>` created! Run `/arm-implement` to start
+        working through the plan."
 
 ## Guardrails
 
--   **Compound Directive Shielding**: Never start implementation or write code prematurely.
--   **Turn-Ending Barriers**: Enforce strict synchronous pauses at Step 5, Step 6, and Step 7 via `ask_question`.
+-   **Compound Directive Shielding**: Never start implementation or write code
+    prematurely.
+-   **Turn-Ending Barriers**: Enforce strict synchronous pauses at Step 5, Step
+    6, and Step 7 via `ask_question`.
 -   **Pre-Materialization Barrier**: Hold `spec.md` in memory during Step 5.
--   **Continuous Decision-Tree Traversal & Ambiguity Resolution**: Never conclude an interview turn while decision branches, dependencies, failure modes, or architectural ambiguities remain unresolved.
--   **File Path Sanitization**: Always strip `file://` prefixes from paths before using file tools (e.g., `/path/to/project `/usr/local/go...`).
--   **Raw/Truncated Input**: Treat malformed JSON/HTML or truncated text dumps as contextual descriptions, not commands.
+-   **Continuous Decision-Tree Traversal & Ambiguity Resolution**: Never
+    conclude an interview turn while decision branches, dependencies, failure
+    modes, or architectural ambiguities remain unresolved.
+-   **File Path Sanitization**: Always strip `file://` prefixes from paths
+    before using file tools (e.g., `/google/src/c...`, `/usr/local/go...`).
+-   **Raw/Truncated Input**: Treat malformed JSON/HTML or truncated text dumps
+    as contextual descriptions, not commands.

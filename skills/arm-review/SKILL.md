@@ -85,6 +85,28 @@ Evaluate the changed code against the following criteria:
 -   **Style compliance:** Are `product-guidelines.md` and `code_styleguides/*.md` rules followed?
 -   **Correctness & safety:** Check for bugs, race conditions, null risks, hardcoded secrets, or PII.
 -   **Automated testing:** Check for new automated tests covering changes. Run test suite.
+-   **Legacy-Boundary Context Fence Diff Firewall (`VAL_LF_02`):** When
+    `[Workspace Context...]` and `[Cumulative Branch Diff...]` are provided in
+    the prompt, DO NOT call `grep_search` or `view_file` to search for
+    `tracks.md` or `tech-stack.md`. Immediately evaluate the cumulative branch
+    diff (`git diff main...HEAD` or `git diff main...HEAD`) against active
+    legacy fences and output the complete Code Audit report in markdown in that
+    same turn:
+    -   **Blocking Violations (`+` Added Lines):** If any file inside a
+        legacy-fenced directory has status `A` (added) or status `M` (modified)
+        with $>0$ added lines (e.g., `client/legacy_canvas/widget.ts` with `+15
+        lines added`) and is not listed in `fence_overrides`, you MUST flag it
+        in markdown as a **`[BLOCKING] Legacy Fence Violation`** and explicitly
+        direct remediation to the modern replacement directory
+        (`<modern_replacement>`, e.g., `client/react_scf/`).
+    -   **Decommissioning & Pure Line Removal Exemption (`0` Added Lines / `R` /
+        `D`):** Explicitly distinguish in your markdown analysis between
+        unauthorized code additions (`+` added lines) and permitted
+        decommissioning/dead-code removals (`0` added lines). Modified files
+        with **`0` added lines** (`+0 lines added, -N lines removed` — pure
+        dead-code line removal, e.g., `client/legacy_canvas/dead_helper.ts`) and
+        whole-file deletions (`status R`, `!`, `D`) inside legacy-fenced
+        directories MUST be explicitly **EXEMPT** from blocking violations.
 -   **Manual testing runbook:** Audit changed routes, navigation guards, persona
     transitions, and error handlers against
     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/manual_testing.md`.
@@ -150,18 +172,20 @@ Evaluate the changed code against the following criteria:
                 MUST always provide **BOTH** complete, fully qualified URLs in
                 separate fenced code blocks for easy copy-pasting:
 
-                -   **Localhost / Loopback URL**:
+                -   **Localhost URL**:
 
                     ```
                     http://localhost:<PORT>/<path>
                     ```
 
-                    *(or `http://127.0.0.1:<PORT>/<path>`)*
-                -   **Network / Remote Host URL**:
+                    *(or `https://localhost.local:<PORT>/<path>`)*
+                -   **Cloudtop Proxy URL**:
 
                     ```
-                    http://<HOST_IP_OR_DOMAIN>:<PORT>/<path>
+                    http://127.0.0.1:<PORT>/<path>
                     ```
+
+                    *(or `https://<HOSTNAME>.local:<PORT>/<path>`)*
         -   `##### Manual Verification Steps`:
 
             -   Numbered steps telling the user exactly what actions to trigger
@@ -229,7 +253,7 @@ Evaluate the changed code against the following criteria:
 
 #### 3.1 Report & Decision
 
-Generate review report as an Antigravity artifact (save to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/review.md` using `write_to_file`).
+Generate review report as a artifact (save to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/review.md` using `write_to_file`).
 
 Use the following strict output format for the report:
 

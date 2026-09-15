@@ -111,7 +111,7 @@ DEFINE_bool release_notes false "Show release notes for the current version"
 parse_flags "$@"
 
 
-VERSION="0.23.0"
+VERSION="0.24.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

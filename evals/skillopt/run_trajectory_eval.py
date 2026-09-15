@@ -726,7 +726,7 @@ def main():
         f" {res['interactive_question_turns']} | Roots: {res['num_roots']} |"
         f" Leaves: {res['num_leaves']} | Depth Ratio: {res['leaf_depth_ratio']}"
         f" | Pre-pop Violations: {res['prepopulation_violations']} |"
-        " Adversarial Critique:"
+        " Adversarial Review:"
         f" {'YES' if res['adversarial_observed'] else 'NO'} | Phase 5c Triage:"
         f" {'YES' if res['phase_5c_triage_observed'] else 'NO'} | Seq Violations:"
         f" {res['sequence_barrier_violations']} | Dictations:"

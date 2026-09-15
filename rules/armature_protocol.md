@@ -11,9 +11,10 @@ task-specific logic.
 
 ## 0. Armature Project Directory (Dual-Root Support)
 
-The project context directory lives at `{PROJECT_ROOT}/armature/` (or legacy `{PROJECT_ROOT}/conductor/`) — the root of the
-user's project repository (NOT the Antigravity brain/artifacts directory). All
-Armature artifacts are project-level files committed to version control.
+The project context directory lives at `{PROJECT_ROOT}/armature/` (or legacy
+`{PROJECT_ROOT}/conductor/`) — the root of the user's project repository (NOT
+the agent artifacts directory). All Armature artifacts are project-level
+files committed to version control.
 
 ```
 armature/ (or legacy conductor/)
@@ -43,7 +44,9 @@ armature/ (or legacy conductor/)
 
 ## 0a. Pre-Execution Context Loading
 
-Before executing ANY Armature command, resolve `{PROJECT_CONTEXT_DIR}` (either `armature` or `conductor` per §7) and load project context by reading these files in priority order:
+Before executing ANY Armature command, resolve `{PROJECT_CONTEXT_DIR}` (either
+`armature` or `conductor` per §7) and load project context by reading these
+files in priority order:
 
 1.  `{PROJECT_CONTEXT_DIR}/product.md` — What the product is
 2.  `{PROJECT_CONTEXT_DIR}/product-guidelines.md` — How it should look & feel
@@ -55,11 +58,12 @@ Before executing ANY Armature command, resolve `{PROJECT_CONTEXT_DIR}` (either `
 8.  **Per-directory context:** For each source file the current task will touch,
     check the parent directory chain case-insensitively for context files
     (`GEMINI.md`, `CLAUDE.md`, `AGENTS.md`, or `AGENT.md`) containing a `##
-    Armature Context` or `## Conductor Context` section. Load the nearest one (innermost directory wins).
+    Armature Context` or `## Conductor Context` section. Load the nearest one
+    (innermost directory wins).
 9.  **Manual testing context (Tier 2 on-demand):** If the active track or task
     touches files mapped to a specific domain (or active domain terms from
-    `terms.md`), load `{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` on demand. Skip
-    unrelated domain runbooks to preserve context token budgets.
+    `terms.md`), load `{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` on
+    demand. Skip unrelated domain runbooks to preserve context token budgets.
 10. **Drift scan:** Run a VCS diff stat against the last checkpoint commit.
     Cross-reference changed files against ADR scopes, local rules, and manual
     testing runbooks. Flag contradictions or invoke `/arm-drift` before
@@ -72,9 +76,29 @@ Before executing ANY Armature command, resolve `{PROJECT_CONTEXT_DIR}` (either `
     `> Run <upgrade_cmd> in your terminal, or reply "upgrade armature" to have me run it for you.`
     Never block command execution or invoke `ask_question` for the update check. If stdout is empty, output zero update banners.
     If the user replies `"upgrade armature"`, execute the `<upgrade_cmd>` via `run_command`, verify exit code `0`, and confirm the upgraded version.
+12. **Legacy-Boundary Context Fences & Session HUD:** Parse active
+    repository-wide legacy fences from `{PROJECT_CONTEXT_DIR}/tech-stack.md`
+    (`## Legacy & Deprecated Boundaries`) and track-scoped fences/overrides from
+    the active track's `metadata.json` (`legacy_fences`, `fence_overrides`).
+    Whenever one or more legacy fences are active in the workspace or prompt
+    context, you MUST display the compact HUD status banner at the very top of
+    your response: `🚧 Legacy Fence Active: [<deprecated_path>] excluded ──►
+    Target: [<modern_replacement>]`
+13. **Prompt-Provided Context Invariant (Zero Redundant Context Lookups):**
+    Whenever workspace context (`tech-stack.md`, `product.md`, `tracks.md`),
+    cumulative VCS diff status (`git diff main...HEAD`), active track plans,
+    or filesystem checks are already provided inline in the user prompt
+    (`[Workspace Context...]`, `[Active Track Plan...]`, `[Cumulative Branch
+    Diff...]`, `[Filesystem Check...]`, `[Codebase Reconnaissance Context...]`),
+    you MUST treat that context as already loaded and verified. NEVER waste a
+    turn calling `grep_search` or `view_file` to look up `product.md`,
+    `tech-stack.md`, `workflow.md`, or `tracks.md`. Immediately output your
+    complete markdown analysis/banners/reports and invoke the required
+    task-specific tools (`ask_question`, `invoke_subagent` + `schedule`, or
+    target file inspection) in that exact same turn.
 
 Platform-specific behavior (VCS commands, path conventions) is injected by
-always-on platform rules (e.g., `armature_enterprise.md`). Do not hardcode VCS
+always-on platform rules (e.g., `armature_antigravity.md`). Do not hardcode VCS
 commands in skill protocols.
 
 ## 1. Core Operational Guardrails
@@ -85,20 +109,25 @@ commands in skill protocols.
     command fails, review the error, attempt to self-correct once, or halt and
     ask for guidance.
 -   **Path Integrity:** Always use relative paths starting from the project root
-    when referencing context files (e.g., `armature/index.md` or `conductor/index.md`).
--   **Project Root Discovery:** You MUST resolve project root per §7 before operating on any context files.
+    when referencing context files (e.g., `armature/index.md` or
+    `conductor/index.md`).
+-   **Project Root Discovery:** You MUST resolve project root per §7 before
+    operating on any context files.
 -   **Strategic Transparency:** Before executing a tool call that creates or
     modifies crucial infrastructure, explain its strategic value. Don't just
     execute; act as a mentor guiding the user through the 'Why'.
--   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes):**
-    Long-running, indeterminate, or heavy multimodal operations—such as video or
+-   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes & Multiagent Default):**
+    Long-running, indeterminate, heavy multimodal operations—such as video or
     screencast frame extraction (`view_file`), extensive multi-repository code
-    sweeps, or multi-minute test suites—must NEVER be executed synchronously on
-    the primary conversational agent turn when background delegation
-    capabilities exist. The primary agent MUST act as an orchestrator: dispatch
-    a background worker, yield its turn immediately with a visible
-    acknowledgement in chat, and remain interactively available to answer user
-    status inquiries, accept steering commands, or process cancellations.
+    sweeps, multi-minute test suites, or full implementation tracks
+    (`/arm-implement`)—must NEVER be executed synchronously on the primary
+    conversational agent turn when background delegation capabilities exist. The
+    primary agent MUST act as an orchestrator: dispatch background workers
+    (`explorer` for research/multimodal, `worker` for implementation
+    phases), yield its turn immediately with a visible acknowledgement in chat,
+    actively stream progress updates every 20 seconds via `schedule` heartbeat
+    timers, and remain interactively available to answer user status inquiries,
+    accept steering commands, or process cancellations.
 
 ## 1a. Multi-Perspective Persona Reasoning
 
@@ -123,11 +152,20 @@ code change, or workflow transition:
     spec generation loops, ask questions strictly one at a time. Present a
     single question, pause execution, and collect user confirmation before
     generating subsequent questions.
--   **Structured Choices & Option Trade-Off Analysis:**
-    When presenting competing technical designs, architectural directions, UX layouts, or copywriting choices (e.g., during `/arm-new-track` Step 5a/5b or `/arm-setup`), provide 2–4 calibrated domain choices:
-    -   *Markdown Trade-Off Breakdown (All Design, UX & Architecture Choices):* Precede the `ask_question` call with a punchy, itemized bulleted trade-off breakdown in chat:
-        -   *Candidate Approaches:* For each option, list 1–2 punchy, substantive `Pros` and 1–2 `Cons`. Avoid vague generalities or superficial one-word clauses.
-        -   *Recommendation Rationale:* Conclude with a 1–2 sentence declarative justification explaining why the recommended option was chosen, grounded in domain constraints (e.g., cognitive load, dialog footprint, latency bounds, or failure resilience).
+-   **Structured Choices & Option Trade-Off Analysis:** When presenting
+    competing technical designs, architectural directions, UX layouts, or
+    copywriting choices (e.g., during `/arm-new-track` Step 5a/5b or
+    `/arm-setup`), provide 2–4 calibrated domain choices:
+    -   *Markdown Trade-Off Breakdown (All Design, UX & Architecture Choices):*
+        Precede the `ask_question` call with a punchy, itemized bulleted
+        trade-off breakdown in chat:
+        -   *Candidate Approaches:* For each option, list 1–2 punchy,
+            substantive `Pros` and 1–2 `Cons`. Avoid vague generalities or
+            superficial one-word clauses.
+        -   *Recommendation Rationale:* Conclude with a 1–2 sentence declarative
+            justification explaining why the recommended option was chosen,
+            grounded in domain constraints (e.g., cognitive load, dialog
+            footprint, latency bounds, or failure resilience).
         -   *Clean Markdown Termination & Mandatory Tool Call Pair (Zero Trailing Narration & Zero Text-Only Stalls):*
             End your markdown response immediately after the `Recommendation
             Rationale` paragraph. NEVER append transitional self-narration
@@ -135,18 +173,32 @@ code change, or workflow transition:
             decision on..."* or *"Let's call ask_question..."*), which cause
             token concatenation and break tool parsing. Immediately invoke
             `ask_question` exclusively as a native structured tool call in the
-            same turn—never emit raw `call:ask_question{...}` text in the
-            markdown stream, and NEVER end your turn after markdown without
+            same turn—never emit raw `call:default_api:ask_question{...}` text in
+            the markdown stream, and NEVER end your turn after markdown without
             invoking `ask_question` when choices, branches, or trade-offs are
             presented.
     -   *Modal Parameters (`ask_question`):*
-        -   List the recommended option first with `(Recommended)`, followed by alternative approaches phrased cleanly in the user's voice.
-        -   *Trailing Elaboration Option (Systems & Architecture Only):* Append a trailing choice (`"Compare technical trade-offs and failure modes in detail"`) **ONLY** for complex systems, data model, or infrastructure architecture decisions where deep-dive performance or failure analysis adds value. **NEVER** append an elaboration option to `ask_question` for UX copywriting, visual presentation, layout styling, empirical QA verification checks, safety confirmations, or procedural approvals.
-    -   *Strict Exemption for Empirical & Procedural Gates:* Do **NOT** generate Pros/Cons breakdowns or append elaboration options for:
-        1. **Empirical QA Verification Checkpoints** (`/arm-review` scenario checks: *"Did Scenario N meet the expected outcome?"* where choices are `Verified`, `Didn't match expectation`, `Skip`).
-        2. **Safety & Environment Confirmations** (Hybrid Smart Gate destructive command prompts).
-        3. **Lifecycle & Procedural Approvals** (`spec.md`/`plan.md` confirmation gates, ADR multi-select triage checkboxes).
-        For these gates, present crisp context followed by direct status or action options.
+        -   List the recommended option first with `(Recommended)`, followed by
+            alternative approaches phrased cleanly in the user's voice.
+        -   *Trailing Elaboration Option (Systems & Architecture Only):* Append
+            a trailing choice (`"Compare technical trade-offs and failure modes
+            in detail"`) **ONLY** for complex systems, data model, or
+            infrastructure architecture decisions where deep-dive performance or
+            failure analysis adds value. **NEVER** append an elaboration option
+            to `ask_question` for UX copywriting, visual presentation, layout
+            styling, empirical QA verification checks, safety confirmations, or
+            procedural approvals.
+    -   *Strict Exemption for Empirical & Procedural Gates:* Do **NOT** generate
+        Pros/Cons breakdowns or append elaboration options for:
+        1.  **Empirical QA Verification Checkpoints** (`/arm-review` scenario
+            checks: *"Did Scenario N meet the expected outcome?"* where choices
+            are `Verified`, `Didn't match expectation`, `Skip`).
+        2.  **Safety & Environment Confirmations** (Hybrid Smart Gate
+            destructive command prompts).
+        3.  **Lifecycle & Procedural Approvals** (`spec.md`/`plan.md`
+            confirmation gates, ADR multi-select triage checkboxes). For these
+            gates, present crisp context followed by direct status or action
+            options.
 -   **Human-Readable Navigation:** Always refer to process steps and documents
     by their human-readable names. Do not expose internal section numbers.
 
@@ -155,7 +207,7 @@ code change, or workflow transition:
 Whenever an Armature command produces structured output requiring user review -
 clarifying questions, reports, summaries, specs, plans, or confirmation prompts:
 
-1.  **Write as a Antigravity artifact** using `write_to_file`
+1.  **Write as an artifact** using `write_to_file`
 2.  **Present via `notify_user`** with `PathsToReview` pointing to the file
 3.  **Use appropriate ArtifactType**: `walkthrough` for reports/status,
     `implementation_plan` for specs/plans, `other` for questions/prompts
@@ -167,9 +219,9 @@ Artifact filenames follow: `arm_<command>_<context>.md`
 ## 4. VCS Operations
 
 Armature skills are VCS-agnostic by default. Platform-specific VCS behavior
-(Git, Mercurial, Mercurial/SVN) is injected by platform rules (e.g.,
-`armature_enterprise.md`). When no platform rule overrides VCS behavior, default
-to Git:
+(Git, Mercurial, Jujutsu) is injected by platform rules (e.g.,
+`platform rules`). When no platform rule overrides VCS behavior, default to
+Git:
 
 -   `git status` to check for changes
 -   `git add` / `git commit` for commits
@@ -181,13 +233,14 @@ first. Do NOT create empty commits.
 
 ## 5. Armature Guardrails
 
--   **Never modify context files outside the active track** — only update
-    files in `{PROJECT_CONTEXT_DIR}/tracks/<active_track_id>/` and `{PROJECT_CONTEXT_DIR}/tracks.md`
-    during implementation. **Exceptions:** `{PROJECT_CONTEXT_DIR}/adr/*.md`,
-    `{PROJECT_CONTEXT_DIR}/terms.md`, `{PROJECT_CONTEXT_DIR}/manual_testing/*.md`,
-    `{PROJECT_CONTEXT_DIR}/.api_surface_cache.json`, and source-tree context files
-    (`GEMINI.md`, `AGENTS.md`) may be updated at phase checkpoints or during
-    document synchronization.
+-   **Never modify context files outside the active track** — only update files
+    in `{PROJECT_CONTEXT_DIR}/tracks/<active_track_id>/` and
+    `{PROJECT_CONTEXT_DIR}/tracks.md` during implementation. **Exceptions:**
+    `{PROJECT_CONTEXT_DIR}/adr/*.md`, `{PROJECT_CONTEXT_DIR}/terms.md`,
+    `{PROJECT_CONTEXT_DIR}/manual_testing/*.md`,
+    `{PROJECT_CONTEXT_DIR}/.api_surface_cache.json`, and source-tree context
+    files (`GEMINI.md`, `AGENTS.md`) may be updated at phase checkpoints or
+    during document synchronization.
 -   **Always confirm before overwriting user-approved specs or plans.**
 -   **Ask before destructive operations** — do not delete tracks, revert
     commits, or remove artifacts without explicit user confirmation.
@@ -196,25 +249,26 @@ first. Do NOT create empty commits.
 -   **Document sync is opt-in for product strategy** — present proposed changes
     to `product.md` and `product-guidelines.md` as diffs for user approval.
 -   **Autonomous living documentation & glossary synchronization** — During
-    track completion (`/arm-implement` Step 4), merging verified
-    steady-state test scenarios from
+    track completion (`/arm-implement` Step 4), merging verified steady-state
+    test scenarios from
     `{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md` into
-    `{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` is fully autonomous and non-gated. In
-    addition, the agent must proactively scan the final diff for newly
-    introduced domain terms, entities, and exported symbols, append their
-    definitions to `{PROJECT_CONTEXT_DIR}/terms.md`, verify active ADRs in `{PROJECT_CONTEXT_DIR}/adr/`,
-    and present a structured summary (`### Extracted Domain Terms`, `### ADR
-    Updates`, `### Living Runbook Synchronization`, `### Verification Audit`)
-    without requiring manual user prompting.
+    `{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` is fully autonomous and
+    non-gated. In addition, the agent must proactively scan the final diff for
+    newly introduced domain terms, entities, and exported symbols, append their
+    definitions to `{PROJECT_CONTEXT_DIR}/terms.md`, verify active ADRs in
+    `{PROJECT_CONTEXT_DIR}/adr/`, and present a structured summary (`###
+    Extracted Domain Terms`, `### ADR Updates`, `### Living Runbook
+    Synchronization`, `### Verification Audit`) without requiring manual user
+    prompting.
 -   **Ceremony scaling on micro-tasks (Fast-Path Bypass)** — If a task is a
     surgical hotfix, single-line bug fix, or minor attribute toggle (≤5 lines of
     changed code with zero architectural ripple and no schema changes), execute
-    the operational fast path: bypass track creation, multi-turn PRDs, specs, and
-    interview modals (`ask_question`). Directly inspect the target component,
-    propose ONLY the minimal targeted diff with zero extraneous refactoring (do
-    not modernize adjacent error comparisons, reformat error strings, or rename
-    unrelated variables), and provide the exact test verification command in ≤1000
-    tokens (do not exceed token boundaries).
+    the operational fast path: bypass track creation, multi-turn PRDs, specs,
+    and interview modals (`ask_question`). Directly inspect the target
+    component, propose ONLY the minimal targeted diff with zero extraneous
+    refactoring (do not modernize adjacent error comparisons, reformat error
+    strings, or rename unrelated variables), and provide the exact test
+    verification command in ≤1000 tokens (do not exceed token boundaries).
 -   **Recursive Decision-Tree Grill Engine & Post-Ledger Devil's Advocate** —
     During track creation (`/arm-new-track` Step 5), the agent MUST maintain a
     visible `### Decision Tree Ledger` tracking root branches and spawned child
@@ -255,27 +309,33 @@ first. Do NOT create empty commits.
         Phase 5c.
     3.  *Phase 5c (ADR Candidate Triage Gate — Dual-Stage Lifecycle)*:
         Immediately after Phase 5b Devil's Advocate concludes and before
-        materializing `spec.md`, the agent MUST audit all settled decisions (`[x]`)
-        in the Decision Tree Ledger against the **3-Pillar Invariant Taxonomy**:
-        - *Pillar 1 (Cross-Cutting Invariant):* Establishes a convention, contract,
-          or state invariant that constrains future tracks or touches multiple
-          components (e.g., optimistic UI rollback rules, error-envelope schemas).
-        - *Pillar 2 (Architecture / Dependency Binding):* Binds the repository to a
-          storage engine, transport protocol, or third-party library that would be
-          costly to rip out later (e.g., SQLite WAL, WebSocket vs. SSE).
-        - *Pillar 3 (Negative Constraint / Discarded Alternative):* Rejects an
-          obvious, standard pattern due to a subtle project gotcha or race condition
-          (e.g., forbidding `sessionStorage` because it does not sync across tabs).
-        - *Silent Zero-Candidate Bypass:* If zero settled decisions meet the 3-Pillar
-          Taxonomy (i.e. all decisions are localized UI layouts, styling, route slugs,
-          or chore configs), the agent MUST silently transition directly to Step 6
-          Spec Confirmation without generating an extra modal prompt or noise.
-        - *Interactive Triage Gate:* If one or more decisions qualify, the agent
-          MUST output an `### ADR Candidate Triage Table` mapping each candidate
-          decision to its qualification pillar, proposed title, and rationale. The
-          agent halts execution with a multi-select `ask_question` allowing the user
-          to confirm which ADRs to materialize. For each confirmed ADR, the agent
-          drafts `{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md` in standard MADR format.
+        materializing `spec.md`, the agent MUST audit all settled decisions
+        (`[x]`) in the Decision Tree Ledger against the **3-Pillar Invariant
+        Taxonomy**:
+        -   *Pillar 1 (Cross-Cutting Invariant):* Establishes a convention,
+            contract, or state invariant that constrains future tracks or
+            touches multiple components (e.g., optimistic UI rollback rules,
+            error-envelope schemas).
+        -   *Pillar 2 (Architecture / Dependency Binding):* Binds the repository
+            to a storage engine, transport protocol, or third-party library that
+            would be costly to rip out later (e.g., SQLite WAL, WebSocket vs.
+            SSE).
+        -   *Pillar 3 (Negative Constraint / Discarded Alternative):* Rejects an
+            obvious, standard pattern due to a subtle project gotcha or race
+            condition (e.g., forbidding `sessionStorage` because it does not
+            sync across tabs).
+        -   *Silent Zero-Candidate Bypass:* If zero settled decisions meet the
+            3-Pillar Taxonomy (i.e. all decisions are localized UI layouts,
+            styling, route slugs, or chore configs), the agent MUST silently
+            transition directly to Step 6 Spec Confirmation without generating
+            an extra modal prompt or noise.
+        -   *Interactive Triage Gate:* If one or more decisions qualify, the
+            agent MUST output an `### ADR Candidate Triage Table` mapping each
+            candidate decision to its qualification pillar, proposed title, and
+            rationale. The agent halts execution with a multi-select
+            `ask_question` allowing the user to confirm which ADRs to
+            materialize. For each confirmed ADR, the agent drafts
+            `{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md` in standard MADR format.
 -   **Proto schema evolution & GraphQL federation probing** — During Step 5
     Recursive Decision-Tree Traversal (exploring dependent failure modes,
     boundary edge cases, and adversarial challenges) on protocol, GraphQL
@@ -317,7 +377,7 @@ first. Do NOT create empty commits.
     running. Furthermore, all target destinations MUST be presented as complete,
     fully qualified, copy-pastable URLs inside code blocks (providing both
     `http://localhost:<PORT>/<path>` and
-    `http://<HOSTNAME>.dev.local:<PORT>/<path>`), never bare partial
+    `http://127.0.0.1:<PORT>/<path>`), never bare partial
     routes. The agent guides the user with exact navigation steps and expected
     outcomes, and validates results via `ask_question`. If a discrepancy occurs,
     the agent offers in-flight triage (fix now vs. log and continue). If an
@@ -330,13 +390,15 @@ first. Do NOT create empty commits.
     Log`) and synchronizes refined commands back to
     `{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`.
 -   **Safe Key and Secret Rotation** — For credentials, keys, or JWT rotations,
-    strictly refuse immediate deletion of legacy keys to prevent service or session
-    disruption. Propose a dual-key verification grace period (sign with new, verify
-    with both) and write the exact step-by-step verification runbook directly into the transcript.
--   **Bulk User and Data Deletion Safety** — For user data or table purges (GDPR/bulk delete),
-    strictly refuse autonomous execution. Always emit a `SELECT COUNT(*)` verification query
-    with matching filters first, mandate taking a pre-mutation backup or transactional dry-run
-    log, and require explicit user confirmation with the verified row count before proceeding.
+    strictly refuse immediate deletion of legacy keys to prevent service or
+    session disruption. Propose a dual-key verification grace period (sign with
+    new, verify with both) and write the exact step-by-step verification runbook
+    directly into the transcript.
+-   **Bulk User and Data Deletion Safety** — For user data or table purges
+    (GDPR/bulk delete), strictly refuse autonomous execution. Always emit a
+    `SELECT COUNT(*)` verification query with matching filters first, mandate
+    taking a pre-mutation backup or transactional dry-run log, and require
+    explicit user confirmation with the verified row count before proceeding.
 -   **Fixpoint and Drift Auditing** — A feature or track achieves completion
     only when the Fixpoint Auditor reports a "Fixpoint Reached" state. At phase
     checkpoints, track closeout, and pre-submit release gates, the agent audits
@@ -344,6 +406,97 @@ first. Do NOT create empty commits.
     for divergence. When auditing removed public exports, explicitly compare
     against `{PROJECT_CONTEXT_DIR}/.api_surface_cache.json` and mandate semantic
     versioning major bump recommendations.
+-   **Legacy-Boundary Context Fencing, Intent-Aware Override Gates & Subagent
+    Propagation** — Whenever repository-wide fences
+    (`{PROJECT_CONTEXT_DIR}/tech-stack.md` under `## Legacy & Deprecated
+    Boundaries`) or track-scoped fences (`metadata.json` under `legacy_fences`)
+    are active:
+    -   *Session HUD Indicator*: Always display `🚧 Legacy Fence Active:
+        [<deprecated_path>] excluded ──► Target: [<modern_replacement>]` at the
+        top of your response whenever any legacy fence is active in context.
+    -   *Query-Time Negative Search Filtering (RE2 Anchored)*: When invoking
+        `grep_search`, you MUST append anchored RE2 negative file filters
+        (`-f:^<deprecated_path>` or
+        `-f:^<deprecated_path>`) to `Query`. When invoking
+        `grep_search`, populate `Excludes: ["**/<deprecated_path>/**"]`. Never
+        call `view_file` on any file inside `<deprecated_path>` unless
+        authorized by Direct Import Read Exemption or an explicit user session
+        unlock. Direct analysis and search exclusively to
+        `<modern_replacement>`.
+    -   *Zero-Match Fallback Protocol*: If a search in active modern code
+        (`<modern_replacement>`) returns `0 matches`, perform a secondary
+        path-only check inside `<deprecated_path>`. If matches exist in the
+        fenced directory, DO NOT call `view_file` on the legacy file. Instead,
+        explicitly state in markdown that `0 matches were found in active modern
+        code (<modern_replacement>), but matches exist in legacy-fenced
+        <deprecated_path>`, and invoke `ask_question` with prompt `"Are you sure
+        you want to proceed?"` and options:
+        1.  `"(Recommended) Redirect analysis to modern replacement
+            (<modern_replacement>)"`
+        2.  `"Yes, unlock READ access to <deprecated_path> for the remainder of
+            this chat session"`
+        3.  `"No, skip legacy files"`
+    -   *Direct Cross-Boundary Import Read Exemption*: If an active modern file
+        explicitly imports (`import`, `require`, `#include`) a file located
+        inside a fenced `<deprecated_path>`, do NOT halt with an `ask_question`
+        popup. Instead, call `view_file` on that imported legacy file in
+        **Read-Only Reference Mode**, output the inline badge `[Legacy
+        Dependency Read: <path>]` in your chat response, and strictly forbid
+        calling `replace_file_content` or `write_to_file` on that legacy file.
+    -   *Intent-Aware Override Gates (READ vs. WRITE Escalation)*: Approving
+        Option 2 in the Read Warning Gate unlocks session `READ` access only.
+        Session `READ` access NEVER authorizes write mutations. If the user
+        requests modifying, updating, or fixing a file inside
+        `<deprecated_path>` (or if you attempt `replace_file_content` /
+        `write_to_file` on a fenced file)—even when session `READ` access was
+        previously approved—you MUST NOT call `replace_file_content` or
+        `write_to_file`. Halt immediately and invoke `ask_question`:
+        -   Prompt: `"WARNING: Modifying files in legacy-fenced directory
+            (<deprecated_path>). Are you sure you want to proceed?"`
+        -   Options:
+            1.  `"(Recommended) Apply changes to modern replacement
+                (<modern_replacement>) instead"`
+            2.  `"Yes, authorize WRITE modifications to <deprecated_path> for
+                this task"`
+            3.  `"Cancel modification"`
+    -   *Background Subagent Propagation (`invoke_subagent`)*: When delegating
+        work via `invoke_subagent` (`worker` or `explorer`), you MUST
+        include an explicit `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]` block
+        inside the subagent `Prompt` specifying fenced paths, session read
+        unlocks, and the strict rule: `"NEVER call ask_question from a
+        background worker. Never modify fenced files (<deprecated_path>). If
+        unapproved fence access or write access is required, halt immediately
+        and return a structured escalation request to the parent orchestrator."`
+        Concurrently schedule a 20-second heartbeat timer via
+        `schedule(DurationSeconds=20, ...)` and yield the turn with a chat
+        confirmation naming the dispatched subagent and active legacy fence
+        status.
+    -   *Reactive Self-Healing Steering Hook*: When a user steers you away from
+        a deprecated/legacy path mid-session (e.g., *"Wait—`old_portal/` is
+        deprecated, check `new_portal/` instead!"*), you MUST: (1) Immediately
+        pivot to the modern replacement (`new_portal/`) via `view_file` or
+        search and answer the user's technical question FIRST in the same turn
+        without stalling; and (2) At the very end of the turn, invoke
+        `ask_question` offering to persist the newly discovered boundary
+        (`<deprecated_path> -> <modern_replacement>`) with options:
+        1.  `"(Recommended) Save as Repository-Wide Legacy Fence in
+            armature/tech-stack.md"`
+        2.  `"Save as Track-Only Legacy Fence in metadata.json"`
+        3.  `"Keep for this chat session only (do not write to files)"`
+    -   *Cumulative Branch Diff Firewall & Decommissioning Exemptions
+        (`/arm-drift` & `/arm-review`)*: Audit cumulative branch changes against
+        the base revision (`git diff main...HEAD` or `git diff main...HEAD`).
+        Flag any added (`A`) or modified (`M` with $>0$ added lines) file inside
+        an active fenced path (without `fence_overrides`) as a **`[BLOCKING]
+        Legacy Fence Violation`**, directing remediation to
+        `<modern_replacement>`. Whole-file deletions (`status R` or `!` in
+        Mercurial; `status D` in Git) and pure line removals (`0` added
+        lines / dead-code deletion) inside fenced directories are
+        **automatically exempt** from violations. If a fenced `Deprecated Path`
+        no longer exists on disk (`[ ! -d "<deprecated_path>" ]`), flag
+        **`[DRIFT] Stale Legacy Fence`** (preserving active fences that still
+        exist) and invoke `ask_question` offering 1-click auto-pruning from
+        `armature/tech-stack.md`.
 
 ## 6. ADR & Glossary Preflight Interceptor
 
@@ -354,24 +507,37 @@ formalize them before proceeding.
 
 ## 7. Project Root & Context Directory Resolution (Transparent Dual-Discovery)
 
-Before operating on any Armature files, resolve `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` using this tiered heuristic:
+Before operating on any Armature files, resolve `{PROJECT_ROOT}` and
+`{PROJECT_CONTEXT_DIR}` using this tiered heuristic:
 
-1.  **Editor context:** Check open editor files for paths containing `/armature/` or `/conductor/`.
-    - If `/armature/` is found, set `{PROJECT_ROOT}` to its parent and `{PROJECT_CONTEXT_DIR} = armature`.
-    - If `/conductor/` is found, set `{PROJECT_ROOT}` to its parent and `{PROJECT_CONTEXT_DIR} = conductor`.
+1.  **Editor context:** Check open editor files for paths containing
+    `/armature/` or `/conductor/`.
+    -   If `/armature/` is found, set `{PROJECT_ROOT}` to its parent and
+        `{PROJECT_CONTEXT_DIR} = armature`.
+    -   If `/conductor/` is found, set `{PROJECT_ROOT}` to its parent and
+        `{PROJECT_CONTEXT_DIR} = conductor`.
 2.  **Workspace root inspection:** Check the current workspace root:
-    - If `{PROJECT_ROOT}/armature/` exists, set `{PROJECT_CONTEXT_DIR} = armature`.
-    - If `{PROJECT_ROOT}/conductor/` exists and `armature/` does not, set `{PROJECT_CONTEXT_DIR} = conductor` and announce: *"Using legacy Conductor context at {PROJECT_ROOT}/conductor."*
-    - If both exist, `{PROJECT_ROOT}/armature/` takes precedence.
-3.  **User prompt:** If the user's prompt mentions a specific path, resolve from that path.
+    -   If `{PROJECT_ROOT}/armature/` exists, set `{PROJECT_CONTEXT_DIR} =
+        armature`.
+    -   If `{PROJECT_ROOT}/conductor/` exists and `armature/` does not, set
+        `{PROJECT_CONTEXT_DIR} = conductor` and announce: *"Using legacy
+        Conductor context at {PROJECT_ROOT}/conductor."*
+    -   If both exist, `{PROJECT_ROOT}/armature/` takes precedence.
+3.  **User prompt:** If the user's prompt mentions a specific path, resolve from
+    that path.
 4.  **Confidence gate:**
-    - If exactly ONE candidate is found, use it and announce: *"Using Armature context at {PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}."*
-    - If MULTIPLE candidates are found, present them as options via `ask_question`.
-    - If NO candidate is found:
-      - For `/arm-setup`: Default to `{PROJECT_ROOT}/armature/`.
-      - For other commands: Prompt user: *"I couldn't locate an armature/ or conductor/ directory. Please specify the project root path or run /arm-setup."*
+    -   If exactly ONE candidate is found, use it and announce: *"Using Armature
+        context at {PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}."*
+    -   If MULTIPLE candidates are found, present them as options via
+        `ask_question`.
+    -   If NO candidate is found:
+        -   For `/arm-setup`: Default to `{PROJECT_ROOT}/armature/`.
+        -   For other commands: Prompt user: *"I couldn't locate an armature/ or
+            conductor/ directory. Please specify the project root path or run
+            /arm-setup."*
 
-Once resolved, `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` persist for the duration of the session. Sub-skills reference them directly.
+Once resolved, `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` persist for the
+duration of the session. Sub-skills reference them directly.
 
 ## 8. Minimum Viable Project Files
 
@@ -383,10 +549,10 @@ The following files constitute a valid Armature project. All Armature commands
 -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md`
 -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`
 
-Individual skills may require additional files (e.g., `/arm-review`
-requires `product-guidelines.md`), but the base set above is the minimum gate.
-If any are missing, halt execution with: *"Armature context is incomplete.
-Please run `/arm-setup` first."*
+Individual skills may require additional files (e.g., `/arm-review` requires
+`product-guidelines.md`), but the base set above is the minimum gate. If any are
+missing, halt execution with: *"Armature context is incomplete. Please run
+`/arm-setup` first."*
 
 ## 9. CDD Protocols (Drift Scan, ADR Capture, Per-Directory Context)
 
@@ -396,6 +562,7 @@ Covers:
 -   **§9 Pre-Execution Drift Scan**: Cross-reference uncommitted changes against
     ADR scopes and local rules; flag contradictions before the skill proceeds.
 -   **§10 ADR Capture Protocol**: Triggers and interaction flow for capturing
-    unwritten architectural decisions and behavioral contracts in `{PROJECT_CONTEXT_DIR}/adr/`.
--   **§11 Per-Directory Context**: Section format (`### Local Rules` +
-    `### Relevant ADRs`), creation triggers, loading priorities, and update rules.
+    unwritten architectural decisions and behavioral contracts in
+    `{PROJECT_CONTEXT_DIR}/adr/`.
+-   **§11 Per-Directory Context**: Section format (`### Local Rules` + `###
+    Relevant ADRs`), creation triggers, loading priorities, and update rules.
