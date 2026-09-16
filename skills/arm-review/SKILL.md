@@ -21,7 +21,7 @@ the developer through automated interactive manual testing across scenarios.
 
 ### 2. Execution Phase
 
-#### 2.1 Scope & Review Mode Identification
+#### 2.1 Scope, Empirical Diff Classification & Review Mode Identification
 
 1.  Check for user-provided arguments describing what to review and mode flags:
     -   `--both` or `--comprehensive`: Run Full Review (Static Code Audit +
@@ -31,7 +31,36 @@ the developer through automated interactive manual testing across scenarios.
 2.  **Auto-detect Track:** Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`
     and look for an in-progress track (`[~]`).
 3.  If no track is specified or found, prompt the user for the track name.
-4.  **Review Mode Gate:** If no mode flag was provided in the arguments, present
+4.  **Stage 2 Empirical VCS Diff Classification (ADR 0009):** Before executing
+    review or manual testing, inspect the actual VCS diff (`hg status` / `hg
+    diff` or `git diff`) using the **Hybrid AST + Diff Classifier**:
+    -   **Visual-Only Qualification (`[Micro-Verification Plan]`)**:
+        -   Changes restricted to template/style files (`.html`, `.css`,
+            `.scss`, `.sass`, `.less`, `.svg`) or component files (`.ts`,
+            `.tsx`, `.jsx`, `.vue`) modifying only JSX/HTML structure, CSS class
+            bindings, static text copy, or inline styles.
+        -   **Orphaned Dead-Code Cleanup Exemption**: Deleting or renaming
+            unused local event handlers (e.g., `onCardClick()`,
+            `handleCardClick()`), display helper functions, or unused
+            imports/props directly attached to a removed or restyled visual UI
+            element explicitly qualifies as visual-only.
+    -   **Stateful / Full Runbook Disqualification Triggers (Strict
+        Escalation)**:
+        -   Any modification to state machines, reactive stores, signals, or
+            data-fetching hooks.
+        -   Any modification to router navigation guards (`canActivate`),
+            authentication checks, or role/permission conditional rendering
+            gates (`*ngIf="user.isAdmin"`, `*ngIf="user.role ===
+            'SUPER_ADMIN'"`, `@if (hasPermission)`).
+        -   Any modification to RPC/API service callers (e.g., `await
+            api.deleteAccount()`), backend handlers, Protobuf definitions, or
+            database schemas/migrations.
+        -   *Adversarial Trap Guardrail*: If a template or component diff alters
+            an auth/role gate or invokes an RPC mutation, you MUST strictly
+            disqualify it from Micro-Verification, explain why multi-persona or
+            stateful verification is required, and enforce the full **3-Part
+            Fixture Triad** runbook.
+5.  **Review Mode Gate:** If no mode flag was provided in the arguments, present
     the review mode choice using `ask_question`:
     -   *Question:* "How would you like to review track '<track_name>'?"
     -   *Options:*
@@ -116,6 +145,102 @@ Evaluate the changed code against the following criteria:
 
 *(Skipped if mode is Code Audit only)*
 
+> [!IMPORTANT] **MANDATORY STEP 2.5 EXECUTION BARRIERS (ZERO BARE TOOL CALLS &
+> ZERO PREMATURE `review.md` WRITES):** 1. **Never Write `review.md` Before
+> Verification Completes:** During Step 2.5, do **NOT** call `write_to_file` to
+> generate `review.md`. You MUST present the interactive verification
+> walkthrough in chat and pause via `ask_question` to collect the user's
+> empirical verification result first. 2. **Mandatory Markdown Walkthrough
+> Before Every `ask_question` Call:** Never emit a bare `ask_question` tool call
+> without a complete markdown response in the exact same turn: - For **Path A
+> (Visual-Only)**, always render the full `┌─ [Micro-Verification Plan] ──┐`
+> ASCII card in chat text before calling `ask_question`. - For **Path B
+> (Stateful / Disqualified Diffs)**, even when a setup command triggers the
+> Hybrid Smart Gate confirmation prompt, you MUST first output in markdown: (a)
+> the explicit disqualification rationale naming the exact file and trigger
+> (e.g., mutative RPC call or auth/role guard edit), (b) `##### Prerequisites`
+> with the exact dev-server startup command inside a fenced code block, (c)
+> `##### Target URLs & Navigation` with both `http://localhost:<PORT>/<path>`
+> and remote workstation hostname URLs inside fenced code blocks, and (d) `##### Manual
+> Verification Steps` before invoking `ask_question`.
+
+Route execution based on the **Stage 2 Empirical VCS Diff Classification** (Step
+2.1):
+
+##### Path A: Automatic Micro-Verification Walkthrough (Visual-Only Footprints)
+
+When the empirical VCS diff qualifies as **Visual-Only** (including the
+**Orphaned Dead-Code Cleanup Exemption**):
+
+1.  **Zero-Latency Documentation-Only Execution (Skip DB Seeding & Probes)**:
+    -   Do **NOT** execute any **Hybrid Smart Gate** database migrations, SQL
+        seed commands (`INSERT`, `DROP`, `span sql`, `seed_users.js`), API token
+        minting, or shell dev-server probes.
+    -   Briefly note the presentational qualification in markdown (and
+        explicitly mention the Orphaned Dead-Code Cleanup Exemption if an unused
+        event handler or local display helper was deleted alongside a removed UI
+        element).
+2.  **Automatic Micro-Verification Card Rendering**:
+
+    -   Render the canonical ASCII `┌─ [Micro-Verification Plan] ──┐` card
+        directly in chat:
+
+        ```text
+        ┌─ [Micro-Verification Plan] ────────────────────────┐
+        │ Change detected: Visual-only (HTML/SCSS)           │
+        │                                                    │
+        │ [•] Step 1: Run local server (`./run.sh`) (requires active logged-in session) │
+        │ [•] Step 2: Navigate to `http://localhost:8080/groups` │
+        │ [•] Verify: Only "Email Forwarding" card is visible│
+        │                                                    │
+        │ (Database seeding and API testing skipped)         │
+        └────────────────────────────────────────────────────┘
+        ```
+    -   **Route Guard Session Hint (`Step 1`)**: Inspect route guards or parent
+        data containers. If the route requires authentication, append a concise
+        one-line session hint to `Step 1`: `(requires active logged-in session)`
+        (e.g., `[•] Step 1: Run local server (./run.sh) (requires active
+        logged-in session)`).
+    -   **Strict `localhost` URL Standard (`Step 2`)**: All target URLs in `Step
+        2` MUST strictly use complete, clickable
+        `http://localhost:<PORT>/<path>` (or
+        `https://localhost:<PORT>/<path>`) formatting. **NEVER**
+        output bare partial routes (e.g., `/groups`) and **NEVER** output
+        remote workstation hostnames (`<REMOTE_HOST>.example.internal`) in Micro-Verification
+        cards.
+    -   **Semantic Visual Assertions (`Verify`)**: Anchor assertions on visible
+        text labels or semantic ARIA roles rather than brittle CSS classes.
+3.  **Multi-Route Consolidation vs. Sequential Walkthroughs**:
+
+    -   Inspect SCSS `@mixin` or global theme token edits for multi-route blast
+        radius.
+    -   If visual changes span multiple routes (e.g., `/groups` and `/settings`)
+        that share a **common dev-server and session setup state**, consolidate
+        all affected `localhost` URLs and visual assertions into a **SINGLE
+        consolidated `┌─ [Micro-Verification Plan] ──┐` card** and a **SINGLE
+        `ask_question` turn**.
+    -   Step through sequential walkthrough turns **only** if distinct setup
+        states are required across routes.
+4.  **Inline Override Escape Hatch (`ask_question` Modal Gate)**:
+
+    -   Immediately following the card, call `ask_question` with the mandatory
+        inline escape hatch:
+        -   *Question:* `"Did the visual verification match the expected
+            outcome?"`
+        -   *Options:*
+            1.  `"(Recommended) Verified: <concise expected visual outcome>"`
+            2.  `"Run full domain runbook instead (execute database seed &
+                multi-role scenarios)"`
+            3.  `"Didn't match expectation (I will describe what occurred)"`
+    -   If the user selects `"Run full domain runbook instead..."`, immediately
+        transition to **Path B** below to execute full database seeding and
+        multi-persona scenarios.
+
+##### Path B: Standard Stateful Walkthrough (Stateful / Full-Stack Footprints or User Override)
+
+When the diff modifies state, auth guards, or RPCs (or when the user selects
+`"Run full domain runbook instead"`):
+
 1.  **Scenario Extraction:**
     -   Parse
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/manual_testing.md`
@@ -148,18 +273,27 @@ Evaluate the changed code against the following criteria:
                     manually)"`
                 -   `"Skip this scenario"`
         -   *Non-Destructive Execution*: Standard fixtures (inserting test
-            records, starting dev servers, minting tokens, exporting env vars)
-            execute automatically via `run_command` with progress streaming.
+            records, running seed scripts like `node scripts/seed_users.js`,
+            minting tokens, exporting env vars) execute **automatically** via
+            the Hybrid Smart Gate. You MUST explicitly state in your chat
+            response that the Hybrid Smart Gate executed the non-destructive
+            setup command automatically and stream its execution status (e.g.,
+            ``**[Hybrid Smart Gate] Automatically executed setup:** \`node
+            scripts/seed_users.js\` -> Status: Completed (Exit code 0)``).
+            **NEVER** instruct the user to manually run non-destructive seed or
+            setup scripts in their terminal.
         -   Verify command exit code 0 before prompting the user.
     -   **Sequential Guidance Presentation:** Output markdown describing the
         active scenario:
 
         -   `#### Scenario <ID>: <Title> (Persona: <Persona>)`
         -   `##### Prerequisites`:
-            -   Explicitly document all development server startup commands,
-                background daemon commands, or environmental state prerequisites
-                (e.g., `./run.sh`, `npm run dev`, `python server.py`) inside a
-                fenced code block.
+            -   Explicitly document all long-running development server startup
+                commands or background daemon commands (e.g., `./run.sh`, `npm
+                run dev`, `python server.py`) inside a fenced code block.
+                *(Note: One-off seed/setup commands executed automatically by
+                the Hybrid Smart Gate must be reported as completed setup steps
+                above, NOT listed as manual commands for the user to run).*
             -   Explicitly instruct the user to ensure the local server or
                 background stack is running before attempting to navigate.
             -   List required account personas, session tokens, or seeded
@@ -179,7 +313,7 @@ Evaluate the changed code against the following criteria:
                     ```
 
                     *(or `https://localhost.local:<PORT>/<path>`)*
-                -   **Cloudtop Proxy URL**:
+                -   **remote workstation Proxy URL**:
 
                     ```
                     http://127.0.0.1:<PORT>/<path>

@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.0] - 2026-09-16
+
+### Added
+
+-   **Change-Aware Verification Scoping & Micro-Verification Plans (`rules/armature_protocol.md`, `skills/arm-new-track/SKILL.md`, `skills/arm-review/SKILL.md`, `skills/arm-implement/SKILL.md`, `skills/arm-drift/SKILL.md`, `skills/arm-setup/assets/manual_testing_template.md`)**:
+    -   **Two-Stage Hybrid AST + Diff Classifier**: Evaluates provisional intent during `/arm-new-track` and enforces a strict VCS diff veto gate during `/arm-review`. Disqualifies any change containing RPC calls, state store mutations, database queries, or auth-guard structural directives (`*ngIf="user.hasPermission(...)"`) from visual-only status while exempting dead-code cleanup of removed UI elements.
+    -   **Micro-Verification Card & Inline Escape Hatch**: Consolidates visual checks across multiple affected routes into a single ASCII `┌─ [Micro-Verification Plan] ──┐` walkthrough card with copy-pastable `http://localhost:<PORT>/<path>` URLs and semantic visual assertions. Includes a mandatory `"Run full domain runbook instead"` option in the interactive review modal.
+    -   **Surgical Assertion Delta Sync & Drift Exemption**: Upgrades `/arm-implement` Step 4 to surgically prune obsolete test scenarios when UI entry points are removed and stamp cold-start visual domains with a deferred fixture marker (`Stateful 3-Part Fixture Triad deferred`). Configures `/arm-drift` to exempt valid visual-only runbooks from missing SQL seed warnings while flagging `[WARNING]` on stateful diff-to-tag mismatches.
+    -   **Two-Tier Rubric & Multi-Seed SkillOpt Suite (`evals/skillopt/`)**: Added 10 adversarial and held-out scenarios (`TRAIN_35`–`TRAIN_40`, `VAL_31`–`VAL_34`) and upgraded `run_optimizer.py` with `[INVARIANT]` veto zeroing (`0.0` score on safety/protocol violations), deterministic protocol assertions, and multi-seed statistical evaluation (`--seeds K`).
+
 ## [0.24.0] - 2026-09-15
 
 ### Added

@@ -253,12 +253,58 @@ resolving all open branches and ambiguities.
             lifecycle state transitions in markdown for topics that have not
             been confirmed via `ask_question`. Every technical detail is an
             unresolved leaf ambiguity that MUST be posed via `ask_question`.
+        -   **Zero Mid-Interview Subagent Re-Dispatch & Premature Exit
+            Pushback**: Once problem exploration has begun or prior interview
+            turns (`[Agent]: ... [User]: ...`) exist in the prompt history,
+            **NEVER** invoke `invoke_subagent` to restart reconnaissance. If the
+            user asks to draft the spec prematurely (e.g., *"Let's draft the
+            spec"*) after confirming a root choice (such as WebSocket +
+            heartbeat), do **NOT** finalize `spec.md` or call `invoke_subagent`.
+            Instead, explicitly push back on premature drafting, expand the `###
+            Decision Tree Ledger` with dependent operational child leaves
+            conditioned on that choice (e.g., reconnect backoff jitter
+            algorithm, tab backgrounding/suspension disconnect handling, state
+            invariants, multi-tab sync, and concurrency dependencies), present
+            codebase-grounded adversarial challenges (e.g., server restart
+            thundering herd socket storms, stale presence ghost states), and
+            pose the next targeted probe via `ask_question`.
 
-        -   **Testing Strategy Classification**: Classify manual testing depth:
+        -   **Data Migration & Storage Evolution Pattern Contrasting**: When
+            probing database migrations or storage synchronization
+            architectures, always contrast all three primary patterns in your
+            trade-off breakdown before locking the path: (1) Application-level
+            dual-writing, (2) Change Data Capture / Spanner change streams, and
+            (3) Lazy read-repair / background backfill.
 
-            -   *Interactive / Stateful / Route / API Tracks*: Full
-                `manual_testing.md` runbook with environment setup, CLI reset
-                tooling, persona matrices, and sequential route test cases.
+        -   **Testing Strategy Classification (Stage 1 Provisional Intent
+            Scoping — ADR 0009)**: Evaluate the confirmed specification and
+            target file list to classify manual testing depth:
+
+            -   *Interactive / Stateful / Route / API Tracks (Tier 1: Standard
+                Stateful 3-Part Fixture Triad)*: Full `manual_testing.md`
+                runbook with environment setup, 3-Part Fixture Triad (`Migration
+                -> Seed -> Reset`), persona matrices, and dual-URL
+                (`localhost` + remote workstation proxy) route test cases. Mandatory
+                whenever state machines, reactive stores, router navigation
+                guards (`canActivate`), conditional auth/role gates
+                (`*ngIf="user.isAdmin"`, `@if`), or RPC/API calls are modified.
+            -   *Visual-Only / Presentational UI Tracks (Tier 2: Provisional
+                `Micro-Verification Plan`)*: When the confirmed specification
+                and target file list involve strictly presentational UI
+                changes—restricted to template/style files (`.html`, `.css`,
+                `.scss`, `.sass`, `.less`, `.svg`) or component files (`.ts`,
+                `.tsx`, `.jsx`, `.vue`) modifying only markup, styling, or
+                static text copy—classify the track as **Visual-Only
+                (`[Micro-Verification Plan]`)**.
+                -   *Orphaned Dead-Code Cleanup Exemption*: Explicitly permits
+                    deleting or renaming unused local event handlers (e.g.,
+                    `onCardClick()`, `handleCardClick()`), local display helper
+                    functions, or unused imports/props that were directly
+                    orphaned by removing or restyling a visual UI element.
+                -   *Disqualification Rule*: Any modification to state
+                    management, router guards, role/permission gates, or backend
+                    RPCs disqualifies the track from Tier 2 and escalates to
+                    Tier 1.
             -   *Pure Refactor / Utility / Chore Tracks*: Lightweight
                 `manual_testing.md` with concise smoke and sanity checks
                 alongside automated unit tests. When requirements for a pure
@@ -438,7 +484,25 @@ resolving all open branches and ambiguities.
     -   Write
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
         based on `manual_testing_template.md` tailored to the classified testing
-        depth.
+        depth:
+        -   If classified as **Tier 1 (Stateful / Full-Stack)**, generate the
+            full **3-Part Fixture Triad** (`Migration -> Seed -> Reset`) and
+            persona walkthrough scenarios.
+        -   If classified as **Tier 2 (Visual-Only / Presentational UI)**,
+            generate a concise **Provisional `Micro-Verification Plan`** tagged
+            with `[Micro-Verification Plan]`. Include the ASCII `┌─
+            [Micro-Verification Plan] ──┐` card (`Step 1: Run local server
+            (<cmd>)` with optional one-line session hint `(requires active
+            logged-in session)`, `Step 2: Navigate to
+            http://localhost:<PORT>/<path>` strictly using `localhost` URLs and
+            never remote workstation hostnames, and `Verify: <visual assertion anchored on
+            visible text or ARIA roles>`), and stamp `## 2. Fixture Provisioning
+            & Reset Tooling` with `> [!NOTE] Stateful 3-Part Fixture Triad
+            deferred (initial track was visual-only).` Do NOT fabricate dummy
+            SQL seed commands or multi-persona boilerplate. *(Note: Stage 2
+            empirical VCS diff re-verification during `/arm-implement` and
+            `/arm-review` will automatically escalate to Tier 1 if stateful/RPC
+            code is touched during implementation).*
     -   Present `spec.md` and `manual_testing.md` via `notify_user` with
         `PathsToReview`.
     -   Present options using `ask_question`: "Approve" (Proceed to planning),

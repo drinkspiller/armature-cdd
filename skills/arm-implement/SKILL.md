@@ -180,11 +180,31 @@ track cleanup.
         update `.api_surface_cache.json`.
     -   **Per-Directory Rule Reconciliation**: Reconcile local directory rules
         in `GEMINI.md` / `AGENTS.md`.
-    -   **Manual Verification Protocol Generation**:
+    -   **Manual Verification Protocol Generation & Stage 2 Empirical Diff
+        Re-Verification (ADR 0009)**:
+        -   Inspect the empirical phase VCS diff (`hg status` / `hg diff` or
+            `git diff`) against the **Hybrid AST + Diff Classifier**:
+            -   If `manual_testing.md` was provisionally classified as a Tier 2
+                **`[Micro-Verification Plan]`**, verify that the phase diff
+                remained strictly presentational/visual (or qualified under the
+                **Orphaned Dead-Code Cleanup Exemption**).
+            -   **Automatic Tier 1 Escalation**: If the phase diff touched any
+                state machines, reactive stores/signals, router navigation
+                guards (`canActivate`), conditional auth/role gates
+                (`*ngIf="user.isAdmin"`, `@if`), or RPC/API callers, you MUST
+                **automatically escalate** `manual_testing.md` from a
+                provisional `Micro-Verification Plan` to a full **Tier 1
+                Standard Stateful 3-Part Fixture Triad** runbook (`Migration ->
+                Seed -> Reset` and multi-persona scenarios).
+            -   If the phase diff remained visual-only, maintain the concise
+                Tier 2 `Micro-Verification Plan` card (`Step 1: Run local server
+                (<cmd>)` with optional one-line session hint, `Step 2: Navigate
+                to http://localhost:<PORT>/<path>`, and `Verify: <visual
+                assertion>`).
         -   Update
-            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md` with
-            exact reproduction steps, CLI reset commands, URLs, and test
-            personas for the phase deliverables.
+            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
+            with the verified reproduction steps, URLs, and assertions for the
+            phase deliverables.
         -   **Documentation-Only Invariant**: Document the exact commands with
             precision, but do NOT execute mutative SQL, database resets, or
             environment teardowns autonomously.
@@ -212,10 +232,14 @@ track cleanup.
 **Mandatory Single-Turn Continuous Execution:** When asked to
 finalize/synchronize documentation (or when transitioning from completing all
 tasks), you MUST execute all steps of Step 4 AND Step 5.1 & Step 5.2 in a single
-turn. Perform all file operations, edits, commits, and retrospective review
-tasks autonomously without printing intermediate conversational updates or
-waiting for the user. Do NOT end your turn or pause until you invoke the
-mandatory `ask_question` next-steps modal in Step 5.2.
+turn. Execute all file operations (`write_to_file`), edits, commits, and
+retrospective review tasks autonomously without pausing to ask intermediate
+questions before Step 5.2. **CRITICAL (Mandatory Same-Turn Markdown Summary):**
+You MUST output the structured markdown summary sections (`### Extracted Domain
+Terms`, `### ADR Updates & Alignment`, `### Living Runbook Synchronization`, and
+`### Verification Audit`) directly in your visible chat markdown response in the
+**exact same turn** alongside your `write_to_file` tool calls—never emit bare
+`write_to_file` tool calls without accompanying markdown text.
 
 When all tasks in the track are complete (or when asked to finalize and
 synchronize documentation):
@@ -233,12 +257,16 @@ synchronize documentation):
         active ADRs in `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/`.
     -   If an architectural trade-off was formalized, capture or update the
         relevant ADR.
-3.  **Structured Synchronization Output**:
-    -   Present document synchronization progress in distinct, structured
-        sections:
+3.  **Structured Synchronization Output (Always Print in Chat)**:
+    -   Always print document synchronization progress in your visible chat
+        markdown response using these exact headings in the same turn as file
+        updates:
         *   `### Extracted Domain Terms`
         *   `### ADR Updates & Alignment`
-        *   `### Living Runbook Synchronization`
+        *   `### Living Runbook Synchronization` (MUST explicitly list any
+            pruned scenario IDs, e.g., `- **Pruned Obsolete Scenario**: Test
+            <Domain>.<ID> (<Title>)`, or state any cold-start deferred fixture
+            stamps applied)
         *   `### Verification Audit`
 4.  **Tech Stack & Guidelines Sync**:
     -   If tech stack / workflow altered: update `tech-stack.md` /
@@ -246,12 +274,51 @@ synchronize documentation):
     -   If product capabilities / UX guidelines changed: update `product.md` /
         `product-guidelines.md` (present diff for approval).
 5.  **Living Manual Testing Runbook Synchronization
-    (`manual_testing/<domain>.md`)**:
+    (`manual_testing/<domain>.md` — ADR 0010)**:
     -   **Autonomous Sync Policy**: Extract verified steady-state test scenarios
         from `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`.
-    -   Reconcile into `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`
-        using structured headings (`### Test <Domain>.<ID>`) without an
-        `ask_question` confirmation gate.
+    -   Reconcile into
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` using
+        structured headings (`### Test <Domain>.<ID>`) without an `ask_question`
+        confirmation gate. Verify `hg status` (or `git status`) before and after
+        writing to prevent silent workspace write-back races.
+    -   **Surgical Assertion Delta Sync (Visual-Only Tracks)**:
+        -   When synchronizing a visual-only track into an existing
+            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`,
+            update modified visual assertions **in-place** (anchoring on visible
+            text labels or semantic ARIA roles rather than brittle CSS class
+            names) while **strictly preserving** all existing database seed,
+            migration (`3-Part Fixture Triad`), and persona setup blocks. Never
+            overwrite or delete existing database seed scripts when syncing a
+            visual-only track.
+    -   **Whole-Scenario Pruning for Removed UI Entry Points**:
+        -   If a visual change completely removes the primary UI entry point of
+            an existing domain scenario (e.g., removing a `"Legacy Export"` card
+            where `Test <Domain>.<ID>` tested only that card), cleanly **prune
+            the entire obsolete scenario block** (including its coupled setup or
+            precondition step) from `manual_testing/<domain>.md` rather than
+            leaving broken ghost instructions.
+        -   **Mandatory Chat & Artifact Reporting**: Whenever a scenario is
+            pruned, you MUST explicitly report the exact pruned scenario ID
+            (e.g., `Test Groups.03`) under a `### Living Runbook
+            Synchronization` heading BOTH in your visible chat markdown text
+            (printed before your tool calls) AND at the bottom of the updated
+            `manual_testing/<domain>.md` / artifact file.
+    -   **Cold-Start Domain Runbook Seeding & Deferred Fixture Stamping**:
+        -   If `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`
+            does not exist yet when syncing a visual-only track, create the file
+            with the verified `localhost` visual baseline and stamp `## 2.
+            Fixture Provisioning & Reset Tooling` with: `> [!NOTE] Stateful
+            3-Part Fixture Triad deferred (initial track was visual-only).`
+        -   Do **NOT** fabricate or hallucinate speculative SQL seed commands
+            for a cold-start visual domain.
+        -   **Mandatory Chat & Artifact Reporting**: Whenever a cold-start
+            domain runbook is initialized with a deferred fixture stamp, you
+            MUST explicitly report the created domain file, verified `localhost`
+            visual baseline URL, and the exact cold-start deferred fixture stamp
+            (`Stateful 3-Part Fixture Triad deferred`) under the `### Living
+            Runbook Synchronization` heading in your visible chat markdown text
+            (printed before your tool calls).
     -   **Artifact Generation & Chat Reference**: Write the finalized domain
         manual testing runbook as an artifact
         (`{ARTIFACT_DIR}/arm_manual_testing_<domain>.md`).
@@ -286,12 +353,18 @@ Synchronization has been handled.
             "The implementation established new architectural invariants. Record them as ADRs?"
         -   For accepted items, draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md`
             and commit.
-    -   *Silent Bypass:* If all decisions are already captured or local-only,
-        proceed silently without adding an extra modal prompt.
+    -   *Zero-Candidate ADR Bypass:* If all decisions are already captured or
+        local-only, skip the Step 5.1 ADR modal and advance directly to Step 5.2
+        (while ensuring you still print the Step 4 markdown summary sections in
+        your chat response text).
 2.  **Next Steps Elicitation Gate (Mandatory Turn Barrier)**:
-    -   You MUST invoke `ask_question` to ask the user what they want to do
-        next. Do NOT end the turn with a static summary or draft CL description
-        without presenting this decision modal.
+    -   First, output the Step 4 markdown summary sections (`### Extracted
+        Domain Terms`, `### ADR Updates & Alignment`, `### Living Runbook
+        Synchronization` listing any pruned scenario IDs or deferred fixture
+        stamps, and `### Verification Audit`) in your visible chat response
+        text.
+    -   Immediately after the markdown summary text in the same turn, invoke
+        `ask_question` to ask the user what they want to do next:
     -   *Question:* "All tasks and documentation for track '<track_name>' are
         complete. What would you like to do next?"
     -   *Options:*
@@ -301,7 +374,7 @@ Synchronization has been handled.
         *   `"Run full code review (/arm-review)"`
         *   `"Archive completed track and finish"`
         *   `"Keep track active and finish"`
-    -   **MANDATORY:** End your turn after calling `ask_question`.
+    -   **MANDATORY:** End your turn immediately after calling `ask_question`.
 3.  **Execution of Selected Next Step**:
     -   If **Test with Manual Testing Guide**: Present the specific verification
         scenarios from `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`
