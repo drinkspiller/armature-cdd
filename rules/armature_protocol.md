@@ -389,6 +389,75 @@ first. Do NOT create empty commits.
     injects the verified results into `review.md` (`## Interactive Verification
     Log`) and synchronizes refined commands back to
     `{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`.
+-   **Change-Aware Verification Scoping & Micro-Verification Protocol** — To
+    prevent verification fatigue on purely presentational changes, manual
+    verification dynamically scales using a **Two-Stage Hybrid AST + Diff
+    Classifier**:
+    1.  *Stage 1: Provisional Intent Scoping (`/arm-new-track` Step 5a & Step
+        6)*: Evaluates the confirmed specification and target file list. If
+        changes are strictly presentational/visual, classifies the track as
+        **Visual-Only (`Micro-Verification`)** and generates a concise
+        `Micro-Verification Plan` in `tracks/<track_id>/manual_testing.md` using
+        the Tier 2 template without database seed boilerplate.
+    2.  *Stage 2: Empirical VCS Diff Re-Verification (`/arm-implement` Step 3.6
+        & `/arm-review` Step 2.1/2.5)*: Inspects actual VCS diffs (`hg diff` /
+        `git diff`). Diffs restricted to template/style files (`.html`, `.css`,
+        `.scss`, `.sass`, `.less`, `.svg`) or component files (`.ts`, `.tsx`,
+        `.jsx`, `.vue`) that modify only JSX/HTML structure, CSS class bindings,
+        static text copy, or inline styles qualify as visual-only.
+    3.  *Orphaned Dead-Code Cleanup Exemption*: Deleting or renaming an unused
+        local click handler (e.g., `onCardClick()`, `handleCardClick()`), local
+        display helper function, or unused import/prop directly attached to a
+        removed or restyled UI element explicitly qualifies as visual-only.
+        Conversely, modifying state machines, reactive stores/signals, router
+        navigation guards (`canActivate`), conditional auth/role rendering gates
+        (`*ngIf="user.isAdmin"`, `@if (hasPermission)`), or RPC/API service
+        calls strictly disqualifies the change and escalates to full **3-Part
+        Fixture Triad** runbooks.
+    4.  *Zero-Latency Documentation-Only Card Contract (`┌─ [Micro-Verification
+        Plan] ──┐`)*: When reviewing visual-only changes in `/arm-review`, the
+        agent skips all database seeding, SQL migrations, API token minting, and
+        shell dev-server probes, rendering the canonical ASCII card directly in
+        chat:
+        -   `Step 1: Run local server (<cmd>)` — appends a one-line route-guard
+            session hint (`(requires active logged-in session)`) if protected by
+            an auth guard or parent data container.
+        -   `Step 2: Navigate to http://localhost:<PORT>/<path>` — strictly uses
+            clickable `http://localhost:<PORT>/<path>` (or
+            `https://localhost:<PORT>/<path>`) URL formatting,
+            never bare partial routes or remote workstation hostnames
+            (`<REMOTE_HOST>.example.internal`).
+        -   `Verify: <visual assertion>` — anchors assertions on visible text
+            labels or semantic ARIA roles rather than brittle CSS class names.
+    5.  *Multi-Route Consolidation*: Multi-route visual checks sharing a common
+        dev-server/session setup state consolidate into a single
+        Micro-Verification card and a single `ask_question` turn; sequential
+        walkthrough turns are used only when distinct setup states are required.
+    6.  *Inline Modal Escape Hatch*: Immediately following the card, the agent
+        calls `ask_question` with:
+        1.  `"(Recommended) Verified: <concise expected visual outcome>"`
+        2.  `"Run full domain runbook instead (execute database seed &
+            multi-role scenarios)"`
+        3.  `"Didn't match expectation (I will describe what occurred)"`
+    7.  *Surgical Assertion Delta Sync, Whole-Scenario Pruning & Cold-Start
+        Stamping (`/arm-implement` Step 4.5 & `/arm-drift`)*: When synchronizing
+        a visual-only track into persistent living runbooks
+        (`{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`), the agent updates
+        modified visual assertions in-place (anchored on visible text or ARIA
+        roles) while strictly preserving existing database seed and persona
+        setup blocks (**Surgical Assertion Delta Sync**). If a visual change
+        completely removes the primary UI entry point of an existing scenario,
+        the agent cleanly prunes the entire obsolete scenario block including
+        its coupled setup step (**Whole-Scenario Pruning**) and logs the pruned
+        scenario ID. If `<domain>.md` does not exist yet, the agent initializes
+        it with the verified `localhost` visual baseline and stamps `## 2.
+        Fixture Provisioning & Reset Tooling` with `> [!NOTE] Stateful 3-Part
+        Fixture Triad deferred (initial track was visual-only).` (**Cold-Start
+        Deferred Fixture Stamping**). `/arm-drift` recognizes
+        `[Micro-Verification Plan]` and `Stateful 3-Part Fixture Triad deferred`
+        markers, exempting them from missing 3-Part Fixture Triad errors while
+        cross-checking VCS diffs to flag a `[WARNING]` if backend/state code was
+        modified under a visual-only tag.
 -   **Safe Key and Secret Rotation** — For credentials, keys, or JWT rotations,
     strictly refuse immediate deletion of legacy keys to prevent service or
     session disruption. Propose a dual-key verification grace period (sign with
