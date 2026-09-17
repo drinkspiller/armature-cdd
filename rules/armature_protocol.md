@@ -365,30 +365,49 @@ first. Do NOT create empty commits.
     commands or script names/arguments: `DROP`, `DELETE`, `TRUNCATE`, `rm -rf`,
     `reset`, `clean`, `wipe`, `reseed`, `kill`) MUST prompt the user with the
     exact command for explicit confirmation via `ask_question` before running.
+-   **Contiguous Scenario Numbering (Zero Gaps on Struck Scenarios)** — Whenever
+    a manual testing scenario is struck (`[-]`) or removed during track
+    execution or `/arm-review` (e.g., due to an ADR or architectural change
+    invalidating the test premise), completely remove the struck scenario from
+    the final commit/PR description's `Tested:` section and living manual testing
+    runbooks, and renumber all remaining scenarios sequentially (`Scenario 1,
+    Scenario 2, Scenario 3...`) with zero gaps.
 -   **Interactive Manual Testing Protocol & Living Runbook Sync** — When guided
     manual testing is selected during `/arm-review`, the agent executes the
     scenarios documented in
     `{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md` sequentially.
-    For each scenario, the agent prepares the environment via the Hybrid Smart
-    Gate. Before directing the user to navigate, the agent MUST output an
-    explicit `##### Prerequisites` section providing exact server startup
-    commands (e.g., `./run.sh`, `npm run dev`, background daemon scripts) inside
-    a fenced code block, instructing the user to ensure the service stack is
-    running. Furthermore, all target destinations MUST be presented as complete,
-    fully qualified, copy-pastable URLs inside code blocks (providing both
-    `http://localhost:<PORT>/<path>` and
-    `http://127.0.0.1:<PORT>/<path>`), never bare partial
-    routes. The agent guides the user with exact navigation steps and expected
-    outcomes, and validates results via `ask_question`. If a discrepancy occurs,
+    For each scenario, the agent prepares the environment under the Hybrid Smart
+    Gate and presents a structured walkthrough in chat using the canonical
+    **6-Part Scenario Format**:
+    1.  `#### Scenario <ID>: <Title> — <Synopsis>` followed immediately by a
+        succinct 1–2 sentence verification synopsis paragraph explaining what
+        behavior or failure mode is under test.
+    2.  `##### Prerequisites` providing exact dev-server startup commands
+        (e.g., `./run.sh`, `npm run dev`) inside a copy-pastable `bash` code
+        block, instructing the user to ensure the service stack is running.
+    3.  `##### Target URL` presenting complete, clickable `localhost` URLs
+        (`http://localhost:<PORT>/<path>` or `https://localhost:<PORT>/<path>`).
+        **Strict Localhost-Only Invariant**: Never output bare partial routes or
+        remote workstation hostnames (`<REMOTE_HOST>.example.com`).
+    4.  `##### Step-by-Step Setup` (or `##### Simulation Setup`) providing
+        numbered setup instructions. **Self-Contained Copy-Pasteable Snippet
+        Invariant**: Whenever setup requires a console snippet, mock script, or
+        CLI payload, reproduce the complete copy-pastable code block directly
+        inline—never instruct the user to *"paste the snippet you loaded
+        earlier"* or hunt through clipboard history across scenarios.
+    5.  `##### Action Steps` specifying numbered, imperative UI or CLI actions.
+    6.  `##### Expected Observations` (strictly titled `Expected Observations`,
+        never `"Expected Observables"` to prevent confusion with RxJS
+        `Observable` streams), categorized by domain (e.g., `**UI Behavior:**`,
+        `**DevTools Console Log:**`).
+    The agent validates results via `ask_question`. If a discrepancy occurs,
     the agent offers in-flight triage (fix now vs. log and continue). If an
     in-flight hotfix modifies code, the agent applies **Cascade Invalidation
     Tracking**, flagging previously verified scenarios for quick re-checking. A
-    **Mandatory Post-Testing Reconciliation Gate** strictly enforces that all
-    logged discrepancies are resolved, recorded as `[BLOCKING]` review findings,
-    or accepted as `[WARNING]` tech debt before track approval. The agent
-    injects the verified results into `review.md` (`## Interactive Verification
-    Log`) and synchronizes refined commands back to
-    `{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`.
+    mandatory **Post-Testing Reconciliation Gate** blocks review completion
+    until all open issues are resolved or triaged. Upon completion, empirical
+    outcomes are logged in `review.md` (`## Interactive Verification Log`) and
+    working setup commands are synchronized back into `manual_testing.md`.
 -   **Change-Aware Verification Scoping & Micro-Verification Protocol** — To
     prevent verification fatigue on purely presentational changes, manual
     verification dynamically scales using a **Two-Stage Hybrid AST + Diff

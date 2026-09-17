@@ -42,14 +42,47 @@ document all three commands of the **3-Part Fixture Triad** in sequence:
 {Exact command to establish or reset state for this persona}
 ```
 
-##### Test {Domain}.{ID}: {Scenario Title}
+#### Scenario {ID}: {Scenario Title} — {Concise Verification Synopsis}
 
--   **Action**:
-    {Exact URL (`http://localhost:<PORT>/<path>` and `http://<REMOTE_HOST>.example.internal:<PORT>/<path>`), CLI command, or UI action}
--   **Expected Outcome**:
-    {Expected route, visual state, HTTP response, or database mutation}
--   **Barrier Checks**:
-    {Negative verification proving unauthorized forward hops or invalid actions are blocked}
+{Succinct 1–2 sentence synopsis explaining what behavior, timeout, or state transition is being verified.}
+
+##### Prerequisites
+
+Ensure your local development server is running:
+
+```bash
+{Exact dev server command, e.g., ./run.sh or npm run dev}
+```
+
+##### Target URL
+
+Navigate to the target view in Google Chrome:
+
+`http://localhost:{PORT}/{path}` *(or `http://localhost:{PORT}/{path}` — strictly use `localhost` URLs; never use remote workstation hostnames)*
+
+##### Step-by-Step Setup
+
+1. {Step-by-step setup or DevTools preparation instruction.}
+2. {If a console snippet, mock script, or CLI command is needed, reproduce the complete self-contained copy-pastable code block directly below (never tell the user to "paste the snippet from earlier"):}
+
+```javascript
+// Self-contained simulation or state setup snippet
+{Complete copy-pastable snippet}
+```
+
+*({Brief italicized note explaining what the snippet configures or simulates.})*
+
+##### Action Steps
+
+1. {Exact UI or CLI action step 1 (what to do and where)}
+2. {Exact UI or CLI action step 2}
+
+##### Expected Observations
+
+*   **UI Behavior**:
+    *   {Concrete visual state, loading spinner duration, toast message, or route transition}
+*   **DevTools Console / Network Log**:
+    *   {Expected log output, RPC status code, or barrier check verification}
 
 ### 4. Resilience, Error Handling & Telemetry
 

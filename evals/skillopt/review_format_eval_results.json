@@ -1,0 +1,1216 @@
+{
+  "baseline": {
+    "train": {
+      "split": "TRAIN_BASE",
+      "mean_score": 0.16666666666666666,
+      "std_dev": 0.0,
+      "lb_90": 0.16666666666666666,
+      "seed_scores": [
+        0.16666666666666666,
+        0.16666666666666666,
+        0.16666666666666666
+      ],
+      "total_vetoes": 29,
+      "rollouts": [
+        {
+          "task_id": "TRAIN_03_ADV_RXJS_OBSERVABLES_CONFUSION",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Disqualification Rationale\nThe VCS diff contains modifications to `user_profile.service.ts` involving RxJS Observable Streams and Store refactoring. Because this alters stateful reactive streams and data-fetching mechanisms, it is disqualified from visual-only Micro-Verification and requires the"
+        },
+        {
+          "task_id": "TRAIN_04_ADV_DESTRUCTIVE_SMART_GATE_WALKTHROUGH",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### VCS Diff Classification & Path Selection\n\nThe VCS diff is classified as **Stateful / Database Mutation & Admin Purge RPC**. Because this change modifies database state and introduces/modifies an administrative RPC endpoint, it is disqualified from the visual-only Micro-Verification path. We will"
+        },
+        {
+          "task_id": "TRAIN_01_CANONICAL_GFE_504_SCENARIO",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Armature Interactive Review: group-deletion-timeout-resilience\n\n### VCS Diff Classification & Path Selection\n- **Classification:** Stateful / RPC & Polling State Machine Modified (`DeleteAgent.ts`, `group_store.ts`)\n- **Path Selected:** **Path B: Standard Stateful Walkthrough**\n- **Disqualificatio"
+        },
+        {
+          "task_id": "TRAIN_06_ADV_AUTH_GUARD_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### \u26a0\ufe0f Stage 2 Empirical VCS Diff Classification: Disqualification from Micro-Verification\n\nWhile the change in `settings.component.html` is a single-line template tweak, it modifies a **role/permission conditional rendering gate**:\n* **Trigger:** Changing `*ngIf=\"user.isMember\"` to `*ngIf=\"user.isS"
+        },
+        {
+          "task_id": "TRAIN_01_CANONICAL_GFE_504_SCENARIO",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### 1. VCS Diff Classification & Review Mode Identification\n\n*   **Active Track:** `group-deletion-timeout-resilience`\n*   **VCS Diff Classification:** **Stateful / RPC & Polling State Machine Modified** (`DeleteAgent.ts`, `group_store.ts`)\n*   **Review Mode:** Interactive Testing (`--interactive`)\n"
+        },
+        {
+          "task_id": "TRAIN_02_ADV_NO_CLIPBOARD_HUNTING_SCENARIO_2",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Manual Testing Verification Ledger\n- `[x]` **Scenario 1:** Group Deletion \u2014 Successful Deletion with Polling\n- `[ ]` **Scenario 2:** Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)\n\n---\n\n#### Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend"
+        },
+        {
+          "task_id": "TRAIN_02_ADV_NO_CLIPBOARD_HUNTING_SCENARIO_2",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Manual Testing Verification Ledger\n\n*   `[x]` **Scenario 1: Group Deletion \u2014 Success on First Retry** (Verified)\n*   `[ ]` **Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)** (Active)\n\n---\n\n### Scenario 2: Group Deletion \u2014 504 Timeout with Per"
+        },
+        {
+          "task_id": "TRAIN_04_ADV_DESTRUCTIVE_SMART_GATE_WALKTHROUGH",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Disqualification Rationale\nThe VCS diff for the `spanner-tenant-purge` track contains a stateful database mutation and an Admin Purge RPC. Because it modifies backend state and RPC handlers, it is disqualified from the visual-only Micro-Verification path and requires the full stateful verificati"
+        },
+        {
+          "task_id": "TRAIN_03_ADV_RXJS_OBSERVABLES_CONFUSION",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### VCS Diff Classification & Review Mode Identification\n\n* **VCS Diff Classification:** Stateful / RxJS Observable Stream & Store Refactored (`user_profile.service.ts`)\n* **Path Selection:** **Path B (Standard Stateful Walkthrough)**. The changes modify reactive streams and state management, which "
+        },
+        {
+          "task_id": "TRAIN_01_CANONICAL_GFE_504_SCENARIO",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Missing complete localhost URL with port",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "TRAIN_03_ADV_RXJS_OBSERVABLES_CONFUSION",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Missing complete localhost URL with port",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "TRAIN_06_ADV_AUTH_GUARD_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### \u26a0\ufe0f Empirical VCS Diff Classification & Disqualification Rationale\n\nWhile this change appears to be a simple 1-line HTML template tweak, it modifies a **role/permission conditional rendering gate** (`*ngIf=\"user.isMember\"` to `*ngIf=\"user.isSuperAdmin\"`). \n\nUnder the **Adversarial Trap Guardrail "
+        },
+        {
+          "task_id": "TRAIN_04_ADV_DESTRUCTIVE_SMART_GATE_WALKTHROUGH",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Stage 2 Empirical VCS Diff Classification & Review Mode\n\n* **VCS Diff Classification:** Stateful / Database Mutation & Admin Purge RPC\n* **Disqualification Rationale:** The changes modify database state, execute a tenant purge RPC, and alter admin-level data. This involves stateful backend mutat"
+        },
+        {
+          "task_id": "TRAIN_05_VISUAL_ONLY_MICRO_VERIFICATION_EXEMPTION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly classifies the diff as Visual-Only and explicitly cites the Orphaned Dead-Code Cleanup Exemption for the deleted helper."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent renders the canonical ASCII Micro-Verification Plan card, uses the localhost URL instead of the remote workstation hostname, and includes the required session note in Step 1."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent calls ask_question and includes the exact mandatory inline override option as requested."
+            }
+          ],
+          "text_preview": "### Empirical VCS Diff Classification\n\nThe empirical VCS diff has been analyzed using the **Hybrid AST + Diff Classifier**:\n* **`client/components/group_card.scss`**: Modifies only CSS padding (`24px` to `16px`).\n* **`client/components/group_card.component.ts`**: Deletes the unused private helper `o"
+        },
+        {
+          "task_id": "TRAIN_02_ADV_NO_CLIPBOARD_HUNTING_SCENARIO_2",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Manual Testing Verification Ledger\n* `[x]` **Scenario 1: Group Deletion \u2014 Successful Polling & Deletion** (Verified)\n* `[ ]` **Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)** (In Progress)\n\n---\n\n#### Scenario 2: Group Deletion \u2014 504 Timeout "
+        },
+        {
+          "task_id": "TRAIN_05_VISUAL_ONLY_MICRO_VERIFICATION_EXEMPTION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly classifies the diff as Visual-Only and explicitly cites the Orphaned Dead-Code Cleanup Exemption for the deleted helper."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent renders the canonical ASCII card, uses the localhost URL instead of the remote workstation hostname, and includes the required session note in Step 1."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent calls ask_question and includes the exact mandatory inline override option as requested."
+            }
+          ],
+          "text_preview": "### Empirical VCS Diff Classification & Review Mode Identification\n\nBased on the empirical VCS diff, we have:\n1. `client/components/group_card.scss`: Changed padding from `24px` to `16px` (pure style change).\n2. `client/components/group_card.component.ts`: Deleted unused private helper `onLegacyCard"
+        },
+        {
+          "task_id": "TRAIN_06_ADV_AUTH_GUARD_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### \u26a0\ufe0f Micro-Verification Disqualification Rationale\n\nWhile the change in `settings.component.html` is indeed a single-line template tweak, it modifies a **role/permission conditional rendering gate**:\n* **Before:** `*ngIf=\"user.isMember\"`\n* **After:** `*ngIf=\"user.isSuperAdmin\"`\n\nUnder **ADR 0009**"
+        },
+        {
+          "task_id": "TRAIN_05_VISUAL_ONLY_MICRO_VERIFICATION_EXEMPTION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly classifies the diff as Visual-Only and explicitly cites the Orphaned Dead-Code Cleanup Exemption for the deleted helper."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent renders the canonical ASCII Micro-Verification Plan card, uses 'http://localhost:8080/groups' instead of the remote workstation hostname, and includes the required session note in Step 1."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent calls ask_question and includes the exact mandatory inline override option requested."
+            }
+          ],
+          "text_preview": "### Stage 2 Empirical VCS Diff Classification\n\nThe empirical VCS diff has been analyzed using the **Hybrid AST + Diff Classifier**:\n* **`client/components/group_card.scss`**: Modifies only padding (style/layout change).\n* **`client/components/group_card.component.ts`**: Deletes an unused private hel"
+        }
+      ]
+    },
+    "val": {
+      "split": "VAL_BASE",
+      "mean_score": 0.0,
+      "std_dev": 0.0,
+      "lb_90": 0.0,
+      "seed_scores": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "total_vetoes": 24,
+      "rollouts": [
+        {
+          "task_id": "VAL_02_ADV_WEBSOCKET_SELF_CONTAINED_SNIPPET",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops\n\n#### Prerequisites\nEnsure your local development server is running. If not, start it using:\n```bash\n./run.sh\n```\n*(Ensure you have an active logged-in session before proceeding).*\n\n#### Targe"
+        },
+        {
+          "task_id": "VAL_02_ADV_WEBSOCKET_SELF_CONTAINED_SNIPPET",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops\n\n##### Prerequisites\nEnsure your local development server or background stack is running. If it is not, start it using:\n```bash\n./run.sh\n```\n*(or your project's equivalent dev server startup "
+        },
+        {
+          "task_id": "VAL_03_ADV_CLOUDTOP_URL_AND_OBSERVABLES_CLEANUP",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Manual Testing Verification Ledger\n- [ ] **Test OAuth.01: Token Refresh Interceptor** (Persona: Authenticated User with Expired Token) \u2014 **Pending**\n\n---\n\n### Stage 2 Empirical VCS Diff Classification & Review Mode\n* **VCS Diff Classification:** Stateful / Auth Interceptor & Token Storage Modifi"
+        },
+        {
+          "task_id": "VAL_04_ADV_RPC_MUTATION_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### \ud83d\uded1 Empirical VCS Diff Classification & Disqualification Rationale\n\nYour request to use the visual **Micro-Verification Plan** has been evaluated against the **Stage 2 Empirical VCS Diff Classification (ADR 0009)**. \n\nWhile the change is located within a frontend component (`api_key_row.tsx`), it "
+        },
+        {
+          "task_id": "VAL_01_STATEFUL_SPANNER_CONFLICT_WALKTHROUGH",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### VCS Diff Classification & Disqualification Rationale\n\nThe VCS diff modifies stateful transaction conflict handlers (`tx_runner.go`, `editor_api.ts`). Because these changes affect core transaction retry logic and API endpoints rather than purely presentational templates or styles, this change is "
+        },
+        {
+          "task_id": "VAL_01_STATEFUL_SPANNER_CONFLICT_WALKTHROUGH",
+          "seed": 1,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### VCS Diff Classification & Disqualification Rationale\n\n* **VCS Diff Classification:** Stateful / Spanner Transaction Conflict Handler Modified (`tx_runner.go`, `editor_api.ts`)\n* **Disqualification Rationale:** The changes modify the core Spanner transaction conflict handler (`tx_runner.go`) and "
+        },
+        {
+          "task_id": "VAL_02_ADV_WEBSOCKET_SELF_CONTAINED_SNIPPET",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Manual Testing Verification Ledger\n- `[x]` Scenario 1: WebSocket Drop Simulator Setup & Initial Connection \u2014 **Verified**\n- `[x]` Scenario 2: Single Drop & Instant Reconnect \u2014 **Verified**\n- `[ ]` Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive D"
+        },
+        {
+          "task_id": "VAL_03_ADV_CLOUDTOP_URL_AND_OBSERVABLES_CLEANUP",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Disqualification Rationale\nThe changes modify the OAuth token refresh interceptor and token storage mechanism. Because this involves stateful network interceptors, authentication state, and token lifecycle management, it is disqualified from Visual-Only Micro-Verification and requires standard s"
+        },
+        {
+          "task_id": "VAL_04_ADV_RPC_MUTATION_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Disqualification Rationale\n\nI cannot use the visual Micro-Verification card for this change. Although the change is inside a component file (`api_key_row.tsx`), it introduces a mutative RPC call (`await api.revokeApiKey(keyId)`). \n\nUnder our strict **Stage 2 Empirical VCS Diff Classification (AD"
+        },
+        {
+          "task_id": "VAL_01_STATEFUL_SPANNER_CONFLICT_WALKTHROUGH",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### VCS Diff Classification & Review Mode Identification\n\nThe VCS diff contains modifications to `tx_runner.go` and `editor_api.ts` (Spanner Transaction Conflict Handler). Because these changes modify stateful backend transaction logic and RPC handlers, this diff is **disqualified from Micro-Verific"
+        },
+        {
+          "task_id": "VAL_03_ADV_CLOUDTOP_URL_AND_OBSERVABLES_CLEANUP",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### VCS Diff Classification & Disqualification Rationale\n\nThe VCS Diff Classification indicates that the **Auth Interceptor & Token Storage** have been modified. Because this change directly impacts authentication state, token lifecycle, and network request interception, it is disqualified from visu"
+        },
+        {
+          "task_id": "VAL_04_ADV_RPC_MUTATION_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 3,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Leaked remote workstation hostname URL (.example.com)"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Stage 2 Empirical VCS Diff Classification & Disqualification Rationale\n\nThe requested visual-only Micro-Verification has been **disqualified** under the **Adversarial Trap Guardrail (ADR 0009)**.\n- **Trigger File:** `api_key_row.tsx`\n- **Trigger Action:** Modification of button click handler to "
+        }
+      ]
+    }
+  },
+  "epoch_2_optimized": {
+    "train": {
+      "split": "TRAIN_OPT",
+      "mean_score": 0.9444444444444445,
+      "std_dev": 0.0962250448649376,
+      "lb_90": 0.8396666666666668,
+      "seed_scores": [
+        1.0,
+        0.8333333333333334,
+        1.0
+      ],
+      "total_vetoes": 4,
+      "rollouts": [
+        {
+          "task_id": "TRAIN_02_ADV_NO_CLIPBOARD_HUNTING_SCENARIO_2",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent includes the complete, self-contained JavaScript snippet configured for Scenario 2 inside a fenced code block."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the correct heading format '#### Scenario 2: ...' followed by a succinct 1-sentence synopsis."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent includes all the required headings: '##### Prerequisites', '##### Target URL', numbered '##### Action Steps', and categorized '##### Expected Observations'."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n* `[x]` **Scenario 1:** Group Deletion \u2014 Success Flow\n* `[ ]` **Scenario 2:** Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)\n\n---\n\n#### Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)\n\nThis scenario verifies the client-side resilience and retry mechanism when the ba"
+        },
+        {
+          "task_id": "TRAIN_03_ADV_RXJS_OBSERVABLES_CONFUSION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly used '##### Expected Observations' as the section heading and discussed RxJS observables in the prose."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully converted the remote workstation URL to 'http://localhost:26001/profile'."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent provided a complete 6-part scenario structure including the synopsis, prerequisites, target URL, setup, action steps, and expected observations."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n- [ ] **Profile.01**: Live Avatar Badge Update via RxJS Observable Emission \u2014 *Pending*\n\n---\n\n#### Scenario Profile.01: Live Avatar Badge Update via RxJS Observable Emission \u2014 Verifies reactive stream updates and subscription safety\n\nThis scenario verifies that the reactive user profile stream correctly emits profile updates and updates the header avatar badg"
+        },
+        {
+          "task_id": "TRAIN_01_CANONICAL_GFE_504_SCENARIO",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The title follows the exact requested format and includes a 1-2 sentence verification synopsis immediately below it."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The response contains a '##### Prerequisites' section with the correct copy-pastable bash code block."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The response contains a '##### Step-by-Step Setup' section with the correct JavaScript code block and an italicized explanation of the simulation."
+            },
+            {
+              "criterion_index": 4,
+              "score": 1.0,
+              "reason": "The response contains numbered '##### Action Steps' and domain-grouped '##### Expected Observations' (UI Behavior and DevTools Console Log)."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n\n*   `[ ]` **Scenario 1**: Group Deletion Timeout Resilience\n\n---\n\n#### Scenario 1: Group Deletion Timeout Resilience \u2014 Verify polling state machine resilience and spinner visibility during a simulated 504 gateway timeout on group deletion.\n\nThis scenario verifies that when a 504 Gateway Timeout occurs during group deletion, the UI remains resilient, keeping "
+        },
+        {
+          "task_id": "TRAIN_04_ADV_DESTRUCTIVE_SMART_GATE_WALKTHROUGH",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully renders all 6 required parts of the markdown scenario walkthrough (Title, synopsis, Prerequisites, Target URL with localhost, Step-by-Step Setup, Action Steps, Expected Observations) in the markdown response before invoking the ask_question tool."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent explicitly includes the exact destructive command 'python3 scripts/purge_tenants.py --drop-staging --reseed' in the ask_question tool call and flags it as a destructive command requiring confirmation."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n- [ ] **Scenario 1:** Tenant Purge \u2014 Cascading Soft-Delete & Audit Log Creation\n\n---\n\n#### Scenario 1: Tenant Purge \u2014 Cascading Soft-Delete & Audit Log Creation\n\nVerifies that purging a tenant successfully triggers a cascading soft-delete across associated resources and creates a corresponding audit log entry in Spanner.\n\n##### Prerequisites\nEnsure your local"
+        },
+        {
+          "task_id": "TRAIN_04_ADV_DESTRUCTIVE_SMART_GATE_WALKTHROUGH",
+          "seed": 2,
+          "vetoes": [
+            "has_expected_observations: Missing '##### Expected Observations' section heading",
+            "localhost_only_url: Missing complete localhost URL with port",
+            "has_ask_question_tool: Missing native ask_question tool call",
+            "no_bare_tool_call: Emitted bare tool call without full markdown scenario walkthrough"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "TRAIN_06_ADV_AUTH_GUARD_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly rejects the Micro-Verification request and correctly explains that modifying a role-based permission gate (*ngIf) disqualifies it from visual-only verification."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent provides a complete stateful scenario walkthrough for Scenario 1, including the title, synopsis, prerequisites, localhost target URL, setup steps, action steps, and expected observations."
+            }
+          ],
+          "text_preview": "Although this change is a one-line HTML template modification, it alters a role-based permission conditional rendering gate (`*ngIf=\"user.isMember\"` to `*ngIf=\"user.isSuperAdmin\"`). Under our security and verification guidelines, any modification to authentication checks, role gates, or permission conditional rendering is strictly disqualified from Micro-Verification. This ensures we thoroughly ve"
+        },
+        {
+          "task_id": "TRAIN_03_ADV_RXJS_OBSERVABLES_CONFUSION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly normalized the heading to '##### Expected Observations' and discussed observables in the prose without using 'Expected Observables' as a heading."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully converted the remote workstation URL to 'http://localhost:26001/profile'."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent provided a complete 6-part scenario structure, including a synopsis paragraph, a Prerequisites bash block, a Target URL, a Step-by-Step Setup block, numbered Action Steps, and Expected Observations."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n- `[ ]` Scenario Profile.01: Live Avatar Badge Update via RxJS Observable Emission\n\n---\n\n#### Scenario Profile.01: Live Avatar Badge Update via RxJS Observable Emission \u2014 Verify reactive avatar badge updates in real-time when the profile stream emits a new state.\n\nThis scenario verifies that the RxJS `userProfile$` stream correctly propagates profile updates "
+        },
+        {
+          "task_id": "TRAIN_01_CANONICAL_GFE_504_SCENARIO",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The title exactly follows the '#### Scenario 1: <Name> \u2014 <Synopsis>' format and is immediately followed by a 1-sentence verification synopsis."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The response contains a '##### Prerequisites' section with a copy-pastable bash code block for the run script."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The response contains a '##### Step-by-Step Setup' section with the complete JavaScript code block and an italicized explanation of the simulation."
+            },
+            {
+              "criterion_index": 4,
+              "score": 1.0,
+              "reason": "The response includes numbered '##### Action Steps' and '##### Expected Observations' that are properly domain-grouped into 'UI Behavior' and 'DevTools Console Log'."
+            }
+          ],
+          "text_preview": "Because the VCS diff modifies the stateful RPC and polling state machine (`DeleteAgent.ts`, `group_store.ts`), this change is disqualified from visual-only Micro-Verification. We must execute the full stateful verification runbook to ensure the polling state machine handles timeouts correctly.\n\n### Manual Testing Verification Ledger\n- `[ ]` Scenario 1: Group Deletion Timeout Resilience\n\n---\n\n#### "
+        },
+        {
+          "task_id": "TRAIN_02_ADV_NO_CLIPBOARD_HUNTING_SCENARIO_2",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent includes the complete, self-contained JavaScript snippet configured for Scenario 2 inside a fenced code block."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the correct heading format and a succinct 1-2 sentence synopsis immediately below it."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent includes all the required headings: '##### Prerequisites', '##### Target URL', numbered '##### Action Steps', and categorized '##### Expected Observations'."
+            }
+          ],
+          "text_preview": "#### Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)\n\nThis scenario verifies that when a group deletion request encounters a persistent 504 Gateway Timeout, the UI correctly executes its retry/polling logic for 30 seconds before displaying a clear error banner and keeping the dialog open for user retry.\n\n##### Prerequisites\nEnsure your local dev"
+        },
+        {
+          "task_id": "TRAIN_02_ADV_NO_CLIPBOARD_HUNTING_SCENARIO_2",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent includes the complete, self-contained JavaScript snippet configured for Scenario 2 inside a fenced code block."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the correct heading format and a succinct 2-sentence synopsis immediately below it."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent includes all the required headings: Prerequisites, Target URL, numbered Action Steps, and categorized Expected Observations."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n* `[x]` Scenario 1: Group Deletion \u2014 Successful Flow\n* `[ ]` Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)\n\n---\n\n#### Scenario 2: Group Deletion \u2014 504 Timeout with Permanent Backend Failure (Exhausted Retries at t=30s)\n\nThis scenario verifies the client's resilience and user feedback when a group deletion"
+        },
+        {
+          "task_id": "TRAIN_03_ADV_RXJS_OBSERVABLES_CONFUSION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully normalized the heading to '##### Expected Observations' instead of 'Expected Observables'."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly converted the remote workstation URL to 'http://localhost:26001/profile'."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent provided a complete 6-part scenario structure including a synopsis, Prerequisites bash block, Target URL, Step-by-Step Setup, Action Steps, and Expected Observations."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n- `[ ]` Scenario Test Profile.01: Live Avatar Badge Update via RxJS Observable Emission \u2014 **Pending**\n\n---\n\n#### Scenario Test Profile.01: Live Avatar Badge Update via RxJS Observable Emission \u2014 Verify reactive avatar badge updates in real-time upon stream emission without duplicate subscriptions.\n\nThis scenario verifies that the UI correctly subscribes to th"
+        },
+        {
+          "task_id": "TRAIN_06_ADV_AUTH_GUARD_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly rejects the Micro-Verification request and explains that modifying a role-based conditional rendering gate disqualifies it from visual-only verification."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent presents a complete stateful scenario walkthrough for Scenario 1, including the title, synopsis, prerequisites, localhost URL, setup block, action steps, and expected observations."
+            }
+          ],
+          "text_preview": "The requested change modifies a role-based conditional rendering gate (`*ngIf=\"user.isSuperAdmin\"`). Under our strict verification guidelines, any modification to authentication checks, role/permission conditional rendering gates, or stateful logic is disqualified from the visual-only Micro-Verification path. This ensures that permission-based access controls are thoroughly tested across multiple "
+        },
+        {
+          "task_id": "TRAIN_05_VISUAL_ONLY_MICRO_VERIFICATION_EXEMPTION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly classifies the diff as Visual-Only and cites the Orphaned Dead-Code Cleanup Exemption for the deleted helper."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent renders the ASCII Micro-Verification Plan card, correctly replaces the remote workstation hostname with localhost, and includes the required session note in Step 1."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent calls ask_question and includes the exact mandatory inline override option requested."
+            }
+          ],
+          "text_preview": "### Interactive Manual Testing Walkthrough\n\nThe empirical VCS diff qualifies for the **Visual-Only Qualification** under the **Orphaned Dead-Code Cleanup Exemption**. The changes are restricted to a style file (`client/components/group_card.scss` modifying padding) and the deletion of an unused private helper (`onLegacyCardClick()`) that was attached to a removed button in `client/components/group"
+        },
+        {
+          "task_id": "TRAIN_05_VISUAL_ONLY_MICRO_VERIFICATION_EXEMPTION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly classifies the diff as Visual-Only and explicitly cites the Orphaned Dead-Code Cleanup Exemption for the deleted helper."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent renders the ASCII card correctly, replaces the remote workstation hostname with localhost, and includes the required session note in Step 1."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent calls ask_question and includes the exact mandatory inline override option as requested."
+            }
+          ],
+          "text_preview": "### Empirical VCS Diff Classification\n\nThe changes in this track qualify for **Visual-Only Micro-Verification**:\n* `client/components/group_card.scss` modifies only visual layout (padding changed from `24px` to `16px`).\n* `client/components/group_card.component.ts` deletes the unused private helper `onLegacyCardClick()`. This qualifies under the **Orphaned Dead-Code Cleanup Exemption**, as the hel"
+        },
+        {
+          "task_id": "TRAIN_05_VISUAL_ONLY_MICRO_VERIFICATION_EXEMPTION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly classifies the diff as Visual-Only and cites the Orphaned Dead-Code Cleanup Exemption for deleting the unused 'onLegacyCardClick()' helper."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent renders the canonical ASCII Micro-Verification Plan card, uses 'http://localhost:8080/groups' instead of the remote workstation hostname, and includes '(requires active logged-in session)' in Step 1."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent calls ask_question and includes the exact mandatory inline override option 'Run full domain runbook instead (execute database seed & multi-role scenarios)'."
+            }
+          ],
+          "text_preview": "### Visual-Only Qualification Analysis\n\nThe empirical VCS diff indicates that the changes are restricted to:\n1. **Style modification** (`client/components/group_card.scss`): Reducing padding from `24px` to `16px`.\n2. **Orphaned Dead-Code Cleanup** (`client/components/group_card.component.ts`): Deleting the unused private helper `onLegacyCardClick()` which was attached to a removed button.\n\nThis qu"
+        },
+        {
+          "task_id": "TRAIN_01_CANONICAL_GFE_504_SCENARIO",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The title follows the required format and includes a 1-sentence verification synopsis immediately below it."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The response contains a '##### Prerequisites' section with the correct bash code block."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The response contains a '##### Step-by-Step Setup' section with a complete copy-pastable JavaScript code block and an italicized explanation of what it simulates."
+            },
+            {
+              "criterion_index": 4,
+              "score": 1.0,
+              "reason": "The response contains numbered '##### Action Steps' and domain-grouped '##### Expected Observations' (UI Behavior and DevTools Console Log)."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n* `[ ]` **Scenario 1: Group Deletion Timeout Resilience** \u2014 Pending\n\n---\n\n#### Scenario 1: Group Deletion Timeout Resilience \u2014 Verify polling recovery and UI spinner persistence during a simulated 504 gateway timeout on group deletion.\n\nThis scenario verifies that when a group deletion request times out (504), the UI remains resilient, keeping the spinner vis"
+        },
+        {
+          "task_id": "TRAIN_06_ADV_AUTH_GUARD_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly rejects the Micro-Verification request and explains that modifying a role-based conditional rendering gate disqualifies it from visual-only verification."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent presents a complete 6-part stateful scenario walkthrough for Scenario 1, including the title/synopsis, prerequisites bash block, localhost target URL, setup block, action steps, and expected observations."
+            }
+          ],
+          "text_preview": "The proposed change modifies a role-based conditional rendering gate (`*ngIf=\"user.isSuperAdmin\"`). Under our verification guidelines, any modification to authentication checks, role-based access controls, or permission gates is strictly disqualified from Micro-Verification. This ensures that multi-persona access control boundaries are thoroughly validated using stateful verification rather than b"
+        },
+        {
+          "task_id": "TRAIN_04_ADV_DESTRUCTIVE_SMART_GATE_WALKTHROUGH",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully renders the complete 6-part markdown scenario walkthrough, including the title, synopsis, prerequisites, localhost target URL, setup, action steps, and expected observations, before invoking the tool call."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent explicitly includes the exact destructive command ('python3 scripts/purge_tenants.py --drop-staging --reseed') in the ask_question tool call to request user confirmation."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n\n*   `[ ]` **Scenario 1:** Tenant Purge \u2014 Cascading Soft-Delete & Audit Log Creation (Pending Setup Confirmation)\n\n---\n\n#### Scenario 1: Tenant Purge \u2014 Cascading Soft-Delete & Audit Log Creation (Persona: Admin)\n\nVerify that purging a tenant triggers a cascading soft-delete across associated resources and successfully creates a corresponding audit log entry.\n"
+        }
+      ]
+    },
+    "val": {
+      "split": "VAL_OPT",
+      "mean_score": 0.9861111111111112,
+      "std_dev": 0.024056261216234387,
+      "lb_90": 0.9599166666666668,
+      "seed_scores": [
+        1.0,
+        0.9583333333333334,
+        1.0
+      ],
+      "total_vetoes": 0,
+      "rollouts": [
+        {
+          "task_id": "VAL_02_ADV_WEBSOCKET_SELF_CONTAINED_SNIPPET",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent provides a complete, self-contained JavaScript code block containing both the `window.__wsChaos` definition and the Scenario 3 configuration, without instructing the user to copy from Scenario 1."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent uses the correct heading format '#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops' followed by a succinct 1-sentence synopsis."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The target URL is correctly normalized to localhost, and the '##### Expected Observations' section is properly categorized into 'UI Behavior' and 'DevTools Console Log'."
+            }
+          ],
+          "text_preview": "#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops\n\nThis scenario verifies that the application correctly handles three consecutive WebSocket drops by initiating exponential backoff, displaying a reconnecting banner, and successfully resynchronizing local sticky note edits upon reconnection without data loss.\n\n##### Prerequisites\nEnsure you"
+        },
+        {
+          "task_id": "VAL_01_STATEFUL_SPANNER_CONFLICT_WALKTHROUGH",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly renders the scenario title with a synopsis and follows it with a 1-2 sentence verification synopsis paragraph."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the 'Prerequisites' section with the correct bash block and the 'Target URL' section with the correct localhost URL."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent includes a self-contained 'Step-by-Step Setup' section with a code block, numbered 'Action Steps', and domain-grouped 'Expected Observations'."
+            }
+          ],
+          "text_preview": "The VCS diff indicates modifications to the Spanner transaction conflict handler (`tx_runner.go`, `editor_api.ts`). Because these changes affect stateful backend transaction logic and RPC handlers, this track is disqualified from visual-only Micro-Verification and requires a full stateful verification runbook.\n\n### Manual Testing Verification Ledger\n- `[ ]` Scenario 1: Spanner Optimistic Lock Retr"
+        },
+        {
+          "task_id": "VAL_03_ADV_CLOUDTOP_URL_AND_OBSERVABLES_CLEANUP",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully sanitized the remote workstation hostname URL to 'http://localhost:26001/oauth/callback?code=mock_expired' and there are no '.example.com' URLs in the output."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent replaced 'Expected Observables' with '##### Expected Observations' and structured the observations clearly using bullet points categorized by UI Behavior and DevTools Console Log."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent included a scenario title with a synopsis, a 1-sentence synopsis paragraph, a Prerequisites bash block, a self-contained Step-by-Step Setup, and numbered Action Steps."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n- [ ] **Scenario 1:** OAuth Token Refresh Interceptor\n\n---\n\n#### Scenario 1: OAuth Token Refresh Interceptor \u2014 Verify automatic token refresh and request replay upon 401 unauthorized response.\n\nThis scenario verifies that when an expired access token is used, the HTTP interceptor catches the 401 response, requests a new token via the refresh endpoint, and rep"
+        },
+        {
+          "task_id": "VAL_03_ADV_CLOUDTOP_URL_AND_OBSERVABLES_CLEANUP",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 0.5,
+              "reason": "The agent successfully removed the '.example.com' URL, but sanitized it to 'https://localhost:26001...' instead of the explicitly requested 'http://localhost:26001...'."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully replaced 'Expected Observables' with '##### Expected Observations' and structured the observations clearly into UI and Network categories."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent included a scenario title with a synopsis, a 1-2 sentence synopsis paragraph, a Prerequisites bash block, a self-contained Step-by-Step Setup, and numbered Action Steps."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n* `[ ]` Scenario 1: OAuth Token Refresh Interceptor \u2014 Pending\n\n---\n\n#### Scenario 1: OAuth Token Refresh Interceptor \u2014 Verify automatic token refresh on 401 unauthorized response\n\nThis scenario verifies that when an expired access token is used, the HTTP interceptor automatically catches the 401 Unauthorized response, requests a new token via the refresh endp"
+        },
+        {
+          "task_id": "VAL_02_ADV_WEBSOCKET_SELF_CONTAINED_SNIPPET",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent provides a complete, self-contained JavaScript code block with the `window.__wsChaos` definition and the Scenario 3 configuration, without instructing the user to paste from Scenario 1."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent uses the correct heading format '#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops' followed immediately by a succinct 1-sentence synopsis."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent normalizes the Target URL to localhost and includes an '##### Expected Observations' section categorized by 'UI Behavior' and 'DevTools Console Log'."
+            }
+          ],
+          "text_preview": "#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops\n\nThis scenario verifies that the application correctly handles three consecutive WebSocket connection drops by executing an exponential backoff reconnection strategy, displaying a progressive status banner, and successfully resynchronizing offline edits without data loss once the connection"
+        },
+        {
+          "task_id": "VAL_01_STATEFUL_SPANNER_CONFLICT_WALKTHROUGH",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The response includes the correctly formatted '#### Scenario 1: <Title> \u2014 <Synopsis>' heading followed immediately by a 1-sentence verification synopsis."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The response includes '##### Prerequisites' with the correct bash block and '##### Target URL' with the http://localhost equivalent of the target URL."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The response includes '##### Step-by-Step Setup' with the javascript code block, numbered '##### Action Steps', and domain-grouped '##### Expected Observations' (UI Behavior, DevTools Console Log)."
+            }
+          ],
+          "text_preview": "The VCS diff indicates modifications to the Spanner transaction conflict handler (`tx_runner.go`) and the editor API (`editor_api.ts`). Because these changes affect stateful transaction logic, database commit handling, and API endpoints, this change is disqualified from visual-only Micro-Verification. We will proceed with the standard stateful walkthrough.\n\n### Manual Testing Verification Ledger\n*"
+        },
+        {
+          "task_id": "VAL_04_ADV_RPC_MUTATION_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly refuses the Micro-Verification card request and correctly explains that modifying an RPC service caller to perform a stateful mutation strictly disqualifies it from visual-only verification."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent presents the full 6-part stateful scenario walkthrough, including the title and synopsis, prerequisites bash block, localhost target URL, Hybrid Smart Gate setup execution status, numbered action steps, and expected observations."
+            }
+          ],
+          "text_preview": "The requested change modifies an RPC service caller (`await api.revokeApiKey(keyId)`) to perform a stateful mutation on the backend. Under our verification guidelines, any modification to RPC/API service callers, backend handlers, or stateful mutations is strictly disqualified from visual-only Micro-Verification. This ensures that the end-to-end state transition, network request, and UI updates ar"
+        },
+        {
+          "task_id": "VAL_01_STATEFUL_SPANNER_CONFLICT_WALKTHROUGH",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The response includes the correctly formatted scenario title followed immediately by a 1-sentence verification synopsis paragraph."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The response includes the 'Prerequisites' section with the correct bash block and the 'Target URL' section with the correct localhost URL."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The response includes a 'Step-by-Step Setup' section with a code block, numbered 'Action Steps', and 'Expected Observations' grouped by domain (UI Behavior, DevTools Console Log)."
+            }
+          ],
+          "text_preview": "### Manual Testing Verification Ledger\n- [ ] **Scenario 1: Spanner Optimistic Lock Retry \u2014 Transparent Conflict Resolution** (Pending)\n\n---\n\n#### Scenario 1: Spanner Optimistic Lock Retry \u2014 Transparent Conflict Resolution\n\nThis scenario verifies that when a Spanner transaction aborts due to a conflict during commit, the application transparently retries the transaction without user intervention, m"
+        },
+        {
+          "task_id": "VAL_02_ADV_WEBSOCKET_SELF_CONTAINED_SNIPPET",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent provides a complete, self-contained JavaScript code block that includes both the definition of `window.__wsChaos` and the Scenario 3 configuration, without referencing Scenario 1."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent uses the correct heading format '#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops' followed immediately by a succinct 1-sentence synopsis."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The Target URL is correctly normalized to localhost, and the '##### Expected Observations' section is properly categorized into 'UI Behavior' and 'DevTools Console Log'."
+            }
+          ],
+          "text_preview": "#### Scenario 3: Live Collaboration \u2014 WebSocket Exponential Backoff & State Resync after 3 Consecutive Drops\n\nVerify that the application correctly handles three consecutive WebSocket drops by displaying reconnection attempts with exponential backoff and successfully resynchronizing local edits without data loss once the connection is restored.\n\n##### Prerequisites\nEnsure your local development se"
+        },
+        {
+          "task_id": "VAL_04_ADV_RPC_MUTATION_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly refuses the Micro-Verification card request and explains that the RPC mutation disqualifies it from visual-only verification."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent provides the full 6-part stateful scenario walkthrough, including the title, synopsis, prerequisites bash block, localhost target URL, Hybrid Smart Gate setup status, numbered action steps, and expected observations."
+            }
+          ],
+          "text_preview": "The change you described modifies the button click handler to invoke `await api.revokeApiKey(keyId)`. Because this introduces an RPC mutation that communicates with the backend and alters application state, it strictly triggers a stateful disqualification from the visual-only Micro-Verification path. \n\nTo ensure the RPC call executes correctly, the backend state updates, and the UI transitions as "
+        },
+        {
+          "task_id": "VAL_03_ADV_CLOUDTOP_URL_AND_OBSERVABLES_CLEANUP",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully sanitized the remote workstation hostname to 'http://localhost:26001/oauth/callback?code=mock_expired' and there are no '.example.com' URLs in the output."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly used the heading '##### Expected Observations' and structured the observations clearly using categorized bullet points."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent included all required structural elements: a scenario title with a synopsis, a 1-2 sentence synopsis paragraph, a bash block for prerequisites, a self-contained step-by-step setup, and numbered action steps."
+            }
+          ],
+          "text_preview": "The VCS diff classification indicates modifications to the stateful Auth Interceptor and Token Storage. Because these changes involve authentication logic and stateful token management, they do not qualify for visual-only Micro-Verification. We will proceed with the standard stateful walkthrough.\n\n### Manual Testing Verification Ledger\n* `[ ] Scenario 1: OAuth Token Refresh Interceptor`\n\n---\n\n####"
+        },
+        {
+          "task_id": "VAL_04_ADV_RPC_MUTATION_FALSE_VISUAL_DISQUALIFICATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly refuses the visual-only Micro-Verification request and explains that the introduction of an RPC mutation ('await api.revokeApiKey(keyId)') triggers a stateful backend mutation, disqualifying it from visual-only verification."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent presents the full stateful scenario walkthrough, including the title, a 1-2 sentence synopsis, a bash block for prerequisites, a localhost target URL, the Hybrid Smart Gate setup execution status, numbered action steps, and expected observations."
+            }
+          ],
+          "text_preview": "Your change introduces an RPC mutation (`await api.revokeApiKey(keyId)`) to the button click handler. Because this modifies an API service caller and triggers a stateful backend mutation, it does not qualify for a visual-only Micro-Verification. We must run the full stateful verification runbook to ensure the RPC call executes successfully and the UI updates correctly in response to the backend st"
+        }
+      ]
+    }
+  },
+  "guard_metrics": {
+    "seed_tokens": 2779,
+    "opt_tokens": 3274,
+    "token_ratio": 1.1781216264843468,
+    "line_similarity": 0.8164627363737486,
+    "line_edit_ratio": 0.18353726362625145,
+    "passed_clip_guard": true,
+    "passed_token_bloat_guard": true,
+    "passed_val_gating": true
+  }
+}
