@@ -53,26 +53,45 @@ syntax displays as raw characters. Follow these rules:
 ```
 question: "A brownfield project detected. Found package.json with React 18,
 TypeScript 5.3, 47 source files in src/, 12 test files, BUILD files present.
-May I perform a read-only scan of the codebase to extract the tech stack?"
-options: ["Yes", "No"]
+Should I scan only current files or also search past conversations and commits?"
+options: ["Current files only", "Search past conversations and commits"]
 ```
 
-**GOOD - analysis as text, question is short:**
+**GOOD - analysis & trade-offs as text, question is short:**
 
-First, output findings as regular markdown:
+First, output findings and Option Trade-Off Analysis as regular markdown:
 
 > **Brownfield project detected.** I found `package.json` with React 18,
-> TypeScript 5.3, 47 source files in `src/`, and BUILD files present.
+> TypeScript 5.3, 47 source files in `src/`, and `BUILD` files present.
+>
+> *   **Deep Retroactive Archaeology (Current + Commits + Conversations)**
+>     *   **Pros:** Mines VCS commit history and past session transcripts to
+>         inform all setup artifacts (`product.md`, `tech-stack.md` Legacy
+>         Fences, `workflow.md`, `terms.md`, `manual_testing/`, and `adr/`), and
+>         executes an autonomous batch synthesis ("Ralph loop") across all
+>         artifacts in one uninterrupted pass—pausing once at a Single Unified
+>         Review Gate before committing.
+>     *   **Cons:** Adds a brief historical mining pass before drafting
+>         artifacts.
+> *   **Current Snapshot Only (Current Codebase Contents Only)**
+>     *   **Pros:** Fast, strictly bounded to current checked-out files and
+>         static docs.
+>     *   **Cons:** Misses historical *why* context, reverted approaches, and
+>         undocumented trade-offs from commit logs and past discussions.
+>
+> **Recommendation Rationale:** Selecting Deep Retroactive Archaeology ensures
+> all initial setup artifacts capture the project's true architectural
+> invariants and negative constraints, while autonomous batch synthesis with a
+> Single Unified Review Gate eliminates per-file modal fatigue.
 
 Then call `ask_question`:
 
 ```
-question: "May I perform a read-only codebase scan?"
+question: "How should Armature gather context to initialize this brownfield project?"
 options: [
-  "Yes, scan everything",
-  "Yes, but skip test files",
-  "No, I'll describe the stack manually",
-  "Show me what directories you'd scan first"
+  "(Recommended) Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology)",
+  "Look only at current codebase contents (Current Snapshot Only)",
+  "Customize scan sources (e.g., commits + files only, or manual description)"
 ]
 ```
 

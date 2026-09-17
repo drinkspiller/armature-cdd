@@ -6,6 +6,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.0] - 2026-09-17
+
+### Added
+
+-   **Retroactive Brownfield Archaeology & Autonomous Batch Setup Synthesis
+    (`skills/arm-setup/SKILL.md`, `rules/armature_antigravity.md`,
+    `rules/armature_adr_preflight.md`)**:
+    -   **Brownfield Context Discovery Scope Gate (§2.0)**: When initializing a
+        brownfield project (detected via `package.json`, `Cargo.toml`, `go.mod`,
+        `BUILD`, `requirements.txt`, or source directories), Armature outputs a
+        structured Option Trade-Off Analysis (`Pros`/`Cons` + `Recommendation
+        Rationale`) and invokes `ask_question` with three calibrated choices:
+        1.  `(Recommended) Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology)`
+        2.  `Look only at current codebase contents (Current Snapshot Only)`
+        3.  `Customize scan sources (e.g., commits + files only, or manual description)`
+    -   **Multi-Source Historical & Conversational Mining**: Deep Retroactive
+        Archaeology queries VCS commit logs (`git log -n 50 --stat`), past
+        session transcripts, and persistent agent memory alongside current
+        codebase manifests to recover original product vision, user personas,
+        deprecated module boundaries (`## Legacy & Deprecated Boundaries`),
+        ubiquitous domain glossary terms (`terms.md`), historical test fixtures
+        (`manual_testing/<domain>.md`), and unrecorded architectural invariants
+        (`adr/NNNN-slug.md`).
+    -   **Autonomous Batch Synthesis ("Ralph Loop" Execution — Mode A §3.1)**:
+        Eliminates sequential per-file modal fatigue during brownfield setup.
+        Synthesizes and writes all initial setup artifacts (`product.md`,
+        `product-guidelines.md`, `tech-stack.md`, `code_styleguides/`,
+        `workflow.md`, `tracks.md`, `index.md`, `terms.md`, `manual_testing/`,
+        and `adr/`) autonomously in a single uninterrupted pass, pausing **once**
+        at a **Single Unified Review Gate** for human approval or surgical
+        targeted edits before committing.
+    -   **Multi-Seed SkillOpt Benchmark & Guardrails
+        (`evals/skillopt/run_brownfield_setup_opt.py`, `tasks/train_brownfield_setup.jsonl`,
+        `tasks/val_brownfield_setup.jsonl`)**: Added a 10-scenario Two-Tier
+        assertion suite ($|D_{\text{train}}| = 6$, $|D_{\text{val}}| = 4$, 50%
+        adversarial red-team floor across React/TypeScript, Node/Express,
+        Rust/gRPC, Go/Kubernetes, C++/Bazel, and Python/PyTorch) evaluated across
+        $K=3$ stochastic seeds. Achieved a **91.67% Held-Out Validation Mean**
+        (up from `25.00%` baseline, `+66.67%` lift), **83.81% Student's $t$
+        Lower Bound**, **0 Validation Invariant Vetoes** (`12/12` rollouts passed
+        all invariants), and `1.1985` token expansion ratio ($\le 1.20$ ceiling).
+
 ## [0.26.0] - 2026-09-17
 
 ### Changed
