@@ -1,12 +1,12 @@
 ---
 name: arm-bug-bash-triage
-description: Triage, deduplicate, and file GitHub Issues from bug bash logs and live tracking boards, and seal sessions into living repository runbooks. Reconciles GitHub Tracking Issue comments with per-user JSONL/Markdown logs, clusters duplicate findings, queries existing issues for duplicates, files paced GitHub Issues (with TRIAGED_ISSUES.md fallback), and codifies verified failure modes into manual_testing/. Use after a bug bash session or when executing /arm-bug-bash-triage.
+description: "[BETA — Experimental] Triage, deduplicate, and file GitHub Issues from bug bash logs and live tracking boards, and seal sessions into living repository runbooks. Reconciles GitHub Tracking Issue comments with per-user JSONL/Markdown logs, clusters duplicate findings, queries existing issues for duplicates, files paced GitHub Issues (with TRIAGED_ISSUES.md fallback), and codifies verified failure modes into manual_testing/. Use after a bug bash session or when executing /arm-bug-bash-triage."
 persona: Armature Triage Specialist
 ---
 
-# /arm-bug-bash-triage — Post-Bash Triage, Deduplication & Sealing
+# /arm-bug-bash-triage — Post-Bash Triage, Deduplication & Sealing [BETA]
 
-**Purpose:** Provide post-bash triage, deduplication, and issue filing. Reconciles findings between the live GitHub Tracking Issue and per-user JSONL/Markdown logs, clusters duplicate reports across teammates, searches existing repository issues for duplicates, creates enriched issues with rate-limit protection (or exports structured Markdown payloads for non-GitHub trackers), and permanently codifies newly discovered failure modes into living domain runbooks.
+**Purpose:** [BETA — Experimental] Provide post-bash triage, deduplication, and issue filing. Reconciles findings between the live GitHub Tracking Issue and per-user JSONL/Markdown logs, clusters duplicate reports across teammates, searches existing repository issues for duplicates, creates enriched issues with rate-limit protection (or exports structured Markdown payloads for non-GitHub trackers), and permanently codifies newly discovered failure modes into living domain runbooks.
 
 ## Architectural Principles
 
@@ -19,6 +19,15 @@ persona: Armature Triage Specialist
 ---
 
 ## Protocol
+
+### 0. Experimental Status Banner (Mandatory)
+
+Whenever `/arm-bug-bash-triage` is invoked, you MUST prepend the following experimental status banner at the very top of your first chat response before proceeding with multi-source reconciliation:
+
+> [!NOTE]
+> **🧪 Experimental Feature (Beta):** The Armature Bug Bash suite (`/arm-new-bug-bash`, `/arm-bash`, `/arm-bug-bash-triage`) is currently in beta. Please report workflow friction or edge cases.
+
+---
 
 ### 1. Initialization & Multi-Source Reconciliation
 

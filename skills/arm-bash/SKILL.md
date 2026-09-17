@@ -1,12 +1,12 @@
 ---
 name: arm-bash
-description: Guide bug bash participants through interactive testing scenarios, balance coverage across feature areas, manage environment setup via the Hybrid Smart Gate, capture off-script bugs, and log findings without VCS conflicts. Use when participating in a team bug bash, running bug bash scenarios, or executing /arm-bash.
+description: "[BETA — Experimental] Guide bug bash participants through interactive testing scenarios, balance coverage across feature areas, manage environment setup via the Hybrid Smart Gate, capture off-script bugs, and log findings without VCS conflicts. Use when participating in a team bug bash, running bug bash scenarios, or executing /arm-bash."
 persona: Armature QA Facilitator
 ---
 
-# /arm-bash — Interactive Bug Bash Facilitator & Coverage Balancer
+# /arm-bash — Interactive Bug Bash Facilitator & Coverage Balancer [BETA]
 
-**Purpose:** Act as an interactive pair-testing copilot for engineers participating in a bug bash. Loads session charters from `session.json`, balances test coverage across teammates, sets up local or preview test environments safely via the Hybrid Smart Gate, captures both scripted and exploratory bugs, and logs findings to conflict-free per-user files and live GitHub Tracking Issues.
+**Purpose:** [BETA — Experimental] Act as an interactive pair-testing copilot for engineers participating in a bug bash. Loads session charters from `session.json`, balances test coverage across teammates, sets up local or preview test environments safely via the Hybrid Smart Gate, captures both scripted and exploratory bugs, and logs findings to conflict-free per-user files and live GitHub Tracking Issues.
 
 ## Architectural Principles
 
@@ -19,6 +19,15 @@ persona: Armature QA Facilitator
 ---
 
 ## Protocol
+
+### 0. Experimental Status Banner (Mandatory)
+
+Whenever `/arm-bash` is invoked, you MUST prepend the following experimental status banner at the very top of your first chat response before proceeding with session discovery:
+
+> [!NOTE]
+> **🧪 Experimental Feature (Beta):** The Armature Bug Bash suite (`/arm-new-bug-bash`, `/arm-bash`, `/arm-bug-bash-triage`) is currently in beta. Please report workflow friction or edge cases.
+
+---
 
 ### 1. Session Discovery & Participant Identity
 
