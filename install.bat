@@ -4,11 +4,13 @@ setlocal EnableDelayedExpansion
 :: Armature (OSS) Skills & Rules Installer (Windows)
 :: =============================================================================
 
-set "VERSION=0.25.1"
+set "VERSION=0.26.0"
 set "FLAGS_dry_run=0"
 set "FLAGS_force=0"
 set "FLAGS_uninstall=0"
 set "FLAGS_update=0"
+set "FLAGS_experimental=0"
+set "EXPERIMENTAL_EXPLICIT=0"
 
 :: Parse arguments
 :parse_args
@@ -17,6 +19,10 @@ if /i "%~1"=="--dry_run" ( set "FLAGS_dry_run=1" & shift & goto :parse_args )
 if /i "%~1"=="--force" ( set "FLAGS_force=1" & shift & goto :parse_args )
 if /i "%~1"=="--uninstall" ( set "FLAGS_uninstall=1" & shift & goto :parse_args )
 if /i "%~1"=="--update" ( set "FLAGS_update=1" & shift & goto :parse_args )
+if /i "%~1"=="--experimental" ( set "FLAGS_experimental=1" & set "EXPERIMENTAL_EXPLICIT=1" & shift & goto :parse_args )
+if /i "%~1"=="--with-experimental" ( set "FLAGS_experimental=1" & set "EXPERIMENTAL_EXPLICIT=1" & shift & goto :parse_args )
+if /i "%~1"=="--no-experimental" ( set "FLAGS_experimental=0" & set "EXPERIMENTAL_EXPLICIT=1" & shift & goto :parse_args )
+if /i "%~1"=="--without-experimental" ( set "FLAGS_experimental=0" & set "EXPERIMENTAL_EXPLICIT=1" & shift & goto :parse_args )
 if /i "%~1"=="--help" ( goto :show_help )
 if /i "%~1"=="-h" ( goto :show_help )
 echo Unknown argument: %~1
@@ -24,11 +30,13 @@ exit /b 1
 
 :show_help
 echo Usage: install.bat [OPTIONS]
-echo   --dry_run    Preview changes without writing files
-echo   --force      Overwrite existing files without backup
-echo   --update     Update to the latest version (implies --force)
-echo   --uninstall  Remove all installed files
-echo   --help, -h   Show this help message
+echo   --dry_run         Preview changes without writing files
+echo   --experimental    Include experimental Beta skills (/arm-bash, /arm-new-bug-bash, /arm-bug-bash-triage)
+echo   --no-experimental Exclude experimental Beta skills
+echo   --force           Overwrite existing files without backup
+echo   --update          Update to the latest version (implies --force)
+echo   --uninstall       Remove all installed files
+echo   --help, -h        Show this help message
 exit /b 0
 
 :args_done
@@ -44,6 +52,14 @@ set "TARGET_SKILLS_ROOT=%TARGET_PLUGIN_DIR%\skills"
 set "TARGET_RULES_ROOT=%TARGET_PLUGIN_DIR%\rules"
 set "TARGET_ASSETS_DIR=%TARGET_SKILLS_ROOT%\arm-setup\assets"
 set "TARGET_MANIFEST_ROOT=%TARGET_PLUGIN_DIR%"
+
+if "%EXPERIMENTAL_EXPLICIT%"=="0" (
+    if "%FLAGS_update%"=="1" (
+        if exist "%TARGET_SKILLS_ROOT%\arm-bash\SKILL.md" (
+            set "FLAGS_experimental=1"
+        )
+    )
+)
 
 echo.
 echo   ==================================================
@@ -117,9 +133,28 @@ if exist "%SCRIPT_DIR%\.claude-plugin\marketplace.json" call :install_file "%SCR
 
 :: Sub-Skills
 echo.
-echo --- Installing Armature Command Skills ---
-for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
+echo --- Installing Armature Core Command Skills ---
+for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat) do (
     call :install_file "%SCRIPT_DIR%\skills\%%S\SKILL.md" "%TARGET_SKILLS_ROOT%\%%S\SKILL.md"
+)
+
+if "%FLAGS_experimental%"=="1" (
+    echo.
+    echo --- Installing Experimental Bug Bash Skills [BETA] ---
+    for %%S in (arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
+        call :install_file "%SCRIPT_DIR%\skills\%%S\SKILL.md" "%TARGET_SKILLS_ROOT%\%%S\SKILL.md"
+    )
+) else (
+    for %%S in (arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
+        if exist "%TARGET_SKILLS_ROOT%\%%S" (
+            if "%FLAGS_dry_run%"=="1" (
+                echo Would remove disabled Beta skill directory: %TARGET_SKILLS_ROOT%\%%S
+            ) else (
+                rmdir /s /q "%TARGET_SKILLS_ROOT%\%%S"
+                echo Removed disabled Beta skill directory: %TARGET_SKILLS_ROOT%\%%S
+            )
+        )
+    )
 )
 
 if exist "%TARGET_SKILLS_ROOT%\arm-revert" (

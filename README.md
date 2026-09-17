@@ -117,6 +117,14 @@ Once installed, the `/arm-*` commands are available globally in chat:
 | `/arm-chat` | Ceremony-free context ingestion with automatic glossary sync |
 | `/arm-undo` | VCS-aware surgical task, phase, or track rollback |
 
+### Experimental Commands (Beta — Opt-In via `--experimental`)
+
+| Command | Status | Purpose |
+| :--- | :---: | :--- |
+| `/arm-new-bug-bash` | 🧪 **BETA** | Interactive scoping interview and reproducible environment setup for Bug Bash tracks |
+| `/arm-bash` | 🧪 **BETA** | Autonomous multi-turn bug bash execution loop with adversarial verification |
+| `/arm-bug-bash-triage` | 🧪 **BETA** | Interactive findings triage, deduplication, and track conversion |
+
 ---
 
 ## Evaluation Results & Benchmark
@@ -139,7 +147,7 @@ Armature is benchmarked against alternative Spec-Driven Development (SDD) and Co
 
 Armature installs as a modular plugin bundle containing skills, rule protocols, assets, and packaging manifests:
 
-### Plugin Manifest & Skills
+### Plugin Manifest & Core Skills
 
 | File | Location in Plugin Bundle | Agent Persona | Purpose |
 | :--- | :--- | :--- | :--- |
@@ -157,6 +165,14 @@ Armature installs as a modular plugin bundle containing skills, rule protocols, 
 | `arm-undo/` | `skills/arm-undo/` | Armature Surgeon | `/arm-undo` — Surgical rollbacks with destructive operation shielding |
 | `arm-drift/` | `skills/arm-drift/` | Armature Drift Auditor | `/arm-drift` — Continuous 3-tier drift auditing across docs, interfaces, and packaging |
 | `arm-chat/` | `skills/arm-chat/` | Armature Guide | `/arm-chat` — Ceremony-free context ingestion with automatic glossary sync |
+
+### Experimental Command Skills (Beta — Opt-In via `--experimental`)
+
+| File | Location in Plugin Bundle | Agent Persona | Purpose |
+| :--- | :--- | :--- | :--- |
+| `arm-new-bug-bash/` | `skills/arm-new-bug-bash/` | Bug Bash Scoper | `/arm-new-bug-bash` — `[BETA]` Interactive scoping interview and reproducible environment setup |
+| `arm-bash/` | `skills/arm-bash/` | Bug Bash Hunter | `/arm-bash` — `[BETA]` Autonomous multi-turn bug bash execution loop with adversarial verification |
+| `arm-bug-bash-triage/` | `skills/arm-bug-bash-triage/` | Bug Bash Triager | `/arm-bug-bash-triage` — `[BETA]` Interactive findings triage, deduplication, and track conversion |
 
 ### Rules (MVC Architecture)
 
@@ -182,11 +198,17 @@ Armature installs as a modular plugin bundle containing skills, rule protocols, 
 # Preview what will happen (no files written)
 bash install.sh --dry_run
 
+# Include experimental Beta skills (/arm-bash, /arm-new-bug-bash, /arm-bug-bash-triage)
+bash install.sh --experimental
+
 # Overwrite without creating backups
 bash install.sh --force
 
-# Update to latest version
+# Update to latest version (auto-preserves existing Beta skills state)
 bash install.sh --update
+
+# Update and explicitly disable Beta skills
+bash install.sh --update --no-experimental
 
 # Windows installation
 install.bat
@@ -200,9 +222,11 @@ bash install.sh --uninstall
 | Flag | Description |
 | :--- | :--- |
 | `--dry_run` | Preview changes without writing or deleting files |
+| `--experimental` | Include experimental Beta skills (`/arm-bash`, `/arm-new-bug-bash`, `/arm-bug-bash-triage`) |
+| `--no-experimental` | Explicitly exclude or prune experimental Beta skills |
 | `--force` | Overwrite existing files without creating `.bak` backups |
 | `--uninstall` | Remove all installed Armature plugin and legacy files |
-| `--update` | Update to the latest version (implies `--force`) |
+| `--update` | Update to the latest version (implies `--force`; preserves existing Beta skills state) |
 | `--target=<path>` | Custom install target directory (defaults to global plugin directory `~/.gemini/config/plugins/armature-cdd`) |
 | `--release_notes` | Show release notes for the current version from `CHANGELOG.md` |
 | `--help` | Show usage information |
@@ -227,5 +251,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.22.2** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.26.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 

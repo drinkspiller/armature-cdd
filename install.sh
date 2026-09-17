@@ -26,9 +26,9 @@
 #     │   ├── arm-undo/SKILL.md
 #     │   ├── arm-drift/SKILL.md
 #     │   ├── arm-chat/SKILL.md
-#     │   ├── arm-new-bug-bash/SKILL.md
-#     │   ├── arm-bash/SKILL.md
-#     │   └── arm-bug-bash-triage/SKILL.md
+#     │   ├── arm-new-bug-bash/SKILL.md [BETA — opt-in via --experimental]
+#     │   ├── arm-bash/SKILL.md         [BETA — opt-in via --experimental]
+#     │   └── arm-bug-bash-triage/SKILL.md [BETA — opt-in via --experimental]
 #     └── rules/
 #         ├── armature_protocol.md
 #         ├── armature_antigravity.md
@@ -107,17 +107,39 @@ DEFINE_bool uninstall false "Remove all installed files"
 DEFINE_bool update false "Update to the latest version (implies --force)"
 DEFINE_string target "global" "Install target: global (default, ~/.gemini/config/plugins/armature-cdd)"
 DEFINE_bool release_notes false "Show release notes for the current version"
+DEFINE_bool experimental false "Include experimental Beta skills (/arm-bash, /arm-new-bug-bash, /arm-bug-bash-triage)"
+
+# Track whether experimental flag was explicitly specified on CLI
+_EXPERIMENTAL_EXPLICIT=0
+for arg in "$@"; do
+  case "$arg" in
+    --experimental|--with-experimental|--with_experimental)
+      _EXPERIMENTAL_EXPLICIT=1
+      set -- "$@" "--experimental"
+      ;;
+    --no-experimental|--noexperimental|--without-experimental|--without_experimental)
+      _EXPERIMENTAL_EXPLICIT=1
+      set -- "$@" "--noexperimental"
+      ;;
+  esac
+done
 
 parse_flags "$@"
 
 
-VERSION="0.25.1"
+VERSION="0.26.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_ASSETS_DIR="${SCRIPT_DIR}/skills/arm-setup/assets"
-# Sub-skill names (each has its own directory under skills/)
-SUB_SKILL_NAMES=(arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage)
+# Core sub-skill names (always installed)
+CORE_SKILL_NAMES=(arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat)
+# Experimental Beta sub-skill names (opt-in via --experimental)
+EXPERIMENTAL_SKILL_NAMES=(arm-new-bug-bash arm-bash arm-bug-bash-triage)
+# All available sub-skills in source repository
+SUB_SKILL_NAMES=("${CORE_SKILL_NAMES[@]}" "${EXPERIMENTAL_SKILL_NAMES[@]}")
+# Active sub-skills to install (populated after target resolution)
+ACTIVE_SKILL_NAMES=("${CORE_SKILL_NAMES[@]}")
 # Rules files (always-on rule files for MVC architecture)
 SOURCE_RULES_DIR="${SCRIPT_DIR}/rules"
 RULE_FILE_NAMES=(armature_protocol.md armature_antigravity.md)
@@ -238,10 +260,48 @@ select_target() {
 }
 
 # =============================================================================
+# Resolve Experimental Beta Skills State
+# =============================================================================
+
+resolve_experimental_skills() {
+  if [[ "${_EXPERIMENTAL_EXPLICIT}" -eq 0 ]]; then
+    if [[ "${FLAGS_update}" -eq "${FLAGS_TRUE}" || "${FLAGS_force}" -eq "${FLAGS_TRUE}" ]]; then
+      if [[ -d "${TARGET_SKILLS_ROOT}/arm-bash" ]]; then
+        FLAGS_experimental="${FLAGS_TRUE}"
+        msg_info "Detected existing Beta skills installation — preserving experimental skills."
+      else
+        FLAGS_experimental="${FLAGS_FALSE}"
+      fi
+    elif [[ -t 0 && "${FLAGS_dry_run}" -ne "${FLAGS_TRUE}" ]]; then
+      echo ""
+      echo -e "  ${YELLOW}🧪 Experimental Bug Bash Suite [BETA]${RESET}"
+      echo -e "     Includes ${CYAN}/arm-new-bug-bash${RESET}, ${CYAN}/arm-bash${RESET}, and ${CYAN}/arm-bug-bash-triage${RESET}."
+      read -r -p "     Include experimental Beta skills? [y/N]: " exp_choice
+      case "${exp_choice}" in
+        [yY]|[yY][eE][sS])
+          FLAGS_experimental="${FLAGS_TRUE}"
+          ;;
+        *)
+          FLAGS_experimental="${FLAGS_FALSE}"
+          ;;
+      esac
+      echo ""
+    fi
+  fi
+
+  if [[ "${FLAGS_experimental}" -eq "${FLAGS_TRUE}" ]]; then
+    ACTIVE_SKILL_NAMES=("${CORE_SKILL_NAMES[@]}" "${EXPERIMENTAL_SKILL_NAMES[@]}")
+  else
+    ACTIVE_SKILL_NAMES=("${CORE_SKILL_NAMES[@]}")
+  fi
+}
+
+# =============================================================================
 # Build target file list (after target selection)
 # =============================================================================
 
 build_target_list() {
+  resolve_experimental_skills
   TARGET_ASSETS_DIR="${TARGET_SKILLS_ROOT}/arm-setup/assets"
   ALL_TARGET_FILES=(
     "${TARGET_ASSETS_DIR}/workflow_template.md"
@@ -256,7 +316,7 @@ build_target_list() {
   if [[ -f "${SCRIPT_DIR}/.claude-plugin/marketplace.json" ]]; then
     ALL_TARGET_FILES+=("${TARGET_PLUGIN_DIR}/.claude-plugin/marketplace.json")
   fi
-  for sub_skill in "${SUB_SKILL_NAMES[@]}"; do
+  for sub_skill in "${ACTIVE_SKILL_NAMES[@]}"; do
     ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/SKILL.md")
   done
   for rule_file in "${RULE_FILE_NAMES[@]}"; do
@@ -762,11 +822,31 @@ if [[ -f "${SCRIPT_DIR}/.claude-plugin/marketplace.json" ]]; then
 fi
 
 # --- Sub-Skills ---
-section "🔧 Installing Armature Command Skills"
+section "🔧 Installing Armature Core Command Skills"
 echo ""
-for sub_skill in "${SUB_SKILL_NAMES[@]}"; do
+for sub_skill in "${CORE_SKILL_NAMES[@]}"; do
   install_file "${SCRIPT_DIR}/skills/${sub_skill}/SKILL.md" "${TARGET_SKILLS_ROOT}/${sub_skill}/SKILL.md"
 done
+
+if [[ "${FLAGS_experimental}" -eq "${FLAGS_TRUE}" ]]; then
+  section "🧪 Installing Experimental Bug Bash Skills [BETA]"
+  echo ""
+  for exp_skill in "${EXPERIMENTAL_SKILL_NAMES[@]}"; do
+    install_file "${SCRIPT_DIR}/skills/${exp_skill}/SKILL.md" "${TARGET_SKILLS_ROOT}/${exp_skill}/SKILL.md"
+  done
+else
+  # Remove experimental skills if previously installed and now disabled
+  for exp_skill in "${EXPERIMENTAL_SKILL_NAMES[@]}"; do
+    if [[ -d "${TARGET_SKILLS_ROOT}/${exp_skill}" ]]; then
+      if [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]]; then
+        msg_info "${YELLOW}[dry-run]${NC} Would remove disabled Beta skill directory: ${CYAN}${TARGET_SKILLS_ROOT}/${exp_skill}${NC}"
+      else
+        rm -rf "${TARGET_SKILLS_ROOT}/${exp_skill}"
+        msg_success "Removed disabled Beta skill directory: ${CYAN}${TARGET_SKILLS_ROOT}/${exp_skill}${NC}"
+      fi
+    fi
+  done
+fi
 
 if [[ -d "${TARGET_SKILLS_ROOT}/arm-revert" ]]; then
   if [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]]; then
@@ -796,6 +876,11 @@ echo -e "${BOLD}Version:${RESET}     ${CYAN}${VERSION}${RESET}"
 echo -e "${BOLD}Source:${RESET}      ${CYAN}${SCRIPT_DIR}${RESET}"
 echo -e "${BOLD}Plugin dir:${RESET}  ${CYAN}${TARGET_PLUGIN_DIR}${RESET}"
 echo -e "${BOLD}Skills:${RESET}      ${CYAN}${TARGET_SKILLS_ROOT}/arm-*/${RESET}"
+if [[ "${FLAGS_experimental}" -eq "${FLAGS_TRUE}" ]]; then
+  echo -e "${BOLD}Beta Skills:${RESET} ${GREEN}Enabled${RESET} ${DIM}(/arm-new-bug-bash, /arm-bash, /arm-bug-bash-triage)${RESET}"
+else
+  echo -e "${BOLD}Beta Skills:${RESET} ${YELLOW}Disabled${RESET} ${DIM}(opt-in via --experimental)${RESET}"
+fi
 echo -e "${BOLD}Rules:${RESET}       ${CYAN}${TARGET_RULES_ROOT}/*.md${RESET}"
 echo -e "${BOLD}Files:${RESET}       ${CYAN}${#ALL_TARGET_FILES[@]} total${RESET}"
 echo ""

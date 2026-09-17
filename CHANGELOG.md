@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.26.0] - 2026-09-17
+
+### Changed
+
+-   **Multi-Surface Beta Badging & Opt-In Installer Gating for Bug Bash Suite
+    (`skills/arm-bash/SKILL.md`, `skills/arm-new-bug-bash/SKILL.md`,
+    `skills/arm-bug-bash-triage/SKILL.md`, `install.sh`, `install.bat`, `README.md`)**:
+    -   **IDE Autocomplete Badges (`SKILL.md` Frontmatter)**: Prefixed the YAML
+        `description:` field across `/arm-bash`, `/arm-new-bug-bash`, and
+        `/arm-bug-bash-triage` with `[BETA — Experimental]` so users clearly see
+        their experimental tier inside the `/` slash-command menu before
+        invocation.
+    -   **Runtime Experimental Status Banner (`SKILL.md` Step 0)**: Added a
+        mandatory Step 0 protocol rule instructing agents to prepend a
+        `> [!NOTE]` **🧪 Experimental Feature (Beta)** callout banner at the top
+        of the first chat response whenever any Bug Bash skill is executed.
+    -   **Installer Opt-In & Auto-Preservation (`install.sh`, `install.bat`)**:
+        Partitioned `SUB_SKILL_NAMES` into `CORE_SKILL_NAMES` (8 stable skills
+        installed by default) and `EXPERIMENTAL_SKILL_NAMES` (3 Beta Bug Bash
+        skills). Added `--experimental` (alias `--with-experimental`) and
+        `--no-experimental` (alias `--without-experimental`) CLI flags,
+        interactive terminal opt-in prompting (`[y/N]`), and automatic state
+        preservation during `--update` runs so existing Beta users retain their
+        opt-in configuration without manual flags.
+    -   **Documentation & Registry Separation (`README.md`)**: Added a dedicated
+        `### Experimental Command Skills (Beta — Opt-In via --experimental)`
+        table under `## What Gets Installed` and documented flag usage in
+        `README.md`.
+
 ## [0.25.1] - 2026-09-17
 
 ### Changed

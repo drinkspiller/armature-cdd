@@ -1,12 +1,12 @@
 ---
 name: arm-new-bug-bash
-description: Plan, scaffold, and launch structured team bug bash sessions. Automates test scenario generation from active feature tracks, provisions live tracking boards (GitHub Tracking Issues or VCS-native Markdown ledgers), configures test environments and accounts, and generates team launch invitations. Use when organizing a bug bash, preparing team QA charters, or executing /arm-new-bug-bash.
+description: "[BETA — Experimental] Plan, scaffold, and launch structured team bug bash sessions. Automates test scenario generation from active feature tracks, provisions live tracking boards (GitHub Tracking Issues or VCS-native Markdown ledgers), configures test environments and accounts, and generates team launch invitations. Use when organizing a bug bash, preparing team QA charters, or executing /arm-new-bug-bash."
 persona: Armature QA Architect
 ---
 
-# /arm-new-bug-bash — Bug Bash Session Architect & Scaffolding
+# /arm-new-bug-bash — Bug Bash Session Architect & Scaffolding [BETA]
 
-**Purpose:** Transform bug bashes from ad-hoc manual setup into structured, repository-grounded QA campaigns. Automatically extracts high-value test charters from active tracks, detects repository tracker capabilities (GitHub Issues via `gh` CLI vs. local VCS-native Markdown ledgers), codifies environment setup and test persona credentials, and produces a ready-to-share team launch invitation.
+**Purpose:** [BETA — Experimental] Transform bug bashes from ad-hoc manual setup into structured, repository-grounded QA campaigns. Automatically extracts high-value test charters from active tracks, detects repository tracker capabilities (GitHub Issues via `gh` CLI vs. local VCS-native Markdown ledgers), codifies environment setup and test persona credentials, and produces a ready-to-share team launch invitation.
 
 ## Architectural Principles
 
@@ -20,6 +20,15 @@ persona: Armature QA Architect
 ---
 
 ## Protocol
+
+### 0. Experimental Status Banner (Mandatory)
+
+Whenever `/arm-new-bug-bash` is invoked, you MUST prepend the following experimental status banner at the very top of your first chat response before proceeding with track discovery:
+
+> [!NOTE]
+> **🧪 Experimental Feature (Beta):** The Armature Bug Bash suite (`/arm-new-bug-bash`, `/arm-bash`, `/arm-bug-bash-triage`) is currently in beta. Please report workflow friction or edge cases.
+
+---
 
 ### 1. Context & Track Discovery
 
