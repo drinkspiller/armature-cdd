@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.25.1] - 2026-09-17
+
+### Changed
+
+-   **Canonical 6-Part Interactive Manual Verification Scenario Structure
+    (`skills/arm-review/SKILL.md`, `rules/armature_protocol.md`,
+    `skills/arm-setup/assets/manual_testing_template.md`)**:
+    -   **Structured Scenario Header & Synopsis**: Standardized interactive QA
+        scenario headings to `#### Scenario <ID>: <Title> — <Synopsis>` followed
+        immediately by a 1–2 sentence plain-English verification synopsis
+        explaining the exact state transition, timeout, or UI behavior under
+        test.
+    -   **Self-Contained Copy-Pasteable Snippet Invariant**: Whenever a scenario
+        requires executing a DevTools console snippet, mock payload, or CLI
+        fixture command, `##### Step-by-Step Setup` must reproduce the complete
+        copy-pastable code block inline with an italicized explanation below it.
+        Strictly forbids referencing earlier scenarios or clipboard history
+        (e.g., *"paste the snippet you loaded earlier"*).
+    -   **Strict Localhost URL Invariant & Zero-Echo Sanitization**: Replaced
+        legacy dual-URL blocks with `##### Target URL` containing exclusively
+        clickable `localhost` URLs (`http://localhost:<PORT>/<path>` or
+        `https://localhost:<PORT>/<path>`), omitting remote workstation hostnames
+        (`<REMOTE_HOST>.example.com`). Added the **Strict Zero-Echo Sanitization
+        Invariant** so agents silently sanitize draft runbooks without echoing
+        deprecated remote hostnames or quoting disqualified ASCII headers in
+        chat explanations.
+    -   **Terminology Cutover (`Expected Observations`)**: Renamed verification
+        sections from `"Expected Observables"` / `"Expected Outcome & Barrier
+        Checks"` to `##### Expected Observations` (grouped by observational
+        domain such as `**UI Behavior:**` and `**DevTools Console Log:**`) to
+        prevent ambiguity with reactive stream observables (`Observable`).
+    -   **SkillOpt Multi-Seed Benchmark Validation (`evals/skillopt/`)**:
+        Evaluated across 10 Two-Tier Rubric tasks (`6` train, `4` held-out val,
+        `K = 3` seeds, 30 rollouts per pass). Improved held-out validation pass
+        rate from `0.00%` (`24` vetoes) to **`98.61%`** (`0` vetoes across all 3
+        seeds, $+98.61\%$ lift, $\text{LB}_{90} = 0.9599 > 0.0000$).
+
 ## [0.25.0] - 2026-09-16
 
 ### Added
