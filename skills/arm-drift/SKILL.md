@@ -162,7 +162,10 @@ delegate `/arm-drift` scans to `invoke_subagent`):
         modified modern files like `new_component.ts`, `tech-stack.md`, or
         `product.md`) without outputting your complete Fixpoint Audit Report in
         markdown first! You MUST output your complete markdown Fixpoint Audit
-        Report—including the HUD banner (`🚧 Legacy Fence Active`), explicit
+        Report—including the active Deprecated Code Boundary banner (Adaptive
+        Verbosity: full `> [!NOTE] **Working in ...**` callout on Turn 1 or
+        compact `> 🛡️ **Deprecated code boundary active:** ...` on Turn 2+),
+        explicit
         confirmation that cumulative branch changes (`git diff main...HEAD` or
         `git diff main...HEAD`) were audited, explicit statement that whole-file
         deletions (`status R/!/D`) inside legacy-fenced directories are exempt

@@ -116,9 +116,10 @@ track cleanup.
         search for the track name or `tracks.md`. Immediately in Turn 1:
 
         1.  Output markdown chat text confirming delegation of the phase to
-            `worker` and displaying the active legacy fence HUD status (`🚧
-            Legacy Fence Active: [<deprecated_path>] excluded ──► Target:
-            [<modern_replacement>]`).
+            `worker` and displaying the active deprecated code boundary banner
+            (Adaptive Verbosity: full `> [!NOTE] **Working in ...**` callout on
+            Turn 1; `> 🛡️ **Deprecated code boundary active:** Working in ...`
+            on Turn 2+).
         2.  Invoke `invoke_subagent` with `TypeName: "worker"` whose `Prompt`
             contains the literal `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`
             block:

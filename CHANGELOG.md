@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.1] - 2026-09-18
+
+### Changed
+
+-   **Adaptive Verbosity Session Banner for Deprecated Code Boundaries
+    (`rules/armature_protocol.md`, `skills/arm-chat/SKILL.md`,
+    `skills/arm-implement/SKILL.md`, `skills/arm-drift/SKILL.md`)**:
+    -   Replaced the cryptic single-line HUD string (`🚧 Legacy Fence Active:
+        [...] excluded ──► Target: [...]`) with a two-stage **Adaptive
+        Verbosity** user-facing banner:
+        -   **Turn 1 (Full Callout):** Renders a structured `> [!NOTE]` callout
+            leading with `**Working in <active_replacement_basename>/:**`,
+            bulleted full paths, `**Skipping <N> deprecated folder(s):**`, and a
+            footer citing the configuration file (`tech-stack.md` /
+            `metadata.json`) and session override instructions (`Want to
+            add/edit an ignored folder? Just ask!`).
+        -   **Turn 2+ (Compact 1-Line Reminder):** Condenses on subsequent turns
+            in the same session to `> 🛡️ **Deprecated code boundary active:**
+            Working in <active_basename>/ (ignoring <deprecated_basenames>).`
+
 ## [0.27.0] - 2026-09-17
 
 ### Added

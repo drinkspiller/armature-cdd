@@ -84,11 +84,27 @@ After context is loaded, determine next action:
         provided in the prompt, NEVER call `grep_search` or `view_file` to look
         up `product.md` or `tech-stack.md`. Act immediately on the user request
         in the same turn.
-    *   **Session HUD Banner**: Whenever `tech-stack.md` (`## Legacy &
-        Deprecated Boundaries`) or active track `metadata.json`
-        (`legacy_fences`) defines active legacy fences, you MUST render the HUD
-        banner at the very top of your response: `🚧 Legacy Fence Active:
-        [<deprecated_path>] excluded ──► Target: [<modern_replacement>]`
+    *   **Session Banner (Adaptive Verbosity)**: Whenever `tech-stack.md` (`##
+        Legacy & Deprecated Boundaries`) or active track `metadata.json`
+        (`legacy_fences`) defines active legacy fences, you MUST render an
+        explanatory user-facing banner at the very top of your response using
+        **Adaptive Verbosity**:
+        -   **First turn in a session (Turn 1 — Full Callout):**
+            ```markdown
+            > [!NOTE]
+            > **Working in `<active_replacement_basename>/`:**
+            > * `<active_replacement_full_path>`
+            >
+            > **Skipping <N> deprecated folder(s):**
+            > * `<deprecated_path_1>`
+            > * `<deprecated_path_2>`
+            >
+            > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
+            ```
+        -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line Reminder):**
+            ```markdown
+            > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
+            ```
     *   **Query-Time Negative Search Exclusion & Modern Scope (`TRAIN_LF_01`)**:
         -   State explicitly in your markdown text that you are directing
             analysis and search exclusively to the modern replacement path

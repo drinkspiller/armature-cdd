@@ -76,14 +76,29 @@ files in priority order:
     `> Run <upgrade_cmd> in your terminal, or reply "upgrade armature" to have me run it for you.`
     Never block command execution or invoke `ask_question` for the update check. If stdout is empty, output zero update banners.
     If the user replies `"upgrade armature"`, execute the `<upgrade_cmd>` via `run_command`, verify exit code `0`, and confirm the upgraded version.
-12. **Legacy-Boundary Context Fences & Session HUD:** Parse active
+12. **Legacy-Boundary Context Fences & Adaptive Verbosity Session Banner:** Parse active
     repository-wide legacy fences from `{PROJECT_CONTEXT_DIR}/tech-stack.md`
     (`## Legacy & Deprecated Boundaries`) and track-scoped fences/overrides from
     the active track's `metadata.json` (`legacy_fences`, `fence_overrides`).
     Whenever one or more legacy fences are active in the workspace or prompt
-    context, you MUST display the compact HUD status banner at the very top of
-    your response: `🚧 Legacy Fence Active: [<deprecated_path>] excluded ──►
-    Target: [<modern_replacement>]`
+    context, you MUST display an explanatory user-facing banner at the very top
+    of your response using **Adaptive Verbosity**:
+    -   **First turn in a session (Turn 1 — Full Callout):**
+        ```markdown
+        > [!NOTE]
+        > **Working in `<active_replacement_basename>/`:**
+        > * `<active_replacement_full_path>`
+        >
+        > **Skipping <N> deprecated folder(s):**
+        > * `<deprecated_path_1>`
+        > * `<deprecated_path_2>`
+        >
+        > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
+        ```
+    -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line Reminder):**
+        ```markdown
+        > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
+        ```
 13. **Prompt-Provided Context Invariant (Zero Redundant Context Lookups):**
     Whenever workspace context (`tech-stack.md`, `product.md`, `tracks.md`),
     cumulative VCS diff status (`git diff main...HEAD`), active track plans,
@@ -499,9 +514,24 @@ first. Do NOT create empty commits.
     (`{PROJECT_CONTEXT_DIR}/tech-stack.md` under `## Legacy & Deprecated
     Boundaries`) or track-scoped fences (`metadata.json` under `legacy_fences`)
     are active:
-    -   *Session HUD Indicator*: Always display `🚧 Legacy Fence Active:
-        [<deprecated_path>] excluded ──► Target: [<modern_replacement>]` at the
-        top of your response whenever any legacy fence is active in context.
+    -   *Session Banner Indicator (Adaptive Verbosity)*: At the top of your
+        response whenever any legacy fence is active in context, display:
+        -   **First turn in a session (Turn 1 — Full Callout):**
+            ```markdown
+            > [!NOTE]
+            > **Working in `<active_replacement_basename>/`:**
+            > * `<active_replacement_full_path>`
+            >
+            > **Skipping <N> deprecated folder(s):**
+            > * `<deprecated_path_1>`
+            > * `<deprecated_path_2>`
+            >
+            > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
+            ```
+        -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line Reminder):**
+            ```markdown
+            > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
+            ```
     -   *Query-Time Negative Search Filtering (RE2 Anchored)*: When invoking
         `grep_search`, you MUST append anchored RE2 negative file filters
         (`-f:^<deprecated_path>` or
