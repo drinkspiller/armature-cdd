@@ -28,6 +28,7 @@ Armature stores architectural decisions, domain terminology, and verification ru
 ## Table of Contents
 
 - [Quickstart](#quickstart)
+- [Basic Workflow](#basic-workflow)
 - [Structural Joints for Autonomous Agents](#structural-joints-for-autonomous-agents)
   - [The Grill Engine (`/arm-new-track`)](#the-grill-engine-arm-new-track)
   - [Architectural Decision Records (`adr/`)](#architectural-decision-records-adr)
@@ -53,6 +54,81 @@ curl -fsSL https://raw.githubusercontent.com/drinkspiller/armature-cdd/main/inst
 
 # Or update an existing installation
 bash install.sh --update
+```
+
+## Basic Workflow
+
+For day-to-day feature development and bug fixes _across any part of the stack_, follow this three-step workflow in your AI coding assistant:
+
+### 1. Plan the task (`/arm-new-track`)
+
+For every new task, start a chat by invoking `/arm-new-track`, followed by the path to your project's `armature` directory and your task description or issue link:
+
+**Example 1 — Describing what you want to make or change:**
+
+```text
+/arm-new-track your/project/root/directory/armature <prompt of what you want to make/change>
+```
+
+**Example 2 — Pasting an issue link directly:**
+
+```text
+/arm-new-track your/project/root/directory/armature https://github.com/org/repo/issues/1234
+```
+
+Armature walks you through targeted questions to clarify requirements and edge cases, then generates two artifacts inside your track directory:
+
+- **`spec.md`** — Detailed requirements and acceptance criteria.
+- **`plan.md`** — Phased implementation tasks to fulfill the spec.
+
+When `/arm-new-track` finishes, you receive a confirmation message with your auto-generated track ID:
+
+> ✅ Track `add-user-auth-backend` created! Run `/arm-implement` to start working through the plan.
+
+### 2. Build the implementation (`/arm-implement`)
+
+Next, run the command shown in the confirmation message:
+
+```text
+/arm-implement <name-of-the-created-track>
+```
+
+For example, the completion message from track creation above named the track `add-user-auth-backend`, so you implement it using:
+
+```text
+/arm-implement add-user-auth-backend
+```
+
+Armature executes the spec step-by-step according to `plan.md`. Because you started the session with `/arm-new-track` and pointed to your project's `armature` directory, the agent automatically applies all accumulated project context—including Architecture Decision Records (`adr/`), domain terminology (`terms.md`), legacy code boundaries (`tech-stack.md`), and coding conventions.
+
+### 3. Verify the result (`/arm-review`)
+
+When implementation finishes, run:
+
+```text
+/arm-review
+```
+
+Armature walks you step-by-step through guided manual verification scenarios so you can interactively confirm that everything works as expected.
+
+### Quick questions and trivial changes (`/arm-chat`)
+
+For most tasks, use `/arm-new-track`. However, for project _questions_ or _extremely trivial_ changes that don't require the full interview, spec, and plan—but still benefit from your project's accumulated knowledge—use `/arm-chat`:
+
+```text
+/arm-chat your/project/root/directory/armature <your question or task>
+```
+
+**Example 1 — Asking a project question:**
+
+```text
+/arm-chat your/project/root/directory/armature does the frontend adhere to a 12-column grid?
+```
+
+**Example 2 — Making an extremely trivial change:**
+
+```text
+/arm-chat your/project/root/directory/armature change the font size for the headline on the such and such page to 24px
 ```
 
 ## Structural Joints for Autonomous Agents
