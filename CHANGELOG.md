@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.2] - 2026-09-21
+
+### Added
+
+-   **Basic Workflow Guide (`README.md`)**:
+    -   Added a high-visibility `## Basic Workflow` section directly below `## Quickstart` covering the core three-step development lifecycle (`1. Plan the task (/arm-new-track)`, `2. Build the implementation (/arm-implement)`, `3. Verify the result (/arm-review)`), plus the `### Quick questions and trivial changes (/arm-chat)` fast path with concrete examples.
+
 ## [0.27.1] - 2026-09-18
 
 ### Changed
