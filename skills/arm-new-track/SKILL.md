@@ -168,7 +168,7 @@ resolving all open branches and ambiguities.
         Turn 1 Ledger)**: If `[Codebase Reconnaissance Context...]` is provided
         in the user prompt or if the user's description reveals parallel
         legacy/modern directories (e.g., migrating from `<legacy_dir>/` to
-        `<modern_dir>/`), DO NOT call `grep_search` or `view_file` to search for
+        `<modern_dir>/`), DO NOT call `code_search` or `view_file` to search for
         `product.md` or `tech-stack.md`. Immediately in Turn 1:
         1.  Output a visible `### Decision Tree Ledger` containing a Tier 1
             Operational Child Leaf (or root branch) probing the Legacy-Boundary
@@ -363,6 +363,14 @@ resolving all open branches and ambiguities.
                 option, output a deep-dive analysis (comparative trade-off
                 matrix, failure cascades, memory bounds, migration costs) and
                 re-prompt the concrete choices.
+            -   **User `@[Quote]` Turns: Pre-Selection Clarification vs. Final-Leaf Confirmation (`ask_question` Non-Bypass Rule):**
+                Every turn MUST contain BOTH non-empty visible markdown text FIRST and a native `ask_question` tool call SECOND (never emit a bare `ask_question` call with empty markdown text, and never emit markdown text without `ask_question`):
+                -   *Case A — Final-Leaf Resolution or Leading Confirmation Question:* When only ONE open `[ ]` leaf remains in `### Decision Tree Ledger` and the user replies by selecting an option, stating a policy/threshold, OR asking a leading confirmation question verifying the final leaf's behavior (e.g., `@[Quote] Route disabled. does the guard redirect back to /setup/sharing-permissions?` alongside commit/spec notes like `capture this in the CL description`), treat that final leaf as **RESOLVED (`[x]`)**:
+                    1. **Visible Markdown Part (Required First):** Directly answer the user's confirmation question, confirm the CL description commitment, output `### Decision Tree Ledger` with **all** branches and leaves marked `[x]`, and output `### Devil's Advocate Analysis: Stress-Testing Confirmed Decisions` (`#### Finding 1 of N: <Title>`) with 2–3 countermeasure options (`*Pros:*` / `*Cons:*` + `Recommendation Rationale`).
+                    2. **Native Tool Call Part (Required Second in Same Turn):** After the visible markdown text, invoke `ask_question` for Finding 1.
+                -   *Case B — Mid-Interview Pre-Selection Blocking Clarification:* When the user explicitly says `"Wait — before I pick..."` or asks how a UI trigger, modal, or network/RPC flow works *before* choosing an option for an open `[ ]` leaf (`Leaf N.M`):
+                    1. **Visible Markdown Part (Required First):** Answer the user's technical question step-by-step in visible markdown, retain the exact open `[ ]` branch and `[ ]` leaf (`Leaf N.M`) in `### Decision Tree Ledger`, and re-present the candidate options (`*Pros:*` / `*Cons:*` + `Recommendation Rationale`) for `Leaf N.M`.
+                    2. **Native Tool Call Part (Required Second in Same Turn):** Invoke `ask_question` for `Leaf N.M`.
             -   **MANDATORY:** End your turn after each `ask_question` call to
                 wait for the user's answer. Never end your turn before calling
                 `ask_question` when choices, branches, or decisions are presented.
@@ -374,45 +382,54 @@ resolving all open branches and ambiguities.
     -   **Phase 5b: Post-Ledger Devil's Advocate Analysis (Red-Teaming Confirmed
         Answers)**:
 
-        -   **Trigger**: Occurs if and only if EVERY branch and dynamically
-            spawned child leaf in the Decision Tree Ledger is marked `[x]`
-            (Resolved) with zero open items.
+        -   **Trigger**: Fires automatically in the exact turn that the final
+            open `[ ]` item in the Decision Tree Ledger is marked `[x]`
+            (Resolved) with zero open items remaining.
         -   **Execution**:
             1.  Audit the combination of confirmed answers across all resolved
                 branches in the ledger.
             2.  Output a structured `### Devil's Advocate Analysis:
                 Stress-Testing Confirmed Decisions` directly beneath the
-                resolved ledger.
-            3.  Formulate 2–3 concrete adversarial challenges targeting:
-                -   *Emergent Contradictions*: Unintended friction or mismatch
-                    between separate confirmed choices.
-                -   *Operational & Maintenance Debt*: Hardcoded template markup
-                    vs headless schemas, excessive client-side state, DOM bloat.
-                -   *Failure Cascades*: Degraded network scenarios, rapid user
-                    interrupts, timeout recovery under load.
-            4.  **Sequential Single-Finding Presentation (Strict One-at-a-Time
-                Rule)**:
+                resolved ledger in visible markdown text (never leave visible
+                markdown text empty).
+            3.  Identify 2–3 concrete adversarial challenges across the design
+                (*Emergent Contradictions*, *Operational & Maintenance Debt*,
+                *Failure Cascades*), but present **ONLY Finding 1** in the
+                initial Phase 5b turn.
+            4.  **Sequential Single-Finding Presentation & Strict Anti-Collapse Ban**:
                 -   Present each adversarial challenge **strictly one by one**
-                    in sequential turns.
-                -   For each challenge:
-                    -   Report the concrete trade-off, specific hazard, and 2–3
-                        actionable countermeasure options in markdown first.
-                    -   Call `ask_question` with options formatted in the user's
-                        voice (e.g., "(Recommended) Apply countermeasure:
-                        <specific fix>", "Reopen Branch <N> to revise approach",
-                        "Accept trade-off as acceptable debt").
-                    -   **MANDATORY:** End your turn and collect the user's
-                        decision for that specific finding before presenting any
-                        subsequent challenge.
-            5.  **Reopening vs. Natural Convergence**:
+                    in separate sequential turns (`#### Finding 1 of N: <Title>`,
+                    then in the next turn `#### Finding 2 of N: <Title>`).
+                -   **Strict Ban on Self-Answered `*Risk:* / *Mitigation:*` Lists & Multi-Finding Dumps**:
+                    NEVER output all 2–3 Devil's Advocate challenges in a single
+                    turn, and NEVER write static `*Risk:*` and `*Mitigation:*`
+                    bullets that pre-decide the countermeasure without calling
+                    `ask_question`.
+                -   **Strict Ban on Same-Turn Phase 5b + Phase 5c Batching**:
+                    NEVER output a `### Phase 5c` or `### ADR Candidate Triage Table`
+                    heading in the same turn as Phase 5b, and NEVER call
+                    `write_to_file` during Phase 5b. If the user asks to bundle
+                    or skip ahead across phases, explicitly state in visible
+                    markdown that **Phase 5b and Phase 5c require sequential
+                    interactive gates** and cannot be collapsed into one turn,
+                    then present ONLY Finding 1.
+                -   **Two-Part Turn Contract (Visible Markdown FIRST -> `ask_question` SECOND)**:
+                    -   *Part 1 (Visible Markdown):* Write the updated `### Decision Tree Ledger`, the `### Devil's Advocate Analysis` heading, the single active challenge (`#### Finding 1 of N`), and 2–3 countermeasure options with `*Pros:*`, `*Cons:*`, and `Recommendation Rationale`.
+                    -   *Part 2 (Native Tool Call):* After the visible markdown text, invoke `ask_question` with options phrased in the user's voice (e.g., `"(Recommended) Apply countermeasure: <specific fix>"`, `"Reopen Branch <N> to revise approach"`, `"Accept trade-off as acceptable debt"`). Never emit a bare `ask_question` call without visible markdown text.
+            5.  **Reopening vs. Natural Convergence (Implicit Phase 5c Transition)**:
                 -   If the user selects to reopen a branch during any finding,
                     flip that branch and its consequence leaf back to `[ ]`
-                    (OPEN), probe the revised ambiguity, and return to Phase 5b
-                    when re-resolved.
-                -   Once all challenges have been resolved individually, ONLY
-                    THEN present the structured **Convergence Summary** in
-                    markdown synthesizing all settled decisions, and proceed to
-                    **Phase 5c: ADR Candidate Triage Gate**.
+                    (OPEN), probe the revised ambiguity via `ask_question`, and
+                    return to Phase 5b when re-resolved.
+                -   In the exact turn where the user resolves the **final**
+                    Phase 5b finding (e.g., Finding 2 of 2), output in visible
+                    markdown the `### Phase 5b Convergence Summary` synthesizing
+                    all settled decisions, and in that **same turn** execute
+                    **Phase 5c: ADR Candidate Triage Gate** (rendering the
+                    `### ADR Candidate Triage Table` in visible markdown +
+                    calling `ask_question` with `is_multi_select: true` if
+                    $\ge 1$ candidates qualify, or silently bypassing to Step 6
+                    if 0 qualify).
 
     -   **Phase 5c: ADR Candidate Triage Gate (Dual-Stage Lifecycle)**:
 
@@ -438,15 +455,31 @@ resolving all open branches and ambiguities.
                 route slugs, error strings, styling) are classified as `[Track
                 Spec Only]`.
         -   **Silent Zero-Candidate Bypass**:
-            -   If zero settled decisions qualify under the 3-Pillar Taxonomy,
-                the agent MUST silently bypass Phase 5c directly to Step 6 Spec
-                Materialization without generating an extra modal prompt or
-                callout note.
+            -   If and only if **zero** settled decisions qualify under Pillars
+                1, 2, or 3 (e.g., strictly local single-component CSS/copy/markup
+                tweaks with no cross-cutting invariant, architecture binding, or
+                negative constraint), silently bypass Phase 5c directly to Step
+                6 in that **same turn**: default `{PROJECT_CONTEXT_DIR}` to
+                `armature` (`armature/tracks/<track_id>/...`) without calling
+                `view_file` to check `armature/product.md` or `armature/index.md`,
+                first write a visible markdown `### Convergence Summary`
+                synthesizing all settled decisions, and then invoke
+                `write_to_file` for `spec.md`, `write_to_file` for
+                `manual_testing.md`, and `ask_question` for Step 6 spec approval.
         -   **Interactive Triage Gate (when $\ge 1$ candidates qualify)**:
 
-            -   Render an `### ADR Candidate Triage Table` mapping each
-                qualifying decision to its pillar, proposed title, and one-line
-                rationale:
+            -   **Strict Ban on Static Bullet ADR Substitution & Premature File Writes**:
+                NEVER replace the `### ADR Candidate Triage Table` with static
+                markdown bullets (e.g., `* **ADR Required?** Yes` / `* **Title:**
+                ADR NNNN...`), NEVER ask *"May I proceed with generating the
+                track artifacts?"* in plain text, and NEVER call `write_to_file`
+                (`spec.md`, `plan.md`, `adr/*.md`) before the user responds to
+                the Phase 5c `ask_question` modal.
+            -   **Part 1 (Visible Markdown — Required First)**: Output the
+                `### Phase 5b Convergence Summary` followed by the markdown pipe
+                table under `### ADR Candidate Triage Table` mapping every
+                settled decision (both `[ADR Candidate]` and `[Track Spec Only]`
+                rows) to its pillar, proposed title, and recommendation:
 
                 ```markdown
                 ### ADR Candidate Triage Table
@@ -455,16 +488,20 @@ resolving all open branches and ambiguities.
                 | Branch 1: In-Memory LRU Cache | Pillar 2: Architecture Binding | Use In-Memory LRU with TTL for Client Asset Caching | [ADR Candidate] |
                 | Leaf 1.1: 100-Item / 25MB Cap | Pillar 1: Cross-Cutting Invariant | Enforce 25MB Fixed Heap Budget on In-Memory Caches | [ADR Candidate] |
                 ```
-            -   Call `ask_question` with a multi-select prompt allowing the user
-                to confirm which ADRs to materialize:
+            -   **Part 2 (Native Tool Call — Required Second in Same Turn)**:
+                Invoke the native `ask_question` tool call with
+                **`is_multi_select: true`** (`"is_multi_select": true`):
 
-                -   `question`: "Confirm which architectural decisions to record
-                    as ADRs:"
-                -   `options`: Checkboxes for each candidate ADR (e.g.,
-                    `"(Recommended) Record ADR: Use In-Memory LRU with TTL"`,
-                    `"(Recommended) Record ADR: Enforce 25MB Fixed Heap
-                    Budget"`, `"Skip ADR creation — keep track-specific only"`).
-            -   **MANDATORY:** End your turn and wait for the user's response.
+                -   `is_multi_select`: `true`
+                -   `question`: `"Confirm which architectural decisions to record
+                    as ADRs:"`
+                -   `options`: Checkboxes for each qualifying candidate ADR
+                    prefixed with `(Recommended)` (e.g., `"(Recommended) Record
+                    ADR: Use In-Memory LRU with TTL"`, `"(Recommended) Record
+                    ADR: Enforce 25MB Fixed Heap Budget"`, `"Skip ADR creation —
+                    keep track-specific only"`).
+            -   **MANDATORY:** End your turn after `ask_question` and wait for
+                the user's multi-select response before writing any files.
             -   For each confirmed candidate:
 
                 -   Determine the next sequential number (e.g.,
@@ -503,10 +540,22 @@ resolving all open branches and ambiguities.
             empirical VCS diff re-verification during `/arm-implement` and
             `/arm-review` will automatically escalate to Tier 1 if stateful/RPC
             code is touched during implementation).*
-    -   Present `spec.md` and `manual_testing.md` via `notify_user` with
-        `PathsToReview`.
-    -   Present options using `ask_question`: "Approve" (Proceed to planning),
-        "Revise" (Suggest manual edits).
+    -   **Two-Part Step 6 Turn Contract (Visible Summary FIRST -> Dual `write_to_file` + `ask_question` SECOND)**:
+        In the Step 6 turn (including when triggered via Phase 5c Silent
+        Zero-Candidate Bypass), default `{PROJECT_CONTEXT_DIR}` to `armature`
+        (`armature/tracks/<track_id>/...`) if not already specified in the
+        prompt (NEVER call `view_file` on `armature/product.md` or
+        `armature/index.md` to verify directory existence first):
+        1. **Part 1 (Visible Markdown Text — Required First):** Write a concise
+           `### Convergence Summary` in visible markdown text summarizing all
+           settled decisions (never emit bare tool calls with empty markdown
+           text).
+        2. **Part 2 (Native Tool Calls — Required Second in Same Turn):** Invoke
+           `write_to_file` for `spec.md`, invoke `write_to_file` for
+           `manual_testing.md`, and invoke `ask_question` (options:
+           `"(Recommended) Approve spec.md and manual_testing.md — proceed to
+           plan generation"`, `"Request revisions to spec.md or
+           manual_testing.md"`) together in that single turn.
     -   **MANDATORY:** End your turn and wait for explicit user approval before
         proceeding to plan generation.
 

@@ -52,6 +52,7 @@ def call_gemini(
     max_retries: int = 5,
     use_tools: bool = False,
     seed: int = None,
+    contents: list = None,
 ) -> str:
   if not API_KEY:
     raise RuntimeError(
@@ -66,7 +67,9 @@ def call_gemini(
   if seed is not None:
     gen_config["seed"] = seed
   payload = {
-      "contents": [{"parts": [{"text": prompt}]}],
+      "contents": (
+          contents if contents is not None else [{"parts": [{"text": prompt}]}]
+      ),
       "generationConfig": gen_config,
       "safetySettings": [
           {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -282,6 +285,9 @@ def verify_jsonl_schema(
       if not isinstance(obj, dict):
         errors.append(f"{filepath}:{line_num} - Expected JSON object (dict)")
         continue
+
+      if "eval_criteria" not in obj and ("invariants" in obj or "qualities" in obj):
+        obj["eval_criteria"] = [f"[INVARIANT] {c}" for c in obj.get("invariants", [])] + [f"[QUALITY] {c}" for c in obj.get("qualities", [])]
 
       missing = required_keys - set(obj.keys())
       if missing:
@@ -844,6 +850,7 @@ def evaluate_task(
         temperature=rollout_temp,
         use_tools=True,
         seed=seed,
+        contents=task.get("turns"),
     )
   except Exception as e:
     print(f"  [Rollout Error] Task {task['id']} failed: {e}", flush=True)
@@ -1146,8 +1153,8 @@ def main():
   )
   args = parser.parse_args()
 
-  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=46)
-  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=38)
+  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=64)
+  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=50)
 
   if not train_ok or not val_ok:
     print("❌ [Schema Verification FAILED]", file=sys.stderr)
@@ -1157,7 +1164,7 @@ def main():
 
   if args.verify_schema:
     print(
-        "✅ [Schema Verification PASSED] All 46 train tasks and 38 val tasks"
+        "✅ [Schema Verification PASSED] All 64 train tasks and 50 val tasks"
         " valid."
     )
     sys.exit(0)

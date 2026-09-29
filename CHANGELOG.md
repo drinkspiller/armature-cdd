@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.27.3] - 2026-09-29
+
+### Fixed
+
+-   **Phase 5b (`Devil's Advocate`) & Phase 5c (`ADR Triage`) Native `ask_question` Enforcement (`skills/arm-new-track/SKILL.md`, `rules/armature_protocol.md`, `evals/skillopt/`)**:
+    -   **Conversational Final-Leaf Resolution vs. Pre-Selection Quote Disambiguation (`Phase 5a`)**: Partitioned conversational and `@[Quote]` handling into **Case A (Final-Leaf Resolution or Leading Confirmation Question)**—answering the confirmation question directly, marking the final leaf `[x]`, and immediately transitioning to **Phase 5b: Finding 1** paired with a native `ask_question` call in the same turn—and **Case B (Mid-Interview Pre-Selection Blocking Clarification)**—answering the clarification, keeping the active leaf `[ ]` open, and re-invoking `ask_question`.
+    -   **Anti-Self-Mitigation & Sequential Stepping Contract (`Phase 5b`)**: Prohibited self-answered risk/mitigation bullet lists and phase bundling (`Phase 5b + Phase 5c` in a single turn), enforcing one adversarial challenge per turn (`#### Finding 1: ...`) paired with a native `ask_question` call.
+    -   **Mandatory Markdown Triage Table & Multi-Select Gate (`Phase 5c`)**: Prohibited static bulleted ADR lists and plain-text closing prompts, enforcing `### ADR Candidate Triage Table` + `ask_question(is_multi_select=True)` when $\ge 1$ candidate qualifies and the **Zero-Candidate Silent Bypass** directly into Step 6 (`spec.md` + `manual_testing.md` + Spec Approval `ask_question`) when `0` candidates qualify.
+    -   **Two-Part Turn Contract**: Enforced emitting the non-empty visible markdown body before the structured `ask_question` tool call, eliminating both Text-Only Stalls and Bare Tool Calls (`100.0%` held-out `D_val` across $K=3$ seeds; added `TRAIN_47`–`TRAIN_52` and `VAL_39`–`VAL_42` multi-turn regression suites).
+
 ## [0.27.2] - 2026-09-21
 
 ### Added
