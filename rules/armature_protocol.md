@@ -214,6 +214,33 @@ code change, or workflow transition:
             confirmation gates, ADR multi-select triage checkboxes). For these
             gates, present crisp context followed by direct status or action
             options.
+-   **Mid-Interview Context Persistence (Zero Redundant `view_file` Lookups):**
+    Once an interactive interview is in progress (prior conversation turns
+    already contain a `### Decision Tree Ledger` or `### Devil's Advocate
+    Analysis`), project context (`armature/index.md`, `armature/tracks.md`,
+    `product.md`, `tech-stack.md`) is already loaded and `{PROJECT_CONTEXT_DIR}`
+    defaults to `armature`. Never call `view_file` to check `armature/index.md`,
+    `armature/product.md`, or `armature/tracks.md` during Step 5a, Phase 5b,
+    Phase 5c, or Step 6 transitions.
+-   **Two-Part Turn Contract (Non-Empty Visible Markdown FIRST + Native `ask_question` SECOND):**
+    Every interactive interview or gate turn MUST contain BOTH (1) non-empty
+    visible markdown text (answering any inline `@[Quote]` questions and
+    rendering the required `### Decision Tree Ledger`, `### Devil's Advocate
+    Analysis`, `### ADR Candidate Triage Table`, or `### Convergence Summary`)
+    FIRST, and (2) the native `ask_question` tool call SECOND in that same turn.
+    Never emit a bare `ask_question` or `write_to_file` call with empty visible
+    markdown text (`""`), and never end a turn with a conversational prose
+    question (`tools=[]`).
+-   **Single-Gate Phase Isolation (`/arm-new-track` Phase 5a → 5b → 5c → Step 6):**
+    Never collapse multiple interactive gates into a single turn. Resolving the
+    final `[ ]` leaf in Phase 5a transitions in that turn to **Phase 5b Finding
+    1** (one challenge per turn with `Pros`/`Cons` options + `ask_question`,
+    never a self-answered `*Risk:*`/`*Mitigation:*` list). Resolving the final
+    Phase 5b challenge transitions in that turn to **Phase 5c** (`### ADR
+    Candidate Triage Table` + `ask_question` with `is_multi_select: true`
+    whenever $\ge 1$ candidates qualify, or silent bypass to Step 6 visible
+    `### Convergence Summary` + `write_to_file` (`spec.md` &
+    `manual_testing.md`) + `ask_question` when 0 qualify).
 -   **Human-Readable Navigation:** Always refer to process steps and documents
     by their human-readable names. Do not expose internal section numbers.
 
