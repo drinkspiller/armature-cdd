@@ -173,6 +173,68 @@ def call_gemini(
   return ""
 
 
+_PROGRESS_HEADER_RE = re.compile(
+    r"^\s*\*\*(Settled|Now|Up next)\*\*:?\s*$", re.IGNORECASE
+)
+_PROGRESS_ITEM_RE = re.compile(
+    r"^\s*[-*]\s+(?:\*\*)?(?:(Round)\s+(\d+)(?:\*\*)?(?:,\s*(?:Question\s+(\d+(?:\.\d+)?)(?:\s+of\s+\d+)?)?)?|(Question)\s+(\d+(?:\.\d+)?))(?:\*\*)?[,:]\s*(.+)$",
+    re.IGNORECASE,
+)
+_ROUND_HEADLINE_RE = re.compile(
+    r"^##\s+Round\s+(\d+),\s*Question\s+(\d+(?:\.\d+)?)\s+of\s+\d+:\s*(.+)$",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _split_progress_sections(
+    turn_text: str,
+) -> dict[str, list[tuple[str, str, str]]]:
+  """Parses the grouped progress list into {section: [(kind, num, topic)]}.
+
+  Recognizes `**Settled**`, `**Now**`, and `**Up next**` headers followed by
+  `- Round N, <topic>[: <answer>]`, `- Round N, Question M, <topic>[:
+  <answer>]`, or `- Question N.M, <topic>[: <answer>]` bullets. The answer after
+  the first `: ` is dropped so the same round or question keeps a stable key
+  across turns.
+
+  Args:
+    turn_text: Raw markdown text of the agent turn.
+
+  Returns:
+    Mapping from section name to list of (kind, identifier, topic) tuples.
+  """
+  sections = {}
+  current = None
+  for line in turn_text.splitlines():
+    header = _PROGRESS_HEADER_RE.match(line)
+    if header:
+      name = header.group(1).lower()
+      current = {"settled": "Settled", "now": "Now", "up next": "Up next"}[name]
+      sections.setdefault(current, [])
+      continue
+    if current is None:
+      continue
+    item = _PROGRESS_ITEM_RE.match(line)
+    if item:
+      topic = re.sub(r"[\*_]+", "", item.group(6))
+      topic = topic.split(": ", 1)[0].strip()
+      if item.group(1):
+        r_num = item.group(2)
+        q_sub = item.group(3)
+        if q_sub:
+          q_key = q_sub if "." in q_sub else f"{r_num}.{q_sub}"
+          sections[current].append(("question", q_key, topic))
+        else:
+          sections[current].append(("round", r_num, topic))
+      else:
+        q_num = item.group(5)
+        sections[current].append(("question", q_num, topic))
+    elif line.strip() and not line.strip().startswith(("-", "*")):
+      # Any non-bullet line (separator, headline, prose) ends the group.
+      current = None
+  return sections
+
+
 def parse_agent_turn(turn_text: str):
   """Extracts tool calls, ledger presence, questions, and potential dictations from an agent turn."""
   has_protocol_violation = "[PROTOCOL_VIOLATION:" in turn_text
@@ -180,13 +242,27 @@ def parse_agent_turn(turn_text: str):
       not has_protocol_violation
       and "[TOOL_CALL: ask_question" in turn_text
   )
-  has_ledger = bool(
+  # Progress display: accepts the current grouped progress list
+  # (**Settled** / **Now** / **Up next** with Round/Question bullets) and the
+  # legacy `### Decision Tree Ledger` block.
+  has_legacy_ledger = bool(
       re.search(
           r"###?\s+(?:Active\s+)?Decision Tree (?:Ledger|Status)",
           turn_text,
           re.IGNORECASE,
       )
   )
+  progress_sections = _split_progress_sections(turn_text)
+  has_progress_list = bool(
+      (
+          "Now" in progress_sections
+          or "Up next" in progress_sections
+          or "Settled" in progress_sections
+      )
+      and any(progress_sections.values())
+  )
+  has_ledger = has_legacy_ledger or has_progress_list
+  has_round_headline = bool(_ROUND_HEADLINE_RE.search(turn_text))
   wrote_spec = bool(
       re.search(
           r"write_to_file.*?spec\.md|Created file.*?spec\.md",
@@ -212,17 +288,33 @@ def parse_agent_turn(turn_text: str):
   has_cons = bool(re.search(r"[-*#]\s+\*{0,2}Cons\*{0,2}:?", turn_text, re.IGNORECASE))
   has_recommendation_rationale = bool(
       re.search(
-          r"(?:###|####|\*{0,2})\s*Recommendation Rationale\*{0,2}:?",
+          r"(?:###|####|\*{0,2})\s*Recommendation Rationale\*{0,2}:?"
+          r"|^###\s*Recommendation:\s*Option\s+\d+",
           turn_text,
-          re.IGNORECASE,
+          re.IGNORECASE | re.MULTILINE,
       )
   )
   has_option_trade_offs = has_pros and has_cons and has_recommendation_rationale
   has_elaboration_option = bool(
       re.search(r"Elaborate on (?:the )?trade-offs", turn_text, re.IGNORECASE)
   )
+  # Answer-anchored provenance: legacy inline `(Spawned by '<choice>'` tags,
+  # or the current settled line / Context wording that names the answer that
+  # opened the follow-up question.
   has_provenance = bool(
       re.search(r"\(Spawned by ['\"].+?['\"]", turn_text, re.IGNORECASE)
+      or re.search(
+          r"(?:Round|Question)\s+\d+(?:\.\d+)?\s+settled:.*?"
+          r"(?:opens?|opened|spawns?|raises?)\s+(?:up\s+)?(?:a\s+|two\s+)?"
+          r"follow-ups?",
+          turn_text,
+          re.IGNORECASE | re.DOTALL,
+      )
+      or re.search(
+          r"\b(?:spawned|opened)\s+by\s+(?:your|the)\s+(?:answer|choice)",
+          turn_text,
+          re.IGNORECASE,
+      )
   )
 
   # Count branches and leaves in ledger if present
@@ -232,6 +324,32 @@ def parse_agent_turn(turn_text: str):
       re.IGNORECASE,
   )
   ledger_branches = []
+  ledger_leaves = []
+  # Current format: rounds map to branches (normalized by round number) and
+  # questions (including settled/active single-question rounds) map to leaves.
+  # Items under **Settled** are resolved ("x"); **Now** / **Up next** are open.
+  seen_leaf_nums = set()
+  for section, items in progress_sections.items():
+    status = "x" if section == "Settled" else " "
+    for kind, num, topic in items:
+      if kind == "round":
+        ledger_branches.append((status, f"Round {num}"))
+        if section in ("Settled", "Now"):
+          q_num = f"{num}.1"
+          seen_leaf_nums.add(q_num)
+          ledger_leaves.append((status, f"Question {q_num}: {topic}"))
+      else:
+        r_prefix = num.split(".")[0]
+        ledger_branches.append((status, f"Round {r_prefix}"))
+        seen_leaf_nums.add(num)
+        ledger_leaves.append((status, f"Question {num}: {topic}"))
+  for hm in _ROUND_HEADLINE_RE.finditer(turn_text):
+    r_num, q_num, h_topic = hm.group(1), hm.group(2), hm.group(3).strip()
+    q_key = q_num if "." in q_num else f"{r_num}.{q_num}"
+    if q_key not in seen_leaf_nums:
+      seen_leaf_nums.add(q_key)
+      ledger_branches.append((" ", f"Round {r_num}"))
+      ledger_leaves.append((" ", f"Question {q_key}: {h_topic}"))
   for status, bnum, btext in ledger_branches_raw:
     clean_b = re.sub(r"[\*_]+", "", btext)
     clean_b = re.split(
@@ -247,7 +365,6 @@ def parse_agent_turn(turn_text: str):
       turn_text,
       re.IGNORECASE,
   )
-  ledger_leaves = []
   for status, ltext in ledger_leaves_raw:
     clean_l = re.sub(r"[\*_]+", "", ltext)
     clean_l = re.split(
@@ -278,6 +395,8 @@ def parse_agent_turn(turn_text: str):
   return {
       "has_ask_question": has_ask_question,
       "has_ledger": has_ledger,
+      "has_progress_list": has_progress_list,
+      "has_round_headline": has_round_headline,
       "wrote_spec": wrote_spec,
       "is_convergence": is_convergence,
       "has_devil_advocate": has_devil_advocate,
@@ -527,10 +646,13 @@ def run_trajectory(
         # Check if declared in declarative non-ledger bullet format
         for line in agent_output.splitlines():
           line_str = line.strip()
-          # Skip ledger items: e.g. - [ ], - [x], * [ ], * [x], or (Resolved: ...)
+          # Skip progress items: legacy ledger checkboxes (- [ ], - [x],
+          # (Resolved: ...)) and current progress list bullets
+          # (- Round N, ... / - Question N.M, ...).
           if (
               re.match(r"^[-*]\s*\[[ xX]\]", line_str)
               or "(Resolved:" in line_str
+              or _PROGRESS_ITEM_RE.match(line_str)
           ):
             continue
           # If it is a regular bullet asserting the target as fact outside the ledger

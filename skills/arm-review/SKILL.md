@@ -378,7 +378,11 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             -   `"(Recommended) Verified: <brief expected result observed>"`
             -   `"Didn't match expectation (I will describe what occurred)"`
             -   `"Skip to next scenario"`
-        -   *Guardrail (Empirical Verification Only):* Verification gates test empirical application state, not architectural trade-offs. Do **NOT** output Pros/Cons matrices or append the `"Elaborate on trade-offs..."` option to scenario verification prompts.
+        -   *Guardrail (Empirical Verification Only):* Verification gates test
+            empirical application state, not architectural trade-offs. Do
+            **NOT** output option cards (`**Pros:**` / `**Cons:**` /
+            `**Implications:**`) or append the `"Elaborate on trade-offs..."`
+            option to scenario verification prompts.
     -   **In-Flight Discrepancy Triage:**
 
         -   If the user reports a mismatch, enter diagnostic mode: inspect
