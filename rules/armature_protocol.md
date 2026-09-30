@@ -172,26 +172,35 @@ code change, or workflow transition:
     copywriting choices (e.g., during `/arm-new-track` Step 5a/5b or
     `/arm-setup`), provide 2–4 calibrated domain choices:
     -   *Markdown Trade-Off Breakdown (All Design, UX & Architecture Choices):*
-        Precede the `ask_question` call with a punchy, itemized bulleted
-        trade-off breakdown in chat:
-        -   *Candidate Approaches:* For each option, list 1–2 punchy,
-            substantive `Pros` and 1–2 `Cons`. Avoid vague generalities or
-            superficial one-word clauses.
-        -   *Recommendation Rationale:* Conclude with a 1–2 sentence declarative
-            justification explaining why the recommended option was chosen,
-            grounded in domain constraints (e.g., cognitive load, dialog
-            footprint, latency bounds, or failure resilience).
-        -   *Clean Markdown Termination & Mandatory Tool Call Pair (Zero Trailing Narration & Zero Text-Only Stalls):*
-            End your markdown response immediately after the `Recommendation
-            Rationale` paragraph. NEVER append transitional self-narration
-            sentences at the end of your prose (e.g., *"I will now ask for your
-            decision on..."* or *"Let's call ask_question..."*), which cause
-            token concatenation and break tool parsing. Immediately invoke
-            `ask_question` exclusively as a native structured tool call in the
-            same turn—never emit raw `call:default_api:ask_question{...}` text in
-            the markdown stream, and NEVER end your turn after markdown without
-            invoking `ask_question` when choices, branches, or trade-offs are
-            presented.
+        Precede the `ask_question` call with a short `**Context:**` block
+        (one-line framing, 2–4 bullets on what the decision affects, and a short
+        paragraph on current state), then option cards and a recommendation in
+        chat:
+        -   *Option Cards:* Render each option as its own plain blockquote card
+            (`> **Option N: <Name>**`, with ` (Recommended)` after the
+            recommended title), followed by `> - **Pros:** ...`, `> - **Cons:**
+            ...`, and `> - **Implications:** ...` rows. Only the labels are
+            bold; each row is one or two short, substantive sentences. Avoid
+            vague generalities or superficial one-word clauses. Place an
+            `&nbsp;` spacer line before the first card and after the last.
+        -   *Recommendation:* Conclude with `### Recommendation: Option N`
+            followed by 1–3 declarative sentences explaining why the recommended
+            option was chosen, grounded in domain constraints (e.g., cognitive
+            load, dialog footprint, latency bounds, or failure resilience).
+        -   *Plain Presentation:* Do not use tables, icons, emoji, glyphs,
+            progress bars, or `[!NOTE]` / `[!TIP]` callouts for option
+            presentation.
+        -   *Clean Markdown Termination & Mandatory Tool Call Pair (Zero
+            Trailing Narration & Zero Text-Only Stalls):* End your markdown
+            response immediately after the recommendation rationale paragraph.
+            NEVER append transitional self-narration sentences at the end of
+            your prose (e.g., *"I will now ask for your decision on..."* or
+            *"Let's call ask_question..."*), which cause token concatenation and
+            break tool parsing. Immediately invoke `ask_question` exclusively as
+            a native structured tool call in the same turn—never emit raw
+            `call:default_api:ask_question{...}` text in the markdown stream,
+            and NEVER end your turn after markdown without invoking
+            `ask_question` when choices, rounds, or trade-offs are presented.
     -   *Modal Parameters (`ask_question`):*
         -   List the recommended option first with `(Recommended)`, followed by
             alternative approaches phrased cleanly in the user's voice.
@@ -204,7 +213,7 @@ code change, or workflow transition:
             styling, empirical QA verification checks, safety confirmations, or
             procedural approvals.
     -   *Strict Exemption for Empirical & Procedural Gates:* Do **NOT** generate
-        Pros/Cons breakdowns or append elaboration options for:
+        option cards or append elaboration options for:
         1.  **Empirical QA Verification Checkpoints** (`/arm-review` scenario
             checks: *"Did Scenario N meet the expected outcome?"* where choices
             are `Verified`, `Didn't match expectation`, `Skip`).
@@ -216,31 +225,32 @@ code change, or workflow transition:
             options.
 -   **Mid-Interview Context Persistence (Zero Redundant `view_file` Lookups):**
     Once an interactive interview is in progress (prior conversation turns
-    already contain a `### Decision Tree Ledger` or `### Devil's Advocate
-    Analysis`), project context (`armature/index.md`, `armature/tracks.md`,
-    `product.md`, `tech-stack.md`) is already loaded and `{PROJECT_CONTEXT_DIR}`
-    defaults to `armature`. Never call `view_file` to check `armature/index.md`,
-    `armature/product.md`, or `armature/tracks.md` during Step 5a, Phase 5b,
-    Phase 5c, or Step 6 transitions.
--   **Two-Part Turn Contract (Non-Empty Visible Markdown FIRST + Native `ask_question` SECOND):**
-    Every interactive interview or gate turn MUST contain BOTH (1) non-empty
-    visible markdown text (answering any inline `@[Quote]` questions and
-    rendering the required `### Decision Tree Ledger`, `### Devil's Advocate
-    Analysis`, `### ADR Candidate Triage Table`, or `### Convergence Summary`)
-    FIRST, and (2) the native `ask_question` tool call SECOND in that same turn.
-    Never emit a bare `ask_question` or `write_to_file` call with empty visible
-    markdown text (`""`), and never end a turn with a conversational prose
-    question (`tools=[]`).
--   **Single-Gate Phase Isolation (`/arm-new-track` Phase 5a → 5b → 5c → Step 6):**
-    Never collapse multiple interactive gates into a single turn. Resolving the
-    final `[ ]` leaf in Phase 5a transitions in that turn to **Phase 5b Finding
-    1** (one challenge per turn with `Pros`/`Cons` options + `ask_question`,
-    never a self-answered `*Risk:*`/`*Mitigation:*` list). Resolving the final
-    Phase 5b challenge transitions in that turn to **Phase 5c** (`### ADR
-    Candidate Triage Table` + `ask_question` with `is_multi_select: true`
-    whenever $\ge 1$ candidates qualify, or silent bypass to Step 6 visible
-    `### Convergence Summary` + `write_to_file` (`spec.md` &
-    `manual_testing.md`) + `ask_question` when 0 qualify).
+    already contain a `**Settled**` / `**Now**` / `**Up next**` progress list or
+    `### Devil's Advocate Analysis`), project context (`armature/index.md`,
+    `armature/tracks.md`, `product.md`, `tech-stack.md`) is already loaded and
+    `{PROJECT_CONTEXT_DIR}` defaults to `armature`. Never call `view_file` to
+    check `armature/index.md`, `armature/product.md`, or `armature/tracks.md`
+    during Step 5a, Phase 5b, Phase 5c, or Step 6 transitions.
+-   **Two-Part Turn Contract (Non-Empty Visible Markdown FIRST + Native
+    `ask_question` SECOND):** Every interactive interview or gate turn MUST
+    contain BOTH (1) non-empty visible markdown text (answering any inline
+    `@[Quote]` questions and rendering the required progress list and interview
+    turn, `### Devil's Advocate Analysis`, `### ADR Candidate Triage Table`, or
+    `### Convergence Summary`) FIRST, and (2) the native `ask_question` tool
+    call SECOND in that same turn. Never emit a bare `ask_question` or
+    `write_to_file` call with empty visible markdown text (`""`), and never end
+    a turn with a conversational prose question (`tools=[]`).
+-   **Single-Gate Phase Isolation (`/arm-new-track` Phase 5a → 5b → 5c → Step
+    6):** Never collapse multiple interactive gates into a single turn.
+    Resolving the final open question in Phase 5a transitions in that turn to
+    **Phase 5b Finding 1** (one challenge per turn with option cards + `###
+    Recommendation: Option N` + `ask_question`, never a self-answered
+    `*Risk:*`/`*Mitigation:*` list). Resolving the final Phase 5b challenge
+    transitions in that turn to **Phase 5c** (`### ADR Candidate Triage Table` +
+    `ask_question` with `is_multi_select: true` whenever $\ge 1$ candidates
+    qualify, or silent bypass to Step 6 visible `### Convergence Summary` +
+    `write_to_file` (`spec.md` & `manual_testing.md`) + `ask_question` when 0
+    qualify).
 -   **Human-Readable Navigation:** Always refer to process steps and documents
     by their human-readable names. Do not expose internal section numbers.
 
@@ -311,40 +321,42 @@ first. Do NOT create empty commits.
     refactoring (do not modernize adjacent error comparisons, reformat error
     strings, or rename unrelated variables), and provide the exact test
     verification command in ≤1000 tokens (do not exceed token boundaries).
--   **Recursive Decision-Tree Grill Engine & Post-Ledger Devil's Advocate** —
-    During track creation (`/arm-new-track` Step 5), the agent MUST maintain a
-    visible `### Decision Tree Ledger` tracking root branches and spawned child
-    leaves (`[ ]` OPEN, `[x]` Resolved). The interview operates in two strictly
-    sequenced phases:
-    1.  *Phase 5a (Dynamic Leaf Traversal & Ambiguity Elicitation)*: Selecting
-        an architectural direction at the root of a branch does NOT close the
-        branch; it actively spawns 1–2 high-value Tier 1 operational child
-        leaves derived from that specific choice. Probing depth is strictly
-        bounded to Depth <= 2 (Root Topic -> Operational Child Leaf).
-        Operational child leaf answers are terminal (`[x]`) and MUST NOT spawn
-        Level 2 grandchildren (Tier 2 styling, micro-copy, and internal helpers
-        are pruned and deferred to `plan.md`). Future root branches MUST remain
-        unexpanded stubs in the ledger until probed (Lazy Leaf Materialization);
-        pre-populating leaves under unconfirmed branches is strictly forbidden.
-        Every spawned child leaf MUST carry an Answer-Anchored Provenance Tag
-        citing the confirmed choice: `- [ ] Leaf N.M: ... (Spawned by
-        '<choice>': ...)`. Furthermore, the agent is strictly forbidden from
-        asserting declarative technical designs, button configurations,
-        countdown cancel behaviors, or state transitions in markdown for topics
-        unconfirmed by the user via `ask_question`. Every turn presenting choices
-        MUST pair markdown analysis and the Decision Tree Ledger with an immediate
-        native `ask_question` tool call in the exact same turn; ending a turn with
-        text alone when choices are presented or emitting bare `ask_question`
-        without markdown text are both strictly forbidden.
-    2.  *Phase 5b (Post-Ledger Devil's Advocate Analysis — Sequential
-        Single-Finding Execution)*: When every branch and child leaf reaches
-        `[x]`, the agent MUST NOT immediately converge and MUST NOT dump all
-        emergent findings into a single compound prompt. It MUST output `###
-        Devil's Advocate Analysis: Stress-Testing Confirmed Decisions`
-        presenting each emergent cross-cutting contradiction, operational
-        hazard, and maintainability debt finding **one-by-one**. For each
-        finding, the agent MUST state the specific risk, offer concrete
-        countermeasure options, and pause execution for human decision via
+-   **Recursive Decision-Tree Grill Engine & Devil's Advocate** — During track
+    creation (`/arm-new-track` Step 5), the agent MUST open every interview turn
+    with a one-line settled sentence (skipped on the first question) and a
+    visible grouped progress list (`**Settled**` with short answers, `**Now**`
+    for the active question, `**Up next**` for queued questions and unexplored
+    rounds), followed by `---` and a `## Round R, Question Q of N: <Topic>`
+    headline. The interview operates in two strictly sequenced phases:
+    1.  *Phase 5a (Round and Question Traversal & Ambiguity Elicitation)*:
+        Selecting an architectural direction for a round does NOT close the
+        round; it actively spawns 1–2 high-value Tier 1 operational follow-up
+        questions derived from that specific choice. Probing depth is strictly
+        bounded to Depth <= 2 (Round -> Question). Question answers are terminal
+        (Settled) and MUST NOT spawn further nested questions (Tier 2 styling,
+        micro-copy, and internal helpers are pruned and deferred to `plan.md`).
+        Future rounds MUST remain unexpanded stubs under `**Up next**` until
+        probed (Lazy Question Materialization); listing questions under
+        unconfirmed rounds is strictly forbidden. Every spawned follow-up
+        question MUST state which confirmed answer spawned it, in the settled
+        line or the `**Context:**` block (Answer-Anchored Provenance).
+        Furthermore, the agent is strictly forbidden from asserting declarative
+        technical designs, button configurations, countdown cancel behaviors, or
+        state transitions in markdown for topics unconfirmed by the user via
+        `ask_question`. Every turn presenting choices MUST pair markdown
+        analysis and the progress list with an immediate native `ask_question`
+        tool call in the exact same turn; ending a turn with text alone when
+        choices are presented or emitting bare `ask_question` without markdown
+        text are both strictly forbidden.
+    2.  *Phase 5b (Devil's Advocate Analysis — Sequential Single-Finding
+        Execution)*: When every round and question is Settled, the agent MUST
+        NOT immediately converge and MUST NOT dump all emergent findings into a
+        single compound prompt. It MUST output `### Devil's Advocate Analysis:
+        Stress-Testing Confirmed Decisions` presenting each emergent
+        cross-cutting contradiction, operational hazard, and maintainability
+        debt finding **one-by-one**. For each finding, the agent MUST state the
+        specific risk, offer concrete countermeasure option cards with `###
+        Recommendation: Option N`, and pause execution for human decision via
         `ask_question` individually before presenting subsequent findings. Only
         after all devil's advocate findings have been evaluated individually
         does the agent present the final convergence gate before proceeding to
@@ -352,7 +364,7 @@ first. Do NOT create empty commits.
     3.  *Phase 5c (ADR Candidate Triage Gate — Dual-Stage Lifecycle)*:
         Immediately after Phase 5b Devil's Advocate concludes and before
         materializing `spec.md`, the agent MUST audit all settled decisions
-        (`[x]`) in the Decision Tree Ledger against the **3-Pillar Invariant
+        (listed under `**Settled**`) against the **3-Pillar Invariant
         Taxonomy**:
         -   *Pillar 1 (Cross-Cutting Invariant):* Establishes a convention,
             contract, or state invariant that constrains future tracks or

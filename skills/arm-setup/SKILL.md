@@ -39,7 +39,8 @@ project).
 -   **User-Specified Scope Direct Execution Invariant (§2.0 -> §3.1):**
     -   If a brownfield workspace is detected and the user has **NOT** yet
         specified a discovery scope, output the Brownfield Option Trade-Off
-        Analysis (`Pros`/`Cons` + `Recommendation Rationale` explaining that
+        Analysis (option cards with `**Pros:**` / `**Cons:**` /
+        `**Implications:**` + `### Recommendation: Option N` explaining that
         Deep Retroactive Archaeology mines VCS commits and transcripts to inform
         all artifacts AND executes an autonomous batch synthesis "Ralph loop"
         pausing once at a Single Unified Review Gate) and invoke `ask_question`
@@ -114,13 +115,14 @@ project).
         `bin/`).
     -   If indicators are found, this is a **Brownfield** project.
         -   **Report & Trade-Off Analysis**: Output a brief markdown summary
-            reporting the detected brownfield indicators, followed by an Option
-            Trade-Off Analysis (`Pros`/`Cons` + `Recommendation Rationale`)
-            contrasting **Deep Retroactive Archaeology** (searching past
-            conversations, VCS commit history, and current codebase contents)
-            against **Current Snapshot Only** (inspecting only current on-disk
-            files).
-            -   In the `Pros` and `Recommendation Rationale` for Deep
+            reporting the detected brownfield indicators in a `**Context:**`
+            block, followed by option cards (`**Pros:**` / `**Cons:**` /
+            `**Implications:**`) and `### Recommendation: Option N` with its
+            rationale, contrasting **Deep Retroactive Archaeology** (searching
+            past conversations, VCS commit history, and current codebase
+            contents) against **Current Snapshot Only** (inspecting only current
+            on-disk files).
+            -   In the `**Pros:**` row and the recommendation rationale for Deep
                 Retroactive Archaeology, explicitly state that it mines VCS
                 commits and past session transcripts to inform all setup
                 artifacts (`product.md`, `tech-stack.md` Legacy Fences,
@@ -130,7 +132,7 @@ project).
                 pass—pausing **once** at a **Single Unified Review Gate** before
                 committing rather than prompting on every individual file.
         -   **Context Discovery Scope Gate**: End your markdown immediately
-            after the `Recommendation Rationale` (with zero trailing
+            after the recommendation rationale paragraph (with zero trailing
             self-narration) and invoke `ask_question` in the same turn:
             -   *Question*: `"How should Armature gather context to initialize
                 this brownfield project?"`

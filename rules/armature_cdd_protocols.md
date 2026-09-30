@@ -69,9 +69,10 @@ Decisions failing all three (local component markup, single route slugs, error s
 
 ADR capture operates across a dual-stage lifecycle alongside targeted in-flight hooks:
 
-1.  **Phase 5c Pre-Spec ADR Triage Gate** (`/arm-new-track` Step 5c): Immediately
-    after Phase 5b Devil's Advocate resolves, the agent audits all settled ledger
-    decisions (`[x]`) against the 3-Pillar Taxonomy.
+1.  **Phase 5c Pre-Spec ADR Triage Gate** (`/arm-new-track` Step 5c):
+    Immediately after Phase 5b Devil's Advocate resolves, the agent audits all
+    settled decisions (listed under `**Settled**` in the progress list) against
+    the 3-Pillar Taxonomy.
     -   *Silent Zero-Candidate Bypass:* If zero decisions qualify, the agent
         silently transitions to Step 6 without an extra modal turn.
     -   *Interactive Triage Table:* If candidates qualify, outputs `### ADR

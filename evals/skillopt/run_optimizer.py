@@ -66,10 +66,22 @@ def call_gemini(
   }
   if seed is not None:
     gen_config["seed"] = seed
+  if contents is not None:
+    norm_contents = []
+    for c in contents:
+      if "parts" in c:
+        norm_contents.append(
+            {"role": c.get("role", "user"), "parts": c["parts"]}
+        )
+      else:
+        norm_contents.append({
+            "role": c.get("role", "user"),
+            "parts": [{"text": c.get("text", c.get("content", ""))}],
+        })
+  else:
+    norm_contents = [{"parts": [{"text": prompt}]}]
   payload = {
-      "contents": (
-          contents if contents is not None else [{"parts": [{"text": prompt}]}]
-      ),
+      "contents": norm_contents,
       "generationConfig": gen_config,
       "safetySettings": [
           {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
@@ -859,10 +871,17 @@ def evaluate_task(
   rollout_output = annotate_protocol_signals(task, rollout_output)
 
   criteria = task.get("eval_criteria") or task.get("criteria", [])
+  scenario_text = task["prompt"]
+  if task.get("turns"):
+    scenario_text = "\n\n".join(
+        f"[Turn {idx + 1} - {t.get('role', 'user').upper()}]:\n"
+        f"{t.get('text') or (t.get('parts', [{}])[0].get('text', ''))}"
+        for idx, t in enumerate(task["turns"])
+    )
   judge_prompt = f"""You are a strict evaluator assessing whether an agent's execution rollout satisfies each required criterion.
 
 Task Scenario:
-{task['prompt']}
+{scenario_text}
 
 Target Skill: {target_skill_name}
 

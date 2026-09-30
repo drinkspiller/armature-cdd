@@ -247,15 +247,21 @@ persona: Armature Architect
 """
 
 
+BASELINE_ROOT = None  # Set via --baseline_root; None keeps the legacy stub.
+
+
 def get_system_instruction(target_skill: str, mode: str = "post_impl") -> str:
-  protocol_path = os.path.join(ARMATURE_ROOT, "rules", "armature_protocol.md")
-  skill_path = os.path.join(ARMATURE_ROOT, "skills", target_skill, "SKILL.md")
+  root = ARMATURE_ROOT
+  if mode == "baseline" and BASELINE_ROOT:
+    root = BASELINE_ROOT
+  protocol_path = os.path.join(root, "rules", "armature_protocol.md")
+  skill_path = os.path.join(root, "skills", target_skill, "SKILL.md")
   protocol_text = ""
   skill_text = ""
   if os.path.exists(protocol_path):
     with open(protocol_path, "r", encoding="utf-8") as f:
       protocol_text = f.read()
-  if mode == "baseline":
+  if mode == "baseline" and not BASELINE_ROOT:
     skill_text = BASELINE_SKILL_STUB
   elif os.path.exists(skill_path):
     with open(skill_path, "r", encoding="utf-8") as f:
@@ -479,7 +485,17 @@ def main():
       "--mode", choices=["baseline", "post_impl", "both"], default="both"
   )
   parser.add_argument("--seeds", type=int, default=3)
+  parser.add_argument(
+      "--baseline_root",
+      default=None,
+      help=(
+          "Armature root to read baseline protocol and skill text from (e.g."
+          " the depot HEAD snapshot). Omit to use the legacy stub skill."
+      ),
+  )
   args = parser.parse_args()
+  global BASELINE_ROOT
+  BASELINE_ROOT = args.baseline_root
 
   train_tasks = load_jsonl(TRAIN_BF_PATH)
   val_tasks = load_jsonl(VAL_BF_PATH)

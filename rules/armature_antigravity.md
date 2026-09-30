@@ -39,7 +39,7 @@ syntax displays as raw characters. Follow these rules:
     *"I will now ask for your decision on..."* or *"Let's call ask_question..."*),
     and IMMEDIATELY emit the native `ask_question` tool call in the exact same
     turn. You are STRICTLY FORBIDDEN from ending your turn with markdown prose
-    alone when presenting choices, branches, or trade-offs.
+    alone when presenting choices, rounds, or trade-offs.
 7.  **Native structured tool invocation only.** Invoke `ask_question`
     exclusively as a structured tool call in the same turn as your markdown
     analysis. NEVER output raw `call:ask_question{...}` strings
@@ -57,32 +57,43 @@ Should I scan only current files or also search past conversations and commits?"
 options: ["Current files only", "Search past conversations and commits"]
 ```
 
-**GOOD - analysis & trade-offs as text, question is short:**
+**GOOD - context, option cards, and recommendation as text, question is short:**
 
-First, output findings and Option Trade-Off Analysis as regular markdown:
+First, output the context, option cards, and recommendation as regular markdown
+(each option is its own plain blockquote card; only the `**Pros:**`,
+`**Cons:**`, and `**Implications:**` labels are bold; no tables, icons, emoji,
+or `[!NOTE]` / `[!TIP]` callouts):
 
-> **Brownfield project detected.** I found `package.json` with React 18,
-> TypeScript 5.3, 47 source files in `src/`, and `BUILD` files present.
+```markdown
+## Round 1, Question 1 of 1: How setup gathers context
+
+**Context:** This is a brownfield project with existing history to draw on:
+
+- Which sources inform `product.md`, `tech-stack.md`, `workflow.md`, `terms.md`, `manual_testing/`, and `adr/`.
+- How many review stops the setup takes.
+
+`package.json` shows React 18 and TypeScript 5.3, with 47 source files in `src/` and `BUILD` files present. The goal is setup artifacts that capture why the code looks the way it does.
+
+&nbsp;
+
+> **Option 1: Deep Retroactive Archaeology** (Recommended)
 >
-> *   **Deep Retroactive Archaeology (Current + Commits + Conversations)**
->     *   **Pros:** Mines VCS commit history and past session transcripts to
->         inform all setup artifacts (`product.md`, `tech-stack.md` Legacy
->         Fences, `workflow.md`, `terms.md`, `manual_testing/`, and `adr/`), and
->         executes an autonomous batch synthesis ("Ralph loop") across all
->         artifacts in one uninterrupted pass—pausing once at a Single Unified
->         Review Gate before committing.
->     *   **Cons:** Adds a brief historical mining pass before drafting
->         artifacts.
-> *   **Current Snapshot Only (Current Codebase Contents Only)**
->     *   **Pros:** Fast, strictly bounded to current checked-out files and
->         static docs.
->     *   **Cons:** Misses historical *why* context, reverted approaches, and
->         undocumented trade-offs from commit logs and past discussions.
+> - **Pros:** Mines commit history and past session transcripts to inform every setup artifact in one uninterrupted pass.
+> - **Cons:** Adds a brief history-mining pass before drafting.
+> - **Implications:** Pauses once at a Single Unified Review Gate before committing.
+
+> **Option 2: Current Snapshot Only**
 >
-> **Recommendation Rationale:** Selecting Deep Retroactive Archaeology ensures
-> all initial setup artifacts capture the project's true architectural
-> invariants and negative constraints, while autonomous batch synthesis with a
-> Single Unified Review Gate eliminates per-file modal fatigue.
+> - **Pros:** Fast, and bounded to checked-out files and static docs.
+> - **Cons:** Misses the history behind reverted approaches and undocumented trade-offs.
+> - **Implications:** Negative constraints and Legacy Fences need to be added by hand later.
+
+&nbsp;
+
+### Recommendation: Option 1
+
+Commit history holds the project's real invariants and discarded approaches. Mining it once, with a single review gate, avoids a modal for every file.
+```
 
 Then call `ask_question`:
 

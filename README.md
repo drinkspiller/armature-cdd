@@ -138,10 +138,10 @@ Autonomous coding agents move fast when given an execution loop, but velocity wi
 ### The Grill Engine (`/arm-new-track`)
 Most AI coding agents jump straight from a short prompt into file edits. When given underspecified requirements, models make silent assumptions about architecture, pick the first familiar pattern that emerges in their context window, and begin generating code without probing failure modes.
 
-The Grill Engine enforces a structured decision-tree interview before any implementation plan is drafted:
-- **Option Trade-Off Analysis Engine**: Every candidate approach is presented with an itemized hierarchy of 1–2 punchy `Pros` and `Cons`, capped with a declarative `Recommendation Rationale` and an on-demand elaboration detour before prompting.
-- **Dynamic Leaf Traversal**: Traverses edge cases, concurrency boundaries, error recovery, and security scope up to Depth 2 without unconfirmed dictation.
-- **Post-Ledger Devil's Advocate (Phase 5b)**: When all leaves resolve, stress-tests the confirmed design against emergent contradictions, operational hazards, and failure cascades one-by-one.
+The Grill Engine enforces a structured round-and-question interview before any implementation plan is drafted:
+- **Scannable Interview Turns**: Every question turn follows a consistent top-down layout: `## Round <R>, Question <Q> of <N>: <Topic>`, `**Context:**`, plain blockquote option cards with bold `**Pros:**` / `**Cons:**` / `**Implications:**` labels, and `### Recommendation: Option <N>`, preceded by a grouped `**Settled**` / `**Now**` / `**Up next**` progress list on Turn 2+.
+- **Dynamic Question Traversal**: Traverses edge cases, concurrency boundaries, error recovery, and security scope up to Depth 2 without unconfirmed dictation.
+- **Post-Interview Devil's Advocate (Phase 5b)**: When all rounds and sub-questions resolve, stress-tests the confirmed design against emergent contradictions, operational hazards, and failure cascades one-by-one.
 - **Pre-Spec ADR Triage Gate (Phase 5c)**: Audits settled decisions against the 3-Pillar Invariant Taxonomy before drafting `spec.md`, offering immediate formalization.
 
 ### Architectural Decision Records (`adr/`)
@@ -209,11 +209,11 @@ Armature is benchmarked against alternative Spec-Driven Development (SDD) and Co
 
 | Rank | Framework | Composite Score | Pass Rate (95% CI) | Avg Tokens / Task | Key Takeaway |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **#1** | **Armature (OSS)** *(this)* | **88.3 / 100** | **88.3%** (106/120, ±5.7%) | 3415 tokens | High drift governance (95.8%), detour resilience (100%), surgical velocity (75.0%), and living runbook verification. |
+| **#1** | **Armature (OSS)** *(this)* | **88.0 / 100** | **87.5%** (105/120, ±5.9%) | 3377 tokens | High drift governance (100.0%), detour resilience (100.0%), state safety (91.7%), and surgical velocity (75.0%). |
 | **#2** | **BMAD Method** | **70.0 / 100** | **70.0%** (84/120, ±8.2%) | 2710 tokens | Multi-agent agile role separation with strong safety guardrails (83.3%); high ceremony on surgical micro-fixes. |
 | **#3** | **GitHub Spec Kit** | **61.7 / 100** | **61.7%** (74/120, ±8.7%) | 2712 tokens | Spec-first rigor with 100% detour resilience; heavy planning ceremony and coordination tax on hotfixes (33.3%). |
 | **#4** | **Wayfinder** | **57.5 / 100** | **57.5%** (69/120, ±8.8%) | 3869 tokens | Breadth-first frontier decision mapping; strong detour resilience (95.8%), but high ceremony and token footprint. |
-| **#5** | **Conductor (Canonical Upstream CLI)** | **49.2 / 100** | **49.2%** (59/120, ±8.9%) | 2542 tokens | Efficient linear track orchestration; lacks multi-turn branch resolution and OCC analysis. |
+| **#5** | **Conductor (Canonical Upstream CLI)** | **49.2 / 100** | **49.2%** (59/120, ±8.9%) | 2542 tokens | Efficient linear track orchestration; lacks multi-turn question resolution and OCC analysis. |
 | **#6** | **OpenSpec** | **45.0 / 100** | **45.0%** (54/120, ±8.9%) | 1581 tokens | Compact token footprint (1581 avg); critical failures in drift governance (20.8%) and destructive execution gates. |
 | **#7** | **Memory Bank (Cline / Roo Code)** | **36.7 / 100** | **36.7%** (44/120, ±8.6%) | 2023 tokens | Stateful markdown memory for detours; total absence of drift governance (0%) and architectural contract gating. |
 
@@ -327,5 +327,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.27.3** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.28.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 

@@ -6,6 +6,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.0] - 2026-09-29
+
+### Changed
+
+-   **New Interview Turn Format (`skills/arm-new-track/SKILL.md`,
+    `rules/armature_protocol.md`, `rules/armature_antigravity.md`,
+    `rules/armature_cdd_protocols.md`, `skills/arm-setup/SKILL.md`,
+    `skills/arm-review/SKILL.md`)**: Interview questions are easier to scan.
+    Each turn now reads top to bottom as:
+    -   A one-line note confirming the previous answer and any follow-up it
+        opened.
+    -   A short progress list grouped as **Settled** (with each answer),
+        **Now**, and **Up next**, replacing the nested `### Decision Tree
+        Ledger` checkbox tree.
+    -   A separator, then a `## Round R, Question Q of N: <Topic>` headline and
+        a brief **Context** block.
+    -   One plain blockquote card per option with **Pros**, **Cons**, and
+        **Implications** rows, replacing the `*Pros:*` / `*Cons:*` bullet lists.
+    -   A `### Recommendation: Option N` heading with one to three sentences of
+        reasoning, replacing `Recommendation Rationale`.
+-   **Terminology**: The interview uses Rounds and Questions instead of Branches
+    and Leaves. Devil's Advocate findings and the brownfield setup scope
+    question use the same option cards and recommendation heading.
+-   **Unchanged Behavior**: The ask-in-the-same-turn contract, lazy expansion of
+    future rounds, answer-anchored follow-ups (now stated in the settled line or
+    the Context block), the two-level depth limit, the anti-dictation rule,
+    Devil's Advocate, and ADR triage all work as before.
+-   **Evals (`evals/skillopt/`, `evals/cdd_sdd_benchmark/`)**: The trajectory
+    evaluator recognizes the new progress list, headline, option cards, and
+    recommendation heading while still accepting the legacy ledger. SkillOpt
+    task prompts and rubrics now use the new format and terminology; train and
+    validation sets stay disjoint.
+
 ## [0.27.3] - 2026-09-29
 
 ### Fixed
