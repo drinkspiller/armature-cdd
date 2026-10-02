@@ -6,6 +6,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.1] - 2026-10-02
+
+### Fixed
+
+-   **`/arm-new-track` Step 6–10 Sequential Gate Enforcement & Mandatory Handoff
+    (`skills/arm-new-track/SKILL.md`, `rules/armature_protocol.md`,
+    `evals/skillopt/`)**:
+    -   **No Auto-Implementation During `/arm-new-track`**: Enforces a terminal
+        planning boundary at Step 10. Prohibits invoking or defining
+        implementation subagents (`invoke_subagent`, `define_subagent`),
+        scheduling implementation heartbeats (`schedule`), editing application
+        source files, or setting `metadata.json` `"status": "in_progress"` or
+        `tracks.md` `[~]` during `/arm-new-track`.
+    -   **Strict Two-Part Step 8–10 Finalization Turn Contract**: Requires
+        emitting the visible markdown completion banner (`✅ Track <track_id>
+        created!`) and the copy-pastable handoff command (`Run /arm-implement
+        <track_id> to start working through the plan.`) as Part 1 before the
+        Part 2 tool calls (`write_to_file` for `metadata.json` with `"status":
+        "planned"`, `tracks.md` with `- [ ]`, `index.md`, and `run_command`
+        commit).
+    -   **Sequential Step 6 & Step 7 Approval Gates**: Prohibits collapsing
+        `spec.md` and `plan.md` creation into a single turn or writing
+        `metadata.json` in the same turn as `plan.md` before receiving explicit
+        user approval via `ask_question`.
+-   **`/arm-implement` Step 2 Intent-Mismatch & Empty-Queue Routing Gate
+    (`skills/arm-implement/SKILL.md`, `rules/armature_protocol.md`)**:
+    -   Detects when `/arm-implement` is invoked with a new feature/bug-fix
+        request while `tracks.md` has no matching track (`_No active tracks._`
+        or track ID mismatch), immediately switching to the `/arm-new-track`
+        Step 5a single-question (`Round 1, Question 1`) interview ceremony
+        instead of packing multi-question `ask_question` calls or bypassing
+        planning gates into `worker`.
+-   **Evals (`evals/skillopt/`)**:
+    -   Added `TRAIN_53`–`TRAIN_58` (`70` total train tasks) and
+        `VAL_43`–`VAL_46` (`54` total held-out validation tasks) covering
+        `/arm-implement` intent-mismatch routing, Step 6/7 sequential approval
+        gates, and Step 10 handoff termination.
+    -   Added deterministic protocol violation detectors in `run_optimizer.py`
+        for illegal implementation subagent dispatch during `/arm-new-track`,
+        missing `/arm-implement <track_id>` handoff commands, collapsed
+        Step 6/7/8 artifact writes, and multi-question packing on
+        intent-mismatch redirects (`0.9375 ± 0.1083` held-out validation mean
+        and `100.0%` held-out `[INVARIANT]` pass rate across $K=3$ seeds).
+
 ## [0.28.0] - 2026-09-29
 
 ### Changed

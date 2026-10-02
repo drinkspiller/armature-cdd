@@ -25,21 +25,78 @@ track cleanup.
 ### Step 2: Track Selection & Milestone Routing
 
 1.  **Direct Milestone Routing**: If the user prompt specifically instructs you to execute a particular milestone or phase (e.g., "Execute Phase N checkpoint", "Finalize and synchronize documentation", "Proceed to Step 5", "Proceed to track closeout", or "What should we do now?"), jump directly to that targeted step without pausing for exploratory file listing or selection confirmation.
-2.  Otherwise, read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`.
-3.  If a track name was provided:
+2.  **New-Track Design Intent Mismatch & Cross-Skill Routing Invariant
+    (`/arm-implement` → `/arm-new-track`)**:
+    -   **Turn 1 Mismatch Routing**: If `/arm-implement` is invoked with a
+        prompt that requests thinking through, designing, reworking, or scoping
+        a new feature or architecture (e.g., `"Let's think through..."`, `"Let's
+        design..."`, `"Rework..."`) AND no matching planned/active track exists
+        in `tracks.md` (e.g., `tracks.md` contains `_No active tracks._`), you
+        MUST NOT call `run_command` (`ls`, `cat`, `find`), MUST NOT pack
+        multiple questions into `ask_question`, MUST NOT write `spec.md` or
+        `plan.md`, and MUST NOT call `invoke_subagent` or `define_subagent`.
+        Instead, in that exact turn:
+        1.  Explicitly state in visible markdown that no active track exists in
+            `tracks.md` for this request, so Armature is routing into
+            `/arm-new-track` one-question-at-a-time planning (and will halt upon
+            track creation so the user can run `/arm-implement <track_id>`).
+        2.  Render the canonical `/arm-new-track` Turn 1 layout in visible
+            markdown:
+            -   Grouped progress list (`**Now**\n- Round 1, <Topic>` and `**Up
+                next**\n- Round 2, <Topic>\n- Round 3, <Topic>`)
+            -   Horizontal rule (`---`)
+            -   Headline (`## Round 1, Question 1 of 1: <Topic>`)
+            -   Context block (`**Context:** <one-line framing>:`, 2–4 bullets,
+                short paragraph)
+            -   `&nbsp;` spacer, plain blockquote option cards (`> **Option 1:
+                <Name>** (Recommended)` with `- **Pros:**`, `- **Cons:**`, `-
+                **Implications:**`), `&nbsp;` spacer
+            -   `### Recommendation: Option 1` with 1–3 sentences of rationale
+        3.  Invoke `ask_question` natively in the same turn with strictly ONE
+            question (`len(questions) == 1`) and 3–4 options.
+    -   **Post-Interview Step 10 Terminal Stop Preservation (Two-Part Step 8–10
+        Turn Contract)**: When a session that originally started with
+        `/arm-implement` in Turn 1 was routed into `/arm-new-track` and reaches
+        Step 7 `plan.md` approval, it remains governed by `/arm-new-track` Steps
+        8–10. Upon `plan.md` approval, do NOT call `run_command` (`ls`, `cat`)
+        to re-read files already in `Given context:`. Execute ONLY
+        `/arm-new-track` Steps 8–10 in a single turn using the Two-Part Turn
+        Contract:
+        1.  **Part 1 (Visible Markdown Text — Required First BEFORE Tool
+            Calls):** Output in visible markdown text first (never emit bare
+            tool calls with empty markdown text): ``✅ Track \`<track_id>\`
+            created! Run \`/arm-implement <track_id>\` to start working through
+            the plan.`` (and explain that `/arm-new-track` concludes upon track
+            creation and implementation requires invoking `/arm-implement
+            <track_id>` as a separate command).
+        2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):** Call
+            `write_to_file` for `metadata.json` (`"status": "planned"` — NEVER
+            `"in_progress"`), call `write_to_file` for `index.md`, call
+            `write_to_file` (NEVER `run_command` / `echo >>`) to update
+            `tracks.md` with `- [ ]`, and invoke `run_command` to commit (`git
+            add ... && git commit -m "chore(armature): Add new track
+            '<description>'"`).
+        3.  **Hard Terminal Stop:** HALT immediately after the commit tool call.
+            Even if the user asks to start Phase 1 immediately with `worker`,
+            NEVER call `invoke_subagent`, `define_subagent`, or `schedule`, and
+            NEVER set status to `in_progress` or `[~]` in the track-creation
+            completion turn.
+3.  Otherwise, inspect `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md` (using
+    inline prompt context if provided).
+4.  If an existing track name was provided:
     -   Find the exact match in `tracks.md`.
     -   **Autonomous Execution Invariant (Zero-Permission Turn 1 Dispatch)**:
-        When a track name is provided or an active track is requested, you are
-        STRICTLY FORBIDDEN from prompting the user with an `ask_question` modal
-        to confirm starting. Immediately proceed to Step 3, audit `plan.md`, and
-        dispatch Phase 1 (or parallel disjoint phases) via `invoke_subagent` on
-        Turn 1.
-4.  If no track name was provided:
+        When an existing track name is provided or an active track is requested,
+        you are STRICTLY FORBIDDEN from prompting the user with an
+        `ask_question` modal to confirm starting. Immediately proceed to Step 3,
+        audit `plan.md`, and dispatch Phase 1 (or parallel disjoint phases) via
+        `invoke_subagent` on Turn 1.
+5.  If no track name was provided and no new-track design prompt was given:
     -   Find the first non-completed track (marked `[ ]` or `[~]`).
     -   If an active track (`[~]`) exists, autonomously resume it without prompting.
     -   Only if multiple ambiguous tracks exist and none was specified, prompt
         via `ask_question`: "Which track would you like to implement?"
-5.  If no incomplete tracks exist, announce that all tracks are complete and
+6.  If no incomplete tracks exist, announce that all tracks are complete and
     halt.
 
 ### Step 3: Track Implementation & Phase Checkpoints
