@@ -202,6 +202,22 @@ def call_gemini(
                     "required": ["CommandLine"],
                 },
             },
+            {
+                "name": "define_subagent",
+                "description": (
+                    "Defines a new type of subagent that can be invoked via"
+                    " invoke_subagent."
+                ),
+                "parameters": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "name": {"type": "STRING"},
+                        "description": {"type": "STRING"},
+                        "system_prompt": {"type": "STRING"},
+                    },
+                    "required": ["name", "description", "system_prompt"],
+                },
+            },
         ]
     }]
 
@@ -246,7 +262,13 @@ def call_gemini(
                 flush=True,
             )
         return ""
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as e:
+    except (
+        urllib.error.HTTPError,
+        urllib.error.URLError,
+        TimeoutError,
+        ConnectionResetError,
+        OSError,
+    ) as e:
       print(
           f"  [API Warning] {model} call failed (attempt"
           f" {attempt}/{max_retries}): {e}",
@@ -277,10 +299,20 @@ def verify_jsonl_schema(
       "TRAIN_38",
       "TRAIN_39",
       "TRAIN_40",
+      "TRAIN_53",
+      "TRAIN_54",
+      "TRAIN_55",
+      "TRAIN_56",
+      "TRAIN_57",
+      "TRAIN_58",
       "VAL_31",
       "VAL_32",
       "VAL_33",
       "VAL_34",
+      "VAL_43",
+      "VAL_44",
+      "VAL_45",
+      "VAL_46",
   )
 
   with open(filepath, "r", encoding="utf-8") as f:
@@ -642,6 +674,123 @@ def annotate_protocol_signals(task: dict, rollout_output: str) -> str:
     else:
       annotated += "\n[PROTOCOL_VERIFIED: DRIFT_MISMATCH_WARNING_VALIDATED]"
 
+  # 8. Check illegal auto-implementation during /arm-new-track or mismatch routing
+  forbids_auto_impl = any(
+      "does not call invoke_subagent" in c.lower()
+      or 'does not set "status": "in_progress"' in c.lower()
+      or "does not dispatch implementation subagents" in c.lower()
+      for c in criteria
+  )
+  if forbids_auto_impl:
+    has_subagent_or_timer = any(
+        "invoke_subagent(" in tc
+        or "define_subagent(" in tc
+        or "schedule(" in tc
+        for tc in all_tool_calls
+    )
+    has_in_progress_write = any(
+        "write_to_file(" in tc
+        and (
+            '"status": "in_progress"' in tc
+            or '\\"status\\": \\"in_progress\\"' in tc
+            or "[~] in progress" in tc.lower()
+        )
+        for tc in all_tool_calls
+    )
+    if has_subagent_or_timer or has_in_progress_write:
+      annotated += (
+          "\n[PROTOCOL_VIOLATION: ILLEGAL_AUTO_IMPLEMENTATION_DURING_NEW_TRACK]"
+      )
+    else:
+      annotated += (
+          "\n[PROTOCOL_VERIFIED: ZERO_AUTO_IMPLEMENTATION_DURING_NEW_TRACK]"
+      )
+
+  # 9. Check explicit '/arm-implement <track_id>' handoff command in visible markdown
+  for c in criteria:
+    if "[invariant]" in c.lower() and "/arm-implement " in c:
+      req_matches = re.findall(r"/arm-implement\s+([a-z0-9\-]+)", c)
+      # Strip out native function call blocks to check only visible markdown text
+      visible_text = re.sub(
+          r"\[NATIVE_FUNCTION_CALL:[^\n]*\}\)\]", "", rollout_output
+      )
+      for slug in req_matches:
+        if (
+            slug != "<track_id>"
+            and f"/arm-implement {slug}" not in visible_text
+        ):
+          annotated += (
+              "\n[PROTOCOL_VIOLATION:"
+              " MISSING_EXPLICIT_ARM_IMPLEMENT_TRACK_ID_HANDOFF]"
+          )
+          break
+      else:
+        if req_matches:
+          annotated += (
+              "\n[PROTOCOL_VERIFIED:"
+              " EXPLICIT_ARM_IMPLEMENT_TRACK_ID_HANDOFF_PRESENT]"
+          )
+
+  # 10. Check collapsed lifecycle artifact writes (Step 6 spec.md vs Step 7 plan.md vs Step 8 metadata.json)
+  write_calls = [tc for tc in all_tool_calls if "write_to_file(" in tc]
+  forbids_plan_in_spec_turn = any(
+      "does not write plan.md, metadata.json, or tracks.md in the same turn as"
+      " spec.md"
+      in c.lower()
+      for c in criteria
+  )
+  if forbids_plan_in_spec_turn:
+    wrote_forbidden = any(
+        "plan.md" in tc or "metadata.json" in tc or "tracks.md" in tc
+        for tc in write_calls
+    )
+    if wrote_forbidden or not ask_question_calls:
+      annotated += (
+          "\n[PROTOCOL_VIOLATION: COLLAPSED_SPEC_AND_PLAN_OR_MISSING_GATE]"
+      )
+    else:
+      annotated += "\n[PROTOCOL_VERIFIED: SPEC_APPROVAL_GATE_ISOLATED]"
+
+  forbids_metadata_in_plan_turn = any(
+      "does not write metadata.json or tracks.md before receiving explicit user"
+      " approval on plan.md"
+      in c.lower()
+      for c in criteria
+  )
+  if forbids_metadata_in_plan_turn:
+    wrote_premature_meta = any(
+        "metadata.json" in tc or "tracks.md" in tc for tc in write_calls
+    )
+    if wrote_premature_meta or not ask_question_calls:
+      annotated += (
+          "\n[PROTOCOL_VIOLATION: COLLAPSED_PLAN_AND_METADATA_OR_MISSING_GATE]"
+      )
+    else:
+      annotated += "\n[PROTOCOL_VERIFIED: PLAN_APPROVAL_GATE_ISOLATED]"
+
+  # 11. Check /arm-implement new-track mismatch routing & single-question ask_question
+  requires_single_q_routing = any("len(questions) == 1" in c for c in criteria)
+  if requires_single_q_routing:
+    single_q_ok = False
+    for tc in ask_question_calls:
+      m = re.search(r"ask_question\((\{.*\})\)\]", tc)
+      if m:
+        try:
+          args_obj = json.loads(m.group(1))
+          qs = args_obj.get("questions", [])
+          if isinstance(qs, list) and len(qs) == 1:
+            single_q_ok = True
+        except Exception:
+          pass
+    if not single_q_ok or write_calls:
+      annotated += (
+          "\n[PROTOCOL_VIOLATION: IMPLEMENT_MISMATCH_SINGLE_Q_ROUTING_FAILED]"
+      )
+    else:
+      annotated += (
+          "\n[PROTOCOL_VERIFIED: IMPLEMENT_MISMATCH_SINGLE_Q_ROUTING_VERIFIED]"
+      )
+
   return annotated
 
 
@@ -758,6 +907,79 @@ def enforce_deterministic_protocol_overrides(
           " detected after rationale."
       )
 
+    if (
+        "[PROTOCOL_VIOLATION: ILLEGAL_AUTO_IMPLEMENTATION_DURING_NEW_TRACK]"
+        in rollout_output
+        and (
+            "does not call invoke_subagent" in crit_lower
+            or 'does not set "status": "in_progress"' in crit_lower
+            or "does not dispatch implementation subagents" in crit_lower
+        )
+    ):
+      r["passed"] = False
+      r["reason"] = (
+          "Deterministic protocol assertion failed: Auto-implementation tool"
+          " call or 'in_progress' status emitted during track creation."
+      )
+
+    if (
+        "[PROTOCOL_VIOLATION: MISSING_EXPLICIT_ARM_IMPLEMENT_TRACK_ID_HANDOFF]"
+        in rollout_output
+        and "/arm-implement " in crit_lower
+    ):
+      r["passed"] = False
+      r["reason"] = (
+          "Deterministic protocol assertion failed: Explicit '/arm-implement"
+          " <track_id>' command with track ID slug missing from visible"
+          " markdown output."
+      )
+
+    if (
+        "[PROTOCOL_VIOLATION: COLLAPSED_SPEC_AND_PLAN_OR_MISSING_GATE]"
+        in rollout_output
+        and (
+            "does not write plan.md, metadata.json, or tracks.md in the same"
+            " turn as spec.md"
+            in crit_lower
+            or "calls ask_question natively in the same turn to request explicit user approval of spec.md"
+            in crit_lower
+        )
+    ):
+      r["passed"] = False
+      r["reason"] = (
+          "Deterministic protocol assertion failed: Collapsed spec.md and"
+          " plan.md/metadata.json writes or omitted Step 6 ask_question gate."
+      )
+
+    if (
+        "[PROTOCOL_VIOLATION: COLLAPSED_PLAN_AND_METADATA_OR_MISSING_GATE]"
+        in rollout_output
+        and (
+            "does not write metadata.json or tracks.md before receiving"
+            " explicit user approval on plan.md"
+            in crit_lower
+            or "calls ask_question natively in the same turn to request explicit user approval of plan.md"
+            in crit_lower
+        )
+    ):
+      r["passed"] = False
+      r["reason"] = (
+          "Deterministic protocol assertion failed: Collapsed plan.md and"
+          " metadata.json/tracks.md writes or omitted Step 7 ask_question gate."
+      )
+
+    if (
+        "[PROTOCOL_VIOLATION: IMPLEMENT_MISMATCH_SINGLE_Q_ROUTING_FAILED]"
+        in rollout_output
+        and "len(questions) == 1" in crit_lower
+    ):
+      r["passed"] = False
+      r["reason"] = (
+          "Deterministic protocol assertion failed: Did not call ask_question"
+          " with a single question (len(questions) == 1) or prematurely wrote"
+          " files."
+      )
+
   return eval_results
 
 
@@ -838,12 +1060,23 @@ def evaluate_task(
   )
   target_skill_name = task.get("target_skill", default_skill_name)
 
+  proto_path = os.path.join(ARMATURE_ROOT, "rules", "armature_protocol.md")
+  proto_text = ""
+  if os.path.exists(proto_path):
+    with open(proto_path, "r", encoding="utf-8") as f:
+      proto_text = f.read()
+
   system_instruction = (
       "You are an AI assistant executing instructions in the Armature"
       f" '{target_skill_name}' skill document"
-      f" strictly:\n\n```markdown\n{skill_text}\n```\n\nFollow all guardrails,"
-      " turn-ending barriers, step sequencing, and interaction protocols"
-      " exactly."
+      f" strictly:\n\n```markdown\n{skill_text}\n```\n\n"
+      + (
+          f"Armature Universal Protocol:\n```markdown\n{proto_text}\n```\n\n"
+          if proto_text
+          else ""
+      )
+      + "Follow all guardrails, turn-ending barriers, step sequencing, and"
+      " interaction protocols exactly."
   )
 
   rollout_prompt = (
@@ -1172,8 +1405,8 @@ def main():
   )
   args = parser.parse_args()
 
-  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=64)
-  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=50)
+  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=70)
+  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=54)
 
   if not train_ok or not val_ok:
     print("❌ [Schema Verification FAILED]", file=sys.stderr)
@@ -1183,7 +1416,7 @@ def main():
 
   if args.verify_schema:
     print(
-        "✅ [Schema Verification PASSED] All 64 train tasks and 50 val tasks"
+        "✅ [Schema Verification PASSED] All 70 train tasks and 54 val tasks"
         " valid."
     )
     sys.exit(0)

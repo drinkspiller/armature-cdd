@@ -100,17 +100,45 @@ files in priority order:
         > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
         ```
 13. **Prompt-Provided Context Invariant (Zero Redundant Context Lookups):**
-    Whenever workspace context (`tech-stack.md`, `product.md`, `tracks.md`),
-    cumulative VCS diff status (`git diff main...HEAD`), active track plans,
-    or filesystem checks are already provided inline in the user prompt
-    (`[Workspace Context...]`, `[Active Track Plan...]`, `[Cumulative Branch
-    Diff...]`, `[Filesystem Check...]`, `[Codebase Reconnaissance Context...]`),
-    you MUST treat that context as already loaded and verified. NEVER waste a
-    turn calling `grep_search` or `view_file` to look up `product.md`,
-    `tech-stack.md`, `workflow.md`, or `tracks.md`. Immediately output your
-    complete markdown analysis/banners/reports and invoke the required
-    task-specific tools (`ask_question`, `invoke_subagent` + `schedule`, or
-    target file inspection) in that exact same turn.
+    Whenever workspace or track context (`tech-stack.md`, `product.md`,
+    `workflow.md`, `tracks.md`, `spec.md`, `plan.md`), cumulative VCS diff
+    status (`git diff main...HEAD`), active track plans, or filesystem checks
+    are already provided inline in the user prompt or conversation turns (`Given
+    context:`, `[Workspace Context...]`, `[Active Track Plan...]`, `[Cumulative
+    Branch Diff...]`, `[Filesystem Check...]`, `[Codebase Reconnaissance
+    Context...]`), you MUST treat that context as already loaded and verified on
+    disk. NEVER waste a turn calling `grep_search`, `view_file`, or
+    `run_command` (`ls`, `cat`, `head`, `find`) to re-read or verify
+    `product.md`, `tech-stack.md`, `workflow.md`, `tracks.md`, `spec.md`, or
+    `plan.md`. Immediately output your complete markdown
+    analysis/banners/reports and invoke the required task-specific tools
+    (`write_to_file`, `ask_question`, `invoke_subagent` + `schedule`, or commit
+    `run_command`) in that exact same turn.
+14. **Track-Creation Lifecycle Boundary & Explicit Handoff Invariant
+    (`/arm-new-track` ↔ `/arm-implement`):**
+
+    -   **Sequential Approval Gates (Steps 6 & 7):** In `/arm-new-track`,
+        `spec.md` + `manual_testing.md` (Step 6) and `plan.md` (Step 7) require
+        strictly separate turns and separate `ask_question` approval modals.
+        Never write `plan.md` or `metadata.json` in the Step 6 turn, and never
+        write `metadata.json` or `tracks.md` in the Step 7 turn before `plan.md`
+        is approved.
+    -   **Step 10 Hard Terminal Stop & Explicit `<track_id>` Handoff (Two-Part
+        Turn Contract):** Once the user approves `plan.md`, execute Steps 8–10
+        in a single turn: FIRST output the mandatory completion handoff in
+        visible markdown text before any tool calls (``✅ Track \`<track_id>\`
+        created! Run \`/arm-implement <track_id>\` to start working through the
+        plan.``, explaining that track creation concludes at Step 10 and
+        implementation requires running `/arm-implement <track_id>`), and SECOND
+        invoke `write_to_file` for `metadata.json` (`"status": "planned"`),
+        `write_to_file` for `index.md`, `write_to_file` (never `run_command`) to
+        append `- [ ]` to `tracks.md`, and `run_command` to commit
+        (`chore(armature): Add new track '<description>'`). Even if the user
+        prompt explicitly asks to auto-start implementation or dispatch `worker`
+        immediately—or if Turn 1 originally began with `/arm-implement` and
+        routed into `/arm-new-track`—you are STRICTLY FORBIDDEN from calling
+        `invoke_subagent`, `define_subagent`, or `schedule`, or setting status
+        to `in_progress` / `[~]` during track creation.
 
 Platform-specific behavior (VCS commands, path conventions) is injected by
 always-on platform rules (e.g., `armature_antigravity.md`). Do not hardcode VCS
