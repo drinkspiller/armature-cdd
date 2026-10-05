@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.28.2] - 2026-10-05
+
+### Changed
+
+-   **Remove 20-Second Heartbeat Timer Streaming Loop (`rules/armature_protocol.md`,
+    `skills/arm-implement/SKILL.md`, `evals/skillopt/`)**:
+    -   Removes the mandatory 20-second `schedule(DurationSeconds=20, ...)`
+        heartbeat timer loop and 4-element `[▓▓▓▓░░░░░░]` progress bar requirement
+        from Armature's subagent delegation rules and `/arm-implement`
+        orchestrator workflow.
+    -   Retains immediate background subagent dispatch (`explorer` / `worker`),
+        on-demand status inspection (`manage_subagents(Action='list')` when the
+        user queries progress), and reactive wakeup upon worker completion.
+
 ## [0.28.1] - 2026-10-02
 
 ### Fixed

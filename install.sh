@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.28.1"
+VERSION="0.28.2"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

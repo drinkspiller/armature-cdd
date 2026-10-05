@@ -1,15 +1,14 @@
 ---
 name: arm-implement
-description: Execute the plan for the current active track via autonomous subagent delegation, streaming active progress every 20s, with TDD lifecycle and phase checkpointing. Use when asked to implement, execute the plan, work on the next task, or run /arm-implement.
+description: Execute the plan for the current active track via autonomous subagent delegation, with TDD lifecycle and phase checkpointing. Use when asked to implement, execute the plan, work on the next task, or run /arm-implement.
 persona: Armature Orchestrator
 ---
 
 # /arm-implement — Execute the Plan
 
 **Purpose:** Execute the plan for the current active track via autonomous
-subagent delegation (`worker`), actively streaming progress updates every 20
-seconds, verifying phase deliverables, synchronizing documentation, and managing
-track cleanup.
+subagent delegation (`worker`), verifying phase deliverables, synchronizing
+documentation, and managing track cleanup.
 
 ## Protocol
 
@@ -188,60 +187,18 @@ track cleanup.
           "Prompt": "Task: Execute Phase N of the implementation plan for track '<track_id>'.\n\n[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]\n- Fenced Paths (Excluded from Search & Edit): <deprecated_path> -> Replacement: <modern_replacement>\n- Session Read Unlocks: <unlocked_paths>\n- Subagent Rule: NEVER call ask_question from a background worker. Never modify fenced files (<deprecated_path>). If unapproved fence access or write access is required, halt immediately and return a structured escalation request to the parent orchestrator.\n\nContext:\n1. Follow TDD Red/Green/Refactor. Mark completed tasks [x] in plan.md."
         }])
         ```
-
-        3.  Concurrently invoke `schedule(DurationSeconds=20, Prompt="Check
-            subagent progress and stream a visible status update",
-            TimerCondition="worker")` in that exact same turn!
-5.  **Mandatory Active Heartbeat & Progress Streaming Loop (20-Second Cadence)**:
-    -   **Proactive Heartbeat Timer**: Concurrently with or immediately upon
-        dispatching the subagent, schedule a 20-second heartbeat timer:
-        `schedule(DurationSeconds=20,
-        TimerCondition="<subagent-conversation-id>", Prompt="Check subagent
-        progress and stream a visible status update")`.
-    -   **Periodic Status Updates**: The orchestrator is strictly forbidden from
-        waiting in silence. On each timer wake-up:
-        1. Call `manage_subagents(Action='list')` to inspect worker state and
-           `stateDetail`.
-        2. Inspect recent tool calls from the subagent's transcript log.
-        3. Output a concise, visible progress update in chat following the canonical 4-element telemetry structure:
-           - **How Far Along (Dynamic Altitude & Task Progress)**:
-             * Calculate and display an advancing progress bar, percentage, and active task count across the track: `[▓▓▓▓░░░░░░] 45%` **Phase N/M (X/Y tasks):** `<track_id>`
-             * **Never use static combined headers** like `Progress Update (Phases 2–4)`—this makes execution appear frozen. The header MUST resolve and display the *single currently active phase* and sub-task count so progress moves visually on every 20-second tick.
-             * Omit redundant chat boilerplate like "Next update in 20 seconds." (the UI timer already signals liveness).
-           - **High-Level Task**: The deliverable/capability achieved (`The subagent finished <functional capability> in <TargetComponent> (<target_file>):`).
-           - **Specific Updates Made**: Light-level bullets explaining what was done and why, avoiding raw variable names and low-level code mechanics.
-           - **Forward Transition**: Natural, varied forward-looking transition to the next step (e.g., "Next up: ...", "Switching focus to ...", "Now moving on to ...", "Advancing to ...").
-           ```markdown
-           `[▓▓▓▓░░░░░░] 45%` **Phase 2/4 (3/7 tasks):** `simplify-conductor-routes`
-
-           The subagent finished container verification in `CcGroups`:
-           * Bootstrapped the component with proper Angular injection context to fix isolated test failures.
-           * Verified that all state test cases in `cc_groups_test` now pass cleanly.
-
-           Switching focus to Phase 3: removing legacy setup route guards in `routes.ts`.
-
-           ```
-        4. **Mandatory Two-Part Heartbeat Turn**: Every heartbeat turn MUST output
-           the visible 4-element markdown progress card in chat AND concurrently
-           call `schedule` to re-arm the 20-second timer. You are STRICTLY
-           FORBIDDEN from emitting `schedule` in isolation without printing the
-           visible progress card in the chat response.
-        5. If the subagent remains active, immediately reschedule the 20-second
-           heartbeat timer before ending the turn.
-    -   **Automatic Timer Cancellation**: When the subagent completes or sends a
-        message, the timer is automatically cancelled by `TimerCondition`.
-6.  **Phase Checkpointing & Autonomous Continuous Advance**:
+5.  **Phase Checkpointing & Autonomous Continuous Advance**:
     When `worker` completes all tasks in a phase:
-    -   Inspect resulting workspace changes (`hg status`, `hg diff`).
-    -   Run the automated test suite (`blaze test ...`).
+    -   Inspect resulting workspace changes (`git status`, `git diff`).
+    -   Run the automated test suite (`npm test`, `pytest`, etc.).
     -   **API Surface Extraction**: Extract public symbols for changed files and
         update `.api_surface_cache.json`.
     -   **Per-Directory Rule Reconciliation**: Reconcile local directory rules
         in `GEMINI.md` / `AGENTS.md`.
     -   **Manual Verification Protocol Generation & Stage 2 Empirical Diff
         Re-Verification (ADR 0009)**:
-        -   Inspect the empirical phase VCS diff (`hg status` / `hg diff` or
-            `git diff`) against the **Hybrid AST + Diff Classifier**:
+        -   Inspect the empirical phase VCS diff (`git status` / `git diff`)
+            against the **Hybrid AST + Diff Classifier**:
             -   If `manual_testing.md` was provisionally classified as a Tier 2
                 **`[Micro-Verification Plan]`**, verify that the phase diff
                 remained strictly presentational/visual (or qualified under the
@@ -437,8 +394,8 @@ Synchronization has been handled.
     -   If **Test with Manual Testing Guide**: Present the specific verification
         scenarios from `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`
         with CLI setup/reset commands and walk the user through testing.
-    -   If **Upload CL / Push**: Execute formatting checks (`hg fix`), verify
-        `hg status`, and upload to system via `hg upload` (or git push).
+    -   If **Upload / Push**: Execute formatting checks, verify `git status`,
+        and push via `git push`.
     -   If **Review**: Transition directly into `/arm-review`.
     -   If **Archive**: Move track folder to `{PROJECT_CONTEXT_DIR}/archive/`, remove from
         `tracks.md`, and commit.
@@ -450,15 +407,11 @@ Synchronization has been handled.
     always delegate phase execution to `worker` subagents. The primary agent
     operates as an orchestrator, never monopolizing the main conversational
     thread for heavy code edits.
--   **Mandatory 20-Second Active Heartbeat Streaming**: The orchestrator must
-    never remain silent while subagents execute. Maintain an active 20-second
-    `schedule` heartbeat loop, streaming visible status updates in chat on every
-    interval.
 -   **Documentation-Only Manual Testing Invariant**: Document exact setup, seed,
     and reset commands in manual testing runbooks, but NEVER execute mutative
     database, environment reset, or teardown commands autonomously.
 -   **Mandatory Completion Next-Steps Barrier**: When all plan tasks are `[x]`
     and document synchronization is complete, you MUST NOT go silent after
-    printing summaries or draft CL descriptions. You MUST invoke `ask_question`
-    to offer the user clear next steps (Manual testing with the guide, Uploading
-    the CL / Pushing, Running `/arm-review`, or Archiving the track).
+    printing summaries or draft commit descriptions. You MUST invoke `ask_question`
+    to offer the user clear next steps (Manual testing with the guide, Pushing
+    changes, Running `/arm-review`, or Archiving the track).

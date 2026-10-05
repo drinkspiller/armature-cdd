@@ -159,7 +159,7 @@ Follow these operational standards:
     -   **Claude Code**: Dispatch via `Task(prompt="...", subagent_type="explorer")`.
     -   **OpenCode**: Route deep codebase exploration to `@explore` or `@scout`.
     -   **OpenAI Codex**: Delegate discovery work to `explorer` (`role="explorer"`).
-    -   **Antigravity**: Dispatch via `invoke_subagent(TypeName='DeepInvestigator', ...)` (or configured worker agent).
+    -   **Antigravity**: Dispatch via `invoke_subagent(TypeName='explorer', ...)` (or configured worker agent).
     -   **Single-Threaded Harnesses (Cursor, Aider)**: Execute long-running jobs in the
         background (`run_in_background` or terminal `command & > /tmp/task.log`) with
         proactive status logging.

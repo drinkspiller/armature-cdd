@@ -112,7 +112,7 @@ files in priority order:
     `product.md`, `tech-stack.md`, `workflow.md`, `tracks.md`, `spec.md`, or
     `plan.md`. Immediately output your complete markdown
     analysis/banners/reports and invoke the required task-specific tools
-    (`write_to_file`, `ask_question`, `invoke_subagent` + `schedule`, or commit
+    (`write_to_file`, `ask_question`, `invoke_subagent`, or commit
     `run_command`) in that exact same turn.
 14. **Track-Creation Lifecycle Boundary & Explicit Handoff Invariant
     (`/arm-new-track` ↔ `/arm-implement`):**
@@ -168,8 +168,7 @@ commands in skill protocols.
     primary agent MUST act as an orchestrator: dispatch background workers
     (`explorer` for research/multimodal, `worker` for implementation
     phases), yield its turn immediately with a visible acknowledgement in chat,
-    actively stream progress updates every 20 seconds via `schedule` heartbeat
-    timers, and remain interactively available to answer user status inquiries,
+    and remain interactively available to answer user status inquiries,
     accept steering commands, or process cancellations.
 
 ## 1a. Multi-Perspective Persona Reasoning
@@ -652,10 +651,8 @@ first. Do NOT create empty commits.
         background worker. Never modify fenced files (<deprecated_path>). If
         unapproved fence access or write access is required, halt immediately
         and return a structured escalation request to the parent orchestrator."`
-        Concurrently schedule a 20-second heartbeat timer via
-        `schedule(DurationSeconds=20, ...)` and yield the turn with a chat
-        confirmation naming the dispatched subagent and active legacy fence
-        status.
+        Yield the turn with a chat confirmation naming the dispatched subagent
+        and active legacy fence status.
     -   *Reactive Self-Healing Steering Hook*: When a user steers you away from
         a deprecated/legacy path mid-session (e.g., *"Wait—`old_portal/` is
         deprecated, check `new_portal/` instead!"*), you MUST: (1) Immediately
@@ -670,12 +667,12 @@ first. Do NOT create empty commits.
         3.  `"Keep for this chat session only (do not write to files)"`
     -   *Cumulative Branch Diff Firewall & Decommissioning Exemptions
         (`/arm-drift` & `/arm-review`)*: Audit cumulative branch changes against
-        the base revision (`git diff main...HEAD` or `git diff main...HEAD`).
+        the base revision (`git diff main...HEAD`).
         Flag any added (`A`) or modified (`M` with $>0$ added lines) file inside
         an active fenced path (without `fence_overrides`) as a **`[BLOCKING]
         Legacy Fence Violation`**, directing remediation to
-        `<modern_replacement>`. Whole-file deletions (`status R` or `!` in
-        Mercurial; `status D` in Git) and pure line removals (`0` added
+        `<modern_replacement>`. Whole-file deletions (`status D` in Git) and
+        pure line removals (`0` added
         lines / dead-code deletion) inside fenced directories are
         **automatically exempt** from violations. If a fenced `Deprecated Path`
         no longer exists on disk (`[ ! -d "<deprecated_path>" ]`), flag
