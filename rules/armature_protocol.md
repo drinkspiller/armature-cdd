@@ -13,8 +13,8 @@ task-specific logic.
 
 The project context directory lives at `{PROJECT_ROOT}/armature/` (or legacy
 `{PROJECT_ROOT}/conductor/`) — the root of the user's project repository (NOT
-the agent artifacts directory). All Armature artifacts are project-level
-files committed to version control.
+the agent artifacts directory). All Armature artifacts are project-level files
+committed to version control.
 
 ```
 armature/ (or legacy conductor/)
@@ -68,22 +68,27 @@ files in priority order:
     Cross-reference changed files against ADR scopes, local rules, and manual
     testing runbooks. Flag contradictions or invoke `/arm-drift` before
     proceeding (see `armature_cdd_protocols.md` §9).
-11. **Non-blocking update check:** Run `bash ~/.cache/armature/check-update.sh 2>/dev/null || true`.
-    If stdout outputs `UPDATE_AVAILABLE|<old_ver>|<new_ver>|<upgrade_cmd>`, prepend
-    a compact `> [!TIP]` banner at the very top of your chat response:
-    `> [!TIP]`
-    `> **Armature Update Available (v<old_ver> → v<new_ver>)**`
-    `> Run <upgrade_cmd> in your terminal, or reply "upgrade armature" to have me run it for you.`
-    Never block command execution or invoke `ask_question` for the update check. If stdout is empty, output zero update banners.
-    If the user replies `"upgrade armature"`, execute the `<upgrade_cmd>` via `run_command`, verify exit code `0`, and confirm the upgraded version.
-12. **Legacy-Boundary Context Fences & Adaptive Verbosity Session Banner:** Parse active
-    repository-wide legacy fences from `{PROJECT_CONTEXT_DIR}/tech-stack.md`
-    (`## Legacy & Deprecated Boundaries`) and track-scoped fences/overrides from
-    the active track's `metadata.json` (`legacy_fences`, `fence_overrides`).
-    Whenever one or more legacy fences are active in the workspace or prompt
-    context, you MUST display an explanatory user-facing banner at the very top
-    of your response using **Adaptive Verbosity**:
+11. **Non-blocking update check:** Run `bash ~/.cache/armature/check-update.sh
+    2>/dev/null || true`. If stdout outputs
+    `UPDATE_AVAILABLE|<old_ver>|<new_ver>|<upgrade_cmd>`, prepend a compact `>
+    [!TIP]` banner at the very top of your chat response: `> [!TIP]` `>
+    **Armature Update Available (v<old_ver> → v<new_ver>)**` `> Run
+    <upgrade_cmd> in your terminal, or reply "upgrade armature" to have me run
+    it for you.` Never block command execution or invoke `ask_question` for the
+    update check. If stdout is empty, output zero update banners. If the user
+    replies `"upgrade armature"`, execute the `<upgrade_cmd>` via `run_command`,
+    verify exit code `0`, and confirm the upgraded version.
+12. **Legacy-Boundary Context Fences & Adaptive Verbosity Session Banner:**
+    Parse active repository-wide legacy fences from
+    `{PROJECT_CONTEXT_DIR}/tech-stack.md` (`## Legacy & Deprecated Boundaries`)
+    and track-scoped fences/overrides from the active track's `metadata.json`
+    (`legacy_fences`, `fence_overrides`). Whenever one or more legacy fences are
+    active in the workspace or prompt context, you MUST display an explanatory
+    user-facing banner at the very top of your response using **Adaptive
+    Verbosity**:
+
     -   **First turn in a session (Turn 1 — Full Callout):**
+
         ```markdown
         > [!NOTE]
         > **Working in `<active_replacement_basename>/`:**
@@ -95,7 +100,9 @@ files in priority order:
         >
         > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
         ```
-    -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line Reminder):**
+    -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line
+        Reminder):**
+
         ```markdown
         > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
         ```
@@ -112,7 +119,7 @@ files in priority order:
     `product.md`, `tech-stack.md`, `workflow.md`, `tracks.md`, `spec.md`, or
     `plan.md`. Immediately output your complete markdown
     analysis/banners/reports and invoke the required task-specific tools
-    (`write_to_file`, `ask_question`, `invoke_subagent`, or commit
+    (`write_to_file`, `ask_question`, `invoke_subagent` + `schedule`, or commit
     `run_command`) in that exact same turn.
 14. **Track-Creation Lifecycle Boundary & Explicit Handoff Invariant
     (`/arm-new-track` ↔ `/arm-implement`):**
@@ -159,17 +166,32 @@ commands in skill protocols.
 -   **Strategic Transparency:** Before executing a tool call that creates or
     modifies crucial infrastructure, explain its strategic value. Don't just
     execute; act as a mentor guiding the user through the 'Why'.
--   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes & Multiagent Default):**
-    Long-running, indeterminate, heavy multimodal operations—such as video or
-    screencast frame extraction (`view_file`), extensive multi-repository code
-    sweeps, multi-minute test suites, or full implementation tracks
+-   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes,
+    Conditional 90s Heartbeat & Multiagent Default):** Long-running,
+    indeterminate, heavy multimodal operations—such as video or screencast frame
+    extraction (`view_file`), extensive multi-repository code sweeps,
+    multi-minute test suites, or full implementation tracks
     (`/arm-implement`)—must NEVER be executed synchronously on the primary
     conversational agent turn when background delegation capabilities exist. The
     primary agent MUST act as an orchestrator: dispatch background workers
-    (`explorer` for research/multimodal, `worker` for implementation
-    phases), yield its turn immediately with a visible acknowledgement in chat,
-    and remain interactively available to answer user status inquiries,
-    accept steering commands, or process cancellations.
+    (`explorer` for research/multimodal, `worker` for implementation phases),
+    concurrently set a 90-second conditional heartbeat timer via
+    `schedule(DurationSeconds=90, TimerCondition="<subagent_id>", Prompt="Check
+    subagent progress and post a 20-block progress bar update in main chat.")`
+    (or `TimerCondition="any"` when multiple parallel subagents are dispatched),
+    and yield its turn immediately with a visible acknowledgement in chat
+    (preceded by `` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)``). On each
+    90-second timer wakeup while a subagent remains active (or when the user
+    asks for `"status?"`), inspect `manage_subagents(Action='list')` and the
+    active worker `transcript.jsonl`, output `\n\n` + `` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░
+    XX%` (Task X of Y)`` + `\n\n` + a 1–2 sentence functional summary of
+    completed and active work in main chat, and re-arm the 90-second conditional
+    `schedule` timer in the same turn. When using 1-stage custom or `self`
+    subagents equipped with `send_message`, instruct the subagent in its
+    `Prompt` to push ``[Progress]\n\n`▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of
+    Y)\n\n<1-2 sentence summary>`` via `send_message(Recipient="<parent_id>",
+    ...)` alongside its next tool call every ~3–4 turns or ~10 tool calls, and
+    echo each incoming `[Progress]` update in main chat before yielding.
 
 ## 1a. Multi-Perspective Persona Reasoning
 
@@ -298,9 +320,8 @@ Artifact filenames follow: `arm_<command>_<context>.md`
 ## 4. VCS Operations
 
 Armature skills are VCS-agnostic by default. Platform-specific VCS behavior
-(Git, Mercurial, Jujutsu) is injected by platform rules (e.g.,
-`platform rules`). When no platform rule overrides VCS behavior, default to
-Git:
+(Git, Mercurial, Jujutsu) is injected by platform rules (e.g., `platform
+rules`). When no platform rule overrides VCS behavior, default to Git:
 
 -   `git status` to check for changes
 -   `git add` / `git commit` for commits
@@ -450,9 +471,9 @@ first. Do NOT create empty commits.
     a manual testing scenario is struck (`[-]`) or removed during track
     execution or `/arm-review` (e.g., due to an ADR or architectural change
     invalidating the test premise), completely remove the struck scenario from
-    the final commit/PR description's `Tested:` section and living manual testing
-    runbooks, and renumber all remaining scenarios sequentially (`Scenario 1,
-    Scenario 2, Scenario 3...`) with zero gaps.
+    the final commit/PR description's `Tested:` section and living manual
+    testing runbooks, and renumber all remaining scenarios sequentially
+    (`Scenario 1, Scenario 2, Scenario 3...`) with zero gaps.
 -   **Interactive Manual Testing Protocol & Living Runbook Sync** — When guided
     manual testing is selected during `/arm-review`, the agent executes the
     scenarios documented in
@@ -463,9 +484,9 @@ first. Do NOT create empty commits.
     1.  `#### Scenario <ID>: <Title> — <Synopsis>` followed immediately by a
         succinct 1–2 sentence verification synopsis paragraph explaining what
         behavior or failure mode is under test.
-    2.  `##### Prerequisites` providing exact dev-server startup commands
-        (e.g., `./run.sh`, `npm run dev`) inside a copy-pastable `bash` code
-        block, instructing the user to ensure the service stack is running.
+    2.  `##### Prerequisites` providing exact dev-server startup commands (e.g.,
+        `./run.sh`, `npm run dev`) inside a copy-pastable `bash` code block,
+        instructing the user to ensure the service stack is running.
     3.  `##### Target URL` presenting complete, clickable `localhost` URLs
         (`http://localhost:<PORT>/<path>` or `https://localhost:<PORT>/<path>`).
         **Strict Localhost-Only Invariant**: Never output bare partial routes or
@@ -480,15 +501,15 @@ first. Do NOT create empty commits.
     6.  `##### Expected Observations` (strictly titled `Expected Observations`,
         never `"Expected Observables"` to prevent confusion with RxJS
         `Observable` streams), categorized by domain (e.g., `**UI Behavior:**`,
-        `**DevTools Console Log:**`).
-    The agent validates results via `ask_question`. If a discrepancy occurs,
-    the agent offers in-flight triage (fix now vs. log and continue). If an
-    in-flight hotfix modifies code, the agent applies **Cascade Invalidation
-    Tracking**, flagging previously verified scenarios for quick re-checking. A
-    mandatory **Post-Testing Reconciliation Gate** blocks review completion
-    until all open issues are resolved or triaged. Upon completion, empirical
-    outcomes are logged in `review.md` (`## Interactive Verification Log`) and
-    working setup commands are synchronized back into `manual_testing.md`.
+        `**DevTools Console Log:**`). The agent validates results via
+        `ask_question`. If a discrepancy occurs, the agent offers in-flight
+        triage (fix now vs. log and continue). If an in-flight hotfix modifies
+        code, the agent applies **Cascade Invalidation Tracking**, flagging
+        previously verified scenarios for quick re-checking. A mandatory
+        **Post-Testing Reconciliation Gate** blocks review completion until all
+        open issues are resolved or triaged. Upon completion, empirical outcomes
+        are logged in `review.md` (`## Interactive Verification Log`) and
+        working setup commands are synchronized back into `manual_testing.md`.
 -   **Change-Aware Verification Scoping & Micro-Verification Protocol** — To
     prevent verification fatigue on purely presentational changes, manual
     verification dynamically scales using a **Two-Stage Hybrid AST + Diff
@@ -500,11 +521,11 @@ first. Do NOT create empty commits.
         `Micro-Verification Plan` in `tracks/<track_id>/manual_testing.md` using
         the Tier 2 template without database seed boilerplate.
     2.  *Stage 2: Empirical VCS Diff Re-Verification (`/arm-implement` Step 3.6
-        & `/arm-review` Step 2.1/2.5)*: Inspects actual VCS diffs (`hg diff` /
-        `git diff`). Diffs restricted to template/style files (`.html`, `.css`,
-        `.scss`, `.sass`, `.less`, `.svg`) or component files (`.ts`, `.tsx`,
-        `.jsx`, `.vue`) that modify only JSX/HTML structure, CSS class bindings,
-        static text copy, or inline styles qualify as visual-only.
+        & `/arm-review` Step 2.1/2.5)*: Inspects actual VCS diffs (`git diff`).
+        Diffs restricted to template/style files (`.html`, `.css`, `.scss`,
+        `.sass`, `.less`, `.svg`) or component files (`.ts`, `.tsx`, `.jsx`,
+        `.vue`) that modify only JSX/HTML structure, CSS class bindings, static
+        text copy, or inline styles qualify as visual-only.
     3.  *Orphaned Dead-Code Cleanup Exemption*: Deleting or renaming an unused
         local click handler (e.g., `onCardClick()`, `handleCardClick()`), local
         display helper function, or unused import/prop directly attached to a
@@ -524,8 +545,8 @@ first. Do NOT create empty commits.
             an auth guard or parent data container.
         -   `Step 2: Navigate to http://localhost:<PORT>/<path>` — strictly uses
             clickable `http://localhost:<PORT>/<path>` (or
-            `https://localhost:<PORT>/<path>`) URL formatting,
-            never bare partial routes or remote workstation hostnames
+            `https://localhost:<PORT>/<path>`) URL formatting, never bare
+            partial routes or remote workstation hostnames
             (`<REMOTE_HOST>.example.internal`).
         -   `Verify: <visual assertion>` — anchors assertions on visible text
             labels or semantic ARIA roles rather than brittle CSS class names.
@@ -580,9 +601,12 @@ first. Do NOT create empty commits.
     (`{PROJECT_CONTEXT_DIR}/tech-stack.md` under `## Legacy & Deprecated
     Boundaries`) or track-scoped fences (`metadata.json` under `legacy_fences`)
     are active:
+
     -   *Session Banner Indicator (Adaptive Verbosity)*: At the top of your
         response whenever any legacy fence is active in context, display:
+
         -   **First turn in a session (Turn 1 — Full Callout):**
+
             ```markdown
             > [!NOTE]
             > **Working in `<active_replacement_basename>/`:**
@@ -594,19 +618,20 @@ first. Do NOT create empty commits.
             >
             > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
             ```
-        -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line Reminder):**
+        -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line
+            Reminder):**
+
             ```markdown
             > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
             ```
     -   *Query-Time Negative Search Filtering (RE2 Anchored)*: When invoking
         `grep_search`, you MUST append anchored RE2 negative file filters
-        (`-f:^<deprecated_path>` or
-        `-f:^<deprecated_path>`) to `Query`. When invoking
-        `grep_search`, populate `Excludes: ["**/<deprecated_path>/**"]`. Never
-        call `view_file` on any file inside `<deprecated_path>` unless
-        authorized by Direct Import Read Exemption or an explicit user session
-        unlock. Direct analysis and search exclusively to
-        `<modern_replacement>`.
+        (`-f:^<deprecated_path>` or `-f:^<deprecated_path>`) to `Query`. When
+        invoking `grep_search`, populate `Excludes:
+        ["**/<deprecated_path>/**"]`. Never call `view_file` on any file inside
+        `<deprecated_path>` unless authorized by Direct Import Read Exemption or
+        an explicit user session unlock. Direct analysis and search exclusively
+        to `<modern_replacement>`.
     -   *Zero-Match Fallback Protocol*: If a search in active modern code
         (`<modern_replacement>`) returns `0 matches`, perform a secondary
         path-only check inside `<deprecated_path>`. If matches exist in the
@@ -615,6 +640,7 @@ first. Do NOT create empty commits.
         code (<modern_replacement>), but matches exist in legacy-fenced
         <deprecated_path>`, and invoke `ask_question` with prompt `"Are you sure
         you want to proceed?"` and options:
+
         1.  `"(Recommended) Redirect analysis to modern replacement
             (<modern_replacement>)"`
         2.  `"Yes, unlock READ access to <deprecated_path> for the remainder of
@@ -635,6 +661,7 @@ first. Do NOT create empty commits.
         `write_to_file` on a fenced file)—even when session `READ` access was
         previously approved—you MUST NOT call `replace_file_content` or
         `write_to_file`. Halt immediately and invoke `ask_question`:
+
         -   Prompt: `"WARNING: Modifying files in legacy-fenced directory
             (<deprecated_path>). Are you sure you want to proceed?"`
         -   Options:
@@ -644,15 +671,19 @@ first. Do NOT create empty commits.
                 this task"`
             3.  `"Cancel modification"`
     -   *Background Subagent Propagation (`invoke_subagent`)*: When delegating
-        work via `invoke_subagent` (`worker` or `explorer`), you MUST
-        include an explicit `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]` block
-        inside the subagent `Prompt` specifying fenced paths, session read
-        unlocks, and the strict rule: `"NEVER call ask_question from a
-        background worker. Never modify fenced files (<deprecated_path>). If
-        unapproved fence access or write access is required, halt immediately
-        and return a structured escalation request to the parent orchestrator."`
-        Yield the turn with a chat confirmation naming the dispatched subagent
-        and active legacy fence status.
+        work via `invoke_subagent` (`worker` or `explorer`), you MUST include an
+        explicit `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]` block inside the
+        subagent `Prompt` specifying fenced paths, session read unlocks, and the
+        strict rule: `"NEVER call ask_question from a background worker. Never
+        modify fenced files (<deprecated_path>). If unapproved fence access or
+        write access is required, halt immediately and return a structured
+        escalation request to the parent orchestrator."` Concurrently call
+        `schedule(DurationSeconds=90, TimerCondition="<subagent_id>",
+        Prompt="Check subagent progress and post a 20-block progress bar update
+        in main chat.")` (or `TimerCondition="any"` for parallel subagents) and
+        yield the turn with a chat confirmation (preceded by ``
+        `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)``) naming the dispatched
+        subagent and active legacy fence status.
     -   *Reactive Self-Healing Steering Hook*: When a user steers you away from
         a deprecated/legacy path mid-session (e.g., *"Wait—`old_portal/` is
         deprecated, check `new_portal/` instead!"*), you MUST: (1) Immediately
@@ -661,19 +692,19 @@ first. Do NOT create empty commits.
         without stalling; and (2) At the very end of the turn, invoke
         `ask_question` offering to persist the newly discovered boundary
         (`<deprecated_path> -> <modern_replacement>`) with options:
+
         1.  `"(Recommended) Save as Repository-Wide Legacy Fence in
             armature/tech-stack.md"`
         2.  `"Save as Track-Only Legacy Fence in metadata.json"`
         3.  `"Keep for this chat session only (do not write to files)"`
     -   *Cumulative Branch Diff Firewall & Decommissioning Exemptions
         (`/arm-drift` & `/arm-review`)*: Audit cumulative branch changes against
-        the base revision (`git diff main...HEAD`).
-        Flag any added (`A`) or modified (`M` with $>0$ added lines) file inside
-        an active fenced path (without `fence_overrides`) as a **`[BLOCKING]
-        Legacy Fence Violation`**, directing remediation to
-        `<modern_replacement>`. Whole-file deletions (`status D` in Git) and
-        pure line removals (`0` added
-        lines / dead-code deletion) inside fenced directories are
+        the base revision (`git diff main...HEAD`). Flag any added (`A`) or
+        modified (`M` with $>0$ added lines) file inside an active fenced path
+        (without `fence_overrides`) as a **`[BLOCKING] Legacy Fence
+        Violation`**, directing remediation to `<modern_replacement>`.
+        Whole-file deletions (`status D` in Git) and pure line removals (`0`
+        added lines / dead-code deletion) inside fenced directories are
         **automatically exempt** from violations. If a fenced `Deprecated Path`
         no longer exists on disk (`[ ! -d "<deprecated_path>" ]`), flag
         **`[DRIFT] Stale Legacy Fence`** (preserving active fences that still

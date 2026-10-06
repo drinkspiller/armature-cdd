@@ -218,6 +218,27 @@ def call_gemini(
                     "required": ["name", "description", "system_prompt"],
                 },
             },
+            {
+                "name": "manage_subagents",
+                "description": (
+                    "Manage existing subagents (list active subagents with live"
+                    " state and transcript URI, or kill subagents)."
+                ),
+                "parameters": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "Action": {
+                            "type": "STRING",
+                            "enum": ["list", "kill", "kill_all"],
+                        },
+                        "ConversationIds": {
+                            "type": "ARRAY",
+                            "items": {"type": "STRING"},
+                        },
+                    },
+                    "required": ["Action"],
+                },
+            },
         ]
     }]
 
