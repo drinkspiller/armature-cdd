@@ -51,12 +51,14 @@ documentation, and managing track cleanup.
                 next**\n- Round 2, <Topic>\n- Round 3, <Topic>`)
             -   Horizontal rule (`---`)
             -   Headline (`## Round 1, Question 1 of 1: <Topic>`)
-            -   Context block (`**Context:** <one-line framing>:`, 2–4 bullets,
-                short paragraph)
-            -   `&nbsp;` spacer, plain blockquote option cards (`> **Option 1:
-                <Name>** (Recommended)` with `- **Pros:**`, `- **Cons:**`, `-
-                **Implications:**`), `&nbsp;` spacer
-            -   `### Recommendation: Option 1` with 1–3 sentences of rationale
+            -   Unlabeled stakes opener (1–3 plain-English sentences, no
+                `**Context:**` label, no code identifiers) ending in `The
+                choice here is <X>. Here are some options:`
+            -   Numbered one-line options (`1. <Name>: <benefit>; <cost>`, 2–4
+                items, no `(Recommended)` tag)
+            -   `Safe to ignore for now: <2–3 mechanics>.`
+            -   `### Recommendation: Option 1` with exactly one sentence
+            -   `Pick N if <condition>.` one line per option
         3.  Invoke `ask_question` natively in the same turn with strictly ONE
             question (`len(questions) == 1`) and 3–4 options.
     -   **Post-Interview Step 10 Terminal Stop Preservation (Two-Part Step 8–10

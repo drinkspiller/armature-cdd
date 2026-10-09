@@ -216,53 +216,78 @@ code change, or workflow transition:
     spec generation loops, ask questions strictly one at a time. Present a
     single question, pause execution, and collect user confirmation before
     generating subsequent questions.
--   **Structured Choices & Option Trade-Off Analysis:** When presenting
-    competing technical designs, architectural directions, UX layouts, or
-    copywriting choices (e.g., during `/arm-new-track` Step 5a/5b or
-    `/arm-setup`), provide 2–4 calibrated domain choices:
-    -   *Markdown Trade-Off Breakdown (All Design, UX & Architecture Choices):*
-        Precede the `ask_question` call with a short `**Context:**` block
-        (one-line framing, 2–4 bullets on what the decision affects, and a short
-        paragraph on current state), then option cards and a recommendation in
-        chat:
-        -   *Option Cards:* Render each option as its own plain blockquote card
-            (`> **Option N: <Name>**`, with ` (Recommended)` after the
-            recommended title), followed by `> - **Pros:** ...`, `> - **Cons:**
-            ...`, and `> - **Implications:** ...` rows. Only the labels are
-            bold; each row is one or two short, substantive sentences. Avoid
-            vague generalities or superficial one-word clauses. Place an
-            `&nbsp;` spacer line before the first card and after the last.
-        -   *Recommendation:* Conclude with `### Recommendation: Option N`
-            followed by 1–3 declarative sentences explaining why the recommended
-            option was chosen, grounded in domain constraints (e.g., cognitive
-            load, dialog footprint, latency bounds, or failure resilience).
-        -   *Plain Presentation:* Do not use tables, icons, emoji, glyphs,
-            progress bars, or `[!NOTE]` / `[!TIP]` callouts for option
-            presentation.
-        -   *Clean Markdown Termination & Mandatory Tool Call Pair (Zero
-            Trailing Narration & Zero Text-Only Stalls):* End your markdown
-            response immediately after the recommendation rationale paragraph.
-            NEVER append transitional self-narration sentences at the end of
-            your prose (e.g., *"I will now ask for your decision on..."* or
-            *"Let's call ask_question..."*), which cause token concatenation and
-            break tool parsing. Immediately invoke `ask_question` exclusively as
-            a native structured tool call in the same turn—never emit raw
-            `call:default_api:ask_question{...}` text in the markdown stream,
-            and NEVER end your turn after markdown without invoking
-            `ask_question` when choices, rounds, or trade-offs are presented.
+-   **Structured Choices & Interview Turn v2 (Option Trade-Off Analysis):** When
+    presenting competing technical designs, architectural directions, UX
+    layouts, or copywriting choices (e.g., during `/arm-new-track` Step 5a/5b or
+    `/arm-setup`), provide 2–4 calibrated domain choices using the compact
+    Interview Turn v2 body below the headline. Every element is mandatory and
+    appears in this order:
+    -   *Opener (unlabeled, 1–3 sentences, at most 45 words):* Plain English
+        stating what changes for the user depending on the answer, with
+        magnitude where it is known (e.g., *"If backfill wins, the first reply
+        can take minutes instead of 1–2 seconds."*). Never prefix it with
+        `**Context:**`, `**Problem:**`, or any other bold label: many questions
+        are ambiguities or preferences rather than problems, and a `Problem`
+        label invites manufactured harm. No function names, flag names, file
+        paths, or other code identifiers. Do not walk through each option's
+        mechanics here; the numbered list does that.
+    -   *Choice sentence:* `The choice here is <what is being decided>. Here are
+        some options:` closing the opener paragraph. Always *"some options"*,
+        never *"the options"*, so the modal write-in remains a legitimate
+        further answer.
+    -   *Numbered options:* `1. <Option name>: <benefit>; <cost>`, one line
+        each, at most 20 words per line, 2–4 items, plain English. No
+        `(Recommended)` tag on the list; the recommendation has its own heading
+        two lines below.
+    -   *Ignore line:* `Safe to ignore for now: <2–3 implementation mechanics>.`
+        This is where limiter internals, schema layout, retry math, and helper
+        names go instead of the opener or the options.
+    -   *Recommendation:* `### Recommendation: Option N` followed by exactly one
+        sentence of rationale grounded in a domain constraint (cognitive load,
+        latency bound, failure resilience, dialog footprint).
+    -   *Pick recap:* `Pick 1 if <condition>.`, one line per option in list
+        order, each naming the situation that makes that option the right one.
+    -   *Budget:* about 180 words, never more than 200, from the headline
+        through the last `Pick` line.
+    -   *Plain Presentation:* Do not use tables, icons, emoji, glyphs, progress
+        bars, blockquote cards, or `[!NOTE]` / `[!TIP]` callouts in the default
+        interview turn.
+    -   *Zoom-In View (On Request Only):* When the user selects the trailing
+        elaboration option or replies *"zoom in"*, render the full Option
+        Trade-Off cards for the same options: one plain blockquote per option
+        (`> **Option N: <Name>**`, with ` (Recommended)` after the recommended
+        title) with `> - **Pros:** ...`, `> - **Cons:** ...`, and `> - **Implications:**
+        ...` rows (code identifiers are allowed only in `Implications`),
+        `&nbsp;` spacers before the first card and after the last, then `###
+        Recommendation: Option N` with 1–3 sentences, then re-ask the same
+        `ask_question`. Never render the cards in the default turn.
+    -   *Clean Markdown Termination & Mandatory Tool Call Pair (Zero Trailing
+        Narration & Zero Text-Only Stalls):* End your markdown response
+        immediately after the last `Pick N if …` line (or, in the zoom-in view,
+        after the recommendation rationale). NEVER append transitional
+        self-narration sentences at the end of your prose (e.g., *"I will now
+        ask for your decision on..."* or *"Let's call ask_question..."*), which
+        cause token concatenation and break tool parsing. Immediately invoke
+        `ask_question` exclusively as a native structured tool call in the same
+        turn—never emit raw `call:default_api:ask_question{...}` text in the
+        markdown stream, and NEVER end your turn after markdown without invoking
+        `ask_question` when choices, rounds, or trade-offs are presented.
     -   *Modal Parameters (`ask_question`):*
-        -   List the recommended option first with `(Recommended)`, followed by
-            alternative approaches phrased cleanly in the user's voice.
+        -   One option per numbered item, each restating the matching `Pick N
+            if …` condition in the user's voice and ending with the option
+            number (e.g., `"Live chat must never lag (Option 1)"`). List the
+            recommended option first with a `(Recommended)` prefix, then the
+            remaining options in list order.
         -   *Trailing Elaboration Option (Systems & Architecture Only):* Append
             a trailing choice (`"Compare technical trade-offs and failure modes
             in detail"`) **ONLY** for complex systems, data model, or
             infrastructure architecture decisions where deep-dive performance or
-            failure analysis adds value. **NEVER** append an elaboration option
-            to `ask_question` for UX copywriting, visual presentation, layout
-            styling, empirical QA verification checks, safety confirmations, or
-            procedural approvals.
+            failure analysis adds value; selecting it triggers the Zoom-In View.
+            **NEVER** append an elaboration option to `ask_question` for UX
+            copywriting, visual presentation, layout styling, empirical QA
+            verification checks, safety confirmations, or procedural approvals.
     -   *Strict Exemption for Empirical & Procedural Gates:* Do **NOT** generate
-        option cards or append elaboration options for:
+        the Interview Turn v2 body, option cards, or elaboration options for:
         1.  **Empirical QA Verification Checkpoints** (`/arm-review` scenario
             checks: *"Did Scenario N meet the expected outcome?"* where choices
             are `Verified`, `Didn't match expectation`, `Skip`).
@@ -292,8 +317,9 @@ code change, or workflow transition:
 -   **Single-Gate Phase Isolation (`/arm-new-track` Phase 5a → 5b → 5c → Step
     6):** Never collapse multiple interactive gates into a single turn.
     Resolving the final open question in Phase 5a transitions in that turn to
-    **Phase 5b Finding 1** (one challenge per turn with option cards + `###
-    Recommendation: Option N` + `ask_question`, never a self-answered
+    **Phase 5b Finding 1** (one challenge per turn with the Interview Turn v2
+    body: numbered countermeasure options + `### Recommendation: Option N` +
+    `Pick N if …` lines + `ask_question`, never a self-answered
     `*Risk:*`/`*Mitigation:*` list). Resolving the final Phase 5b challenge
     transitions in that turn to **Phase 5c** (`### ADR Candidate Triage Table` +
     `ask_question` with `is_multi_select: true` whenever $\ge 1$ candidates
@@ -387,7 +413,7 @@ first. Do NOT create empty commits.
         probed (Lazy Question Materialization); listing questions under
         unconfirmed rounds is strictly forbidden. Every spawned follow-up
         question MUST state which confirmed answer spawned it, in the settled
-        line or the `**Context:**` block (Answer-Anchored Provenance).
+        line or the opener paragraph (Answer-Anchored Provenance).
         Furthermore, the agent is strictly forbidden from asserting declarative
         technical designs, button configurations, countdown cancel behaviors, or
         state transitions in markdown for topics unconfirmed by the user via
@@ -403,8 +429,9 @@ first. Do NOT create empty commits.
         Stress-Testing Confirmed Decisions` presenting each emergent
         cross-cutting contradiction, operational hazard, and maintainability
         debt finding **one-by-one**. For each finding, the agent MUST state the
-        specific risk, offer concrete countermeasure option cards with `###
-        Recommendation: Option N`, and pause execution for human decision via
+        specific risk in the opener, offer numbered countermeasure options with
+        `### Recommendation: Option N` and `Pick N if …` lines (Interview Turn
+        v2), and pause execution for human decision via
         `ask_question` individually before presenting subsequent findings. Only
         after all devil's advocate findings have been evaluated individually
         does the agent present the final convergence gate before proceeding to

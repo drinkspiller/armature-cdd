@@ -38,13 +38,14 @@ project).
         forbidden.
 -   **User-Specified Scope Direct Execution Invariant (§2.0 -> §3.1):**
     -   If a brownfield workspace is detected and the user has **NOT** yet
-        specified a discovery scope, output the Brownfield Option Trade-Off
-        Analysis (option cards with `**Pros:**` / `**Cons:**` /
-        `**Implications:**` + `### Recommendation: Option N` explaining that
-        Deep Retroactive Archaeology mines VCS commits and transcripts to inform
-        all artifacts AND executes an autonomous batch synthesis "Ralph loop"
-        pausing once at a Single Unified Review Gate) and invoke `ask_question`
-        (Step 2.0 Scope Gate).
+        specified a discovery scope, output the Brownfield Interview Turn v2
+        body (unlabeled stakes opener ending in `The choice here is <X>. Here
+        are some options:`, numbered one-line options, `Safe to ignore for
+        now:` line, `### Recommendation: Option N` with one sentence, and `Pick
+        N if …` lines) explaining that Deep Retroactive Archaeology mines VCS
+        commits and transcripts to inform all artifacts AND executes an
+        autonomous batch synthesis "Ralph loop" pausing once at a Single Unified
+        Review Gate, and invoke `ask_question` (Step 2.0 Scope Gate).
     -   If the user prompt **ALREADY explicitly specifies or selects** a
         discovery scope (e.g., `"using Deep Retroactive Archaeology"`, `"choose
         Deep Retroactive Archaeology"`, or selecting Option 1), do **NOT**
@@ -114,16 +115,19 @@ project).
     -   Check for common source code directories (e.g., `src/`, `app/`, `lib/`,
         `bin/`).
     -   If indicators are found, this is a **Brownfield** project.
-        -   **Report & Trade-Off Analysis**: Output a brief markdown summary
-            reporting the detected brownfield indicators in a `**Context:**`
-            block, followed by option cards (`**Pros:**` / `**Cons:**` /
-            `**Implications:**`) and `### Recommendation: Option N` with its
-            rationale, contrasting **Deep Retroactive Archaeology** (searching
-            past conversations, VCS commit history, and current codebase
-            contents) against **Current Snapshot Only** (inspecting only current
-            on-disk files).
-            -   In the `**Pros:**` row and the recommendation rationale for Deep
-                Retroactive Archaeology, explicitly state that it mines VCS
+        -   **Report & Interview Turn v2**: Output a brief markdown summary
+            reporting the detected brownfield indicators, then the Interview
+            Turn v2 body: an unlabeled opener stating what changes for the user
+            depending on the scope (history-backed artifacts versus a quick
+            file-based start) ending in `The choice here is which sources setup
+            reads before drafting. Here are some options:`, numbered one-line
+            options contrasting **Deep Retroactive Archaeology** (searching past
+            conversations, VCS commit history, and current codebase contents)
+            against **Current Snapshot Only** (inspecting only current on-disk
+            files), a `Safe to ignore for now:` line, `### Recommendation:
+            Option N` with one sentence, and `Pick N if …` lines.
+            -   In the Deep Retroactive Archaeology option line and the
+                recommendation sentence, explicitly state that it mines VCS
                 commits and past session transcripts to inform all setup
                 artifacts (`product.md`, `tech-stack.md` Legacy Fences,
                 `workflow.md`, `terms.md`, `manual_testing/`, and `adr/`), AND
@@ -132,15 +136,14 @@ project).
                 pass—pausing **once** at a **Single Unified Review Gate** before
                 committing rather than prompting on every individual file.
         -   **Context Discovery Scope Gate**: End your markdown immediately
-            after the recommendation rationale paragraph (with zero trailing
+            after the last `Pick N if …` line (with zero trailing
             self-narration) and invoke `ask_question` in the same turn:
             -   *Question*: `"How should Armature gather context to initialize
                 this brownfield project?"`
             -   *Options*:
-                1.  `"(Recommended) Search past conversations, commit history,
-                    and current codebase (Deep Retroactive Archaeology)"`
-                2.  `"Look only at current codebase contents (Current Snapshot
-                    Only)"`
+                1.  `"(Recommended) I want artifacts that explain why the code
+                    looks this way (Option 1)"`
+                2.  `"A quick file-based starting point is enough (Option 2)"`
                 3.  `"Customize scan sources (e.g., commits + files only, or
                     manual description)"`
         -   **Execution by Selected Scope**:
