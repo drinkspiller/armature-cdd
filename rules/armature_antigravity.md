@@ -58,42 +58,33 @@ Should I scan only current files or also search past conversations and commits?"
 options: ["Current files only", "Search past conversations and commits"]
 ```
 
-**GOOD - context, option cards, and recommendation as text, question is short:**
+**GOOD - stakes, numbered options, recommendation, and Pick recap as text, question is short:**
 
-First, output the context, option cards, and recommendation as regular markdown
-(each option is its own plain blockquote card; only the `**Pros:**`,
-`**Cons:**`, and `**Implications:**` labels are bold; no tables, icons, emoji,
-or `[!NOTE]` / `[!TIP]` callouts):
+First, output the Interview Turn v2 body as regular markdown (unlabeled opener
+that says what changes for the user, numbered one-line options, a `Safe to
+ignore for now` line, a one-sentence recommendation, and a `Pick N if …` recap;
+no blockquote cards, tables, icons, emoji, or `[!NOTE]` / `[!TIP]` callouts):
 
 ```markdown
 ## Round 1, Question 1 of 1: How setup gathers context
 
-**Context:** This is a brownfield project with existing history to draw on:
+This project already has a commit history and past sessions. If setup reads only
+the checked-out files, the reasons behind reverted approaches and undocumented
+trade-offs never make it into `product.md`, `tech-stack.md`, or the ADRs, and
+they get rediscovered the hard way later.
 
-- Which sources inform `product.md`, `tech-stack.md`, `workflow.md`, `terms.md`, `manual_testing/`, and `adr/`.
-- How many review stops the setup takes.
+The choice here is which sources setup reads before drafting. Here are some options:
 
-`package.json` shows React 18 and TypeScript 5.3, with 47 source files in `src/` and `BUILD` files present. The goal is setup artifacts that capture why the code looks the way it does.
+1. Deep retroactive archaeology: mines commits and past transcripts in one pass; adds a few minutes before drafting
+2. Current snapshot only: fast and bounded to checked-out files; misses the history behind discarded approaches
 
-&nbsp;
-
-> **Option 1: Deep Retroactive Archaeology** (Recommended)
->
-> - **Pros:** Mines commit history and past session transcripts to inform every setup artifact in one uninterrupted pass.
-> - **Cons:** Adds a brief history-mining pass before drafting.
-> - **Implications:** Pauses once at a Single Unified Review Gate before committing.
-
-> **Option 2: Current Snapshot Only**
->
-> - **Pros:** Fast, and bounded to checked-out files and static docs.
-> - **Cons:** Misses the history behind reverted approaches and undocumented trade-offs.
-> - **Implications:** Negative constraints and Legacy Fences need to be added by hand later.
-
-&nbsp;
+Safe to ignore for now: transcript parsing, memory search ranking.
 
 ### Recommendation: Option 1
+Commit history is where the project's real invariants and discarded approaches live.
 
-Commit history holds the project's real invariants and discarded approaches. Mining it once, with a single review gate, avoids a modal for every file.
+Pick 1 if you want setup artifacts that explain why the code looks the way it does.
+Pick 2 if you only need a quick, file-based starting point.
 ```
 
 Then call `ask_question`:
@@ -101,11 +92,16 @@ Then call `ask_question`:
 ```
 question: "How should Armature gather context to initialize this brownfield project?"
 options: [
-  "(Recommended) Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology)",
-  "Look only at current codebase contents (Current Snapshot Only)",
+  "(Recommended) I want artifacts that explain why the code looks this way (Option 1)",
+  "A quick file-based starting point is enough (Option 2)",
   "Customize scan sources (e.g., commits + files only, or manual description)"
 ]
 ```
+
+The full `**Pros:**` / `**Cons:**` / `**Implications:**` blockquote cards are
+the Zoom-In View: render them only when the user selects the trailing
+"Compare technical trade-offs and failure modes in detail" option or replies
+"zoom in".
 
 **More examples:**
 

@@ -294,9 +294,28 @@ def parse_agent_turn(turn_text: str):
           re.IGNORECASE | re.MULTILINE,
       )
   )
-  has_option_trade_offs = has_pros and has_cons and has_recommendation_rationale
+  # Legacy Option Trade-Off cards (Pros + Cons + Recommendation). Kept so
+  # transcripts recorded before Interview Turn v2 still parse.
+  has_legacy_option_cards = has_pros and has_cons and has_recommendation_rationale
+  # Interview Turn v2 body: a numbered option list of >= 2 items, a
+  # `### Recommendation: Option N` heading, and at least one `Pick N if` line.
+  numbered_option_count = len(
+      re.findall(r"^\s*\d+\.\s+\S.*\S\s*$", turn_text, re.MULTILINE)
+  )
+  has_v2_recommendation = bool(
+      re.search(r"^###\s*Recommendation:\s*Option\s+\d+", turn_text, re.MULTILINE)
+  )
+  has_pick_recap = bool(re.search(r"^Pick \d+ if", turn_text, re.MULTILINE))
+  has_v2_option_body = (
+      numbered_option_count >= 2 and has_v2_recommendation and has_pick_recap
+  )
+  has_option_trade_offs = has_legacy_option_cards or has_v2_option_body
   has_elaboration_option = bool(
-      re.search(r"Elaborate on (?:the )?trade-offs", turn_text, re.IGNORECASE)
+      re.search(
+          r"Elaborate on (?:the )?trade-offs|Compare technical trade-offs",
+          turn_text,
+          re.IGNORECASE,
+      )
   )
   # Answer-anchored provenance: legacy inline `(Spawned by '<choice>'` tags,
   # or the current settled line / Context wording that names the answer that

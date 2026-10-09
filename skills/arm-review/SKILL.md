@@ -380,9 +380,11 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             -   `"Skip to next scenario"`
         -   *Guardrail (Empirical Verification Only):* Verification gates test
             empirical application state, not architectural trade-offs. Do
-            **NOT** output option cards (`**Pros:**` / `**Cons:**` /
-            `**Implications:**`) or append the `"Elaborate on trade-offs..."`
-            option to scenario verification prompts.
+            **NOT** output the Interview Turn v2 body (stakes opener, numbered
+            options, `### Recommendation: Option N`, `Pick N if …` lines), the
+            Zoom-In View cards (`**Pros:**` / `**Cons:**` /
+            `**Implications:**`), or the `"Compare technical trade-offs and
+            failure modes in detail"` option on scenario verification prompts.
     -   **In-Flight Discrepancy Triage:**
 
         -   If the user reports a mismatch, enter diagnostic mode: inspect

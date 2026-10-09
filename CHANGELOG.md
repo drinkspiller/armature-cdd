@@ -6,6 +6,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.0] - 2026-10-09
+
+### Changed
+
+-   **Interview Turn v2 (compact option presentation)**: Replaced the
+    `**Context:**` block and the per-option Pros / Cons / Implications
+    blockquote cards in `/arm-new-track` Step 5a, Phase 5b, `/arm-setup`, and
+    the Interaction Standards rule with a scannable body: an unlabeled
+    plain-English opener that states what changes for the user depending on the
+    answer (never a `Problem:` label; no code identifiers), `The choice here is
+    … Here are some options:`, numbered one-line options (`<benefit>; <cost>`),
+    a `Safe to ignore for now:` line, `### Recommendation: Option N` with
+    exactly one sentence, and a `Pick 1 if … / Pick 2 if …` recap. The
+    `ask_question` options restate the Pick conditions in the user's voice and
+    end with `(Option N)`. Budget: 180 words from headline through the last
+    Pick line.
+-   **Zoom-In View**: The full Pros / Cons / Implications cards are retained
+    and render only when the user selects "Compare technical trade-offs and
+    failure modes in detail" or replies "zoom in".
+-   **Headline numbering**: The first question of a round is `Round R, Question
+    1 of N`, never `Question R.1 of N`.
+-   **Settled list cap**: The progress list shows at most the five most recent
+    settled items and folds older ones into `- + N earlier settled`.
+-   Updated `armature_protocol.md`, `armature_antigravity.md`, `arm-new-track`,
+    `arm-setup`, `arm-review`, and `arm-implement`.
+
+### Evaluation
+
+-   Added `evals/skillopt/run_interview_format_opt.py` with 6 train / 4
+    held-out validation scenarios (70% adversarial) and 25 deterministic format
+    invariants; rewrote 15 legacy rubric strings in `train.jsonl` / `val.jsonl`
+    and taught `run_trajectory_eval.py` to recognize both the legacy cards and
+    the v2 body. Across K=3 seeds, the pre-change files scored 0.20 train /
+    0.00 val (230 vetoes, by construction: the old rules never asked for Pick
+    lines); the v2 files scored 0.84 train (0 vetoes) / 0.84 val (LB90 0.72,
+    1 veto: a 201-word body against the 200-word cap). Two reflection epochs
+    were rejected by the zero-veto gate; the promoted wording came from manual
+    tightening (45-word opener, 20-word option lines, literal fold bullet).
+    Results: `evals/skillopt/skillopt_report_interview_format.md`. The
+    comparative CDD/SDD benchmark was not re-run for this presentation-format
+    change.
+
 ## [0.28.3] - 2026-10-06
 
 ### Changed

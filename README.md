@@ -139,7 +139,7 @@ Autonomous coding agents move fast when given an execution loop, but velocity wi
 Most AI coding agents jump straight from a short prompt into file edits. When given underspecified requirements, models make silent assumptions about architecture, pick the first familiar pattern that emerges in their context window, and begin generating code without probing failure modes.
 
 The Grill Engine enforces a structured round-and-question interview before any implementation plan is drafted:
-- **Scannable Interview Turns**: Every question turn follows a consistent top-down layout: `## Round <R>, Question <Q> of <N>: <Topic>`, `**Context:**`, plain blockquote option cards with bold `**Pros:**` / `**Cons:**` / `**Implications:**` labels, and `### Recommendation: Option <N>`, preceded by a grouped `**Settled**` / `**Now**` / `**Up next**` progress list on Turn 2+.
+- **Scannable Interview Turns (v2)**: Each turn opens with a one-line note on the last answer and a short progress list (Settled, Now, Up next; at most five settled items shown), then a `Round R, Question Q of N` headline, a plain-English opener that says what changes for the user depending on the answer, `The choice here is … Here are some options:`, numbered one-line options (benefit; cost), a `Safe to ignore for now` line, a one-sentence `Recommendation: Option N`, and a `Pick 1 if … / Pick 2 if …` recap whose conditions become the modal options. The full Pros / Cons / Implications cards render only on request (the "Compare technical trade-offs and failure modes in detail" option or "zoom in").
 - **Dynamic Question Traversal**: Traverses edge cases, concurrency boundaries, error recovery, and security scope up to Depth 2 without unconfirmed dictation.
 - **Post-Interview Devil's Advocate (Phase 5b)**: When all rounds and sub-questions resolve, stress-tests the confirmed design against emergent contradictions, operational hazards, and failure cascades one-by-one.
 - **Pre-Spec ADR Triage Gate (Phase 5c)**: Audits settled decisions against the 3-Pillar Invariant Taxonomy before drafting `spec.md`, offering immediate formalization.
@@ -327,5 +327,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.28.3** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.29.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 
