@@ -2,16 +2,16 @@
   "baseline": {
     "train": {
       "split": "TRAIN_BASE",
-      "mean_score": 0.2037037037037037,
-      "std_dev": 0.11564811108145182,
-      "lb_90": 0.07777648693472067,
+      "mean_score": 0.17460317460317457,
+      "std_dev": 0.09912695235553012,
+      "lb_90": 0.06666556022976054,
       "seed_scores": [
-        0.3333333333333333,
-        0.16666666666666666,
-        0.1111111111111111
+        0.2857142857142857,
+        0.14285714285714285,
+        0.09523809523809523
       ],
-      "total_vetoes": 121,
-      "pass_rate": 0.16666666666666666,
+      "total_vetoes": 141,
+      "pass_rate": 0.14285714285714285,
       "rollouts": [
         {
           "task_id": "IFT_TRAIN_01_PUSH_BATCHING_TURN1",
@@ -721,6 +721,99 @@
               "id": "call_44269"
             }
           ]
+        },
+        {
+          "task_id": "IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION",
+          "seed": 1,
+          "vetoes": [
+            "has_pre_turn_explanation: fewer than 25 words of explanation before the progress list (0 words)",
+            "has_settled_now_list: missing the Now progress group",
+            "headline_round_question_format: headline missing or uses 'Question R.Q of N'",
+            "no_labeled_opener: no opener paragraph between headline and options",
+            "has_choice_sentence_some_options: missing 'The choice here is \u2026'",
+            "has_choice_sentence_some_options: missing 'Here are some options:'",
+            "has_numbered_options: fewer than 2 numbered options",
+            "has_ignore_line: missing 'Safe to ignore for now:'",
+            "has_recommendation_heading_one_sentence: missing '### Recommendation: Option N'",
+            "has_pick_recap: fewer than 2 'Pick N if' lines",
+            "ends_with_pick_line: trailing text after the last Pick line"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "optimizer_feedback": "",
+          "text_preview": "",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "options": [
+                      "(Recommended) Jump to earliest unfinished step; keep child step routes permissive (Option 1)",
+                      "Always resume directly on payment once shipping address is saved (Option 2)",
+                      "Strictly block child step routes until every preceding step is completed (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ],
+                    "question": "How should resume step resolution and child route guards behave?"
+                  }
+                ]
+              },
+              "id": "call_3896"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION",
+          "seed": 2,
+          "vetoes": [
+            "has_pre_turn_explanation: fewer than 25 words of explanation before the progress list (20 words)",
+            "has_pick_recap: 3 Pick lines for 5 options",
+            "word_budget_200: 306 words from headline to last Pick line",
+            "modal_options_mirror_pick: 3 modal options for 5 numbered items"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "optimizer_feedback": "",
+          "text_preview": "Round 1, Entry redirects settled: Milestone-aware cart redirects. This opens a follow-up on resume step resolution and step guard strictness.\n\n**Settled**\n- Round 1, Entry redirects and splash screen removal: Milestone-aware cart redirects\n\n**Now**\n- Question 1.1, Resume step resolution and permissive child guards\n\n**Up next**\n- Question 1.2, Browser history and back-button handling\n- Round 2, Order confirmation screen removal\n\n---\n\n## Round 1, Question 1 of 2: Resume step resolution and permissive child guards\n\nHere is how Option 1 works in detail:\n\n1. **Entry Resume (Hub Routing):** When a s",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "question": "How should wizard route guards handle resume navigation for returning shoppers?",
+                    "is_multi_select": false,
+                    "options": [
+                      "(Recommended) Auto-resume entry hub, permissive step access after address saved (Option 1)",
+                      "Resume directly on payment step once address is saved (Option 2)",
+                      "Strict sequential guards requiring all previous steps completed (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ]
+                  }
+                ]
+              },
+              "id": "call_11908"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION",
+          "seed": 3,
+          "vetoes": [
+            "has_ask_question_tool: no native ask_question call",
+            "rewrites_vague_option_names: repeated vague phrase 'Entry-only resume with permissive step guards' verbatim in rewritten options",
+            "rewrites_vague_option_names: repeated vague phrase 'Strict per-step guard enforcement' verbatim in rewritten options",
+            "modal_options_mirror_pick: 0 modal options for 3 numbered items",
+            "modal_options_mirror_pick: no '(Recommended)' modal option"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "optimizer_feedback": "",
+          "text_preview": "\"Entry-only resume with permissive step guards\" means:\n\n* **Hub Resume (`/checkout/wizard/`):** When a shopper hits the checkout hub URL, the app checks their saved cart milestones and automatically routes them to the earliest incomplete step (e.g., Step 1 if no address is saved, Step 2 if an address exists).\n* **Permissive Child Guards (`/shipping`, `/gift-message`, `/payment`):** As long as the minimum requirement (a saved shipping address) is met, direct navigation to any step route via back button, step header, or direct link is allowed without forcing rigid sequential redirects or blockin",
+          "tool_calls": []
         }
       ]
     },
@@ -734,7 +827,7 @@
         0.0,
         0.0
       ],
-      "total_vetoes": 109,
+      "total_vetoes": 151,
       "pass_rate": 0.0,
       "rollouts": [
         {
@@ -1196,6 +1289,108 @@
           "optimizer_feedback": "",
           "text_preview": "Clarified that vendor handoff files in `i18n/vendor/` use ICU plural syntax.\n\n**Now**\n- Round 1, Message format\n\n**Up next**\n- Round 2, Plural categories support\n\n---\n\n## Round 1, Question 1 of 1: Message format\n\n**Context:** Choosing the plural message format:\n\n- How pluralized strings are defined in source files.\n- Compatibility with translation vendor tooling.\n\nWe verified that the vendor handoff files in `i18n/vendor/` are XLIFF 2.0 with ICU plural syntax. We need to decide whether to adopt ICU MessageFormat or use a custom plural table structure.\n\n&nbsp;\n\n> **Option 1: ICU MessageFormat**",
           "tool_calls": []
+        },
+        {
+          "task_id": "IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN",
+          "seed": 1,
+          "vetoes": [
+            "has_ask_question_tool: no native ask_question call",
+            "no_read_search_tools: called ['view_file'] instead of answering from conversation context",
+            "has_pre_turn_explanation: fewer than 25 words of explanation before the progress list (0 words)",
+            "has_settled_now_list: missing the Now progress group",
+            "headline_round_question_format: headline missing or uses 'Question R.Q of N'",
+            "no_labeled_opener: no opener paragraph between headline and options",
+            "has_choice_sentence_some_options: missing 'The choice here is \u2026'",
+            "has_choice_sentence_some_options: missing 'Here are some options:'",
+            "has_numbered_options: fewer than 2 numbered options",
+            "has_ignore_line: missing 'Safe to ignore for now:'",
+            "has_recommendation_heading_one_sentence: missing '### Recommendation: Option N'",
+            "has_pick_recap: fewer than 2 'Pick N if' lines",
+            "ends_with_pick_line: trailing text after the last Pick line",
+            "modal_options_mirror_pick: no '(Recommended)' modal option"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "optimizer_feedback": "",
+          "text_preview": "",
+          "tool_calls": [
+            {
+              "name": "view_file",
+              "args": {
+                "AbsolutePath": "/home/dev/memory/default/projects/import-parser-resource-lifecycle.md"
+              },
+              "id": "call_10285"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN",
+          "seed": 2,
+          "vetoes": [
+            "has_ask_question_tool: no native ask_question call",
+            "no_read_search_tools: called ['view_file'] instead of answering from conversation context",
+            "has_pre_turn_explanation: fewer than 25 words of explanation before the progress list (0 words)",
+            "has_settled_now_list: missing the Now progress group",
+            "headline_round_question_format: headline missing or uses 'Question R.Q of N'",
+            "no_labeled_opener: no opener paragraph between headline and options",
+            "has_choice_sentence_some_options: missing 'The choice here is \u2026'",
+            "has_choice_sentence_some_options: missing 'Here are some options:'",
+            "has_numbered_options: fewer than 2 numbered options",
+            "has_ignore_line: missing 'Safe to ignore for now:'",
+            "has_recommendation_heading_one_sentence: missing '### Recommendation: Option N'",
+            "has_pick_recap: fewer than 2 'Pick N if' lines",
+            "ends_with_pick_line: trailing text after the last Pick line",
+            "modal_options_mirror_pick: no '(Recommended)' modal option"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "optimizer_feedback": "",
+          "text_preview": "",
+          "tool_calls": [
+            {
+              "name": "view_file",
+              "args": {
+                "AbsolutePath": "/home/dev/memory/default/projects/import-parser-resource-lifecycle.md"
+              },
+              "id": "call_23360"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN",
+          "seed": 3,
+          "vetoes": [
+            "has_ask_question_tool: no native ask_question call",
+            "no_read_search_tools: called ['code_search'] instead of answering from conversation context",
+            "has_pre_turn_explanation: fewer than 25 words of explanation before the progress list (0 words)",
+            "has_settled_now_list: missing the Now progress group",
+            "headline_round_question_format: headline missing or uses 'Question R.Q of N'",
+            "no_labeled_opener: no opener paragraph between headline and options",
+            "has_choice_sentence_some_options: missing 'The choice here is \u2026'",
+            "has_choice_sentence_some_options: missing 'Here are some options:'",
+            "has_numbered_options: fewer than 2 numbered options",
+            "has_ignore_line: missing 'Safe to ignore for now:'",
+            "has_recommendation_heading_one_sentence: missing '### Recommendation: Option N'",
+            "has_pick_recap: fewer than 2 'Pick N if' lines",
+            "ends_with_pick_line: trailing text after the last Pick line",
+            "modal_options_mirror_pick: no '(Recommended)' modal option"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "optimizer_feedback": "",
+          "text_preview": "",
+          "tool_calls": [
+            {
+              "name": "code_search",
+              "args": {
+                "Query": "importer/wizard"
+              },
+              "id": "call_2435"
+            }
+          ]
         }
       ]
     }
@@ -1203,16 +1398,16 @@
   "candidate": {
     "train": {
       "split": "TRAIN_CAND",
-      "mean_score": 0.8449074074074074,
-      "std_dev": 0.05212189930184125,
-      "lb_90": 0.7881527777777778,
+      "mean_score": 0.8599206349206349,
+      "std_dev": 0.05591859837966962,
+      "lb_90": 0.799031845698519,
       "seed_scores": [
-        0.8472222222222222,
-        0.7916666666666666,
-        0.8958333333333334
+        0.869047619047619,
+        0.7999999999999999,
+        0.9107142857142857
       ],
       "total_vetoes": 0,
-      "pass_rate": 0.5,
+      "pass_rate": 0.5714285714285714,
       "rollouts": [
         {
           "task_id": "IFT_TRAIN_01_PUSH_BATCHING_TURN1",
@@ -2109,21 +2304,146 @@
               "id": "call_44130"
             }
           ]
+        },
+        {
+          "task_id": "IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent makes zero view_file or code_search tool calls and clearly explains above the progress list what occurs when visiting the entry URL versus clicking Skip or Back inside a step."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "Question 1.1 remains under 'Now' and is not prematurely moved to 'Settled'."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "Option 1 and its Pick line are rewritten in concrete user-action terms without repeating the vague phrase, and exactly three Pick lines are provided corresponding to the three numbered options."
+            }
+          ],
+          "optimizer_feedback": "All criteria were fully met. The response clearly clarified the vague terminology with concrete user flows, maintained correct progress tracking, and re-rendered the interview turn cleanly.",
+          "text_preview": "When a shopper visits the main checkout entry URL, the checkout wizard must decide which step to display.\n\n\"Entry-only resume with permissive step guards\" means:\n- **At the entry point:** The wizard inspects the cart state and jumps directly to the earliest unfinished step (for example, taking a returning shopper who already has an address on file directly to the optional gift message step).\n- **Inside the step screens:** Once a valid shipping address is saved, the step routes allow shoppers to freely click **Skip**, use **Back**, or reload the page without being forced through a rigid prerequ",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "options": [
+                      "(Recommended) Resume at the earliest unfinished step and allow free movement once address is saved (Option 1)",
+                      "Always jump directly to payment once an address is saved (Option 2)",
+                      "Require strict sequential completion for every step (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ],
+                    "is_multi_select": false,
+                    "question": "Where should returning shoppers resume and how should step navigation behave?"
+                  }
+                ]
+              },
+              "id": "call_28782"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 0.85,
+          "final_score": 0.85,
+          "passed": true,
+          "q_details": [],
+          "optimizer_feedback": "",
+          "text_preview": "When a shopper returns to `/checkout`, the entry URL checks where they left off and directs them to the appropriate step. Once inside, the question is how strict the individual step URLs (`/checkout/step/1`, `/checkout/step/2`, `/checkout/step/3`) should be when a shopper clicks **Skip**, presses **Back**, or refreshes the page:\n\n- **Option 1 (Resume at entry only, allow free navigation inside):** The main checkout URL directs the shopper to their earliest unfinished step. Once a shipping address is saved, the shopper can freely move forward or backward between the optional gift note and payme",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "options": [
+                      "(Recommended) Resume where left off and allow free navigation once address is saved (Option 1)",
+                      "Always jump straight to payment for shoppers with a saved address (Option 2)",
+                      "Enforce completing every step in sequence before allowing access (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ],
+                    "question": "How should checkout route guards handle resume and skipped steps?",
+                    "is_multi_select": false
+                  }
+                ]
+              },
+              "id": "call_20457"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "No view_file or code_search calls were made, and the agent explained entry URL routing versus clicking Skip or Back before the progress list."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "Question 1.1 correctly remains under 'Now' and is not placed in 'Settled'."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "Option titles and Pick lines were rewritten in clear, concrete user actions without repeating the vague phrase, with exactly one Pick line per numbered option."
+            }
+          ],
+          "optimizer_feedback": "The response fully satisfied all requirements, providing clear user-facing explanations without extraneous tool calls or malformed progress states.",
+          "text_preview": "When a shopper visits `/checkout/` directly, entry resolution checks their saved progress and sends them to their earliest unfinished step: Step 1 if no address is on file, Step 2 if an address exists but gift messaging was never addressed, or Step 3 if gift messaging was skipped or completed.\n\nOnce the shopper is inside checkout, permissive step guards mean that as long as Step 1 (Shipping Address) is satisfied, direct links and browser navigation allow moving freely between Step 2 and Step 3. This prevents blocking shoppers who clicked **Skip** on gift messaging when they want to return and ",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "question": "How should step URL guards handle returning shoppers and direct step navigation?",
+                    "options": [
+                      "(Recommended) Entry jumps to unfinished work, step links stay flexible (Option 1)",
+                      "Returning shoppers with addresses always land on payment (Option 2)",
+                      "Every step URL strictly requires completing the prior step (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ],
+                    "is_multi_select": false
+                  }
+                ]
+              },
+              "id": "call_96548"
+            }
+          ]
         }
       ]
     },
     "val": {
       "split": "VAL_CAND",
-      "mean_score": 0.84375,
-      "std_dev": 0.11267347735824966,
-      "lb_90": 0.7210618101564648,
+      "mean_score": 0.875,
+      "std_dev": 0.09013878188659971,
+      "lb_90": 0.7768494481251719,
       "seed_scores": [
-        0.71875,
-        0.875,
-        0.9375
+        0.775,
+        0.9,
+        0.95
       ],
       "total_vetoes": 1,
-      "pass_rate": 0.75,
+      "pass_rate": 0.8,
       "rollouts": [
         {
           "task_id": "IFT_VAL_01_WEBHOOK_RETRY_TURN1_SYSTEMS",
@@ -2708,6 +3028,147 @@
                 ]
               },
               "id": "call_73910"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent made no file or search tool calls and successfully explained the vague option using concrete user actions above the progress list."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "Question 1.1 correctly remains under the 'Now' section of the progress list."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The options and Pick lines were rewritten in plain English, avoiding the previous jargon, and there is exactly one Pick line per numbered option."
+            }
+          ],
+          "optimizer_feedback": "Excellent job following all instructions. The explanation was concrete and placed correctly, the progress list state was maintained accurately, and the options were successfully translated into plain English without adding unnecessary Pick lines.",
+          "text_preview": "Here is what that option means in terms of concrete user actions:\n\nWhen an analyst opens the main wizard URL, the system checks what has been completed so far and forwards them straight to the first step they still need to work on. If they have already uploaded a file, they land on Column Transforms instead of starting over at the upload screen.\n\nOnce inside the wizard, the individual step pages are flexible: as long as a valid file is attached to the import session, the analyst is free to click **Skip**, click **Back**, or move directly between Step 2 (Transforms) and Step 3 (Validation). The",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "is_multi_select": false,
+                    "options": [
+                      "(Recommended) Entry jumps to unfinished work, but allows free movement between steps (Option 1)",
+                      "Returning users with an uploaded file always land directly on validation (Option 2)",
+                      "Every step must strictly require completing the previous step first (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ],
+                    "question": "How should the wizard route returning users and validate step access?"
+                  }
+                ]
+              },
+              "id": "call_3049"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "No view_file or code_search calls were made, and the concrete user actions (visiting the entry URL vs. clicking Skip/Back) were clearly unpacked above the progress list."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "Question 1.1 correctly remains under Now rather than being moved to Settled."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The option names and Pick lines were rewritten in plain, concrete terms without repeating the vague phrasing, and exactly three Pick lines were provided for the three numbered options."
+            }
+          ],
+          "optimizer_feedback": "The response satisfies all criteria with clear explanations, accurate progress list tracking, and properly rewritten options.",
+          "text_preview": "Here is what **Hub-only resume with permissive stage guards** means in concrete user actions:\n\n* **When an analyst opens the wizard directly (`/importer/wizard`):** The system checks their progress and automatically routes them to the first step they haven't finished yet. For example, if they uploaded a CSV file yesterday but closed the browser before choosing column transforms or clicking Skip, opening the wizard resumes directly on Stage 2 (Transforms). If transforms were already completed or skipped, it resumes on Stage 3 (Validation).\n* **When an analyst navigates between steps or reloads:",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "is_multi_select": false,
+                    "question": "How should the wizard resume in-progress imports and manage step access?",
+                    "options": [
+                      "(Recommended) Resume earliest unfinished step and allow free navigation once a file is uploaded (Option 1)",
+                      "Always land on validation once a file is uploaded (Option 2)",
+                      "Strictly require completing each step in order before allowing entry (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ]
+                  }
+                ]
+              },
+              "id": "call_8721"
+            }
+          ]
+        },
+        {
+          "task_id": "IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent made no file or search tool calls and successfully explained the vague option using concrete user actions above the progress list."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "Question 1.1 correctly remains under the 'Now' section since the user only asked for clarification."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The options and Pick lines were rewritten in plain English, avoiding the vague phrasing, and there is exactly one Pick line per numbered option."
+            }
+          ],
+          "optimizer_feedback": "The response perfectly addressed the user's request for clarification and correctly maintained the state of the interview.",
+          "text_preview": "When an analyst opens the main CSV wizard URL (`/importer/wizard/`), \"Hub-only resume with permissive stage guards\" means the main link automatically routes them to wherever they left off\u2014such as Stage 2 if a file is already uploaded, or Stage 1 if starting fresh. Once a CSV is uploaded, stage direct links (like Stage 2 or Stage 3) will not lock or block them: analysts can freely click **Skip**, go back to edit column transforms, or jump straight to validation.\n\n**Settled**\n- Round 1, Entry redirects and intro splash removal: Milestone-aware entry redirects\n\n**Now**\n- Question 1.1, Resume stag",
+          "tool_calls": [
+            {
+              "name": "ask_question",
+              "args": {
+                "questions": [
+                  {
+                    "question": "How should the import wizard resume active sessions and guard stage navigation?",
+                    "is_multi_select": false,
+                    "options": [
+                      "(Recommended) Main link resumes incomplete work while stage routes allow free navigation (Option 1)",
+                      "Always jump directly to validation stage once CSV is uploaded (Option 2)",
+                      "Strictly enforce completing earlier stages in sequence before allowing access (Option 3)",
+                      "Compare technical trade-offs and failure modes in detail"
+                    ]
+                  }
+                ]
+              },
+              "id": "call_1845"
             }
           ]
         }

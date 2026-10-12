@@ -1,11 +1,11 @@
 # SkillOpt Report: Interview Turn v2 (`arm-new-track` + protocol rules)
 
-Generated: 2026-10-09T18:29:38
+Generated: 2026-10-12T17:22:18
 
 | Pass | Train mean | Train vetoes | Val mean | Val LB90 | Val vetoes | Val pass rate |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| baseline | 0.2037 | 121 | 0.0000 | 0.0000 | 109 | 0.0% |
-| candidate | 0.8449 | 0 | 0.8438 | 0.7211 | 1 | 75.0% |
+| baseline | 0.1746 | 141 | 0.0000 | 0.0000 | 151 | 0.0% |
+| candidate | 0.8599 | 0 | 0.8750 | 0.7768 | 1 | 80.0% |
 
 ## baseline: per-task vetoes
 
@@ -23,6 +23,30 @@ Generated: 2026-10-09T18:29:38
 - `IFT_TRAIN_06_EMPTY_STATE_COPY_PREFERENCE` seed 1: has_ask_question_tool: no native ask_question call; headline_round_question_format: headline missing or uses 'Question R.Q of N'; no_labeled_opener: no opener paragraph between headline and options; has_choice_sentence_some_options: missing 'The choice here is …'; has_choice_sentence_some_options: missing 'Here are some options:'; has_numbered_options: fewer than 2 numbered options; has_recommendation_heading_one_sentence: missing '### Recommendation: Option N'; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line
 - `IFT_TRAIN_06_EMPTY_STATE_COPY_PREFERENCE` seed 2: no_labeled_opener: opener carries a bold label; has_choice_sentence_some_options: missing 'The choice here is …'; has_choice_sentence_some_options: missing 'Here are some options:'; has_numbered_options: fewer than 2 numbered options; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; word_budget_180: 238 words from headline to last Pick line
 - `IFT_TRAIN_06_EMPTY_STATE_COPY_PREFERENCE` seed 3: has_ask_question_tool: no native ask_question call; headline_round_question_format: headline missing or uses 'Question R.Q of N'; no_labeled_opener: no opener paragraph between headline and options; has_choice_sentence_some_options: missing 'The choice here is …'; has_choice_sentence_some_options: missing 'Here are some options:'; has_numbered_options: fewer than 2 numbered options; has_recommendation_heading_one_sentence: missing '### Recommendation: Option N'; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line
+-   `IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION` seed 1:
+    has_pre_turn_explanation: fewer than 25 words of explanation before the
+    progress list (0 words); has_settled_now_list: missing the Now progress
+    group; headline_round_question_format: headline missing or uses 'Question
+    R.Q of N'; no_labeled_opener: no opener paragraph between headline and
+    options; has_choice_sentence_some_options: missing 'The choice here is …';
+    has_choice_sentence_some_options: missing 'Here are some options:';
+    has_numbered_options: fewer than 2 numbered options; has_ignore_line:
+    missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence:
+    missing '### Recommendation: Option N'; has_pick_recap: fewer than 2 'Pick N
+    if' lines; ends_with_pick_line: trailing text after the last Pick line
+-   `IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION` seed 2:
+    has_pre_turn_explanation: fewer than 25 words of explanation before the
+    progress list (20 words); has_pick_recap: 3 Pick lines for 5 options;
+    word_budget_200: 306 words from headline to last Pick line;
+    modal_options_mirror_pick: 3 modal options for 5 numbered items
+-   `IFT_TRAIN_07_CHECKOUT_VAGUE_OPTION_CLARIFICATION` seed 3:
+    has_ask_question_tool: no native ask_question call;
+    rewrites_vague_option_names: repeated vague phrase 'Entry-only resume with
+    permissive step guards' verbatim in rewritten options;
+    rewrites_vague_option_names: repeated vague phrase 'Strict per-step guard
+    enforcement' verbatim in rewritten options; modal_options_mirror_pick: 0
+    modal options for 3 numbered items; modal_options_mirror_pick: no
+    '(Recommended)' modal option
 - `IFT_VAL_01_WEBHOOK_RETRY_TURN1_SYSTEMS` seed 1: no_labeled_opener: opener carries a bold label; has_choice_sentence_some_options: missing 'The choice here is …'; has_choice_sentence_some_options: missing 'Here are some options:'; has_numbered_options: fewer than 2 numbered options; has_ignore_line: missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence: rationale has 2 sentences, expected 1; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; no_code_identifiers_in_opener: code identifier in opener; word_budget_180: 289 words from headline to last Pick line; modal_options_mirror_pick: modal options do not end with '(Option N)'
 - `IFT_VAL_01_WEBHOOK_RETRY_TURN1_SYSTEMS` seed 2: no_labeled_opener: opener carries a bold label; has_choice_sentence_some_options: missing 'The choice here is …'; has_choice_sentence_some_options: missing 'Here are some options:'; has_numbered_options: fewer than 2 numbered options; has_ignore_line: missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence: rationale has 2 sentences, expected 1; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; no_code_identifiers_in_opener: code identifier in opener; word_budget_180: 225 words from headline to last Pick line; modal_options_mirror_pick: modal options do not end with '(Option N)'
 - `IFT_VAL_01_WEBHOOK_RETRY_TURN1_SYSTEMS` seed 3: no_labeled_opener: opener carries a bold label; has_choice_sentence_some_options: missing 'The choice here is …'; has_choice_sentence_some_options: missing 'Here are some options:'; has_numbered_options: fewer than 2 numbered options; has_ignore_line: missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence: rationale has 2 sentences, expected 1; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; word_budget_180: 267 words from headline to last Pick line; modal_options_mirror_pick: modal options do not end with '(Option N)'
@@ -35,6 +59,48 @@ Generated: 2026-10-09T18:29:38
 - `IFT_VAL_04_PLURALIZATION_QUOTE_DETOUR_RESUME` seed 1: has_settled_now_list: missing Settled / Now progress list; no_labeled_opener: opener carries a bold label; has_numbered_options: fewer than 2 numbered options; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; word_budget_180: 221 words from headline to last Pick line
 - `IFT_VAL_04_PLURALIZATION_QUOTE_DETOUR_RESUME` seed 2: has_settled_now_list: missing Settled / Now progress list; no_labeled_opener: opener carries a bold label; has_numbered_options: fewer than 2 numbered options; has_recommendation_heading_one_sentence: rationale has 3 sentences, expected 1; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; word_budget_180: 223 words from headline to last Pick line
 - `IFT_VAL_04_PLURALIZATION_QUOTE_DETOUR_RESUME` seed 3: has_ask_question_tool: no native ask_question call; has_settled_now_list: missing Settled / Now progress list; no_labeled_opener: opener carries a bold label; has_numbered_options: fewer than 2 numbered options; has_pick_recap: fewer than 2 'Pick N if' lines; ends_with_pick_line: trailing text after the last Pick line; no_blockquote_cards_default: rendered Pros/Cons blockquote cards in default turn; word_budget_180: 192 words from headline to last Pick line
+-   `IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN` seed 1:
+    has_ask_question_tool: no native ask_question call; no_read_search_tools:
+    called ['view_file'] instead of answering from conversation context;
+    has_pre_turn_explanation: fewer than 25 words of explanation before the
+    progress list (0 words); has_settled_now_list: missing the Now progress
+    group; headline_round_question_format: headline missing or uses 'Question
+    R.Q of N'; no_labeled_opener: no opener paragraph between headline and
+    options; has_choice_sentence_some_options: missing 'The choice here is …';
+    has_choice_sentence_some_options: missing 'Here are some options:';
+    has_numbered_options: fewer than 2 numbered options; has_ignore_line:
+    missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence:
+    missing '### Recommendation: Option N'; has_pick_recap: fewer than 2 'Pick N
+    if' lines; ends_with_pick_line: trailing text after the last Pick line;
+    modal_options_mirror_pick: no '(Recommended)' modal option
+-   `IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN` seed 2:
+    has_ask_question_tool: no native ask_question call; no_read_search_tools:
+    called ['view_file'] instead of answering from conversation context;
+    has_pre_turn_explanation: fewer than 25 words of explanation before the
+    progress list (0 words); has_settled_now_list: missing the Now progress
+    group; headline_round_question_format: headline missing or uses 'Question
+    R.Q of N'; no_labeled_opener: no opener paragraph between headline and
+    options; has_choice_sentence_some_options: missing 'The choice here is …';
+    has_choice_sentence_some_options: missing 'Here are some options:';
+    has_numbered_options: fewer than 2 numbered options; has_ignore_line:
+    missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence:
+    missing '### Recommendation: Option N'; has_pick_recap: fewer than 2 'Pick N
+    if' lines; ends_with_pick_line: trailing text after the last Pick line;
+    modal_options_mirror_pick: no '(Recommended)' modal option
+-   `IFT_VAL_05_IMPORT_WIZARD_VAGUE_OPTION_WRITEIN` seed 3:
+    has_ask_question_tool: no native ask_question call; no_read_search_tools:
+    called ['code_search'] instead of answering from conversation context;
+    has_pre_turn_explanation: fewer than 25 words of explanation before the
+    progress list (0 words); has_settled_now_list: missing the Now progress
+    group; headline_round_question_format: headline missing or uses 'Question
+    R.Q of N'; no_labeled_opener: no opener paragraph between headline and
+    options; has_choice_sentence_some_options: missing 'The choice here is …';
+    has_choice_sentence_some_options: missing 'Here are some options:';
+    has_numbered_options: fewer than 2 numbered options; has_ignore_line:
+    missing 'Safe to ignore for now:'; has_recommendation_heading_one_sentence:
+    missing '### Recommendation: Option N'; has_pick_recap: fewer than 2 'Pick N
+    if' lines; ends_with_pick_line: trailing text after the last Pick line;
+    modal_options_mirror_pick: no '(Recommended)' modal option
 
 ## candidate: per-task vetoes
 

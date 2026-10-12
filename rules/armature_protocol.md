@@ -236,31 +236,43 @@ code change, or workflow transition:
         never *"the options"*, so the modal write-in remains a legitimate
         further answer.
     -   *Numbered options:* `1. <Option name>: <benefit>; <cost>`, one line
-        each, at most 20 words per line, 2–4 items, plain English. No
-        `(Recommended)` tag on the list; the recommendation has its own heading
-        two lines below.
+        each, at most 20 words per line, 2–4 items, plain English. `<Option
+        name>` MUST state what the user or system concretely does in everyday
+        words (e.g., *"Resume at entry only, allow free Skip and Back inside"*),
+        never an invented compound-noun architectural slogan (*"Entry-only
+        resume with permissive step guards"*, *"permissive child guards"*,
+        *"milestone enforcement"*). No `(Recommended)` tag on the list; the
+        recommendation has its own heading two lines below.
     -   *Ignore line:* `Safe to ignore for now: <2–3 implementation mechanics>.`
         This is where limiter internals, schema layout, retry math, and helper
         names go instead of the opener or the options.
     -   *Recommendation:* `### Recommendation: Option N` followed by exactly one
         sentence of rationale grounded in a domain constraint (cognitive load,
         latency bound, failure resilience, dialog footprint).
-    -   *Pick recap:* `Pick 1 if <condition>.`, one line per option in list
-        order, each naming the situation that makes that option the right one.
+    -   *Pick recap:* `Pick 1 if <condition>.`, one line per numbered option in
+        list order (`len(picks) == len(numbered)`), each naming the concrete
+        user scenario or product rule that makes that option right without
+        repeating abstract nouns from `<Option name>`. Never add an extra `Pick`
+        line for the modal-only `"Compare technical trade-offs and failure modes
+        in detail"` option.
     -   *Budget:* about 180 words, never more than 200, from the headline
         through the last `Pick` line.
     -   *Plain Presentation:* Do not use tables, icons, emoji, glyphs, progress
-        bars, blockquote cards, or `[!NOTE]` / `[!TIP]` callouts in the default
-        interview turn.
+        bars, blockquote cards, or `[!NOTE]` / `[!TIP]` callouts inside the
+        default `## Round R, Question Q of N:` interview turn block. (When
+        answering a user clarification or `"zoom out"` request before re-asking
+        a question, place any explanatory walkthrough or comparison table
+        *above* the `**Settled**` / `**Now**` progress list.)
     -   *Zoom-In View (On Request Only):* When the user selects the trailing
         elaboration option or replies *"zoom in"*, render the full Option
         Trade-Off cards for the same options: one plain blockquote per option
         (`> **Option N: <Name>**`, with ` (Recommended)` after the recommended
-        title) with `> - **Pros:** ...`, `> - **Cons:** ...`, and `> - **Implications:**
-        ...` rows (code identifiers are allowed only in `Implications`),
-        `&nbsp;` spacers before the first card and after the last, then `###
-        Recommendation: Option N` with 1–3 sentences, then re-ask the same
-        `ask_question`. Never render the cards in the default turn.
+        title) with `> - **Pros:** ...`, `> - **Cons:** ...`, and `> -
+        **Implications:** ...` rows (code identifiers are allowed only in
+        `Implications`), `&nbsp;` spacers before the first card and after the
+        last, then `### Recommendation: Option N` with 1–3 sentences, then
+        re-ask the same `ask_question`. Never render the cards in the default
+        turn.
     -   *Clean Markdown Termination & Mandatory Tool Call Pair (Zero Trailing
         Narration & Zero Text-Only Stalls):* End your markdown response
         immediately after the last `Pick N if …` line (or, in the zoom-in view,
@@ -273,9 +285,9 @@ code change, or workflow transition:
         markdown stream, and NEVER end your turn after markdown without invoking
         `ask_question` when choices, rounds, or trade-offs are presented.
     -   *Modal Parameters (`ask_question`):*
-        -   One option per numbered item, each restating the matching `Pick N
-            if …` condition in the user's voice and ending with the option
-            number (e.g., `"Live chat must never lag (Option 1)"`). List the
+        -   One option per numbered item, each restating the matching `Pick N if
+            …` condition in the user's voice and ending with the option number
+            (e.g., `"Live chat must never lag (Option 1)"`). List the
             recommended option first with a `(Recommended)` prefix, then the
             remaining options in list order.
         -   *Trailing Elaboration Option (Systems & Architecture Only):* Append
@@ -297,23 +309,33 @@ code change, or workflow transition:
             confirmation gates, ADR multi-select triage checkboxes). For these
             gates, present crisp context followed by direct status or action
             options.
--   **Mid-Interview Context Persistence (Zero Redundant `view_file` Lookups):**
-    Once an interactive interview is in progress (prior conversation turns
-    already contain a `**Settled**` / `**Now**` / `**Up next**` progress list or
-    `### Devil's Advocate Analysis`), project context (`armature/index.md`,
-    `armature/tracks.md`, `product.md`, `tech-stack.md`) is already loaded and
-    `{PROJECT_CONTEXT_DIR}` defaults to `armature`. Never call `view_file` to
-    check `armature/index.md`, `armature/product.md`, or `armature/tracks.md`
-    during Step 5a, Phase 5b, Phase 5c, or Step 6 transitions.
+-   **Mid-Interview Context Persistence & Zero File-Read/Search Calls on Option
+    Clarifications:** Once an interactive interview is in progress (prior
+    conversation turns already contain a `**Settled**` / `**Now**` / `**Up
+    next**` progress list or `### Devil's Advocate Analysis`), project context
+    (`armature/index.md`, `armature/tracks.md`, `product.md`, `tech-stack.md`)
+    is already loaded and `{PROJECT_CONTEXT_DIR}` defaults to `armature`. Never
+    call `view_file` to check `armature/index.md`, `armature/product.md`, or
+    `armature/tracks.md` during Step 5a, Phase 5b, Phase 5c, or Step 6
+    transitions. Furthermore, when the user replies to an open question with a
+    write-in clarification (`"<Option name> is too vague, explain"`, `"what does
+    Option 1 mean?"`, or `"zoom out"`), recognize that the quoted phrase came
+    from your own prior turn: **NEVER** call `view_file`, `code_search`, or
+    `grep_search` (even if `<memory>` ambient hints are injected) to look up
+    your own option wording. Answer directly from conversation context, unpack
+    the options above the progress list, **rewrite** the vague option names and
+    `Pick N if` lines in concrete plain English (never copy-pasting the prior
+    turn's wording verbatim), and call `ask_question` in that same turn.
 -   **Two-Part Turn Contract (Non-Empty Visible Markdown FIRST + Native
     `ask_question` SECOND):** Every interactive interview or gate turn MUST
     contain BOTH (1) non-empty visible markdown text (answering any inline
-    `@[Quote]` questions and rendering the required progress list and interview
-    turn, `### Devil's Advocate Analysis`, `### ADR Candidate Triage Table`, or
-    `### Convergence Summary`) FIRST, and (2) the native `ask_question` tool
-    call SECOND in that same turn. Never emit a bare `ask_question` or
-    `write_to_file` call with empty visible markdown text (`""`), and never end
-    a turn with a conversational prose question (`tools=[]`).
+    `@[Quote]` or write-in clarification questions and rendering the required
+    progress list and interview turn, `### Devil's Advocate Analysis`, `### ADR
+    Candidate Triage Table`, or `### Convergence Summary`) FIRST, and (2) the
+    native `ask_question` tool call SECOND in that same turn. Never emit a bare
+    `ask_question` or `write_to_file` call with empty visible markdown text
+    (`""`), and never end a turn with a conversational prose question
+    (`tools=[]`).
 -   **Single-Gate Phase Isolation (`/arm-new-track` Phase 5a → 5b → 5c → Step
     6):** Never collapse multiple interactive gates into a single turn.
     Resolving the final open question in Phase 5a transitions in that turn to
@@ -413,10 +435,10 @@ first. Do NOT create empty commits.
         probed (Lazy Question Materialization); listing questions under
         unconfirmed rounds is strictly forbidden. Every spawned follow-up
         question MUST state which confirmed answer spawned it, in the settled
-        line or the opener paragraph (Answer-Anchored Provenance).
-        Furthermore, the agent is strictly forbidden from asserting declarative
-        technical designs, button configurations, countdown cancel behaviors, or
-        state transitions in markdown for topics unconfirmed by the user via
+        line or the opener paragraph (Answer-Anchored Provenance). Furthermore,
+        the agent is strictly forbidden from asserting declarative technical
+        designs, button configurations, countdown cancel behaviors, or state
+        transitions in markdown for topics unconfirmed by the user via
         `ask_question`. Every turn presenting choices MUST pair markdown
         analysis and the progress list with an immediate native `ask_question`
         tool call in the exact same turn; ending a turn with text alone when
@@ -431,11 +453,10 @@ first. Do NOT create empty commits.
         debt finding **one-by-one**. For each finding, the agent MUST state the
         specific risk in the opener, offer numbered countermeasure options with
         `### Recommendation: Option N` and `Pick N if …` lines (Interview Turn
-        v2), and pause execution for human decision via
-        `ask_question` individually before presenting subsequent findings. Only
-        after all devil's advocate findings have been evaluated individually
-        does the agent present the final convergence gate before proceeding to
-        Phase 5c.
+        v2), and pause execution for human decision via `ask_question`
+        individually before presenting subsequent findings. Only after all
+        devil's advocate findings have been evaluated individually does the
+        agent present the final convergence gate before proceeding to Phase 5c.
     3.  *Phase 5c (ADR Candidate Triage Gate — Dual-Stage Lifecycle)*:
         Immediately after Phase 5b Devil's Advocate concludes and before
         materializing `spec.md`, the agent MUST audit all settled decisions

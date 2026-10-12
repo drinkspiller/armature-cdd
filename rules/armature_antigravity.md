@@ -58,12 +58,15 @@ Should I scan only current files or also search past conversations and commits?"
 options: ["Current files only", "Search past conversations and commits"]
 ```
 
-**GOOD - stakes, numbered options, recommendation, and Pick recap as text, question is short:**
+**GOOD - stakes, numbered options, recommendation, and Pick recap as text,
+question is short:**
 
 First, output the Interview Turn v2 body as regular markdown (unlabeled opener
-that says what changes for the user, numbered one-line options, a `Safe to
-ignore for now` line, a one-sentence recommendation, and a `Pick N if …` recap;
-no blockquote cards, tables, icons, emoji, or `[!NOTE]` / `[!TIP]` callouts):
+that says what changes for the user, numbered one-line options whose `<Option
+name>` states what happens in everyday words rather than coined architectural
+jargon, a `Safe to ignore for now` line, a one-sentence recommendation, and one
+`Pick N if …` recap line per numbered option; no blockquote cards, tables,
+icons, emoji, or `[!NOTE]` / `[!TIP]` callouts inside the interview turn block):
 
 ```markdown
 ## Round 1, Question 1 of 1: How setup gathers context
@@ -99,9 +102,13 @@ options: [
 ```
 
 The full `**Pros:**` / `**Cons:**` / `**Implications:**` blockquote cards are
-the Zoom-In View: render them only when the user selects the trailing
-"Compare technical trade-offs and failure modes in detail" option or replies
-"zoom in".
+the Zoom-In View: render them only when the user selects the trailing "Compare
+technical trade-offs and failure modes in detail" option or replies "zoom in".
+If the user writes in that an option is too vague or asks to explain or zoom
+out, answer directly from conversation context with **zero `view_file` /
+`code_search` calls**, unpack the concrete user scenarios above the progress
+list, and **rewrite** the numbered options and `Pick N if` lines in plain
+everyday words (never copy-pasting the prior turn's wording verbatim).
 
 **More examples:**
 
