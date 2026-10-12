@@ -47,11 +47,14 @@ VAL_PATH = os.path.join(EVALS_DIR, "tasks", "val_interview_format.jsonl")
 RESULTS_JSON_PATH = os.path.join(EVALS_DIR, "interview_format_eval_results.json")
 REPORT_MD_PATH = os.path.join(EVALS_DIR, "skillopt_report_interview_format.md")
 
-TOOL_DECLARATIONS = [{
+BASE_TOOL_DECLARATIONS = [{
     "functionDeclarations": [
         {
             "name": "ask_question",
-            "description": "Ask the user one or more multiple-choice questions via interactive UI modal.",
+            "description": (
+                "Ask the user one or more multiple-choice questions via"
+                " interactive UI modal."
+            ),
             "parameters": {
                 "type": "OBJECT",
                 "properties": {
@@ -61,7 +64,10 @@ TOOL_DECLARATIONS = [{
                             "type": "OBJECT",
                             "properties": {
                                 "question": {"type": "STRING"},
-                                "options": {"type": "ARRAY", "items": {"type": "STRING"}},
+                                "options": {
+                                    "type": "ARRAY",
+                                    "items": {"type": "STRING"},
+                                },
                                 "is_multi_select": {"type": "BOOLEAN"},
                             },
                             "required": ["question", "options"],
@@ -87,13 +93,53 @@ TOOL_DECLARATIONS = [{
     ]
 }]
 
+READ_TOOL_DECLARATIONS = [{
+    "functionDeclarations": (
+        BASE_TOOL_DECLARATIONS[0]["functionDeclarations"]
+        + [
+            {
+                "name": "view_file",
+                "description": (
+                    "View the contents of a file from the local filesystem."
+                ),
+                "parameters": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "AbsolutePath": {"type": "STRING"},
+                    },
+                    "required": ["AbsolutePath"],
+                },
+            },
+            {
+                "name": "code_search",
+                "description": "Search source files in the codebase.",
+                "parameters": {
+                    "type": "OBJECT",
+                    "properties": {
+                        "Query": {"type": "STRING"},
+                    },
+                    "required": ["Query"],
+                },
+            },
+        ]
+    )
+}]
+
 
 # --------------------------------------------------------------------------
 # Gemini transport
 # --------------------------------------------------------------------------
-def call_gemini(models, prompt, system_instruction=None, temperature=0.2,
-                use_tools=False, max_retries=4, max_output_tokens=8192,
-                json_mode=False):
+def call_gemini(
+    models,
+    prompt,
+    system_instruction=None,
+    temperature=0.2,
+    use_tools=False,
+    include_read_tools=False,
+    max_retries=4,
+    max_output_tokens=8192,
+    json_mode=False,
+):
   if not API_KEY:
     sys.exit("ERROR: GEMINI_API_KEY is not set.")
   for model in models:
@@ -117,7 +163,11 @@ def call_gemini(models, prompt, system_instruction=None, temperature=0.2,
       if system_instruction:
         payload["systemInstruction"] = {"parts": [{"text": system_instruction}]}
       if use_tools:
-        payload["tools"] = TOOL_DECLARATIONS
+        payload["tools"] = (
+            READ_TOOL_DECLARATIONS
+            if include_read_tools
+            else BASE_TOOL_DECLARATIONS
+        )
       data = json.dumps(payload).encode("utf-8")
       try:
         req = urllib.request.Request(
@@ -135,13 +185,24 @@ def call_gemini(models, prompt, system_instruction=None, temperature=0.2,
             tool_calls.append(p["functionCall"])
         return "\n".join(text_out), tool_calls
       except urllib.error.HTTPError as e:
-        if e.code in (404, 503):
-          print(f"  [transport] {model} -> HTTP {e.code}; trying next model",
-                file=sys.stderr, flush=True)
+        if e.code == 404:
+          print(
+              f"  [transport] {model} -> HTTP 404; trying next model",
+              file=sys.stderr,
+              flush=True,
+          )
+          break
+        if e.code in (429, 503) and attempt >= 2:
+          print(
+              f"  [transport] {model} -> HTTP {e.code} after {attempt}"
+              " attempts; trying next model",
+              file=sys.stderr,
+              flush=True,
+          )
           break
         if attempt == max_retries:
           return f"[ERROR: HTTP {e.code}]", []
-        time.sleep(2 ** attempt)
+        time.sleep(1.0)
       except Exception as e:  # pylint: disable=broad-except
         if attempt == max_retries:
           return f"[ERROR: {e}]", []
@@ -197,9 +258,10 @@ def _body_region(text):
 def evaluate_invariants(task, text, tool_calls):
   vetoes = []
   opener, body = _body_region(text)
-  numbered = NUMBERED_RE.findall(text)
-  numbered_lines = [l for l in text.splitlines() if NUMBERED_RE.match(l)]
-  picks = PICK_RE.findall(text)
+  target_body = body or text
+  numbered = NUMBERED_RE.findall(target_body)
+  numbered_lines = [l for l in target_body.splitlines() if NUMBERED_RE.match(l)]
+  picks = PICK_RE.findall(target_body)
   asq_opts = _asq_options(tool_calls)
   nonempty = [l for l in text.splitlines() if l.strip()]
   last_line = nonempty[-1] if nonempty else ""
@@ -208,6 +270,34 @@ def evaluate_invariants(task, text, tool_calls):
     if inv == "has_ask_question_tool":
       if not any(tc.get("name") == "ask_question" for tc in tool_calls):
         vetoes.append(f"{inv}: no native ask_question call")
+    elif inv == "no_read_search_tools":
+      bad_tools = [
+          tc.get("name")
+          for tc in tool_calls
+          if tc.get("name") in ("view_file", "code_search", "grep_search")
+      ]
+      if bad_tools:
+        vetoes.append(
+            f"{inv}: called {bad_tools} instead of answering from conversation"
+            " context"
+        )
+    elif inv == "has_pre_turn_explanation":
+      pm = re.search(r"^\*\*(?:Settled|Now)\*\*", text, re.M)
+      pre = text[: pm.start()].strip() if pm else ""
+      if len(pre.split()) < 25:
+        vetoes.append(
+            f"{inv}: fewer than 25 words of explanation before the progress"
+            f" list ({len(pre.split())} words)"
+        )
+    elif inv == "rewrites_vague_option_names":
+      for phrase in task.get("forbidden_phrases", []):
+        if re.search(re.escape(phrase), target_body, re.I) or any(
+            re.search(re.escape(phrase), o, re.I) for o in asq_opts
+        ):
+          vetoes.append(
+              f"{inv}: repeated vague phrase '{phrase}' verbatim in rewritten"
+              " options"
+          )
     elif inv == "headline_round_question_format":
       if not ROUND_HEADLINE_RE.search(text) or BAD_HEADLINE_RE.search(text):
         vetoes.append(f"{inv}: headline missing or uses 'Question R.Q of N'")
@@ -271,8 +361,13 @@ def evaluate_invariants(task, text, tool_calls):
       if CODE_ID_RE.search(opener):
         vetoes.append(f"{inv}: code identifier in opener")
     elif inv == "word_budget_200":
+      limit = (
+          260
+          if "rewrites_vague_option_names" in task.get("invariants", [])
+          else 200
+      )
       n = len(body.split())
-      if n > 200:
+      if n > limit:
         vetoes.append(f"{inv}: {n} words from headline to last Pick line")
     elif inv == "modal_options_mirror_pick":
       core = [o for o in asq_opts if not ELAB_RE.search(o)]
@@ -360,9 +455,15 @@ def build_system_instruction(protocol_text, antigravity_text, skill_text):
 
 
 def evaluate_single_rollout(system_instruction, task, seed):
+  inc_read = "no_read_search_tools" in task.get("invariants", [])
   text, tool_calls = call_gemini(
-      TARGET_MODELS, task["prompt"], system_instruction=system_instruction,
-      temperature=0.2 + 0.05 * (seed - 1), use_tools=True)
+      TARGET_MODELS,
+      task["prompt"],
+      system_instruction=system_instruction,
+      temperature=0.2 + 0.05 * (seed - 1),
+      use_tools=True,
+      include_read_tools=inc_read,
+  )
   vetoes = evaluate_invariants(task, text, tool_calls)
   if vetoes:
     return {"task_id": task["id"], "seed": seed, "vetoes": vetoes,
@@ -427,31 +528,85 @@ def collect_feedback(split_result):
 
 
 PLAIN_LANGUAGE = {
-    "has_ask_question_tool": "ended the turn without asking the user via the question modal",
-    "headline_round_question_format": "the round headline was missing or numbered the question like a sub-section",
-    "no_labeled_opener": "the opening paragraph was missing or started with a bold label",
+    "has_ask_question_tool": (
+        "ended the turn without asking the user via the question modal"
+    ),
+    "no_read_search_tools": (
+        "called a file-read or code-search tool when asked to clarify its own"
+        " option label instead of answering from conversation context"
+    ),
+    "has_pre_turn_explanation": (
+        "did not unpack the options in concrete everyday terms before the"
+        " progress list when the user asked for clarification"
+    ),
+    "rewrites_vague_option_names": (
+        "copy-pasted the prior turn's vague option names verbatim instead of"
+        " rewriting them in plain user-action terms"
+    ),
+    "headline_round_question_format": (
+        "the round headline was missing or numbered the question like a"
+        " sub-section"
+    ),
+    "no_labeled_opener": (
+        "the opening paragraph was missing or started with a bold label"
+    ),
     "no_problem_label": "framed a preference question as a problem",
-    "has_choice_sentence_some_options": "did not state the decision in one sentence followed by a non-exhaustive options lead-in",
+    "has_choice_sentence_some_options": (
+        "did not state the decision in one sentence followed by a"
+        " non-exhaustive options lead-in"
+    ),
     "has_numbered_options": "options were not a short numbered list",
-    "no_numbered_tradeoff_options": "offered design options on a step that only needed approval",
-    "no_recommended_tag_in_list": "tagged an option in the list as recommended instead of using the recommendation heading",
-    "has_ignore_line": "did not tell the reader which mechanics are safe to ignore",
+    "no_numbered_tradeoff_options": (
+        "offered design options on a step that only needed approval"
+    ),
+    "no_recommended_tag_in_list": (
+        "tagged an option in the list as recommended instead of using the"
+        " recommendation heading"
+    ),
+    "has_ignore_line": (
+        "did not tell the reader which mechanics are safe to ignore"
+    ),
     "has_recommendation_heading": "no recommendation heading",
-    "has_recommendation_heading_one_sentence": "the recommendation rationale was longer than one sentence or missing",
+    "has_recommendation_heading_one_sentence": (
+        "the recommendation rationale was longer than one sentence or missing"
+    ),
     "has_pick_recap": "did not close with one 'pick this if' line per option",
     "no_pick_recap": "added a pick recap to an approval step",
     "ends_with_pick_line": "added narration after the pick recap",
-    "no_blockquote_cards_default": "rendered the long pros/cons cards in the default turn",
-    "zoom_in_renders_cards": "did not expand to the detailed pros/cons cards when the user asked for detail",
+    "no_blockquote_cards_default": (
+        "rendered the long pros/cons cards in the default turn"
+    ),
+    "zoom_in_renders_cards": (
+        "did not expand to the detailed pros/cons cards when the user asked for"
+        " detail"
+    ),
     "no_code_identifiers_in_opener": "used code names in the opening paragraph",
-    "word_budget_200": "the body from headline to the last pick line was too long",
-    "modal_options_mirror_pick": "the modal options did not mirror the pick conditions, mark the recommended one, or end with the option number",
-    "has_settled_now_list": "dropped the Settled / Now progress list mid-interview",
-    "settled_capped_at_five": "listed more than five settled items without folding older ones",
-    "no_elaboration_option_in_modal": "offered a technical deep-dive option on a copy or layout decision",
-    "has_elaboration_option_in_modal": "omitted the technical deep-dive option on an infrastructure decision",
-    "no_self_answered_risk_mitigation": "answered its own devil's-advocate finding with a risk/mitigation list instead of asking",
-    "no_bare_tool_call": "emitted a bare modal without re-rendering the interview turn",
+    "word_budget_200": (
+        "the body from headline to the last pick line was too long"
+    ),
+    "modal_options_mirror_pick": (
+        "the modal options did not mirror the pick conditions, mark the"
+        " recommended one, or end with the option number"
+    ),
+    "has_settled_now_list": (
+        "dropped the Settled / Now progress list mid-interview"
+    ),
+    "settled_capped_at_five": (
+        "listed more than five settled items without folding older ones"
+    ),
+    "no_elaboration_option_in_modal": (
+        "offered a technical deep-dive option on a copy or layout decision"
+    ),
+    "has_elaboration_option_in_modal": (
+        "omitted the technical deep-dive option on an infrastructure decision"
+    ),
+    "no_self_answered_risk_mitigation": (
+        "answered its own devil's-advocate finding with a risk/mitigation list"
+        " instead of asking"
+    ),
+    "no_bare_tool_call": (
+        "emitted a bare modal without re-rendering the interview turn"
+    ),
 }
 
 

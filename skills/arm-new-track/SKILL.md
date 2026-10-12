@@ -58,8 +58,8 @@ resolving all open rounds, questions, and ambiguities.
 -   **Answer-Anchored Provenance:** Every spawned follow-up question MUST say
     which confirmed user answer generated it, stated in the settled line (e.g.,
     `Round 2 settled: <answer>. This opens a follow-up on <topic>.`) or in the
-    opener paragraph. Questions without a literal proven choice from prior
-    turns are forbidden.
+    opener paragraph. Questions without a literal proven choice from prior turns
+    are forbidden.
 -   **Anti-Dictation Invariant (Zero Un-Queried Decisions):** You MUST NEVER
     assert or output declarative technical specifications, UI layouts, button
     behaviors, countdown cancel rules, or lifecycle state transitions in
@@ -230,10 +230,10 @@ resolving all open rounds, questions, and ambiguities.
                 question with its short answer), `**Now**` (one bullet for the
                 active question), and `**Up next**` (queued questions and
                 unexplored round stubs). Omit a group when it is empty. When
-                more than five items are settled, list only the five most
-                recent and close the group with exactly one extra bullet in the
-                literal form `- + N earlier settled` (so seven settled items
-                render as five bullets plus `- + 2 earlier settled`).
+                more than five items are settled, list only the five most recent
+                and close the group with exactly one extra bullet in the literal
+                form `- + N earlier settled` (so seven settled items render as
+                five bullets plus `- + 2 earlier settled`).
             3.  *Separator*: `---`
             4.  *Headline*: `## Round <R>, Question <Q> of <N>: <Topic>` (H2).
                 `Q` is the question's position within the round and `N` is the
@@ -248,13 +248,23 @@ resolving all open rounds, questions, and ambiguities.
                 <what is being decided>. Here are some options:`.
             6.  *Numbered options*: `1. <Option name>: <benefit>; <cost>`, one
                 line each, at most 20 words per line, 2–4 items, no
-                `(Recommended)` tag.
+                `(Recommended)` tag. `<Option name>` MUST state what happens in
+                plain, everyday user-action terms (e.g., *"Resume on entry only,
+                allow free Skip and Back inside"*), never an invented
+                compound-noun architectural slogan (*"Entry-only resume with
+                permissive step guards"*, *"permissive child guards"*,
+                *"milestone enforcement"*).
             7.  *Ignore line*: `Safe to ignore for now: <2–3 mechanics>.`
             8.  *Recommendation*: `### Recommendation: Option <N>` (H3), then
                 exactly one sentence of rationale grounded in the codebase or
                 track scope.
-            9.  *Pick recap*: `Pick 1 if <condition>.` one line per option, in
-                order, with no trailing narration after the last line.
+            9.  *Pick recap*: `Pick 1 if <condition>.` strictly one line per
+                numbered option (`len(picks) == len(numbered)`), in order,
+                stating the concrete user scenario or product outcome without
+                repeating abstract nouns from `<Option name>`, and with no
+                trailing narration after the last line. Never add an extra
+                `Pick` line for the modal-only `"Compare technical trade-offs
+                and failure modes in detail"` choice.
             10. *`ask_question` tool call* in the same turn, one option per
                 numbered item restating its `Pick` condition in the user's
                 voice, recommended option first with `(Recommended)`.
@@ -303,11 +313,11 @@ resolving all open rounds, questions, and ambiguities.
             Track state accurately: items under `**Now**` and `**Up next**` are
             unresolved; items under `**Settled**` are confirmed decisions. Do
             not use tables, icons, emoji, glyphs, progress bars, blockquote
-            cards, or `[!NOTE]` / `[!TIP]` callouts in the interview turn. The
-            full `**Pros:**` / `**Cons:**` / `**Implications:**` cards are the
-            Zoom-In View and render only when the user selects the trailing
-            elaboration option or replies "zoom in" (see the Interaction
-            Standards rule).
+            cards, or `[!NOTE]` / `[!TIP]` callouts inside the default `## Round
+            R, Question Q of N:` interview turn block. The full `**Pros:**` /
+            `**Cons:**` / `**Implications:**` cards are the Zoom-In View and
+            render only when the user selects the trailing elaboration option or
+            replies "zoom in" (see the Interaction Standards rule).
 
         -   **Lazy Question Materialization (Pre-Population Ban)**: Future
             rounds MUST remain unexpanded stubs under `**Up next**` (e.g., `-
@@ -413,21 +423,23 @@ resolving all open rounds, questions, and ambiguities.
                 output the markdown interview turn FIRST, followed immediately
                 by the native `ask_question` tool call in that same turn.
             -   **Interview Turn v2 Body:** Present the candidate approaches
-                using the layout defined under *Mandatory Interview Turn
-                Layout* above: an unlabeled stakes opener ending in `The choice
-                here is <X>. Here are some options:`, numbered one-line options
-                (`1. <Name>: <benefit>; <cost>`, 2–4 items, no `(Recommended)`
-                tag), a `Safe to ignore for now: <mechanics>.` line, `###
-                Recommendation: Option <N>` with exactly one sentence grounded
-                in codebase constraints, latency, memory budgets, schema
-                migrations, failure resilience, or track scope, and `Pick N if
-                <condition>.` lines. Keep the headline through the last `Pick`
-                line within 180 words (200 hard cap). Never render blockquote cards in the
-                default turn.
+                using the layout defined under *Mandatory Interview Turn Layout*
+                above: an unlabeled stakes opener ending in `The choice here is
+                <X>. Here are some options:`, numbered one-line options (`1.
+                <Name>: <benefit>; <cost>`, 2–4 items, no `(Recommended)` tag,
+                with `<Name>` stating concrete user-visible behavior in plain
+                words rather than coined architectural slogans), a `Safe to
+                ignore for now: <mechanics>.` line, `### Recommendation: Option
+                <N>` with exactly one sentence grounded in codebase constraints,
+                latency, memory budgets, schema migrations, failure resilience,
+                or track scope, and strictly one `Pick N if <condition>.` line
+                per numbered option (`len(picks) == len(numbered)`). Keep the
+                headline through the last `Pick` line within 180 words (200 hard
+                cap). Never render blockquote cards in the default turn.
             -   **Zoom-In View (On Request Only):** When the user selects the
                 trailing elaboration option or replies "zoom in", render the
-                full Option Trade-Off cards for the same options (`> **Option
-                N: <Name>**` with `> - **Pros:**`, `> - **Cons:**`, and `> -
+                full Option Trade-Off cards for the same options (`> **Option N:
+                <Name>**` with `> - **Pros:**`, `> - **Cons:**`, and `> -
                 **Implications:**` rows, `&nbsp;` spacers, and `###
                 Recommendation: Option N` with 1–3 sentences), then re-ask the
                 same `ask_question`.
@@ -435,15 +447,15 @@ resolving all open rounds, questions, and ambiguities.
                 Pairing (Zero Trailing Narration & Zero Text-Only Stalls):** End
                 your markdown prose immediately after the last `Pick N if …`
                 line (or the recommendation rationale in the Zoom-In View).
-                NEVER append transitional self-narration
-                sentences at the end of your prose (e.g., *"I will now ask for
-                your decision on..."* or *"Let's call ask_question..."*), which
-                cause token concatenation and break tool parsing. Immediately
-                invoke `ask_question` exclusively as a native structured tool
-                call in the same turn—never emit raw
-                `call:default_api:ask_question{...}` text in the markdown
-                stream, and NEVER end your turn after markdown without calling
-                `ask_question` when presenting choices, rounds, or trade-offs.
+                NEVER append transitional self-narration sentences at the end of
+                your prose (e.g., *"I will now ask for your decision on..."* or
+                *"Let's call ask_question..."*), which cause token concatenation
+                and break tool parsing. Immediately invoke `ask_question`
+                exclusively as a native structured tool call in the same
+                turn—never emit raw `call:default_api:ask_question{...}` text in
+                the markdown stream, and NEVER end your turn after markdown
+                without calling `ask_question` when presenting choices, rounds,
+                or trade-offs.
             -   **Modal Parameters (`ask_question`):**
                 -   Ask questions **strictly one at a time**.
                 -   One option per numbered item, each restating the matching
@@ -467,12 +479,13 @@ resolving all open rounds, questions, and ambiguities.
                 option, render the Zoom-In View (full Option Trade-Off cards,
                 failure cascades, memory bounds, migration costs) and re-prompt
                 the same concrete choices.
-            -   **User `@[Quote]` Turns: Pre-Selection Clarification vs.
-                Final-Question Confirmation (`ask_question` Non-Bypass Rule):**
-                Every turn MUST contain BOTH non-empty visible markdown text
-                FIRST and a native `ask_question` tool call SECOND (never emit a
-                bare `ask_question` call with empty markdown text, and never
-                emit markdown text without `ask_question`):
+            -   **User `@[Quote]` & Write-In Clarification Turns: Pre-Selection
+                Clarification vs. Final-Question Confirmation (`ask_question`
+                Non-Bypass Rule):** Every turn MUST contain BOTH non-empty
+                visible markdown text FIRST and a native `ask_question` tool
+                call SECOND (never emit a bare `ask_question` call with empty
+                markdown text, and never emit markdown text without
+                `ask_question`):
                 -   *Case A — Final-Question Resolution or Leading Confirmation
                     Question:* When only ONE open question remains (the
                     `**Now**` item with nothing under `**Up next**`) and the
@@ -493,20 +506,38 @@ resolving all open rounds, questions, and ambiguities.
                         body: hazard opener, 2–3 numbered countermeasure
                         options, ignore line, `### Recommendation: Option N`
                         with one sentence, and `Pick N if …` lines.
-                    2. **Native Tool Call Part (Required Second in Same Turn):** After the visible markdown text, invoke `ask_question` for Finding 1.
-                -   *Case B — Mid-Interview Pre-Selection Blocking
-                    Clarification:* When the user explicitly says `"Wait —
-                    before I pick..."` or asks how a UI trigger, modal, or
-                    network/RPC flow works *before* choosing an option for the
-                    open question (`Question N.M`):
-                    1.  **Visible Markdown Part (Required First):** Answer the
-                        user's technical question step-by-step in visible
-                        markdown, keep `Question N.M` under `**Now**` in the
-                        progress list, and re-present its Interview Turn v2
-                        body (opener, numbered options, ignore line, `###
-                        Recommendation: Option N`, and `Pick N if …` lines).
                     2.  **Native Tool Call Part (Required Second in Same
-                        Turn):** Invoke `ask_question` for `Question N.M`.
+                        Turn):** After the visible markdown text, invoke
+                        `ask_question` for Finding 1.
+                -   *Case B — Mid-Interview Pre-Selection Blocking Clarification
+                    or `"Too Vague / Explain / Zoom Out"` Write-In:* When the
+                    user explicitly says `"Wait — before I pick..."`, writes in
+                    `"<Option name> is too vague, explain"`, replies `"zoom
+                    out"`, or asks how a UI trigger, modal, or routing flow
+                    works *before* choosing an option for the open question
+                    (`Question N.M`):
+                    1.  **Zero File-Read/Search Calls (Self-Authored Option
+                        Guard):** Recognize that any quoted option title or
+                        phrase came from your own prior turn. **NEVER** call
+                        `view_file`, `code_search`, or `grep_search` (even if
+                        `<memory>` ambient hints are injected into the turn) to
+                        search for the meaning of your own option label. Answer
+                        immediately from existing conversation context.
+                    2.  **Visible Markdown Part (Required First):** Above the
+                        `**Settled**` / `**Now**` / `**Up next**` progress list,
+                        unpack the question in concrete, everyday terms (e.g.,
+                        contrasting what happens when a user visits the entry
+                        URL vs. clicks **Skip**, **Back**, or refreshes inside a
+                        step). Then render the progress list keeping `Question
+                        N.M` under `**Now**`, followed by `---` and a
+                        **rewritten** Interview Turn v2 body whose headline,
+                        opener, numbered `<Option name>: <benefit>; <cost>`
+                        lines, and `Pick N if …` lines use plain, concrete
+                        user-action language. **NEVER** copy-paste the prior
+                        turn's vague option names or phrasing verbatim.
+                    3.  **Native Tool Call Part (Required Second in Same
+                        Turn):** Invoke `ask_question` for `Question N.M` with
+                        options mirroring the rewritten `Pick N if …` lines.
             -   **MANDATORY:** End your turn after each `ask_question` call to
                 wait for the user's answer. Never end your turn before calling
                 `ask_question` when choices, rounds, or decisions are presented.
@@ -531,24 +562,27 @@ resolving all open rounds, questions, and ambiguities.
                 (*Emergent Contradictions*, *Operational & Maintenance Debt*,
                 *Failure Cascades*), but present **ONLY Finding 1** in the
                 initial Phase 5b turn.
-            4.  **Sequential Single-Finding Presentation & Strict Anti-Collapse Ban**:
+            4.  **Sequential Single-Finding Presentation & Strict Anti-Collapse
+                Ban**:
                 -   Present each adversarial challenge **strictly one by one**
-                    in separate sequential turns (`#### Finding 1 of N: <Title>`,
-                    then in the next turn `#### Finding 2 of N: <Title>`).
-                -   **Strict Ban on Self-Answered `*Risk:* / *Mitigation:*` Lists & Multi-Finding Dumps**:
-                    NEVER output all 2–3 Devil's Advocate challenges in a single
-                    turn, and NEVER write static `*Risk:*` and `*Mitigation:*`
-                    bullets that pre-decide the countermeasure without calling
-                    `ask_question`.
+                    in separate sequential turns (`#### Finding 1 of N:
+                    <Title>`, then in the next turn `#### Finding 2 of N:
+                    <Title>`).
+                -   **Strict Ban on Self-Answered `*Risk:* / *Mitigation:*`
+                    Lists & Multi-Finding Dumps**: NEVER output all 2–3 Devil's
+                    Advocate challenges in a single turn, and NEVER write static
+                    `*Risk:*` and `*Mitigation:*` bullets that pre-decide the
+                    countermeasure without calling `ask_question`.
                 -   **Strict Ban on Same-Turn Phase 5b + Phase 5c Batching**:
-                    NEVER output a `### Phase 5c` or `### ADR Candidate Triage Table`
-                    heading in the same turn as Phase 5b, and NEVER call
+                    NEVER output a `### Phase 5c` or `### ADR Candidate Triage
+                    Table` heading in the same turn as Phase 5b, and NEVER call
                     `write_to_file` during Phase 5b. If the user asks to bundle
                     or skip ahead across phases, explicitly state in visible
                     markdown that **Phase 5b and Phase 5c require sequential
                     interactive gates** and cannot be collapsed into one turn,
                     then present ONLY Finding 1.
-                -   **Two-Part Turn Contract (Visible Markdown FIRST -> `ask_question` SECOND)**:
+                -   **Two-Part Turn Contract (Visible Markdown FIRST ->
+                    `ask_question` SECOND)**:
                     -   *Part 1 (Visible Markdown):* Write the settled line and
                         updated progress list, the `### Devil's Advocate
                         Analysis` heading, the single active challenge (`####
@@ -567,7 +601,8 @@ resolving all open rounds, questions, and ambiguities.
                         revise approach"`, `"Accept trade-off as acceptable
                         debt"`). Never emit a bare `ask_question` call without
                         visible markdown text.
-            5.  **Reopening vs. Natural Convergence (Implicit Phase 5c Transition)**:
+            5.  **Reopening vs. Natural Convergence (Implicit Phase 5c
+                Transition)**:
                 -   If the user selects to reopen a round during any finding,
                     move that round and its affected question from `**Settled**`
                     back to `**Now**` / `**Up next**`, probe the revised
@@ -577,11 +612,11 @@ resolving all open rounds, questions, and ambiguities.
                     Phase 5b finding (e.g., Finding 2 of 2), output in visible
                     markdown the `### Phase 5b Convergence Summary` synthesizing
                     all settled decisions, and in that **same turn** execute
-                    **Phase 5c: ADR Candidate Triage Gate** (rendering the
-                    `### ADR Candidate Triage Table` in visible markdown +
-                    calling `ask_question` with `is_multi_select: true` if
-                    $\ge 1$ candidates qualify, or silently bypassing to Step 6
-                    if 0 qualify).
+                    **Phase 5c: ADR Candidate Triage Gate** (rendering the `###
+                    ADR Candidate Triage Table` in visible markdown + calling
+                    `ask_question` with `is_multi_select: true` if $\ge 1$
+                    candidates qualify, or silently bypassing to Step 6 if 0
+                    qualify).
 
     -   **Phase 5c: ADR Candidate Triage Gate (Dual-Stage Lifecycle)**:
 
@@ -608,27 +643,28 @@ resolving all open rounds, questions, and ambiguities.
                 Spec Only]`.
         -   **Silent Zero-Candidate Bypass**:
             -   If and only if **zero** settled decisions qualify under Pillars
-                1, 2, or 3 (e.g., strictly local single-component CSS/copy/markup
-                tweaks with no cross-cutting invariant, architecture binding, or
-                negative constraint), silently bypass Phase 5c directly to Step
-                6 in that **same turn**: default `{PROJECT_CONTEXT_DIR}` to
-                `armature` (`armature/tracks/<track_id>/...`) without calling
-                `view_file` to check `armature/product.md` or `armature/index.md`,
-                first write a visible markdown `### Convergence Summary`
-                synthesizing all settled decisions, and then invoke
-                `write_to_file` for `spec.md`, `write_to_file` for
-                `manual_testing.md`, and `ask_question` for Step 6 spec approval.
+                1, 2, or 3 (e.g., strictly local single-component
+                CSS/copy/markup tweaks with no cross-cutting invariant,
+                architecture binding, or negative constraint), silently bypass
+                Phase 5c directly to Step 6 in that **same turn**: default
+                `{PROJECT_CONTEXT_DIR}` to `armature`
+                (`armature/tracks/<track_id>/...`) without calling `view_file`
+                to check `armature/product.md` or `armature/index.md`, first
+                write a visible markdown `### Convergence Summary` synthesizing
+                all settled decisions, and then invoke `write_to_file` for
+                `spec.md`, `write_to_file` for `manual_testing.md`, and
+                `ask_question` for Step 6 spec approval.
         -   **Interactive Triage Gate (when $\ge 1$ candidates qualify)**:
 
-            -   **Strict Ban on Static Bullet ADR Substitution & Premature File Writes**:
-                NEVER replace the `### ADR Candidate Triage Table` with static
-                markdown bullets (e.g., `* **ADR Required?** Yes` / `* **Title:**
-                ADR NNNN...`), NEVER ask *"May I proceed with generating the
-                track artifacts?"* in plain text, and NEVER call `write_to_file`
-                (`spec.md`, `plan.md`, `adr/*.md`) before the user responds to
-                the Phase 5c `ask_question` modal.
-            -   **Part 1 (Visible Markdown — Required First)**: Output the
-                `### Phase 5b Convergence Summary` followed by the markdown pipe
+            -   **Strict Ban on Static Bullet ADR Substitution & Premature File
+                Writes**: NEVER replace the `### ADR Candidate Triage Table`
+                with static markdown bullets (e.g., `* **ADR Required?** Yes` /
+                `* **Title:** ADR NNNN...`), NEVER ask *"May I proceed with
+                generating the track artifacts?"* in plain text, and NEVER call
+                `write_to_file` (`spec.md`, `plan.md`, `adr/*.md`) before the
+                user responds to the Phase 5c `ask_question` modal.
+            -   **Part 1 (Visible Markdown — Required First)**: Output the `###
+                Phase 5b Convergence Summary` followed by the markdown pipe
                 table under `### ADR Candidate Triage Table` mapping every
                 settled decision (both `[ADR Candidate]` and `[Track Spec Only]`
                 rows) to its pillar, proposed title, and recommendation:
@@ -645,8 +681,8 @@ resolving all open rounds, questions, and ambiguities.
                 **`is_multi_select: true`** (`"is_multi_select": true`):
 
                 -   `is_multi_select`: `true`
-                -   `question`: `"Confirm which architectural decisions to record
-                    as ADRs:"`
+                -   `question`: `"Confirm which architectural decisions to
+                    record as ADRs:"`
                 -   `options`: Checkboxes for each qualifying candidate ADR
                     prefixed with `(Recommended)` (e.g., `"(Recommended) Record
                     ADR: Use In-Memory LRU with TTL"`, `"(Recommended) Record

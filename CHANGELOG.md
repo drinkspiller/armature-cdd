@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.29.1] - 2026-10-12
+
+### Fixed
+
+-   **Plain-Language Option Naming in Interview Turn v2**: Enforced that
+    `<Option name>` in `1. <Option name>: <benefit>; <cost>` states what happens
+    in concrete user or behavior terms (3–8 everyday words) rather than coined
+    architectural jargon or compound noun-phrase slogans (such as *"Entry-only
+    resume with permissive step guards"*).
+-   **Anti-Copy-Paste Option Clarification & Zero-Tool-Call Mid-Interview
+    Rule**: When a user replies that an option or question is too vague, asks to
+    explain an option, or requests `"zoom out"` during an active interview, the
+    agent now answers directly from the conversation context with zero
+    `view_file` or `code_search` calls (even when an ambient `<memory>` hint
+    fires), unpacks concrete user scenarios above the `**Settled**` / `**Now**`
+    progress list, and rewrites the numbered option names and `Pick N if` lines
+    in plain everyday words instead of copy-pasting the prior turn's wording
+    verbatim.
+-   **Strict 1:1 `Pick` Recap Count (`len(picks) == len(numbered)`)**:
+    Prohibited rendering a `Pick N+1 if` line in the markdown body for the
+    modal-only `"Compare technical trade-offs and failure modes in detail"`
+    choice.
+-   **SkillOpt Benchmark Expansion**: Added `IFT_TRAIN_07` and `IFT_VAL_05` plus
+    the `no_read_search_tools`, `has_pre_turn_explanation`, and
+    `rewrites_vague_option_names` invariants to
+    `evals/skillopt/run_interview_format_opt.py`.
+
 ## [0.29.0] - 2026-10-09
 
 ### Changed
@@ -20,11 +47,11 @@ and this project adheres to
     a `Safe to ignore for now:` line, `### Recommendation: Option N` with
     exactly one sentence, and a `Pick 1 if … / Pick 2 if …` recap. The
     `ask_question` options restate the Pick conditions in the user's voice and
-    end with `(Option N)`. Budget: 180 words from headline through the last
-    Pick line.
--   **Zoom-In View**: The full Pros / Cons / Implications cards are retained
-    and render only when the user selects "Compare technical trade-offs and
-    failure modes in detail" or replies "zoom in".
+    end with `(Option N)`. Budget: 180 words from headline through the last Pick
+    line.
+-   **Zoom-In View**: The full Pros / Cons / Implications cards are retained and
+    render only when the user selects "Compare technical trade-offs and failure
+    modes in detail" or replies "zoom in".
 -   **Headline numbering**: The first question of a round is `Round R, Question
     1 of N`, never `Question R.1 of N`.
 -   **Settled list cap**: The progress list shows at most the five most recent
