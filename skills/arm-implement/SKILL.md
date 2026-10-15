@@ -6,9 +6,10 @@ persona: Armature Orchestrator
 
 # /arm-implement — Execute the Plan
 
-**Purpose:** Execute the plan for the current active track via autonomous
-subagent delegation (`worker`), verifying phase deliverables, synchronizing
-documentation, and managing track cleanup.
+**Purpose:** Execute the plan for the current active track via phase execution
+routing (parallel isolated worktree subagents for independent disjoint phases
+and a single worker for sequential coupled phases), verifying phase
+deliverables, synchronizing documentation, and managing track cleanup.
 
 ## Protocol
 
@@ -112,7 +113,8 @@ documentation, and managing track cleanup.
 1.  Before starting tasks, update the selected track's status to `[~]` in
     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`.
 2.  Load the track context (`spec.md`, `plan.md`, `workflow.md`).
-3.  **Execution Topology & Dependency Audit**:
+3.  **Phase Coupling Classification & Execution Routing (Parallel Worktrees vs.
+    Single Worker)**:
     -   *Fast-Path Solo Exception (Ceremony Scaling)*: If the task is a verified
         micro-task (≤5 lines of code, single-file hotfix, single-line
         configuration, timeout, constant update, or typo fix with zero
@@ -121,26 +123,57 @@ documentation, and managing track cleanup.
         main thread. Run the targeted test and finish cleanly.
     -   *Autonomous Delegation Routine (Default)*: All standard implementation
         tracks (multi-task, multi-phase, >5 lines) MUST execute via autonomous
-        subagent delegation. The primary agent acts as orchestrator: it
-        decomposes the implementation plan by phase and delegates execution to
-        background `worker` workers rather than executing file mutations on the
-        main thread.
-    -   *Disjoint Phase Concurrency Audit*: The orchestrator audits the
-        uncompleted phases in `plan.md` to map touched file scopes and interface
-        dependencies:
-        *   **Disjoint Phases (Parallel Execution)**: If two or more phases
-            touch completely disjoint file sets with zero contract dependencies
-            (e.g., Phase 1 touches `landing/` and Phase 2 touches `settings/`),
-            the orchestrator dispatches separate `worker` subagents
-            simultaneously, specifying `Workspace: "share"` for each to isolate
-            working copies.
-        *   **Coupled Phases (Continuous Pipelined Execution)**: If Phase N+1
-            imports or depends on symbols produced by Phase N (or imports types
-            defined in Phase 1's package), the orchestrator strictly refuses
-            parallel dispatch and executes them pipelined: it dispatches Phase N
-            first. Upon successful phase completion and automated test pass, the
-            orchestrator autonomously advances to Phase N+1 without halting for
-            intermediate confirmation modals.
+        subagent delegation rather than executing heavy file mutations on the
+        main thread. At the start of each phase, the orchestrator checks task
+        coupling in `plan.md`:
+    -   **1. Phase Coupling Classification (Independent/Disjoint vs.
+        Sequential/Coupled)**:
+        *   Inspect the tasks in the current phase (and across uncompleted
+            phases) in `plan.md`.
+        *   **Independent (Disjoint)**: Classify a phase (or set of uncompleted
+            phases) as **Independent (Disjoint)** if it has $\ge 2$ tasks/slices
+            operating on non-overlapping source and test directories with no
+            intra-phase sequential output or imported contract dependencies
+            (e.g., Phase 1 touches `landing/` and Phase 2 touches `settings/`).
+        *   **Sequential (Coupled)**: Classify a phase (or set of phases) as
+            **Sequential (Coupled)** if tasks share state dependencies, touch
+            overlapping files, or if Task/Phase N+1 imports or depends on
+            symbols/types produced by Task/Phase N (e.g., `frontend/` importing
+            types modified in `backend/`). For coupled phases, strictly refuse
+            parallel dispatch and execute them pipelined: dispatch Phase N
+            first, and upon automated test pass, autonomously advance to Phase
+            N+1 without halting for intermediate confirmation modals.
+    -   **2. Parallel Isolated Worktrees (Independent/Disjoint Phases)**:
+        *   When a phase (or set of phases) is **Independent (Disjoint)**:
+            -   **On Antigravity**: Dispatch parallel `worker` subagents in a
+                single `invoke_subagent` call with `Workspace: "share"` for each
+                entry and arm `schedule(DurationSeconds=90,
+                TimerCondition="any")`.
+            -   **On Claude Code**: Dispatch parallel `Task` subagents in
+                isolated `git worktree` checkouts.
+            -   **On Single-Threaded Harnesses**: Fall back to sequential
+                execution.
+        *   Pass `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`, applicable ADR
+            summaries, and canonical `spec.md`/`plan.md` paths in each worker's
+            prompt, along with strict `Owned Files` vs. `Forbidden Files`
+            boundaries.
+    -   **3. Single Worker (Sequential/Coupled Phases or Single-Task Phases)**:
+        *   When a phase is **Sequential (Coupled)** or contains a single task
+            slice:
+            -   **On Antigravity**: Dispatch a single `worker` via
+                `invoke_subagent` with a 90-second conditional
+                `schedule(DurationSeconds=90, TimerCondition="<subagent_id>")`
+                heartbeat (or `self` with `[Progress]` `send_message` relay).
+            -   **On Claude Code**: Dispatch a single `Task` subagent.
+    -   **4. Coordinator-Only Updates to Shared Track Files**:
+        *   Parallel worktree workers (`Workspace: "share"` / `git worktree`)
+            are strictly scoped to their assigned disjoint source and test files
+            and are **FORBIDDEN** from mutating
+            `armature/tracks/<track_id>/plan.md`, `metadata.json`, `tracks.md`,
+            or `.api_surface_cache.json`.
+        *   Only the orchestrator updates task checkboxes (`[x]`) in `plan.md`
+            and refreshes `.api_surface_cache.json` after merging and verifying
+            worker worktrees at phase completion.
 4.  **Phase Worker Dispatch (`worker` & `explorer`) & Legacy Fence
     Propagation**:
 
@@ -211,7 +244,9 @@ documentation, and managing track cleanup.
             (<deprecated_path>). If unapproved fence access or write access is
             required, halt immediately and return a structured escalation
             request to the parent orchestrator.\n\nContext:\n1. Follow TDD
-            Red/Green/Refactor. Mark completed tasks [x] in plan.md." }])
+            Red/Green/Refactor. Edit only your assigned source/test files; do
+            not modify shared track files (plan.md, metadata.json, tracks.md,
+            or .api_surface_cache.json) when running in parallel worktrees." }])
             schedule( DurationSeconds=90, TimerCondition="subagent-worker-1",
             Prompt="Check subagent progress and post a 20-block progress bar
             update in main chat." )`
@@ -471,10 +506,17 @@ Synchronization has been handled.
 
 ## Guardrails
 
--   **Autonomous Delegation Default**: Multi-phase or multi-task tracks must
-    always delegate phase execution to `worker` subagents. The primary agent
-    operates as an orchestrator, never monopolizing the main conversational
-    thread for heavy code edits.
+-   **Autonomous Delegation Default**: Multi-phase or multi-task tracks delegate
+    phase execution via phase coupling routing (parallel isolated worktree
+    subagents for independent disjoint slices, and a single worker for
+    sequential coupled phases). The primary agent operates as an orchestrator,
+    never monopolizing the main conversational thread for heavy code edits.
+-   **Coordinator-Only Updates to Shared Track Files**: Parallel worktree
+    workers (`Workspace: "share"` / `git worktree`) are strictly forbidden from
+    editing `armature/tracks/<track_id>/plan.md`, `metadata.json`, `tracks.md`,
+    or `.api_surface_cache.json`. Only the orchestrator updates `plan.md` task
+    checkboxes and `.api_surface_cache.json` after merging worker worktrees at
+    phase completion.
 -   **Documentation-Only Manual Testing Invariant**: Document exact setup, seed,
     and reset commands in manual testing runbooks, but NEVER execute mutative
     database, environment reset, or teardown commands autonomously.

@@ -149,56 +149,59 @@ When creating Armature artifacts (spec.md, plan.md, etc.):
 
 Synchronous tool execution suspends the model thread until all tools in the turn
 return. For heavy operations (e.g., video/screencast decoding via `view_file`,
-deep multi-repository search, or lengthy compilation/benchmarks), running
-synchronously on the main thread locks the chat UI and traps queued user
-messages in the inbox for minutes or tens of minutes.
+deep multi-repository search, lengthy compilation/benchmarks, or multi-phase
+track implementations), running synchronously on the main thread locks the chat
+UI and traps queued user messages in the inbox.
 
-Follow these operational standards:
+Phase-level routing rules (parallel isolated worktree subagents for independent
+disjoint phases vs. a single worker for sequential coupled phases) are defined
+in `skills/arm-implement/SKILL.md`:
 
-1.  **Immediate Dispatch, Conditional 90s Heartbeat & Turn Yield
-    (Orchestrator-Worker Primacy):** When encountering heavy multimodal inputs
-    (e.g., screencast `.webm` files), broad codebase discovery, or indeterminate
-    tasks (>30s), the primary conversational agent MUST dispatch a background
-    worker and immediately conclude its turn with a visible chat message
-    confirming the worker has been started:
-    -   **Claude Code**: Dispatch via `Task(prompt="...",
-        subagent_type="explorer")`.
-    -   **OpenCode**: Route deep codebase exploration to `@explore` or `@scout`.
-    -   **OpenAI Codex**: Delegate discovery work to `explorer`
-        (`role="explorer"`).
-    -   **Antigravity**: Dispatch via `invoke_subagent(TypeName='explorer',
-        ...)` (or `TypeName='worker'`) and concurrently call
-        `schedule(DurationSeconds=90, TimerCondition="<subagent_id>",
-        Prompt="Check subagent progress and post a 20-block progress bar update
-        in main chat.")` (or `TimerCondition="any"` when multiple parallel
-        subagents are dispatched) in the same turn.
-    -   **Single-Threaded Harnesses (Cursor, Aider)**: Execute long-running jobs
-        in the background (`run_in_background` or terminal `command & >
-        /tmp/task.log`) with proactive status logging.
-2.  **Periodic Progress Bar Relay & Conversational Availability:** Because
-    background subagents and processes return immediately to the dispatching
-    loop, the primary conversational agent remains unblocked. On each 90-second
-    timer wakeup while a subagent is still running, or when the user asks for
-    progress (e.g., `"status?"`, `"what are you doing?"`), the agent inspects
-    worker state and recent step transcripts in seconds (e.g.,
-    `manage_subagents(Action='list')` and the active worker `transcript.jsonl`
-    in Antigravity, step inspection in Claude Code, or checking background
-    logs/process table in single-threaded setups), prints a concise status
-    update in main chat formatted with a leading blank line (`\n\n`), ``
-    `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)``, a blank line (`\n\n`), and a 1–2
-    sentence functional summary of completed and active work, and re-arms the
-    90-second conditional `schedule` timer in the same turn rather than letting
-    the user wait in silence. When using 1-stage custom or `self` subagents
-    equipped with `send_message`, instruct the subagent in its `Prompt` to push
-    ``[Progress]\n\n`▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)\n\n<1-2 sentence
-    summary>`` via `send_message(Recipient="<parent_id>", ...)` alongside its
-    next tool call every ~3–4 turns or ~10 tool calls, and echo each incoming
-    `[Progress]` message in main chat before yielding.
-3.  **Context Window Hygiene:** Isolating heavy multimodal frame extraction,
-    compiler logs, or sprawling search traces inside a subagent worker keeps
-    thousands of transient tokens from polluting the primary conversation's
-    context window.
-4.  **Reactive Re-engagement:** When the subagent or background task completes
-    (which automatically cancels any pending conditional `schedule` timer),
-    synthesize the worker's findings and present them to the user in the main
-    conversational thread.
+1.  **Parallel Isolated Worktrees — Independent Disjoint Phases:**
+    -   Use when an implementation phase contains multiple independent tasks
+        operating on non-overlapping source and test directories.
+    -   **Antigravity**: Dispatch parallel `worker` subagents in a single
+        `invoke_subagent` call with `Workspace: "share"` for each entry to
+        provision isolated working copies, and arm
+        `schedule(DurationSeconds=90, TimerCondition="any")`.
+    -   **Claude Code**: Dispatch parallel `Task(prompt="...",
+        subagent_type="worker")` subagents in isolated `git worktree` checkouts.
+    -   **Coordinator-Only Updates to Shared Track Files**: Parallel workers
+        must only edit their assigned source and test files and must NEVER
+        modify shared track files (`plan.md`, `metadata.json`, `tracks.md`, or
+        `.api_surface_cache.json`). Only the orchestrator updates `plan.md`
+        checkboxes and refreshes `.api_surface_cache.json` after merging and
+        verifying worker worktrees at phase completion.
+2.  **Single Worker — Sequential Coupled Phases & Standalone Heavy
+    Investigations:**
+    -   Use when phase tasks share state dependencies or touch overlapping
+        files, or when offloading standalone heavy multimodal inputs (e.g.,
+        screencast `.webm` files) or broad codebase discovery:
+        -   **Claude Code**: Dispatch via `Task(prompt="...",
+            subagent_type="explorer")` (or `subagent_type="worker"`).
+        -   **OpenCode**: Route deep codebase exploration to `@explore` or
+            `@scout`.
+        -   **OpenAI Codex**: Delegate discovery or implementation work to
+            `explorer` (`role="explorer"`) or `worker` (`role="worker"`).
+        -   **Antigravity**: Dispatch via `invoke_subagent(TypeName='explorer',
+            ...)` (or `TypeName='worker'`) and concurrently call
+            `schedule(DurationSeconds=90, TimerCondition="<subagent_id>",
+            Prompt="Check subagent progress and post a 20-block progress bar
+            update in main chat.")` in the same turn. On each 90-second wakeup
+            while a worker remains active (or on user status inquiries), inspect
+            `manage_subagents(Action='list')` and recent steps in the active
+            worker `transcript.jsonl`, output a leading blank line (`\n\n`), ``
+            `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)``, a blank line (`\n\n`),
+            and a 1–2 sentence status summary in main chat, and re-arm the
+            90-second conditional `schedule` timer. When using 1-stage `self`
+            subagents, instruct the worker to relay `[Progress]` updates via
+            `send_message` and echo them in main chat.
+        -   **Single-Threaded Harnesses (Cursor, Aider)**: Execute long-running
+            jobs in the background (`run_in_background` or terminal `command & >
+            /tmp/task.log`) with proactive status logging.
+3.  **Context Window Hygiene & Reactive Re-engagement:** Isolating heavy
+    multimodal frame extraction, compiler logs, or multi-file coding cycles
+    inside background workers keeps thousands of transient tokens out of the
+    parent context window. When the subagent or background task completes
+    (automatically cancelling any pending conditional `schedule` timer),
+    synthesize the verified results in the main conversational thread.
