@@ -166,32 +166,22 @@ commands in skill protocols.
 -   **Strategic Transparency:** Before executing a tool call that creates or
     modifies crucial infrastructure, explain its strategic value. Don't just
     execute; act as a mentor guiding the user through the 'Why'.
--   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes,
-    Conditional 90s Heartbeat & Multiagent Default):** Long-running,
-    indeterminate, heavy multimodal operations—such as video or screencast frame
-    extraction (`view_file`), extensive multi-repository code sweeps,
-    multi-minute test suites, or full implementation tracks
-    (`/arm-implement`)—must NEVER be executed synchronously on the primary
-    conversational agent turn when background delegation capabilities exist. The
-    primary agent MUST act as an orchestrator: dispatch background workers
-    (`explorer` for research/multimodal, `worker` for implementation phases),
-    concurrently set a 90-second conditional heartbeat timer via
-    `schedule(DurationSeconds=90, TimerCondition="<subagent_id>", Prompt="Check
-    subagent progress and post a 20-block progress bar update in main chat.")`
-    (or `TimerCondition="any"` when multiple parallel subagents are dispatched),
-    and yield its turn immediately with a visible acknowledgement in chat
-    (preceded by `` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)``). On each
-    90-second timer wakeup while a subagent remains active (or when the user
-    asks for `"status?"`), inspect `manage_subagents(Action='list')` and the
-    active worker `transcript.jsonl`, output `\n\n` + `` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░
-    XX%` (Task X of Y)`` + `\n\n` + a 1–2 sentence functional summary of
-    completed and active work in main chat, and re-arm the 90-second conditional
-    `schedule` timer in the same turn. When using 1-stage custom or `self`
-    subagents equipped with `send_message`, instruct the subagent in its
-    `Prompt` to push ``[Progress]\n\n`▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of
-    Y)\n\n<1-2 sentence summary>`` via `send_message(Recipient="<parent_id>",
-    ...)` alongside its next tool call every ~3–4 turns or ~10 tool calls, and
-    echo each incoming `[Progress]` update in main chat before yielding.
+-   **Asynchronous Delegation Invariant (Zero Primary-Thread Freezes &
+    Orchestrator-Worker Routing):** Long-running, indeterminate, or heavy
+    multimodal operations—such as video or screencast frame extraction
+    (`view_file`), extensive multi-repository code sweeps, multi-minute test
+    suites, or multi-phase implementation tracks (`/arm-implement`)—must NEVER
+    be executed synchronously on the primary conversational agent turn when
+    background delegation capabilities exist. The primary agent MUST act as an
+    orchestrator: offload heavy multimodal or multi-phase work to background
+    workers, preserve parent context window hygiene, yield its turn immediately
+    with a visible acknowledgement in chat, and rely on reactive wakeups (and
+    platform-appropriate progress heartbeats) while remaining interactively
+    available to answer user status inquiries, accept steering commands, or
+    process cancellations. Concrete phase execution routing (parallel isolated
+    worktree subagents for independent disjoint phases vs. a single worker for
+    sequential coupled phases) is governed by `skills/arm-implement/SKILL.md`
+    and the active platform adapter (`rules/armature_antigravity.md`).
 
 ## 1a. Multi-Perspective Persona Reasoning
 

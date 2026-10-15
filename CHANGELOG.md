@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.30.0] - 2026-10-15
+
+### Added
+
+-   **Phase Coupling Classification & Parallel Worktree Routing in
+    `/arm-implement`**: Added phase-level task coupling classification to
+    `skills/arm-implement/SKILL.md`, routing independent (disjoint) phases or
+    task slices to parallel isolated worktree subagents (`Workspace: "share"` on
+    Antigravity or `git worktree` + `Task` on Claude Code) and sequential
+    (coupled) phases to a single pipelined worker.
+-   **Coordinator-Only Updates to Shared Track Files**: Scoped parallel worktree
+    workers strictly to their assigned source and test directories. Parallel
+    workers do not edit `plan.md`, `metadata.json`, `tracks.md`, or
+    `.api_surface_cache.json`; the orchestrator updates `plan.md` checkboxes and
+    `.api_surface_cache.json` once after merging worker worktrees at phase
+    completion, preventing merge conflicts on shared track metadata.
+
+### Changed
+
+-   **Leaner Always-On Delegation Rules**: Streamlined
+    `rules/armature_protocol.md` and `rules/armature_antigravity.md` so
+    always-on rules focus on orchestrator-worker responsiveness while deferring
+    phase execution routing to `skills/arm-implement/SKILL.md`.
+
 ## [0.29.1] - 2026-10-12
 
 ### Fixed
