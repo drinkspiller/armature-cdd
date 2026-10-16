@@ -79,6 +79,11 @@ After context is loaded, determine next action:
     requested (or when persisting a Legacy Fence via the Reactive Self-Healing
     Steering Hook).
 -   **No Ceremony**: Do NOT create artifacts for the loading process.
+-   **LLM Streaming vs. Static Microcopy**: When addressing tasks or developer
+    corrections involving LLM streaming responses or dynamic outputs, focus on
+    modifying system prompts, adjusting generation parameters (e.g.,
+    temperature), or post-processing streams. Do NOT attempt to fix dynamic LLM
+    output issues by editing static UI localization or microcopy files.
 -   **Legacy-Boundary Context Fences (Mandatory Single-Turn Execution Rules)**:
     -   *Prompt-Provided Context Invariant*: If `[Workspace Context...]` is
         provided in the prompt, NEVER call `grep_search` or `view_file` to look
