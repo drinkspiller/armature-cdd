@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.30.1] - 2026-10-16
+
+### Fixed
+
+-   **Dynamic LLM Output vs. Static UI Microcopy Boundary in `/arm-chat`**:
+    Clarified `skills/arm-chat/SKILL.md` guardrails so tasks or developer
+    corrections involving LLM streaming responses or dynamic text generation
+    target system prompts, sampling parameters (e.g., temperature), or stream
+    post-processing filters rather than editing static UI localization or
+    microcopy files.
+
 ## [0.30.0] - 2026-10-15
 
 ### Added
