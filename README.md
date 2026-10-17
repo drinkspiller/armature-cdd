@@ -186,9 +186,9 @@ Once installed, the `/arm-*` commands are available globally in chat:
 | :--- | :--- |
 | `/arm-setup` | Initialize a project's `armature/` context (or adopt legacy `conductor/`) |
 | `/arm-new-track` | Create a new feature or bug fix track via continuous decision trees |
-| `/arm-implement` | Execute the current track's plan with incremental drift checks |
+| `/arm-implement` | Execute the current track's plan with pre-closeout review-and-repair and drift checks |
 | `/arm-status` | View trajectory and contract health across all active tracks |
-| `/arm-review` | Multi-dimensional review against living runbooks and ADRs |
+| `/arm-review` | Multi-expert iterative review-and-repair loop against living runbooks and ADRs |
 | `/arm-drift` | Continuous 3-tier drift tripwire across docs, interfaces, and code |
 | `/arm-chat` | Ceremony-free context ingestion with automatic glossary sync |
 | `/arm-undo` | VCS-aware surgical task, phase, or track rollback |
@@ -235,9 +235,9 @@ Armature installs as a modular plugin bundle containing skills, rule protocols, 
 | `manual_testing_template.md` | `skills/arm-setup/assets/` | — | Bundled manual testing guide template copied during `/arm-setup` |
 | `.armature_version` | `.armature_version` | — | Version stamp for update detection |
 | `arm-new-track/` | `skills/arm-new-track/` | Armature Planner | `/arm-new-track` — Start a new feature or bug fix with continuous decision-tree elicitation |
-| `arm-implement/` | `skills/arm-implement/` | Armature Implementer | `/arm-implement` — Execute plan tasks sequentially with phase checkpoint drift audits |
+| `arm-implement/` | `skills/arm-implement/` | Armature Implementer | `/arm-implement` — Execute plan tasks with pre-closeout multi-expert review-and-repair and phase checkpoint drift audits |
 | `arm-status/` | `skills/arm-status/` | Armature Observer | `/arm-status` — View project trajectory with ambient contract health monitoring |
-| `arm-review/` | `skills/arm-review/` | Armature Reviewer | `/arm-review` — Multi-dimensional code audit and guided interactive manual verification walkthroughs |
+| `arm-review/` | `skills/arm-review/` | Armature Reviewer | `/arm-review` — Multi-expert iterative code review-and-repair loop and guided interactive manual verification walkthroughs |
 | `arm-undo/` | `skills/arm-undo/` | Armature Surgeon | `/arm-undo` — Surgical rollbacks with destructive operation shielding |
 | `arm-drift/` | `skills/arm-drift/` | Armature Drift Auditor | `/arm-drift` — Continuous 3-tier drift auditing across docs, interfaces, and packaging |
 | `arm-chat/` | `skills/arm-chat/` | Armature Guide | `/arm-chat` — Ceremony-free context ingestion with automatic glossary sync |
@@ -327,5 +327,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.30.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.31.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 

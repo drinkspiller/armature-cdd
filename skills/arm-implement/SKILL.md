@@ -341,6 +341,69 @@ deliverables, synchronizing documentation, and managing track cleanup.
             (`["(Recommended) Triage and fix failure in-flight", "Revise phase
             implementation", "Roll back phase"]`).
 
+6.  **Step 3.6: Pre-Closeout Inner-Loop Review & Repair Gate (`ADR 0015`)**:
+    When all phases in `plan.md` are marked `[x]` and automated unit tests pass,
+    execute the **Pre-Closeout Inner-Loop Review & Repair Gate** *before*
+    running `Step 4: Document Synchronization` so that AST symbol extraction
+    (`.api_surface_cache.json`), `terms.md`, and `adr/*.md` synchronize against
+    the final post-repair codebase:
+
+    -   **Ceremony Scaling & Automatic Bypass Rules (Skip When Visual-Only or
+        Micro-Task):**
+        -   **Skip on Micro-Tasks ($\le 5$ Lines):** If the cumulative track
+            diff modifies $\le 5$ lines of code in a single file with zero
+            schema or architectural changes, **skip Step 3.6** and finish via
+            the Fast-Path Solo Exception.
+        -   **Skip on Visual-Only Tracks (`[Micro-Verification Plan]`):** If the
+            Stage 2 Empirical VCS Diff Classifier (`Step 3.5`) confirms the
+            track is strictly presentational/visual (`[Micro-Verification
+            Plan]`, including the Orphaned Dead-Code Cleanup Exemption with zero
+            state, auth-guard, or RPC changes), **skip Step 3.6** and advance
+            directly to `Step 4: Document Synchronization`, noting in your chat
+            summary under `### Verification Audit`: `"Step 3.6 Pre-Closeout
+            Review Loop skipped (Visual-Only [Micro-Verification Plan]
+            track)."`.
+    -   **2-Pass Multi-Expert Review-and-Repair Execution (`MAX_ITERATIONS = 2`
+        on Behavioral Code Tracks):**
+
+        -   On all behavioral, stateful, backend, API, or multi-file code
+            tracks, run up to **`MAX_ITERATIONS = 2`** passes of the **3-Tier
+            Runtime-Polymorphic Review-and-Repair Adapter**
+            (`armature_protocol.md` §5): Tier 1 Host Adapter +
+            `spec_and_adr_verifier` (`include_intent: true`), Tier 2 Multi-Agent
+            Panel (`spec_and_adr_verifier` with `include_intent: true`;
+            `code_taste_style_verifier` and `correctness_security_verifier` with
+            `include_intent: false` blinded to author rationale;
+            `deterministic_linter_runner`), or Tier 3 Sequential Pass.
+        -   Apply repairs in `P0 -> P1 -> P2 -> P3` order while enforcing all
+            **Four Repair Safety Circuit Breakers**: CB1
+            `blocked_by_legacy_fence`, CB2 `deferred_spec_conflict`, CB3
+            `reverted_test_regression` (revert broken test fix & lock in
+            Anti-Oscillation Ledger), and CB4 Final-Pass Application Guarantee
+            (`iteration == 2`).
+        -   **Mandatory Markdown Table Under `### Verification Audit`:**
+            Whenever Step 3.6 executes on a behavioral track, you MUST render
+            the `#### Review Loop Iteration Breakdown` markdown table directly
+            in your visible chat response under `### Verification Audit`:
+
+            ```markdown
+            #### Review Loop Iteration Breakdown
+            | Iteration | Reviewers Executed | Reviewer Skipped | Total Comments | Applied | Unapplied |
+            | :--- | :--- | :--- | :--- | :--- | :--- |
+            | 1 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 2 | 2 | 0 |
+            | 2 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 0 | 0 | 0 |
+            ```
+
+            Below the table under `### Verification Audit`, explicitly state:
+
+            1.  That `Step 3.6` (`MAX_ITERATIONS = 2`) ran **before** `Step 4:
+                Document Synchronization` so `.api_surface_cache.json` and
+                `terms.md` captured the post-repair symbols.
+            2.  The selective author-intent blinding configuration
+                (`include_intent: true` for `spec_and_adr_verifier`;
+                `include_intent: false` for `code_taste_style_verifier` and
+                `correctness_security_verifier`).
+
 ### Step 4: Document Synchronization
 
 **Mandatory Single-Turn Continuous Execution:** When asked to
@@ -381,7 +444,13 @@ synchronize documentation):
             pruned scenario IDs, e.g., `- **Pruned Obsolete Scenario**: Test
             <Domain>.<ID> (<Title>)`, or state any cold-start deferred fixture
             stamps applied)
-        *   `### Verification Audit`
+        *   `### Verification Audit` (When Step 3.6 executed on a behavioral
+            track, you MUST render a `#### Review Loop Iteration Breakdown`
+            markdown table `| Iteration | Reviewers Executed | Reviewer Skipped
+            | Total Comments | Applied | Unapplied |` in chat under this
+            heading; when Step 3.6 was skipped for a visual-only
+            `[Micro-Verification Plan]` track or micro-task, explicitly state
+            the bypass reason under this heading)
 4.  **Tech Stack & Guidelines Sync**:
     -   If tech stack / workflow altered: update `tech-stack.md` /
         `workflow.md`.
@@ -395,7 +464,7 @@ synchronize documentation):
     -   Reconcile into
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` using
         structured headings (`### Test <Domain>.<ID>`) without an `ask_question`
-        confirmation gate. Verify `hg status` (or `git status`) before and after
+        confirmation gate. Verify `git status` before and after
         writing to prevent silent workspace write-back races.
     -   **Surgical Assertion Delta Sync (Visual-Only Tracks)**:
         -   When synchronizing a visual-only track into an existing
@@ -452,7 +521,7 @@ This step occurs **only** after all plan tasks are marked `[x]` and Document
 Synchronization has been handled.
 
 1.  **Stage 2 Living ADR Reconciliation & Code Diff Harvest**:
-    -   Audit the final code diff (`hg diff` / `git diff`), touched directories,
+    -   Audit the final code diff (`git diff`), touched directories,
         and completed `spec.md` against the **3-Pillar Invariant Taxonomy**:
         1.  *Cross-Cutting Invariant:* New conventions, state invariants, or
             safety guards extending beyond this track.
