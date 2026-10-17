@@ -634,6 +634,51 @@ first. Do NOT create empty commits.
     for divergence. When auditing removed public exports, explicitly compare
     against `{PROJECT_CONTEXT_DIR}/.api_surface_cache.json` and mandate semantic
     versioning major bump recommendations.
+-   **Iterative Multi-Expert Review & Closed-Loop Repair (`ADR 0015`)** — In
+    `/arm-review` (`Steps 2.3–2.4`, up to `MAX_ITERATIONS = 3`, or `1` read-only
+    pass with `--report-only`) and `/arm-implement` (`Step 3.6` Pre-Closeout
+    Gate, up to `MAX_ITERATIONS = 2` before `Step 4: Document Synchronization`
+    on behavioral tracks; skipped on $\le 5$-line micro-tasks and visual-only
+    `[Micro-Verification Plan]` tracks), execute an iterative **Review $\to$
+    Deduplicate $\to$ Repair $\to$ Re-Verify** loop:
+    1.  *3-Tier Runtime-Polymorphic Review Panel*:
+        -   **Tier 1 (Host Review-Loop Adapter):** Run the active platform
+            rule's adapter (`start_new_loop=true` on Pass 1, `false` on Pass
+            $>1$; count comments strictly via top-level `len(comments)`) in
+            parallel with `spec_and_adr_verifier` (`include_intent: true`).
+        -   **Tier 2 (Multi-Agent Panel via Read-Only Subagents):**
+            Fan out read-only (`workspace: "inherit"`) `spec_and_adr_verifier`
+            (`include_intent: true`), `code_taste_style_verifier`
+            (`include_intent: false` — blinded to author rationale to prevent
+            confirmation bias), `correctness_security_verifier`
+            (`include_intent: false` — blinded to author intent), and
+            `deterministic_linter_runner`.
+        -   **Tier 3 (Single-Agent Sequential Pass):** Evaluate the three
+            verifier rubrics and deterministic linters sequentially.
+    2.  *2D Ordering (`P0–P3` $\times$ `S0–S3`) & Spec/ADR Precedence*: Sort
+        deduplicated findings by Priority (`P0` Architectural/Contract $\to$
+        `P1` Functional $\to$ `P2` Local $\to$ `P3` Polish) and Severity (`S0`
+        Blocker $\to$ `S1` Critical $\to$ `S2` Improvement $\to$ `S3` Nit).
+        Approved `spec.md` and `adr/*.md` invariants automatically override
+        conflicting blinded `S2`/`S3` style suggestions during deduplication
+        (`status: skipped_spec_adr_precedence`).
+    3.  *Four Repair Safety Circuit Breakers & Anti-Oscillation Ledger*:
+        -   **CB1 (`blocked_by_legacy_fence`):** Never auto-edit files in
+            `<deprecated_path>`; redirect to `<modern_replacement>` or log as
+            unapplied.
+        -   **CB2 (`deferred_spec_conflict`):** Never auto-mutate `spec.md`,
+            `plan.md`, or `adr/*.md` during repair.
+        -   **CB3 (`reverted_test_regression`):** Re-run unit tests after each
+            pass; immediately revert any repair that breaks a test, lock it in
+            the **Anti-Oscillation Ledger**, and never re-attempt it in later
+            passes.
+        -   **CB4 (Surgical Scope & Final-Pass Application Guarantee):** Scope
+            `S2`/`S3` edits strictly to modified diff lines, and always apply
+            valid, test-passing fixes found on `iteration == MAX_ITERATIONS`.
+    4.  *Pre-Manual-Testing Unapplied Blocker Gate (`/arm-review` Step 2.4 $\to$
+        2.5)*: Pause via `ask_question` before Step 2.5 only when $\ge 1$
+        unapplied `S0`/`S1` findings remain; when `0` unapplied `S0`/`S1`
+        blockers remain, proceed directly into Step 2.5.
 -   **Legacy-Boundary Context Fencing, Intent-Aware Override Gates & Subagent
     Propagation** — Whenever repository-wide fences
     (`{PROJECT_CONTEXT_DIR}/tech-stack.md` under `## Legacy & Deprecated

@@ -6,6 +6,46 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.31.0] - 2026-10-17
+
+### Added
+
+-   **Multi-Expert Iterative Review-and-Repair Loop (`ADR 0015`)**: Upgraded
+    `/arm-review` (`Steps 2.3–2.4` and `3.1–3.2`) and `/arm-implement` (`Step
+    3.6` Pre-Closeout Gate) with a closed-loop **Review $\to$ Deduplicate $\to$
+    Repair $\to$ Re-Verify** engine (`MAX_ITERATIONS = 3` in `/arm-review`;
+    `MAX_ITERATIONS = 2` in `/arm-implement` Step 3.6; `MAX_ITERATIONS = 1`
+    read-only under `--report-only`).
+-   **3-Tier Runtime-Polymorphic Review Dispatch & Selective Author-Intent
+    Blinding**:
+    -   *Tier 1 (Host Review-Loop Adapter)*: Invokes the active platform rule's
+        host adapter in parallel with `spec_and_adr_verifier`.
+    -   *Tier 2 (Multi-Agent Panel)*: Fans out read-only subagents
+        (`spec_and_adr_verifier` with `include_intent: true`;
+        `code_taste_style_verifier` and `correctness_security_verifier` with
+        `include_intent: false` blinded to author rationale to prevent
+        confirmation bias; plus `deterministic_linter_runner`).
+    -   *Tier 3 (Single-Agent Sequential Pass)*: Evaluates the three verifier
+        rubrics and deterministic linters sequentially.
+-   **2D `P0–P3` $\times$ `S0–S3` Ordering & Spec/ADR Precedence Rule**: Orders
+    deduplicated findings by Priority (`P0` Architectural/Contract $\to$ `P3`
+    Polish) and Severity (`S0` Blocker $\to$ `S3` Nit), counting `Total
+    Comments` strictly from top-level `len(comments)`. Approved `spec.md` and
+    `adr/*.md` invariants automatically override conflicting blinded `S2`/`S3`
+    style suggestions during deduplication (`status:
+    skipped_spec_adr_precedence`).
+-   **Four Repair Safety Circuit Breakers & Anti-Oscillation Ledger**: Enforces
+    CB1 (`blocked_by_legacy_fence`), CB2 (`deferred_spec_conflict`), CB3
+    (`reverted_test_regression` — reverts repairs that break unit tests and
+    locks them in the Anti-Oscillation Ledger), and CB4 (Surgical Scope &
+    Final-Pass Application Guarantee on `iteration == MAX_ITERATIONS`).
+-   **Multi-Seed SkillOpt Benchmark (`evals/skillopt/run_review_loop_opt.py`)**:
+    Added 6 training tasks (`RL_TRAIN_01`–`RL_TRAIN_06`) and 4 held-out
+    validation tasks (`RL_VAL_01`–`RL_VAL_04`), achieving `99.07%` training mean
+    (`+83.33%` lift, `0` vetoes across `18/18` rollouts) and `100.00%` held-out
+    validation mean (`LB90 = 1.0000`, `+100.00%` lift, `0` vetoes across `12/12`
+    rollouts).
+
 ## [0.30.1] - 2026-10-16
 
 ### Fixed

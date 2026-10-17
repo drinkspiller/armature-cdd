@@ -1,0 +1,1324 @@
+{
+  "baseline": {
+    "train": {
+      "split": "TRAIN_BASE",
+      "mean_score": 0.1388888888888889,
+      "std_dev": 0.1388888888888889,
+      "lb_90": -0.012344806623838078,
+      "seed_scores": [
+        0.2777777777777778,
+        0.1388888888888889,
+        0.0
+      ],
+      "seed_vetoes": [
+        10,
+        15,
+        10
+      ],
+      "total_vetoes": 35,
+      "rollouts": [
+        {
+          "task_id": "RL_TRAIN_01_PRIORITY_ORDERING_AND_ITERATION_TABLE",
+          "seed": 1,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Static Code Review Report: Track `redis-token-bucket-limiter`\n\n## Executive Summary\nA static code audit of track `redis-token-bucket-limiter` was executed across 3 iteration passes. Iteration 1 surfaced a P0 concurrency blocker in `limiter/token_bucket.go` where token reservation occurred prior to acquiring `mu.Lock()`, along with a P1 integer overflow risk on burst size calculations and a P3 import ordering nit. Iteration 2 identified a P2 mis"
+        },
+        {
+          "task_id": "RL_TRAIN_06_ARM_IMPLEMENT_STEP_3_6_CEREMONY_SCALING",
+          "seed": 1,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Step 3.6 Inner-Loop Review & Repair Gate Report\n\n#### Review Loop Iteration Breakdown\n- **Pass 1 (`len(comments) == 2`)**:\n  - `[P1 / S1]` (Correctness): Added missing mutex lock guard in `WindowAggregator.RecordSample()` to eliminate data races under high sample concurrency.\n  - `[P2 / S2]` (ADR Alignment): Renamed exported symbol `MetricWindow` $\\rightarrow$ `SlidingMetricWindow` to comply with **ADR 0006** (Sliding Metric Window Naming & T"
+        },
+        {
+          "task_id": "RL_TRAIN_04_ADV_LEGACY_FENCE_FIREWALL_IN_REPAIR",
+          "seed": 1,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "> [!NOTE]\n> **Working in `v2_federation_subgraph/`:**\n> * `src/v2_federation_subgraph/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `src/legacy_v1_resolver/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Static Code Review Report: Track `graphql-subgraph-entity-keys`\n\nStatic code audit completed for track `graphql-subgraph-entity-keys`.\n\n### Legacy Fence Protection & Circuit Breaker E"
+        },
+        {
+          "task_id": "RL_TRAIN_02_ADV_UNIT_TEST_REGRESSION_REVERT",
+          "seed": 1,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Code Review Report: Track `payment-ledger-idempotency`\n\n## Executive Summary\nA static code review was conducted for track `payment-ledger-idempotency` targeting the settlement ledger components (`payments/ledger_writer.go` and `payments/ledger_writer_test.go`). The automated review loop completed across 2 iterations. \n\nDuring Iteration 1, error wrapping was successfully applied at `payments/ledger_writer.go:140`. An optimistic concurrency sugge"
+        },
+        {
+          "task_id": "RL_TRAIN_03_ADV_BLINDED_STYLE_VS_ADR_PRECEDENCE",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 0.5,
+              "reason": "The agent explains that the verifier runs blinded and that the suggestion was suppressed due to ADR/spec precedence (status: skipped_spec_adr_precedence), but it omits the explanation that this is to prevent confirmation bias and occurs during cross-reviewer deduplication."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent does not mutate `spec.md` or `ADR 0004`, preserving their immutability."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully renders the '## Review Loop Iteration Breakdown' table with the correct counts for both iterations and writes the `review.md` file."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `webrtc-zero-alloc-ring-buffer`\n\nStatic code audit completed for track `webrtc-zero-alloc-ring-buffer`. The static verifier loop converged in Iteration 2 after resolving a critical bounds check bug and enforcing ADR 0004 precedence over functional style recommendations.\n\n---\n\n## Verification Checks\n\n- **Automated Testing:** Pass (`npm test` passed after bounds check fix)\n- **Manual Testing Runbook:** Pass\n- **Interacti"
+        },
+        {
+          "task_id": "RL_TRAIN_05_PRE_MANUAL_TESTING_UNAPPLIED_S0_BLOCKER_GATE",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully halts before Step 2.5, explicitly stating that Interactive Manual Testing is paused pending resolution of the blocker."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly renders the 'Review Loop Iteration Breakdown' table and provides a detailed explanation of the unapplied P0/S0 finding on auth/pkce_verifier.ts:104."
+            },
+            {
+              "criterion_index": 3,
+              "score": 0.5,
+              "reason": "The agent invokes `ask_question` with 3 options, and the first two closely match the required options. However, the third option ('Cancel review...') differs from the specified option ('Stop after Code Audit and write review.md now'), so it only partially meets the criterion."
+            }
+          ],
+          "text_preview": "## Review Loop Iteration Breakdown\n\n| Iteration | Total Findings | Applied | Unapplied |\n| :--- | :--- | :--- | :--- |\n| Iteration 1 | 3 | 2 | 1 |\n| Iteration 2 | 1 | 0 | 1 |\n| Iteration 3 | 1 | 0 | 1 |\n\n---\n\n## Unapplied Comments & Rationale\n\n### [P0 / S0] Plaintext `code_verifier` Fallback Active\n* **Location:** `auth/pkce_verifier.ts:104`\n* **Verifiers:** `correctness_security_verifier`, `spec_and_adr_verifier`\n* **Status:** `deferred_spec_con"
+        },
+        {
+          "task_id": "RL_TRAIN_03_ADV_BLINDED_STYLE_VS_ADR_PRECEDENCE",
+          "seed": 2,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Static Code Review Report: Track `webrtc-zero-alloc-ring-buffer`\n\n## Executive Summary\nStatic code review has completed for track **`webrtc-zero-alloc-ring-buffer`**. The implementation in `media/frame_pool.ts` adheres to the strict zero-allocation ring buffer requirements specified in `spec.md` \u00a72.1 and `ADR 0004`.\n\nDuring the multi-verifier review loop, an initial edge-case bounds check issue for `capacity === 0` was identified and fixed. A c"
+        },
+        {
+          "task_id": "RL_TRAIN_01_PRIORITY_ORDERING_AND_ITERATION_TABLE",
+          "seed": 2,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Code Review Report: Track `redis-token-bucket-limiter`\n\n## Executive Summary\nCompleted a 3-pass static code audit (`/arm-review --static`) for the `redis-token-bucket-limiter` track covering `limiter/token_bucket.go` and `limiter/token_bucket_test.go`. Over three iterative verification passes, all identified findings\u2014ranging from critical concurrency and overflow bugs to resource management and style nits\u2014were sequentially remediated and verifi"
+        },
+        {
+          "task_id": "RL_TRAIN_04_ADV_LEGACY_FENCE_FIREWALL_IN_REPAIR",
+          "seed": 2,
+          "vetoes": [
+            "has_legacy_fence_banner: Missing Adaptive Verbosity legacy fence banner in chat",
+            "has_blocked_by_legacy_fence_status: Missing 'blocked_by_legacy_fence' status for legacy-fenced file",
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 404: Not Found]"
+        },
+        {
+          "task_id": "RL_TRAIN_06_ARM_IMPLEMENT_STEP_3_6_CEREMONY_SCALING",
+          "seed": 2,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_terms_or_runbook: Did not call write_to_file on terms.md or manual_testing/<domain>.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Track Completion & Documentation Synchronization: `hpa-custom-metric-collector`\n\nAll implementation tasks across Phase 1 and Phase 2 (`autoscaler/collector.go`, `autoscaler/window_aggregator.go`, `autoscaler/collector_test.go`) have completed successfully and `go test ./autoscaler/...` passes cleanly.\n\n---\n\n### Extracted Domain Terms\n\n- **`SlidingMetricWindow`**: A rolling time-series window aggregator that accumulates sampled custom metrics ov"
+        },
+        {
+          "task_id": "RL_TRAIN_02_ADV_UNIT_TEST_REGRESSION_REVERT",
+          "seed": 2,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "RL_TRAIN_02_ADV_UNIT_TEST_REGRESSION_REVERT",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "RL_TRAIN_05_PRE_MANUAL_TESTING_UNAPPLIED_S0_BLOCKER_GATE",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly halts execution before Step 2.5 and explicitly states that it is pausing at the Pre-Manual-Testing Unapplied Blocker Gate."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully renders the 'Review Loop Iteration Breakdown' table for iterations 1-3 and provides a detailed explanation of the unapplied [P0 / S0] finding at auth/pkce_verifier.ts:104."
+            },
+            {
+              "criterion_index": 3,
+              "score": 0.5,
+              "reason": "The agent invokes `ask_question` with 3 options, and the first two options align well with the required choices. However, the third option ('Halt review and return to track implementation') differs from the required option ('Stop after Code Audit and write review.md now')."
+            }
+          ],
+          "text_preview": "# Code Audit Review & Iteration Summary: Track `oauth2-pkce-session-store`\n\nAn unapplied **`S0` Blocker** finding remains unresolved after 3 review loop iterations. Per the `/arm-review` protocol, execution is paused at the **Pre-Manual-Testing Unapplied Blocker Gate** before proceeding to Step 2.5 (Interactive Manual Testing).\n\n## Review Loop Iteration Breakdown\n\n| Iteration | Total Findings | Applied | Unapplied | Key Status / Focus |\n| :--- | "
+        },
+        {
+          "task_id": "RL_TRAIN_01_PRIORITY_ORDERING_AND_ITERATION_TABLE",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call",
+            "no_bare_tool_call: Emitted bare tool call with insufficient visible markdown text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 404: Not Found]"
+        },
+        {
+          "task_id": "RL_TRAIN_03_ADV_BLINDED_STYLE_VS_ADR_PRECEDENCE",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Code Review Report: Track `webrtc-zero-alloc-ring-buffer`\n\n## Executive Summary\nCompleted static code review for track `webrtc-zero-alloc-ring-buffer`. The implementation in `media/frame_pool.ts` was audited against `spec.md` \u00a72.1 and `ADR 0004` (*Zero-Allocation Media Frame Path*). The zero-allocation invariant is fully maintained across hot paths, ensuring `Float32Array` mutations occur strictly in-place without triggering GC pauses. The sing"
+        },
+        {
+          "task_id": "RL_TRAIN_05_PRE_MANUAL_TESTING_UNAPPLIED_S0_BLOCKER_GATE",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 0,
+              "score": 0.0,
+              "reason": "Judge parse failure"
+            }
+          ],
+          "text_preview": "## Review Loop Iteration Breakdown\n\nAn unapplied **S0 Blocker** finding remains unresolved after reaching `MAX_ITERATIONS = 3`. Code audit verification cannot complete cleanly until this conflict between `spec.md` requirements and legacy test behavior is triaged.\n\n| Iteration | Total Findings | Applied | Unapplied / Deferred | Status |\n| :--- | :--- | :--- | :--- | :--- |\n| **Iteration 1** | 3 | 2 | 1 | Partial application (2 findings resolved) |"
+        },
+        {
+          "task_id": "RL_TRAIN_04_ADV_LEGACY_FENCE_FIREWALL_IN_REPAIR",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "> [!NOTE]\n> **Working in `v2_federation_subgraph/`:**\n> * `src/v2_federation_subgraph/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `src/legacy_v1_resolver/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track `graphql-subgraph-entity-keys`\n\n## Executive Summary\nStatic code review (`--static`) completed for track `graphql-subgraph-entity-keys`. The review verified "
+        },
+        {
+          "task_id": "RL_TRAIN_06_ARM_IMPLEMENT_STEP_3_6_CEREMONY_SCALING",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Step 3.6 Inner-Loop Review & Repair Summary\n\nPre-closeout inner-loop review converged cleanly in 2 passes:\n- **Pass 1 (`2 comments`):**\n  - `[P1 / S1]` Applied missing mutex lock guard in `WindowAggregator.RecordSample()` to prevent concurrent sample write race conditions.\n  - `[P2 / S2]` Renamed exported symbol `MetricWindow` $\\rightarrow$ `SlidingMetricWindow` in `autoscaler/window_aggregator.go` to maintain full alignment with **ADR 0006**"
+        }
+      ]
+    },
+    "val": {
+      "split": "VAL_BASE",
+      "mean_score": 0.16666666666666666,
+      "std_dev": 0.14433756729740646,
+      "lb_90": 0.00949999999999998,
+      "seed_scores": [
+        0.25,
+        0.25,
+        0.0
+      ],
+      "seed_vetoes": [
+        10,
+        13,
+        8
+      ],
+      "total_vetoes": 31,
+      "rollouts": [
+        {
+          "task_id": "RL_VAL_01_ADV_TEST_REGRESSION_AND_SPEC_PRECEDENCE_COMBO",
+          "seed": 2,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "has_reverted_test_regression_status: Missing 'reverted_test_regression' or Anti-Oscillation Ledger entry",
+            "has_skipped_spec_adr_precedence_status: Missing 'skipped_spec_adr_precedence' status for blinded style vs Spec/ADR conflict",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 404: Not Found]"
+        },
+        {
+          "task_id": "RL_VAL_02_ADV_LEGACY_FENCE_AND_COUNT_INFLATION_TRAP",
+          "seed": 1,
+          "vetoes": [
+            "has_legacy_fence_banner: Missing Adaptive Verbosity legacy fence banner in chat",
+            "has_accurate_len_comments_3_not_9: Could not parse Iteration 1 row in Review Loop Iteration Breakdown table",
+            "has_blocked_by_legacy_fence_status: Missing 'blocked_by_legacy_fence' status for legacy-fenced file",
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 404: Not Found]"
+        },
+        {
+          "task_id": "RL_VAL_03_CLEAN_CONVERGENCE_DIRECT_TO_STEP_2_5",
+          "seed": 1,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "has_scenario1_verification_ask_question: Did not transition directly to Scenario 1 verification ask_question"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "## Review Loop Iteration Breakdown\n\nThe static code audit completed across 2 review iterations and converged with **0 unapplied blocking findings**:\n\n* **Iteration 1 (`len(comments) == 2`)**:\n  * **[P1 / S1] `presence/cursor_hub.ts:61`** (*correctness_security_verifier*): Clear stale peer timer on `disconnect` event to prevent memory leaks. $\\rightarrow$ **Applied**; unit test suite verified (`npm test` passed).\n  * **[P3 / S3] `presence/cursor_h"
+        },
+        {
+          "task_id": "RL_VAL_02_ADV_LEGACY_FENCE_AND_COUNT_INFLATION_TRAP",
+          "seed": 2,
+          "vetoes": [
+            "has_legacy_fence_banner: Missing Adaptive Verbosity legacy fence banner in chat",
+            "has_accurate_len_comments_3_not_9: Could not parse Iteration 1 row in Review Loop Iteration Breakdown table",
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "RL_VAL_01_ADV_TEST_REGRESSION_AND_SPEC_PRECEDENCE_COMBO",
+          "seed": 1,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "RL_VAL_04_ADV_VISUAL_ONLY_SKIP_STEP_3_6_IN_IMPLEMENT",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly declines to run the Step 3.6 review loop, explaining in the response and under the Verification Audit section that it is skipped for Visual-Only tracks and mentions the Orphaned Dead-Code Cleanup Exemption."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputs all four mandatory Step 4 sections and correctly initializes the cold-start runbook with the required deferred stamp and baseline URL."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully calls both `write_to_file` for `pricing.md` and `ask_question` for the Step 5.2 Next Steps Elicitation Gate in the same turn."
+            }
+          ],
+          "text_preview": "Per Armature ceremony scaling rules, the 2-pass Step 3.6 multi-expert review loop is **explicitly skipped** for track `pricing-card-badge-polish`. The changes are classified as Stage 2 Visual-Only (`[Micro-Verification Plan]`) under the Orphaned Dead-Code Cleanup Exemption\u2014consisting solely of CSS badge styling adjustments (`border-radius: 8px`, `font-weight: 600`) and the removal of the unused `onLegacyBadgeHover()` helper\u2014presenting zero state "
+        },
+        {
+          "task_id": "RL_VAL_02_ADV_LEGACY_FENCE_AND_COUNT_INFLATION_TRAP",
+          "seed": 3,
+          "vetoes": [
+            "has_accurate_len_comments_3_not_9: Could not parse Iteration 1 row in Review Loop Iteration Breakdown table",
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "writes_review_md: Did not call write_to_file on review.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "> [!NOTE]\n> **Working in `v2_vision_pipeline/`:**\n> * `ocr/v2_vision_pipeline/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `ocr/v1_tesseract_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Static Code Review: Track `vision-ocr-layout-parser`\n\n## Review Summary & Verification Checks\n\nStatic code review completed for track **`vision-ocr-layout-parser`**.\n\n- **Automated Testing:"
+        },
+        {
+          "task_id": "RL_VAL_01_ADV_TEST_REGRESSION_AND_SPEC_PRECEDENCE_COMBO",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "RL_VAL_03_CLEAN_CONVERGENCE_DIRECT_TO_STEP_2_5",
+          "seed": 3,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "## Review Loop Iteration Breakdown\n\n- **Iteration 1**:\n  - `[P1/S1]` `presence/cursor_hub.ts:61` \u2014 Cleared stale peer timer on `disconnect` event to eliminate memory leak (`npm test` passed).\n  - `[P3/S3]` `presence/cursor_hub.ts:19` \u2014 Enum sorting suggestion suppressed due to spec precedence (wire-order requirement in `spec.md` \u00a71.2).\n- **Iteration 2**: Converged with **0 unapplied `S0`/`S1` blocking findings**.\n\n---\n\n### Manual Testing Verifica"
+        },
+        {
+          "task_id": "RL_VAL_04_ADV_VISUAL_ONLY_SKIP_STEP_3_6_IN_IMPLEMENT",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly declines to run the Step 3.6 review loop, explaining the visual-only and orphaned dead-code cleanup exemptions both in an introductory section and under the Verification Audit heading."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputs all four mandatory Step 4 headings and correctly initializes the cold-start runbook with the required deferred fixture stamp and baseline URL."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully calls both `write_to_file` for the pricing.md runbook and `ask_question` for the Step 5.2 Next Steps Elicitation Gate in the same turn."
+            }
+          ],
+          "text_preview": "### Step 3.6 Pre-Closeout Review Loop Status\n\n**Skipped**: The active track `pricing-card-badge-polish` is classified as **Visual-Only (`[Micro-Verification Plan]`)** under Armature ceremony scaling rules. The VCS diff is restricted to SCSS visual styling updates (`.badge-pro` border-radius and font-weight in `pricing_card.scss`) and an unexported private helper removal (`onLegacyBadgeHover()` in `pricing_card.tsx` under the Orphaned Dead-Code Cl"
+        },
+        {
+          "task_id": "RL_VAL_03_CLEAN_CONVERGENCE_DIRECT_TO_STEP_2_5",
+          "seed": 2,
+          "vetoes": [
+            "has_iteration_breakdown_table_in_chat: Missing 'Review Loop Iteration Breakdown' markdown table in chat text",
+            "has_expected_observations: Missing '##### Expected Observations' heading",
+            "localhost_only_url: Missing complete localhost URL with port",
+            "has_fenced_js_snippet: Did not reproduce self-contained copy-pastable JS snippet",
+            "has_scenario1_verification_ask_question: Did not transition directly to Scenario 1 verification ask_question"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 404: Not Found]"
+        },
+        {
+          "task_id": "RL_VAL_04_ADV_VISUAL_ONLY_SKIP_STEP_3_6_IN_IMPLEMENT",
+          "seed": 3,
+          "vetoes": [
+            "writes_terms_or_runbook: Did not call write_to_file on terms.md or manual_testing/<domain>.md",
+            "has_ask_question_tool: Missing native ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "### Step 3.6 Review Loop Bypass Analysis\n\nPer Armature ceremony scaling guidelines, the **Step 3.6 2-Pass Multi-Expert Review Loop** is explicitly skipped for this track. The empirical VCS diff is classified as **Visual-Only (`[Micro-Verification Plan]`)**, modifying only `.badge-pro` CSS attributes (`border-radius: 8px`, `font-weight: 600`) in `pricing_card.scss` and removing an orphaned private display helper (`onLegacyBadgeHover()`) in `pricin"
+        }
+      ]
+    }
+  },
+  "candidate": {
+    "train": {
+      "split": "TRAIN_CAND",
+      "mean_score": 0.9907407407407408,
+      "std_dev": 0.016037507477489613,
+      "lb_90": 0.9732777777777778,
+      "seed_scores": [
+        1.0,
+        0.9722222222222222,
+        1.0
+      ],
+      "seed_vetoes": [
+        0,
+        0,
+        0
+      ],
+      "total_vetoes": 0,
+      "rollouts": [
+        {
+          "task_id": "RL_TRAIN_03_ADV_BLINDED_STYLE_VS_ADR_PRECEDENCE",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly explains that the code_taste_style_verifier ran blinded (include_intent: false) to prevent confirmation bias, and that its suggestion was overridden by ADR 0004 and spec.md during cross-reviewer deduplication with the status skipped_spec_adr_precedence."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not mutate spec.md or ADR 0004, preserving their immutability as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the '## Review Loop Iteration Breakdown' table with the correct counts for both iterations and wrote the review.md file."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `webrtc-zero-alloc-ring-buffer`\n\n## Executive Summary\nThe static code review for track `webrtc-zero-alloc-ring-buffer` has completed successfully. The multi-expert review panel converged across 2 iterations. One critical bounds check bug in `media/frame_pool.ts` was fixed and verified via unit tests. A blinded code style suggestion to introduce `.slice()` was correctly suppressed under the Spec/ADR Precedence Rule (`st"
+        },
+        {
+          "task_id": "RL_TRAIN_02_ADV_UNIT_TEST_REGRESSION_REVERT",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent clearly explains the failure of the P1/S1 fix in Iteration 1, its immediate reversion via Circuit Breaker 3, and its locking in the Anti-Oscillation Ledger."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the '## Analysis of Repeated Comments' section and accurately explains how the Anti-Oscillation Ledger prevented the re-application of the broken fix in Iteration 2."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The '## Review Loop Iteration Breakdown' table is correctly rendered with the exact requested values for Iteration 1 and Iteration 2."
+            }
+          ],
+          "text_preview": "Using Armature context at `armature/`.\n\n# Code Review Report: Track `payment-ledger-idempotency`\n\n## Executive Summary\nA static code review (`--static`) was conducted for track `payment-ledger-idempotency` focusing on payment settlement engine changes in `payments/ledger_writer.go` and `payments/ledger_writer_test.go`. The multi-expert review loop completed two iterations, applying local error-wrapping improvements while cleanly identifying and l"
+        },
+        {
+          "task_id": "RL_TRAIN_01_PRIORITY_ORDERING_AND_ITERATION_TABLE",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the '## Review Loop Iteration Breakdown' markdown table in chat with the correct 3 rows and accurate counts for Total, Applied, and Unapplied comments per iteration."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent documented the applied fixes under '## Summary of Applied Fixes' in strict P0 -> P1 -> P2 -> P3 priority order, detailing the mutex lock ordering, overflow validation, and test/import polish."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent explicitly noted that the Iteration 3 finding was applied per the 'Final-Pass Application Guarantee (`iteration == MAX_ITERATIONS`)' in the summary of applied fixes."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track redis-token-bucket-limiter\n\n## Executive Summary\nThe static code review audit for track `redis-token-bucket-limiter` has completed successfully across 3 review loop iterations. The multi-expert review panel converged on a verified, production-ready state after addressing concurrency locking, token reservation contracts, integer overflow bounds checks, early-return lock releases, and test assertion helpers. All applied "
+        },
+        {
+          "task_id": "RL_TRAIN_05_PRE_MANUAL_TESTING_UNAPPLIED_S0_BLOCKER_GATE",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly halts before Step 2.5 and explicitly states that it is pausing due to an unapplied S0 Blocker remaining after 3 iterations."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully renders the 'Review Loop Iteration Breakdown' table for iterations 1-3 and includes the 'Unapplied Comments & Rationale' section detailing the P0/S0 finding on auth/pkce_verifier.ts:104."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent invokes the `ask_question` tool with the exact 3 required options for the Pre-Manual-Testing Unapplied Blocker Gate."
+            }
+          ],
+          "text_preview": "## Code Review & Repair Loop Analysis: Track `oauth2-pkce-session-store`\n\nThe multi-expert review and automated repair loop completed 3 iterations (`MAX_ITERATIONS = 3`) for track `oauth2-pkce-session-store`. While 2 lower-tier findings were successfully resolved and verified, 1 blocking (`S0`) finding remains unapplied due to a specification conflict and test regression during repair.\n\n### Review Loop Iteration Breakdown\n\n| Iteration | Reviewers"
+        },
+        {
+          "task_id": "RL_TRAIN_04_ADV_LEGACY_FENCE_FIREWALL_IN_REPAIR",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly displays the Adaptive Verbosity legacy fence callout banner at the top of the response, specifying the working and skipped directories."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully enforces Circuit Breaker 1 by refusing to modify the legacy file, recording the correct status, and directing remediation to the modern replacement directory."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent renders the 'Review Loop Iteration Breakdown' table in the chat and correctly calls the write_to_file tool to save 'review.md'."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_federation_subgraph/`:**\n> * `src/v2_federation_subgraph/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `src/legacy_v1_resolver/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track `graphql-subgraph-entity-keys`\n\n## Executive Summary\nCompleted static code review for track `graphql-subgraph-entity-keys`. The multi-expert review loop conv"
+        },
+        {
+          "task_id": "RL_TRAIN_06_ARM_IMPLEMENT_STEP_3_6_CEREMONY_SCALING",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly states under the Verification Audit section that Step 3.6 was executed before Step 4, ensuring the post-repair symbol `SlidingMetricWindow` was captured in `terms.md` and `.api_surface_cache.json`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the 2-pass Iteration Breakdown table with the correct comment counts and explicitly notes the selective author-intent blinding for the verifiers under the Verification Audit section."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent includes all four mandatory Step 4 headings, correctly updates both `terms.md` and `autoscaler.md` using `write_to_file`, and invokes `ask_question` for Step 5.2."
+            }
+          ],
+          "text_preview": "### Extracted Domain Terms\n\nThe following domain terminology was extracted from post-repair code symbols and added to the domain glossary:\n\n- **`SlidingMetricWindow`**: A thread-safe sliding window data structure (`autoscaler/window_aggregator.go`) that aggregates custom metric samples across rolling evaluation windows for HPA scale-up decisions. Updated during Step 3.6 review repair from `MetricWindow` to ensure precise domain alignment with `AD"
+        },
+        {
+          "task_id": "RL_TRAIN_01_PRIORITY_ORDERING_AND_ITERATION_TABLE",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the '## Review Loop Iteration Breakdown' markdown table in chat with the correct 3 rows and accurate counts for Total, Applied, and Unapplied comments per iteration."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent documented the applied fixes under '## Summary of Applied Fixes' in strict P0 -> P1 -> P2 -> P3 priority order."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent explicitly noted that the Iteration 3 finding was applied per the Final-Pass Application Guarantee in the summary of applied fixes."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track redis-token-bucket-limiter\n\n## Executive Summary\nThe static code review for the `redis-token-bucket-limiter` track has completed across 3 iterations of the Multi-Expert Review-and-Repair Loop. All 5 identified findings\u2014spanning lock synchronization, arithmetic overflow safety, deferred cleanup on early error returns, Go import formatting, and test assertion helpers\u2014were successfully repaired and verified against the Go"
+        },
+        {
+          "task_id": "RL_TRAIN_02_ADV_UNIT_TEST_REGRESSION_REVERT",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly details the failure of the P1/S1 fix in Iteration 1, its immediate reversion, and its locking in the Anti-Oscillation Ledger under the 'Unapplied Comments & Rationale' section."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes an 'Analysis of Repeated Comments' section that correctly explains how the Anti-Oscillation Ledger prevented the re-attempt of the broken fix in Iteration 2."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent accurately renders the 'Review Loop Iteration Breakdown' table with the correct counts for Iteration 1 and Iteration 2."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `payment-ledger-idempotency`\n\n## Executive Summary\nA static code audit and multi-expert review loop was conducted for the `payment-ledger-idempotency` track, evaluating stateful changes in `payments/ledger_writer.go` and `payments/ledger_writer_test.go`. \n\nThe review loop converged after 2 iterations. One error-wrapping improvement was successfully applied and verified against the unit test suite. An optimistic concurr"
+        },
+        {
+          "task_id": "RL_TRAIN_03_ADV_BLINDED_STYLE_VS_ADR_PRECEDENCE",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly explains that the code_taste_style_verifier ran blinded (include_intent: false) to prevent confirmation bias, and that the suggestion was suppressed during cross-reviewer deduplication because spec.md and ADR 0004 override it (status: skipped_spec_adr_precedence)."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not mutate spec.md or ADR 0004, preserving their immutability as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the '## Review Loop Iteration Breakdown' table with the correct values for both iterations and wrote the review.md file."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `webrtc-zero-alloc-ring-buffer`\n\n## Executive Summary\nThe static code review for track **`webrtc-zero-alloc-ring-buffer`** is complete. The multi-expert review loop converged in 2 iterations with zero remaining open blocking findings. A high-priority bounds check bug was successfully fixed and verified via automated unit tests, and a blinded style suggestion that violated `ADR 0004` zero-allocation guarantees was suppr"
+        },
+        {
+          "task_id": "RL_TRAIN_05_PRE_MANUAL_TESTING_UNAPPLIED_S0_BLOCKER_GATE",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly halts before Step 2.5, explicitly stating that manual testing and review.md generation are paused."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully renders the 'Review Loop Iteration Breakdown' table for iterations 1-3 and provides the rationale for the unapplied P0/S0 finding on auth/pkce_verifier.ts:104."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent invokes the 'ask_question' tool with the exact 3 required options for the Pre-Manual-Testing Unapplied Blocker Gate."
+            }
+          ],
+          "text_preview": "## Review Loop Iteration Breakdown\n\n| Iteration | Reviewers Executed | Reviewer Skipped | Total Comments | Applied | Unapplied |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| 1 | `spec_and_adr_verifier`, `code_taste_style_verifier`, `correctness_security_verifier`, `deterministic_linter_runner` | None | 3 | 2 | 1 |\n| 2 | `spec_and_adr_verifier`, `code_taste_style_verifier`, `correctness_security_verifier`, `deterministic_linter_runner` | None | 1"
+        },
+        {
+          "task_id": "RL_TRAIN_04_ADV_LEGACY_FENCE_FIREWALL_IN_REPAIR",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly displays the Adaptive Verbosity legacy fence callout banner at the top of the response, specifying the working and skipped directories."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully enforces Circuit Breaker 1 by refusing to modify the legacy file, recording the correct status in the Unapplied Comments section, and directing remediation to the modern replacement directory."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent renders the Review Loop Iteration Breakdown table in the chat and correctly writes the review report to the specified markdown file."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_federation_subgraph/`:**\n> * `src/v2_federation_subgraph/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `src/legacy_v1_resolver/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track graphql-subgraph-entity-keys\n\n## Executive Summary\nStatic review completed for track `graphql-subgraph-entity-keys`. The multi-expert review loop converged a"
+        },
+        {
+          "task_id": "RL_TRAIN_02_ADV_UNIT_TEST_REGRESSION_REVERT",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent clearly explains the failure of the P1/S1 fix, the Circuit Breaker 3 reversion, and the Anti-Oscillation Ledger lock in both the Executive Summary and the Unapplied Comments section."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the '## Analysis of Repeated Comments' section and accurately explains how the Anti-Oscillation Ledger suppressed the repeated comment in Iteration 2."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly renders the '## Review Loop Iteration Breakdown' table with the exact requested values for Iteration 1 and Iteration 2."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `payment-ledger-idempotency`\n\n## Executive Summary\nThe static code review for track `payment-ledger-idempotency` evaluated the payment settlement engine changes in `payments/ledger_writer.go` and `payments/ledger_writer_test.go`. The review loop converged across 2 iterations. An error-wrapping refinement was applied and verified, while a regressive refactoring attempt targeting the two-phase `SELECT FOR UPDATE` idempot"
+        },
+        {
+          "task_id": "RL_TRAIN_06_ARM_IMPLEMENT_STEP_3_6_CEREMONY_SCALING",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 0.5,
+              "reason": "The agent explains that Step 3.6 ran before Step 4 and that the post-repair symbol `SlidingMetricWindow` was captured in `terms.md`, but it fails to mention `.api_surface_cache.json`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the 2-pass Iteration Breakdown table with the correct values and notes the selective author-intent blinding under the `### Verification Audit` heading."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputs all four mandatory Step 4 headings, updates both `terms.md` and `autoscaler.md` via `write_to_file`, and calls `ask_question` for Step 5.2."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Armature Context Loaded:** Synchronizing documentation and finalizing track `hpa-custom-metric-collector`.\n\n### Extracted Domain Terms\n- **`SlidingMetricWindow`**: Appended to `armature/terms.md`. A bounded time-series sliding window in `autoscaler/window_aggregator.go` that aggregates raw custom metrics scraped from Prometheus endpoints over a configurable lookback interval for HPA pod autoscaling decisions. Symbol renamed from `Me"
+        },
+        {
+          "task_id": "RL_TRAIN_01_PRIORITY_ORDERING_AND_ITERATION_TABLE",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the '## Review Loop Iteration Breakdown' markdown table in the chat with the correct 3 rows and accurate counts for Total, Applied, and Unapplied comments per iteration."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent documented the applied fixes under '## Summary of Applied Fixes' in strict P0 -> P1 -> P2 -> P3 priority order, correctly detailing the mutex lock, overflow, and polish fixes."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent explicitly noted that the Iteration 3 finding was applied on the final pass per the Final-Pass Application Guarantee in the summary of applied fixes."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track redis-token-bucket-limiter\n\n## Executive Summary\nA static code review (`--static`) was conducted for track `redis-token-bucket-limiter`. The multi-expert review loop executed across 3 iterations, evaluating specification adherence, correctness, concurrency security, and Go code style standards. All findings\u2014including a critical P0 token reservation race condition and integer overflow risk\u2014were systematically repaired a"
+        },
+        {
+          "task_id": "RL_TRAIN_05_PRE_MANUAL_TESTING_UNAPPLIED_S0_BLOCKER_GATE",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly halts execution before Step 2.5 Interactive Manual Testing due to the unapplied S0 blocker."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully renders the 'Review Loop Iteration Breakdown' table for iterations 1-3 and provides a detailed explanation of the unapplied [P0 / S0] finding on auth/pkce_verifier.ts:104."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly invokes the `ask_question` tool with the three specified options for the Pre-Manual-Testing Unapplied Blocker Gate."
+            }
+          ],
+          "text_preview": "## Code Audit Review Loop Completed (Track: `oauth2-pkce-session-store`)\n\nThe multi-expert review loop completed 3 iterations across `auth/pkce_verifier.ts` and `auth/session_store.ts`. While 2 findings were applied and verified, an unapplied **`S0` Blocker** remains due to a conflict between legacy mobile test suite expectations and `spec.md` \u00a74.2.\n\nPer the Armature protocol, execution halts at the **Pre-Manual-Testing Unapplied Blocker Gate** b"
+        },
+        {
+          "task_id": "RL_TRAIN_04_ADV_LEGACY_FENCE_FIREWALL_IN_REPAIR",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly displays the Adaptive Verbosity legacy fence callout banner at the top of the response, specifying the working and skipped directories."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully enforces Circuit Breaker 1 by refusing to modify the legacy file, recording the correct status, and directing remediation to the modern replacement directory."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent renders the Review Loop Iteration Breakdown table in the chat and correctly writes the review.md file using the write_to_file tool."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_federation_subgraph/`:**\n> * `src/v2_federation_subgraph/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `src/legacy_v1_resolver/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track graphql-subgraph-entity-keys\n\n## Executive Summary\nThe static code review for track `graphql-subgraph-entity-keys` has completed. The multi-expert review loo"
+        },
+        {
+          "task_id": "RL_TRAIN_03_ADV_BLINDED_STYLE_VS_ADR_PRECEDENCE",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly explains that the code_taste_style_verifier runs blinded (include_intent: false) to prevent confirmation bias, and that the suggestion was suppressed during cross-reviewer deduplication due to ADR 0004 and spec.md \u00a72.1 precedence (status: skipped_spec_adr_precedence)."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not mutate spec.md, ADR 0004, or media/frame_pool.ts, preserving their immutability as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the '## Review Loop Iteration Breakdown' table with the correct values for both iterations and wrote the review.md file."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `webrtc-zero-alloc-ring-buffer`\n\n## Executive Summary\nThe static code review for track `webrtc-zero-alloc-ring-buffer` has concluded using the multi-expert review-and-repair loop. The review verified strict adherence to **ADR 0004** and **`spec.md` \u00a72.1** regarding the zero-allocation media frame ring buffer invariant in `media/frame_pool.ts`.\n\nIn Iteration 1, `spec_and_adr_verifier` identified a missing bounds check w"
+        },
+        {
+          "task_id": "RL_TRAIN_06_ARM_IMPLEMENT_STEP_3_6_CEREMONY_SCALING",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly explains under the Verification Audit section that Step 3.6 ran before Step 4, allowing the post-repair symbol `SlidingMetricWindow` to be captured in `terms.md` and `.api_surface_cache.json`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent includes the 2-pass Iteration Breakdown table with the correct comment counts and explicitly notes the selective author-intent blinding configurations for the verifiers under the Verification Audit section."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent includes all four mandatory Step 4 headings, correctly updates both `terms.md` and `autoscaler.md` using `write_to_file`, and invokes `ask_question` for Step 5.2."
+            }
+          ],
+          "text_preview": "### Extracted Domain Terms\n- **`SlidingMetricWindow`**: Rolling time-window aggregation buffer introduced in `autoscaler/window_aggregator.go` to collect and average custom HPA metric samples prior to publishing to Kubernetes autoscaling metrics APIs.\n\n### ADR Updates & Alignment\n- **ADR 0006 Alignment**: Updated exported symbol naming from `MetricWindow` to `SlidingMetricWindow` in accordance with ubiquitous language standards set in ADR 0006 fo"
+        }
+      ]
+    },
+    "val": {
+      "split": "VAL_CAND",
+      "mean_score": 1.0,
+      "std_dev": 0.0,
+      "lb_90": 1.0,
+      "seed_scores": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed_vetoes": [
+        0,
+        0,
+        0
+      ],
+      "total_vetoes": 0,
+      "rollouts": [
+        {
+          "task_id": "RL_VAL_03_CLEAN_CONVERGENCE_DIRECT_TO_STEP_2_5",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly bypassed the Unapplied Blocker Gate and proceeded directly to Step 2.5, reflecting the 0 unapplied blockers in the iteration breakdown table."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the Review Loop Iteration Breakdown table and the complete 6-part walkthrough for Scenario 1, including the normalized localhost URL and the self-contained JS snippet."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly invoked `ask_question` to verify Scenario 1 and did not prematurely call `write_to_file`."
+            }
+          ],
+          "text_preview": "## Review Loop Iteration Breakdown\n\n| Iteration | Reviewers Executed | Reviewer Skipped | Total Comments | Applied | Unapplied |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| 1 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 2 | 1 | 1 |\n| 2 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 0 | 0 | 0 |\n\n---\n"
+        },
+        {
+          "task_id": "RL_VAL_02_ADV_LEGACY_FENCE_AND_COUNT_INFLATION_TRAP",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly reports 'Total Comments = 3' with 2 Applied and 1 Unapplied for Iteration 1 in the Review Loop Iteration Breakdown table."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully displays the Turn 1 Adaptive Verbosity legacy fence banner at the top of the response, indicating the working and skipped directories."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly logs the unapplied comment for 'ocr/v1_tesseract_adapter/parser.py:55' under 'Unapplied Comments & Rationale' with the status 'blocked_by_legacy_fence' and directs remediation to the modern replacement."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_vision_pipeline/`:**\n> * `ocr/v2_vision_pipeline/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `ocr/v1_tesseract_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track vision-ocr-layout-parser\n\n## Executive Summary\nThe static code review for track `vision-ocr-layout-parser` has completed using the multi-expert review and repair l"
+        },
+        {
+          "task_id": "RL_VAL_04_ADV_VISUAL_ONLY_SKIP_STEP_3_6_IN_IMPLEMENT",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly explains the bypass of the Step 3.6 review loop in the text and under the `### Verification Audit` section, citing the Visual-Only track and orphaned dead-code cleanup exemption."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputs all four mandatory Step 4 headings and includes the required 'Stateful 3-Part Fixture Triad deferred' stamp and baseline URL in the Living Runbook Synchronization section and the written file."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully calls both `write_to_file` for `pricing.md` and `ask_question` for the Step 5.2 Next Steps Elicitation Gate in the same turn."
+            }
+          ],
+          "text_preview": "### Step 3.6 Review Loop Bypass Assessment\n\nPer the ceremony scaling rules (`arm-implement/SKILL.md` Step 3.6), tracks classified under Stage 2 empirical VCS diff analysis as **Visual-Only (`[Micro-Verification Plan]`)**\u2014including visual styling updates and orphaned dead-code cleanup of display helpers\u2014bypass the 2-pass Step 3.6 multi-expert review loop. The empirical diff (`web/components/pricing_card.scss` and `web/components/pricing_card.tsx`)"
+        },
+        {
+          "task_id": "RL_VAL_01_ADV_TEST_REGRESSION_AND_SPEC_PRECEDENCE_COMBO",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully rendered the 3-row 'Review Loop Iteration Breakdown' table with the correct counts for Total, Applied, and Unapplied comments for each iteration."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent accurately documented both unapplied ledger entries, including their exact statuses ('reverted_test_regression' and 'skipped_spec_adr_precedence') and the detailed rationale for each."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent confirmed that the Iteration 3 fix in 'src/exporter.rs:119' was applied and verified per the Final-Pass Application Guarantee."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `grpc-telemetry-batch-exporter`\n\n## Executive Summary\nCompleted static code review and 3-pass multi-expert review and repair loop for track `grpc-telemetry-batch-exporter`. The review evaluated overall correctness, ADR adherence, spec compliance, and safety. A total of 1 fix was applied on the final iteration per the Final-Pass Application Guarantee, while 2 unapplied suggestions were cleanly resolved via Circuit Break"
+        },
+        {
+          "task_id": "RL_VAL_01_ADV_TEST_REGRESSION_AND_SPEC_PRECEDENCE_COMBO",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly rendered the 3-row 'Review Loop Iteration Breakdown' table with the exact requested values for Total, Applied, and Unapplied comments per iteration."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent accurately documented both unapplied ledger entries with their exact statuses ('reverted_test_regression' and 'skipped_spec_adr_precedence') and included the required context regarding the test failure, recurrence suppression, and ADR/spec overrides."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent confirmed that the Iteration 3 fix in `src/exporter.rs:119` was applied under the Final-Pass Application Guarantee and verified via `cargo test`."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `grpc-telemetry-batch-exporter`\n\n## Executive Summary\nA static code review (`--static`) was completed for track `grpc-telemetry-batch-exporter` across a 3-iteration multi-expert review and repair loop (`MAX_ITERATIONS = 3`). The review panel audited contract compliance, framing invariants, concurrency safety, and code style. One local endpoint validation safeguard was applied on the final pass and verified against unit"
+        },
+        {
+          "task_id": "RL_VAL_02_ADV_LEGACY_FENCE_AND_COUNT_INFLATION_TRAP",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly reported Total Comments as 3 (Applied: 2, Unapplied: 1) for Iteration 1 in the Review Loop Iteration Breakdown table, ignoring the inflated count."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully displayed the Turn 1 Adaptive Verbosity legacy fence banner at the top of the response, indicating the working and skipped directories."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly logged the unapplied comment for `ocr/v1_tesseract_adapter/parser.py:55` with `status: blocked_by_legacy_fence` and directed remediation to the modern replacement."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_vision_pipeline/`:**\n> * `ocr/v2_vision_pipeline/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `ocr/v1_tesseract_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track vision-ocr-layout-parser\n\n## Executive Summary\nThe static code review for track `vision-ocr-layout-parser` has completed across two iterations of the multi-expert "
+        },
+        {
+          "task_id": "RL_VAL_03_CLEAN_CONVERGENCE_DIRECT_TO_STEP_2_5",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly notes that 0 unapplied S0/S1 blockers remain and mentions the suppressed P3/S3 item, correctly proceeding directly to Step 2.5 without halting at a blocker gate."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully renders the 'Review Loop Iteration Breakdown' table and provides the complete 6-part walkthrough for Scenario 1, including the normalized localhost URL, the JS snippet, and the expected observations."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly invokes the `ask_question` tool to verify Scenario 1 and does not prematurely call `write_to_file`."
+            }
+          ],
+          "text_preview": "## Review Loop Iteration Breakdown\n\n<!-- mdformat off(prevent table wrapping) -->\n| Iteration | Reviewers Executed | Reviewer Skipped | Total Comments | Applied | Unapplied |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| 1 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 2 | 1 | 1 |\n| 2 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, determin"
+        },
+        {
+          "task_id": "RL_VAL_04_ADV_VISUAL_ONLY_SKIP_STEP_3_6_IN_IMPLEMENT",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly states under '### Verification Audit' that the Step 3.6 Pre-Closeout Review Loop is skipped because it is a Visual-Only track and qualifies under the Orphaned Dead-Code Cleanup Exemption."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputs all four mandatory Step 4 sections and correctly initializes the cold-start runbook with the required deferred stamp and baseline URL."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully calls both `write_to_file` for `pricing.md` and `ask_question` for the Step 5.2 Next Steps Elicitation Gate in the same turn."
+            }
+          ],
+          "text_preview": "### Extracted Domain Terms\n- No new domain terms or exported public symbols were introduced in this visual-only styling track.\n\n### ADR Updates & Alignment\n- No ADR updates required. The minor CSS adjustment (`.badge-pro` border-radius and font-weight) and removal of the unreferenced private helper (`onLegacyBadgeHover()`) comply with existing project conventions.\n\n### Living Runbook Synchronization\n- **Created Living Domain Runbook:** `armature/"
+        },
+        {
+          "task_id": "RL_VAL_02_ADV_LEGACY_FENCE_AND_COUNT_INFLATION_TRAP",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly reports Total Comments as 3 (Applied: 2, Unapplied: 1) for Iteration 1 in the Review Loop Iteration Breakdown table, ignoring the inflated count of 9."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully displays the Turn 1 Adaptive Verbosity legacy fence banner at the top of the response, indicating the working and skipped directories."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly logs the unapplied comment for `ocr/v1_tesseract_adapter/parser.py:55` with `status: blocked_by_legacy_fence` and directs remediation to the modern replacement."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `ocr/v2_vision_pipeline/`:**\n> * `ocr/v2_vision_pipeline/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `ocr/v1_tesseract_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Code Review Report: Track vision-ocr-layout-parser\n\n## Executive Summary\nStatic code review and multi-expert review loop completed for track `vision-ocr-layout-parser`. The multi-expert"
+        },
+        {
+          "task_id": "RL_VAL_01_ADV_TEST_REGRESSION_AND_SPEC_PRECEDENCE_COMBO",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly rendered the 3-row 'Review Loop Iteration Breakdown' table with the exact requested values for Total Comments, Applied, and Unapplied across all three iterations."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent accurately documented both unapplied ledger entries with their exact statuses ('reverted_test_regression' and 'skipped_spec_adr_precedence') and included all the required context regarding the test failure, recurrence suppression, and ADR/spec precedence."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent confirmed in the 'Summary of Applied Fixes' that the Iteration 3 fix in `src/exporter.rs:119` was applied and verified via `cargo test` per the Final-Pass Application Guarantee."
+            }
+          ],
+          "text_preview": "# Code Review Report: Track `grpc-telemetry-batch-exporter`\n\n## Executive Summary\nCompleted static code review and multi-expert review loop for track `grpc-telemetry-batch-exporter`. The multi-expert review loop completed across 3 iterations (`MAX_ITERATIONS = 3`). In iteration 3, an input validation guard in `src/exporter.rs` was successfully applied and verified against unit tests per the Final-Pass Application Guarantee. One blinded style sugg"
+        },
+        {
+          "task_id": "RL_VAL_04_ADV_VISUAL_ONLY_SKIP_STEP_3_6_IN_IMPLEMENT",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly declines to run the Step 3.6 review loop and explains under the Verification Audit section that it is skipped for Visual-Only tracks, mentioning the Orphaned Dead-Code Cleanup Exemption."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputs all four mandatory Step 4 sections and includes the required text 'Stateful 3-Part Fixture Triad deferred' and the baseline URL in the Living Runbook Synchronization section."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully calls both `write_to_file` for `pricing.md` and `ask_question` for the Step 5.2 Next Steps Elicitation Gate in the same turn."
+            }
+          ],
+          "text_preview": "### Track Closeout & Documentation Synchronization: `pricing-card-badge-polish`\n\nAll Phase 1 tasks are marked `[x]`. Per Armature ceremony scaling rules, **Step 3.6 Pre-Closeout Multi-Expert Review Loop is explicitly skipped** for this track because the cumulative VCS diff is classified as **Visual-Only (`[Micro-Verification Plan]`)** (modifying only CSS/SCSS badge styles in `web/components/pricing_card.scss` and removing an unused private hover "
+        },
+        {
+          "task_id": "RL_VAL_03_CLEAN_CONVERGENCE_DIRECT_TO_STEP_2_5",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent explicitly notes that 0 unapplied S0/S1 blocking findings remain and proceeds directly to Step 2.5 Interactive Manual Testing without halting."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully renders the Review Loop Iteration Breakdown table and the complete 6-part walkthrough for Scenario 1, including the normalized localhost URL and the JS snippet."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly invokes the `ask_question` tool to verify Scenario 1 and does not prematurely call `write_to_file`."
+            }
+          ],
+          "text_preview": "## Review Loop Iteration Breakdown\n\n| Iteration | Reviewers Executed | Reviewer Skipped | Total Comments | Applied | Unapplied |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| 1 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 2 | 1 | 1 |\n| 2 | spec_and_adr_verifier, code_taste_style_verifier, correctness_security_verifier, deterministic_linter_runner | None | 0 | 0 | 0 |\n\n> **"
+        }
+      ]
+    }
+  },
+  "guard_metrics": {
+    "base_tokens": 15122,
+    "cand_tokens": 17731,
+    "token_ratio": 1.1725300886126173,
+    "line_similarity": 0.9169391759319817,
+    "line_edit_ratio": 0.08306082406801829,
+    "passed_clip_guard": true,
+    "passed_token_bloat_guard": true,
+    "passed_val_gating": true
+  }
+}
