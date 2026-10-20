@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.31.1] - 2026-10-20
+
+### Changed
+
+-   **Once-Per-Session Deprecated Code Boundary Callout (`rules/armature_protocol.md`, `skills/arm-chat/SKILL.md`, `skills/arm-implement/SKILL.md`, `skills/arm-drift/SKILL.md`, `skills/arm-review/SKILL.md`)**:
+    -   Scoped the `> [!NOTE] **Working in <active_replacement_basename>/:**` deprecated code boundary callout strictly to **Turn 1 once per conversation session** (when project context is first loaded, or once if legacy boundaries are newly added or modified mid-session).
+    -   Removed the recurring `Turn 2+` compact reminder (`> 🛡️ **Deprecated code boundary active:** ...`) and prohibited repeating any deprecated code boundary banner across subsequent turns (`Turn 2+`) or intermediate tool-calling steps (`Explored files`, `Edited files`) within a turn unless a specific boundary event fires (`[Legacy Dependency Read: <path>]` badge, Zero-Match Fallback, or Intent-Aware Read/Write Override Gate).
+
 ## [0.31.0] - 2026-10-17
 
 ### Added
