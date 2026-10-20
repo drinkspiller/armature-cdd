@@ -582,8 +582,9 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
 > `write_to_file` with empty visible chat text, or ending the turn with markdown
 > prose alone without tool calls. In that single turn, you MUST emit all
 > three: 1. **Visible Markdown Report in Chat:** Print the complete markdown
-> report directly in your visible chat response (starting with the Turn 1
-> Adaptive Verbosity legacy fence banner if `legacy_fences` exist, the `##
+> report directly in your visible chat response (starting with the
+> once-per-session Turn 1 legacy fence callout banner if `legacy_fences` exist
+> and have not yet been shown in the session, the `##
 > Review Loop Iteration Breakdown` markdown table counting `Total Comments`
 > strictly from top-level `len(comments)`, `## Summary of Applied Fixes`
 > explicitly ordered in strict `P0 -> P1 -> P2 -> P3` priority order and

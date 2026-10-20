@@ -421,12 +421,12 @@ def evaluate_invariants(
         )
     elif inv == "has_legacy_fence_banner":
       if not re.search(
-          r"(?i)(?:Working\s+in\s+`?[^`\n]+`?|Deprecated\s+code\s+boundary\s+active)",
+          r"(?i)Working\s+in\s+`?[^`\n]+`?",
           text,
       ):
         vetoes.append(
-            "has_legacy_fence_banner: Missing Adaptive Verbosity legacy fence"
-            " banner in chat"
+            "has_legacy_fence_banner: Missing once-per-session Turn 1 legacy"
+            " fence callout banner in chat"
         )
     elif inv == "no_premature_review_md":
       if any("review.md" in mf for mf in mutated_files):

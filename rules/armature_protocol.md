@@ -78,16 +78,17 @@ files in priority order:
     update check. If stdout is empty, output zero update banners. If the user
     replies `"upgrade armature"`, execute the `<upgrade_cmd>` via `run_command`,
     verify exit code `0`, and confirm the upgraded version.
-12. **Legacy-Boundary Context Fences & Adaptive Verbosity Session Banner:**
-    Parse active repository-wide legacy fences from
+12. **Legacy-Boundary Context Fences & Once-Per-Session Session Banner (Turn 1
+    Only):** Parse active repository-wide legacy fences from
     `{PROJECT_CONTEXT_DIR}/tech-stack.md` (`## Legacy & Deprecated Boundaries`)
     and track-scoped fences/overrides from the active track's `metadata.json`
     (`legacy_fences`, `fence_overrides`). Whenever one or more legacy fences are
-    active in the workspace or prompt context, you MUST display an explanatory
-    user-facing banner at the very top of your response using **Adaptive
-    Verbosity**:
+    active in the workspace or prompt context, render the explanatory
+    user-facing callout **at most once per conversation session** (on Turn 1
+    when context is first loaded, or once if legacy boundaries are newly added
+    or modified mid-session):
 
-    -   **First turn in a session (Turn 1 — Full Callout):**
+    -   **Once per session (Turn 1 — Full Callout Only):**
 
         ```markdown
         > [!NOTE]
@@ -100,12 +101,16 @@ files in priority order:
         >
         > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
         ```
-    -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line
-        Reminder):**
-
-        ```markdown
-        > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
-        ```
+    -   **Strict Silence on Subsequent Turns (`Turn 2+`) & Intermediate Tool
+        Steps:** After the Turn 1 callout has been shown once in the session
+        (e.g., when `[Prior Session History]` is present or on Turn 2+ of a
+        conversation), or across intermediate tool-calling steps within a turn
+        (`Explored files`, `Edited files`), emit **zero** deprecated code
+        boundary banners unless a specific boundary event fires (`[Legacy
+        Dependency Read: <path>]` badge, Zero-Match Fallback prompt, or
+        Intent-Aware Read/Write Override Gate). NEVER output a recurring `> 🛡️
+        **Deprecated code boundary active:** ...` reminder on Turn 2+ or repeat
+        the callout across multiple steps of the same turn.
 13. **Prompt-Provided Context Invariant (Zero Redundant Context Lookups):**
     Whenever workspace or track context (`tech-stack.md`, `product.md`,
     `workflow.md`, `tracks.md`, `spec.md`, `plan.md`), cumulative VCS diff
@@ -688,7 +693,7 @@ first. Do NOT create empty commits.
     -   *Session Banner Indicator (Adaptive Verbosity)*: At the top of your
         response whenever any legacy fence is active in context, display:
 
-        -   **First turn in a session (Turn 1 — Full Callout):**
+        -   **Once per session (Turn 1 — Full Callout Only):**
 
             ```markdown
             > [!NOTE]
@@ -701,12 +706,14 @@ first. Do NOT create empty commits.
             >
             > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
             ```
-        -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line
-            Reminder):**
-
-            ```markdown
-            > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
-            ```
+        -   **Strict Silence on Subsequent Turns (`Turn 2+`) & Intermediate Tool
+            Steps:** Do **NOT** repeat the boundary callout or emit any `> 🛡️
+            **Deprecated code boundary active:** ...` reminder on `Turn 2+`
+            (such as when `[Prior Session History]` is present) or across
+            intermediate tool-calling steps within a turn. Stay completely
+            silent about code boundaries after Turn 1 unless a specific boundary
+            event fires (`[Legacy Dependency Read: <path>]`, Zero-Match
+            Fallback, or Intent-Aware Read/Write Override Gate).
     -   *Query-Time Negative Search Filtering (RE2 Anchored)*: When invoking
         `grep_search`, you MUST append anchored RE2 negative file filters
         (`-f:^<deprecated_path>` or `-f:^<deprecated_path>`) to `Query`. When

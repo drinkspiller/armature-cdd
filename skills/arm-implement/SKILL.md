@@ -223,11 +223,26 @@ deliverables, synchronizing documentation, and managing track cleanup.
             (`` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)`` followed by `\n\n`
             and a 1–2 sentence status summary) confirming delegation of the
             phase(s) to `worker` (naming each dispatched subagent and assigned
-            phase, plus the active deprecated code boundary banner when legacy
-            fences are present: full `> [!NOTE] **Working in ...**` callout on
-            Turn 1; `> 🛡️ **Deprecated code boundary active:** Working in ...`
-            on Turn 2+).
-        2.  Invoke `invoke_subagent` with `TypeName: "worker"` (whose `Prompt`
+            phase, plus the active deprecated code boundary banner once on Turn
+            1 when legacy fences are present and have not yet been shown in the
+            session: once-per-session `> [!NOTE] **Working in ...**` callout on
+            Turn 1; strictly silent on Turn 2+ when `[Prior Session History]` is
+            present and across intermediate tool steps).
+        2.  **Intent-Aware Write Escalation Gate on Fenced Targets (`TRAIN_LF_02`)**:
+            If the active plan task or user request targets a file inside an
+            active legacy-fenced directory (`<deprecated_path>`) without a prior
+            `WRITE` override in `metadata.json` (`fence_overrides`), do **NOT**
+            call `replace_file_content`, `write_to_file`, or `invoke_subagent`
+            to modify the fenced file. Instead, explain the high-risk legacy
+            mutation warning in markdown (directing new work to
+            `<modern_replacement>`, without repeating the general session banner
+            if `[Prior Session History]` shows Turn 1 already rendered it) and
+            immediately invoke `ask_question` in the same turn with the
+            Intent-Aware Write Escalation Gate options (`"(Recommended) Apply
+            changes to modern replacement (<modern_replacement>) instead"`,
+            `"Yes, unlock WRITE access to <deprecated_path> and record in track
+            metadata.json"`, `"Abort task"`).
+        3.  Invoke `invoke_subagent` with `TypeName: "worker"` (whose `Prompt`
             contains the literal `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`
             block when legacy fences are active) AND concurrently invoke
             `schedule(DurationSeconds=90, TimerCondition="<subagent_id>",

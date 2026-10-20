@@ -89,12 +89,13 @@ After context is loaded, determine next action:
         provided in the prompt, NEVER call `grep_search` or `view_file` to look
         up `product.md` or `tech-stack.md`. Act immediately on the user request
         in the same turn.
-    *   **Session Banner (Adaptive Verbosity)**: Whenever `tech-stack.md` (`##
-        Legacy & Deprecated Boundaries`) or active track `metadata.json`
-        (`legacy_fences`) defines active legacy fences, you MUST render an
-        explanatory user-facing banner at the very top of your response using
-        **Adaptive Verbosity**:
-        -   **First turn in a session (Turn 1 — Full Callout):**
+    *   **Session Banner (Once Per Session — Turn 1 Only)**: Whenever
+        `tech-stack.md` (`## Legacy & Deprecated Boundaries`) or active track
+        `metadata.json` (`legacy_fences`) defines active legacy fences, render
+        the explanatory user-facing callout at the very top of your response
+        **only once per session on Turn 1** (when context is first loaded, or
+        once if boundaries are newly added/modified mid-session):
+        -   **Once per session (Turn 1 — Full Callout Only):**
             ```markdown
             > [!NOTE]
             > **Working in `<active_replacement_basename>/`:**
@@ -106,10 +107,14 @@ After context is loaded, determine next action:
             >
             > _Code boundaries defined in `<source_config_file>`. Want to add/edit an ignored folder? Just ask!_
             ```
-        -   **Subsequent turns in the same session (Turn 2+ — Compact 1-Line Reminder):**
-            ```markdown
-            > 🛡️ **Deprecated code boundary active:** Working in `<active_replacement_basename>/` (ignoring `<deprecated_basename_1>/`, `<deprecated_basename_2>/`).
-            ```
+        -   **Strict Silence on Turn 2+ & Intermediate Tool Steps:** Never emit
+            a `> 🛡️ **Deprecated code boundary active:** ...` reminder on
+            subsequent turns (`Turn 2+`, or when `[Prior Session History]` is
+            present) and never repeat the boundary banner across intermediate
+            tool-calling steps (`Explored files`, `Edited files`) within a turn.
+            Stay silent about code boundaries after Turn 1 unless a boundary
+            event fires (`[Legacy Dependency Read: <path>]`, Zero-Match
+            Fallback, or Intent-Aware Read/Write Override Gate).
     *   **Query-Time Negative Search Exclusion & Modern Scope (`TRAIN_LF_01`)**:
         -   State explicitly in your markdown text that you are directing
             analysis and search exclusively to the modern replacement path

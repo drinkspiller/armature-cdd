@@ -162,9 +162,9 @@ delegate `/arm-drift` scans to `invoke_subagent`):
         modified modern files like `new_component.ts`, `tech-stack.md`, or
         `product.md`) without outputting your complete Fixpoint Audit Report in
         markdown first! You MUST output your complete markdown Fixpoint Audit
-        Report—including the active Deprecated Code Boundary banner (Adaptive
-        Verbosity: full `> [!NOTE] **Working in ...**` callout on Turn 1 or
-        compact `> 🛡️ **Deprecated code boundary active:** ...` on Turn 2+),
+        Report—including the active Deprecated Code Boundary banner on Turn 1 if
+        not yet shown in the session (`> [!NOTE] **Working in ...**` callout on
+        Turn 1 only; strictly silent on Turn 2+ and intermediate tool steps),
         explicit
         confirmation that cumulative branch changes (`git diff main...HEAD` or
         `git diff main...HEAD`) were audited, explicit statement that whole-file
