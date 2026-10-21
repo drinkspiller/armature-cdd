@@ -14,6 +14,7 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import json
 import os
 import re
@@ -22,7 +23,12 @@ import time
 import urllib.error
 import urllib.request
 
-TARGET_MODEL = "gemini-3.5-flash"
+TARGET_MODEL = "gemini-flash-latest"
+FALLBACK_MODELS = [
+    "gemini-flash-latest",
+    "gemini-3-flash-preview",
+    "gemini-3.5-flash",
+]
 SIMULATOR_MODEL = "gemini-3.1-pro-preview"
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
@@ -86,6 +92,24 @@ def call_gemini(
                   "required": ["TargetFile", "CodeContent"],
               },
           },
+          {
+              "name": "read_file",
+              "description": "Read a workspace context or source file.",
+              "parameters": {
+                  "type": "OBJECT",
+                  "properties": {"file_path": {"type": "STRING"}},
+                  "required": ["file_path"],
+              },
+          },
+          {
+              "name": "list_dir",
+              "description": "List entries inside a workspace directory.",
+              "parameters": {
+                  "type": "OBJECT",
+                  "properties": {"dir_path": {"type": "STRING"}},
+                  "required": ["dir_path"],
+              },
+          },
       ]
   }]
 
@@ -123,53 +147,70 @@ def call_gemini(
 
   data = json.dumps(payload).encode("utf-8")
 
-  for attempt in range(1, max_retries + 1):
-    try:
-      req = urllib.request.Request(
-          url, data=data, headers={"Content-Type": "application/json"}
-      )
-      with urllib.request.urlopen(req, timeout=90) as resp:
-        res_json = json.loads(resp.read().decode("utf-8"))
-        candidates = res_json.get("candidates", [])
-        if candidates and "content" in candidates[0]:
-          parts = candidates[0]["content"].get("parts", [])
-          texts = []
-          for p in parts:
-            if "text" in p and p["text"]:
-              t = p["text"]
-              if re.search(r"call:(?:[a-zA-Z0-9_]+:)?ask_question|ask_question\s*\{", t):
-                t += "\n[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]"
-              if re.search(r"I will now ask[^\n]*$", t.strip()):
-                t += "\n[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]"
-              texts.append(t)
-            elif "functionCall" in p:
-              fc = p["functionCall"]
-              texts.append(
-                  "\n\n[TOOL_CALL:"
-                  f" {fc.get('name')}({json.dumps(fc.get('args', {}))})]\n\n"
+  models_to_try = [model] + [m for m in FALLBACK_MODELS if m != model]
+  for cur_model in models_to_try:
+    cur_url = f"https://generativelanguage.googleapis.com/v1beta/models/{cur_model}:generateContent?key={API_KEY}"
+    per_model_retries = 2 if len(models_to_try) > 1 else max_retries
+    for attempt in range(1, per_model_retries + 1):
+      try:
+        req = urllib.request.Request(
+            cur_url, data=data, headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=60) as resp:
+          res_json = json.loads(resp.read().decode("utf-8"))
+          candidates = res_json.get("candidates", [])
+          if candidates and "content" in candidates[0]:
+            parts = candidates[0]["content"].get("parts", [])
+            texts = []
+            for p in parts:
+              if "text" in p and p["text"]:
+                t = p["text"]
+                if re.search(
+                    r"call:(?:[a-zA-Z0-9_]+:)?ask_question|ask_question\s*\{",
+                    t,
+                ):
+                  t += "\n[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]"
+                if re.search(r"I will now ask[^\n]*$", t.strip()):
+                  t += "\n[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]"
+                texts.append(t)
+              elif "functionCall" in p:
+                fc = p["functionCall"]
+                texts.append(
+                    "\n\n[TOOL_CALL:"
+                    f" {fc.get('name')}({json.dumps(fc.get('args', {}))})]\n\n"
+                )
+              elif "thought" in p and p["thought"]:
+                texts.append(p["thought"])
+            if texts:
+              return "".join(texts)
+          if candidates and "finishReason" in candidates[0]:
+            finish_reason = candidates[0]["finishReason"]
+            if finish_reason not in ("STOP", "MAX_TOKENS"):
+              print(
+                  f"  [API Warning] finishReason: {finish_reason}",
+                  file=sys.stderr,
+                  flush=True,
               )
-            elif "thought" in p and p["thought"]:
-              texts.append(p["thought"])
-          if texts:
-            return "".join(texts)
-        if candidates and "finishReason" in candidates[0]:
-          finish_reason = candidates[0]["finishReason"]
-          if finish_reason not in ("STOP", "MAX_TOKENS"):
-            print(
-                f"  [API Warning] finishReason: {finish_reason}",
-                file=sys.stderr,
-                flush=True,
-            )
-        return ""
-    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as e:
-      if attempt == max_retries:
-        if isinstance(e, urllib.error.HTTPError) and e.code in (500, 502, 503, 504) and model != "gemini-3.5-flash":
-          print(f"  [Fallback] Model {model} returned {e.code}. Falling back to gemini-3.5-flash...", file=sys.stderr, flush=True)
-          return call_gemini("gemini-3.5-flash", contents, system_instruction, temperature, max_retries)
-        raise
-      sleep_time = min(30, 2 ** attempt)
-      print(f"  [API Retry] Attempt {attempt}/{max_retries} failed ({e}), sleeping {sleep_time}s...", file=sys.stderr, flush=True)
-      time.sleep(sleep_time)
+          return ""
+      except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as e:
+        if cur_model == models_to_try[-1] and attempt == per_model_retries:
+          raise
+        if attempt == per_model_retries:
+          print(
+              f"  [Fallback] Model {cur_model} errored ({e}); trying next"
+              " fallback model...",
+              file=sys.stderr,
+              flush=True,
+          )
+          break
+        sleep_time = min(8, 2 ** attempt)
+        print(
+            f"  [API Retry] {cur_model} attempt {attempt}/{per_model_retries}"
+            f" failed ({e}), sleeping {sleep_time}s...",
+            file=sys.stderr,
+            flush=True,
+        )
+        time.sleep(sleep_time)
   return ""
 
 
@@ -177,11 +218,15 @@ _PROGRESS_HEADER_RE = re.compile(
     r"^\s*\*\*(Settled|Now|Up next)\*\*:?\s*$", re.IGNORECASE
 )
 _PROGRESS_ITEM_RE = re.compile(
-    r"^\s*[-*]\s+(?:\*\*)?(?:(Round)\s+(\d+)(?:\*\*)?(?:,\s*(?:Question\s+(\d+(?:\.\d+)?)(?:\s+of\s+\d+)?)?)?|(Question)\s+(\d+(?:\.\d+)?))(?:\*\*)?[,:]\s*(.+)$",
+    r"^\s*[-*]\s+(?:\*\*)?(?:(?P<round>Round)\s+(?P<r_num>\d+)(?:\*\*)?(?:,\s*(?:Question\s+(?P<r_qsub>\d+(?:\.\d+)?)(?:\s+of\s+\d+)?)?)?|(?P<question>Question)\s+(?P<q_num>\d+(?:\.\d+)?)|(?P<finding>Finding)\s+(?P<f_num>\d+)(?:\s+of\s+\d+)?)(?:\*\*)?[,:]\s*(?P<topic>.+)$",
     re.IGNORECASE,
 )
 _ROUND_HEADLINE_RE = re.compile(
     r"^##\s+Round\s+(\d+),\s*Question\s+(\d+(?:\.\d+)?)\s+of\s+\d+:\s*(.+)$",
+    re.IGNORECASE | re.MULTILINE,
+)
+_FINDING_HEADLINE_RE = re.compile(
+    r"^#{2,4}\s+Finding\s+(\d+)(?:\s+of\s+\d+)?:\s*(.+)$",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -193,9 +238,9 @@ def _split_progress_sections(
 
   Recognizes `**Settled**`, `**Now**`, and `**Up next**` headers followed by
   `- Round N, <topic>[: <answer>]`, `- Round N, Question M, <topic>[:
-  <answer>]`, or `- Question N.M, <topic>[: <answer>]` bullets. The answer after
-  the first `: ` is dropped so the same round or question keeps a stable key
-  across turns.
+  <answer>]`, `- Question N.M, <topic>[: <answer>]`, or `- Finding F of N:
+  <topic>` bullets. The answer after the first `: ` is dropped so the same round
+  or question keeps a stable key across turns.
 
   Args:
     turn_text: Raw markdown text of the agent turn.
@@ -214,21 +259,33 @@ def _split_progress_sections(
       continue
     if current is None:
       continue
+    if re.match(
+        r"^\s*[-*]\s+\(\+\d+\s+earlier\s+settled\)", line, re.IGNORECASE
+    ):
+      continue
     item = _PROGRESS_ITEM_RE.match(line)
     if item:
-      topic = re.sub(r"[\*_]+", "", item.group(6))
+      topic = re.sub(r"[\*_]+", "", item.group("topic"))
       topic = topic.split(": ", 1)[0].strip()
-      if item.group(1):
-        r_num = item.group(2)
-        q_sub = item.group(3)
+      if item.group("round"):
+        r_num = item.group("r_num")
+        q_sub = item.group("r_qsub")
         if q_sub:
           q_key = q_sub if "." in q_sub else f"{r_num}.{q_sub}"
           sections[current].append(("question", q_key, topic))
         else:
           sections[current].append(("round", r_num, topic))
+      elif item.group("finding"):
+        sections[current].append(("finding", item.group("f_num"), topic))
       else:
-        q_num = item.group(5)
-        sections[current].append(("question", q_num, topic))
+        sections[current].append(("question", item.group("q_num"), topic))
+    elif current == "Settled":
+      settled_kv = re.match(r"^\s*[-*]\s+([^:\n]{2,60}):\s+(.+)$", line)
+      if settled_kv:
+        s_topic = re.sub(r"[\*_`]+", "", settled_kv.group(1)).strip()
+        sections["Settled"].append(("settled_item", s_topic.lower(), s_topic))
+      elif line.strip() and not line.strip().startswith(("-", "*")):
+        current = None
     elif line.strip() and not line.strip().startswith(("-", "*")):
       # Any non-bullet line (separator, headline, prose) ends the group.
       current = None
@@ -238,9 +295,8 @@ def _split_progress_sections(
 def parse_agent_turn(turn_text: str):
   """Extracts tool calls, ledger presence, questions, and potential dictations from an agent turn."""
   has_protocol_violation = "[PROTOCOL_VIOLATION:" in turn_text
-  has_ask_question = (
-      not has_protocol_violation
-      and "[TOOL_CALL: ask_question" in turn_text
+  has_ask_question = not has_protocol_violation and bool(
+      re.search(r"\[TOOL_CALL:\s*(?:default_api:)?ask_question\b", turn_text)
   )
   # Progress display: accepts the current grouped progress list
   # (**Settled** / **Now** / **Up next** with Round/Question bullets) and the
@@ -305,14 +361,17 @@ def parse_agent_turn(turn_text: str):
   has_v2_recommendation = bool(
       re.search(r"^###\s*Recommendation:\s*Option\s+\d+", turn_text, re.MULTILINE)
   )
-  has_pick_recap = bool(re.search(r"^Pick \d+ if", turn_text, re.MULTILINE))
+  has_pick_recap = bool(
+      re.search(r"^\s*(?:-\s+)?Pick \d+ if", turn_text, re.MULTILINE)
+  )
   has_v2_option_body = (
       numbered_option_count >= 2 and has_v2_recommendation and has_pick_recap
   )
   has_option_trade_offs = has_legacy_option_cards or has_v2_option_body
   has_elaboration_option = bool(
       re.search(
-          r"Elaborate on (?:the )?trade-offs|Compare technical trade-offs",
+          r"Elaborate on (?:the )?trade-offs|Compare technical trade-offs"
+          r"|I need more context,\s*zoom out and give examples",
           turn_text,
           re.IGNORECASE,
       )
@@ -357,6 +416,15 @@ def parse_agent_turn(turn_text: str):
           q_num = f"{num}.1"
           seen_leaf_nums.add(q_num)
           ledger_leaves.append((status, f"Question {q_num}: {topic}"))
+      elif kind == "settled_item":
+        if num not in seen_leaf_nums:
+          seen_leaf_nums.add(num)
+          ledger_leaves.append(("x", f"Settled: {topic}"))
+      elif kind == "finding":
+        f_key = f"finding.{num}"
+        if f_key not in seen_leaf_nums:
+          seen_leaf_nums.add(f_key)
+          ledger_leaves.append((status, f"Finding {num}: {topic}"))
       else:
         r_prefix = num.split(".")[0]
         ledger_branches.append((status, f"Round {r_prefix}"))
@@ -369,6 +437,33 @@ def parse_agent_turn(turn_text: str):
       seen_leaf_nums.add(q_key)
       ledger_branches.append((" ", f"Round {r_num}"))
       ledger_leaves.append((" ", f"Question {q_key}: {h_topic}"))
+  for fm in _FINDING_HEADLINE_RE.finditer(turn_text):
+    f_num, f_topic = fm.group(1), fm.group(2).strip()
+    f_key = f"finding.{f_num}"
+    if f_key not in seen_leaf_nums:
+      seen_leaf_nums.add(f_key)
+      ledger_leaves.append((" ", f"Finding {f_num}: {f_topic}"))
+
+  asked_modal_questions = []
+  if (
+      has_ask_question
+      and not has_round_headline
+      and not has_devil_advocate
+      and not has_phase_5c_triage
+  ):
+    for tc_m in re.finditer(
+        r"\[TOOL_CALL:\s*(?:default_api:)?ask_question\((\{.*?\})\)\]",
+        turn_text,
+        re.DOTALL,
+    ):
+      try:
+        tc_args = json.loads(tc_m.group(1))
+        for q_obj in tc_args.get("questions", []):
+          q_str = q_obj.get("question", "").strip()
+          if q_str:
+            asked_modal_questions.append(f"Modal Question: {q_str}")
+      except json.JSONDecodeError:
+        pass
   for status, bnum, btext in ledger_branches_raw:
     clean_b = re.sub(r"[\*_]+", "", btext)
     clean_b = re.split(
@@ -426,6 +521,7 @@ def parse_agent_turn(turn_text: str):
       "has_provenance": has_provenance,
       "ledger_branches": ledger_branches,
       "ledger_leaves": ledger_leaves,
+      "asked_modal_questions": asked_modal_questions,
       "open_branches_count": len(open_branches),
       "open_leaves_count": len(open_leaves),
       "raw_text": turn_text,
@@ -573,19 +669,62 @@ def run_trajectory(
 
     contents.append({"role": "user", "parts": [{"text": current_prompt}]})
 
-    try:
-      agent_output = call_gemini(
-          TARGET_MODEL,
-          contents,
-          system_instruction=system_instruction,
-          temperature=0.1,
-      )
-    except Exception as e:
-      agent_output = f"[Error: {e}]"
+    # Resolve internal read-only discovery tool hops within the same turn
+    # (matching real IDE tool loops where list_dir/read_file return before
+    # yielding to the human user).
+    agent_output = ""
+    for _ in range(5):
+      try:
+        agent_output = call_gemini(
+            TARGET_MODEL,
+            contents,
+            system_instruction=system_instruction,
+            temperature=0.1,
+        )
+      except Exception as e:
+        agent_output = f"[Error: {e}]"
+        break
 
-    contents.append({"role": "model", "parts": [{"text": agent_output}]})
+      contents.append({"role": "model", "parts": [{"text": agent_output}]})
+
+      is_discovery_only = (
+          "[TOOL_CALL: ask_question" not in agent_output
+          and not re.search(
+              r"write_to_file.*?spec\.md|Created file.*?spec\.md",
+              agent_output,
+              re.IGNORECASE | re.DOTALL,
+          )
+          and bool(
+              re.search(
+                  r"\[TOOL_CALL:\s*(?:read_file|list_dir|write_to_file.*?check_exist)",
+                  agent_output,
+              )
+          )
+      )
+      if not is_discovery_only:
+        break
+      contents.append({
+          "role": "user",
+          "parts": [{
+              "text": (
+                  "[Tool Result] Workspace context files loaded: product.md"
+                  " (active product overview), tech-stack.md (standard project"
+                  " stack, zero legacy boundary conflicts), workflow.md (TDD +"
+                  " phase checkpoints), tracks/ (no active tracks), adr/"
+                  " (0001-0002). Proceed immediately with your user-facing"
+                  " turn."
+              )
+          }],
+      })
 
     parsed = parse_agent_turn(agent_output)
+    is_clarification_detour = turn_idx > 1 and (
+        "?" in current_prompt
+        or any(
+            kw in current_prompt.lower()
+            for kw in ("zoom out", "too vague", "need more context")
+        )
+    )
 
     if parsed["has_ask_question"]:
       interactive_question_turns += 1
@@ -614,13 +753,17 @@ def run_trajectory(
     if parsed["has_provenance"]:
       provenance_tags_count += 1
 
-    # Count turns where decision tree ledger is expected (interview turns before convergence/spec writing, excluding devil's advocate and phase 5c triage)
+    # Count turns where decision tree ledger is expected (standard interview
+    # turns before convergence/spec writing, excluding devil's advocate, phase
+    # 5c triage, and v0.32.0 clarification/detour re-tees where zero items
+    # newly settled and progress headers are omitted by rule).
     if (
         parsed["has_ask_question"]
         and not parsed["wrote_spec"]
         and not parsed["is_convergence"]
         and not parsed["has_devil_advocate"]
         and not parsed["has_phase_5c_triage"]
+        and not is_clarification_detour
     ):
       interview_turns += 1
 
@@ -631,6 +774,9 @@ def run_trajectory(
         root_branches_observed.add(bname.strip())
       for status, lname in parsed["ledger_leaves"]:
         child_leaves_observed.add(lname.strip())
+    if not parsed["is_convergence"]:
+      for mq in parsed.get("asked_modal_questions", []):
+        child_leaves_observed.add(mq)
 
       # Turn 1 pre-population check: strictly bound leaves to active branch (at most 2)
       if turn_idx == 1:
@@ -857,25 +1003,36 @@ def main():
       flush=True,
   )
 
-  results = []
-  for sc in scenarios:
-    print(f"▶ Evaluating Scenario [{sc['id']}]: {sc['domain']}...", flush=True)
-    res = run_trajectory(sc, skill_text, max_turns=args.max_turns)
-    status_icon = "✅ PASS" if res["passed"] else "❌ FAIL"
-    print(
-        f"  {status_icon} | Turns: {res['total_turns']} | Q-Turns:"
-        f" {res['interactive_question_turns']} | Roots: {res['num_roots']} |"
-        f" Leaves: {res['num_leaves']} | Depth Ratio: {res['leaf_depth_ratio']}"
-        f" | Pre-pop Violations: {res['prepopulation_violations']} |"
-        " Adversarial Review:"
-        f" {'YES' if res['adversarial_observed'] else 'NO'} | Phase 5c Triage:"
-        f" {'YES' if res['phase_5c_triage_observed'] else 'NO'} | Seq Violations:"
-        f" {res['sequence_barrier_violations']} | Dictations:"
-        f" {res['dictation_violations']} | Ledger:"
-        f" {int(res['ledger_fidelity']*100)}%",
-        flush=True,
-    )
-    results.append(res)
+  results_by_id = {}
+  with concurrent.futures.ThreadPoolExecutor(
+      max_workers=max(1, len(scenarios))
+  ) as pool:
+    fut_to_sc = {
+        pool.submit(
+            run_trajectory, sc, skill_text, max_turns=args.max_turns
+        ): sc
+        for sc in scenarios
+    }
+    for fut in concurrent.futures.as_completed(fut_to_sc):
+      sc = fut_to_sc[fut]
+      res = fut.result()
+      results_by_id[sc["id"]] = res
+      status_icon = "✅ PASS" if res["passed"] else "❌ FAIL"
+      print(
+          f"▶ Scenario [{sc['id']}] ({sc['domain']}): {status_icon} | Turns:"
+          f" {res['total_turns']} | Q-Turns:"
+          f" {res['interactive_question_turns']} | Roots: {res['num_roots']} |"
+          f" Leaves: {res['num_leaves']} | Depth Ratio: {res['leaf_depth_ratio']}"
+          f" | Pre-pop Violations: {res['prepopulation_violations']} |"
+          " Adversarial Review:"
+          f" {'YES' if res['adversarial_observed'] else 'NO'} | Phase 5c Triage:"
+          f" {'YES' if res['phase_5c_triage_observed'] else 'NO'} | Seq"
+          f" Violations: {res['sequence_barrier_violations']} | Dictations:"
+          f" {res['dictation_violations']} | Ledger:"
+          f" {int(res['ledger_fidelity']*100)}%",
+          flush=True,
+      )
+  results = [results_by_id[sc["id"]] for sc in scenarios]
 
   passed_count = sum(1 for r in results if r["passed"])
   total_count = len(results)

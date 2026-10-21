@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.32.0] - 2026-10-21
+
+### Changed
+
+-   **Need-More-Context Modal Option, Pass-1 Everyday Plain Language, & Direct
+    Modal-to-Chat Option Matching (`ADR 0003`, `ADR 0012`)**:
+    -   Replaced the trailing `"Compare technical trade-offs and failure modes
+        in detail"` choice in `ask_question` modals with **`"I need more
+        context, zoom out and give examples"`** across substantive decision
+        turns (`rules/armature_protocol.md`, `rules/armature_antigravity.md`,
+        `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`,
+        `skills/arm-review/SKILL.md`).
+    -   When `"I need more context, zoom out and give examples"` is selected (or
+        when `"zoom out"` / `"too vague"` / `"explain"` is written in), the
+        agent executes zero file-read or code-search tool calls, **omits
+        `**Settled**` / `**Now**` / `**Up next**` completely** so no progress
+        list splits the explanation from the question, explains why the decision
+        arises in the overall workflow with 1–2 concrete named domain examples,
+        outputs `---`, and re-tees a rewritten Interview Turn v2 block plus
+        native `ask_question`. Scoped the Zoom-In blockquote cards (`Pros` /
+        `Cons` / `Implications`) strictly to explicit `"zoom in"` write-ins, and
+        changed the normal `Settled` overflow fold syntax from `- + N earlier
+        settled` to `- (+N earlier settled)` to avoid nested CommonMark bullets.
+    -   Enforced **Pass-1 Everyday Plain Language & Familiar Domain-Noun
+        Grounding** requiring headlines, openers, and option names to anchor
+        directly in the concrete domain objects from the request or workflow
+        (e.g., *"linking a layer to a null parent"*, *"keeping remixes and live
+        samples safe from broken files"*) while banning both code identifiers
+        and un-translated backend systems jargon (*"blob"*, *"copy-on-write"*,
+        *"refcount"*, *"in-flight"*, *"monotonically"*, *"race condition"*).
+    -   Locked `ask_question` choices `1..K` to match the plain-English `<Option
+        name>` strings from the numbered chat list in exact 1-to-1 order with
+        Option 1 recommended (`"(Recommended) <Option 1 name>"`), and formatted
+        `- Pick N if …` recap lines as Markdown bullets so each line renders
+        separately in CommonMark.
+
 ## [0.31.1] - 2026-10-20
 
 ### Changed

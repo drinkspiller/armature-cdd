@@ -22,6 +22,7 @@ import difflib
 import json
 import math
 import os
+import random
 import re
 import socket
 import subprocess
@@ -32,9 +33,13 @@ import urllib.request
 
 socket.setdefaulttimeout(120)
 
-TARGET_MODELS = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.7-flash"]
+TARGET_MODELS = ["gemini-flash-latest", "gemini-3.7-flash", "gemini-3.5-flash"]
 JUDGE_MODELS = ["gemini-3.1-pro-preview", "gemini-pro-latest", "gemini-flash-latest"]
-OPTIMIZER_MODELS = ["gemini-3.1-pro-preview", "gemini-pro-latest", "gemini-3.5-flash"]
+OPTIMIZER_MODELS = [
+    "gemini-3.1-pro-preview",
+    "gemini-pro-latest",
+    "gemini-flash-latest",
+]
 API_KEY = os.environ.get("GEMINI_API_KEY")
 
 EVALS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -136,7 +141,7 @@ def call_gemini(
     temperature=0.2,
     use_tools=False,
     include_read_tools=False,
-    max_retries=4,
+    max_retries=6,
     max_output_tokens=8192,
     json_mode=False,
 ):
@@ -192,7 +197,7 @@ def call_gemini(
               flush=True,
           )
           break
-        if e.code in (429, 503) and attempt >= 2:
+        if e.code in (429, 503) and attempt >= (5 if use_tools else 2):
           print(
               f"  [transport] {model} -> HTTP {e.code} after {attempt}"
               " attempts; trying next model",
@@ -202,7 +207,9 @@ def call_gemini(
           break
         if attempt == max_retries:
           return f"[ERROR: HTTP {e.code}]", []
-        time.sleep(1.0)
+        time.sleep(
+            min(12.0, 1.5 * (2 ** (attempt - 1))) + random.uniform(0.1, 0.9)
+        )
       except Exception as e:  # pylint: disable=broad-except
         if attempt == max_retries:
           return f"[ERROR: {e}]", []
@@ -217,13 +224,61 @@ HEADLINE_RE = re.compile(r"^#{2,4}\s+(?:Round\s+\d+,\s+Question\s+\d+\s+of\s+\d+
 ROUND_HEADLINE_RE = re.compile(r"^##\s+Round\s+\d+,\s+Question\s+\d+\s+of\s+\d+:\s*\S", re.M)
 BAD_HEADLINE_RE = re.compile(r"^##\s+Round\s+\d+,\s+Question\s+\d+\.\d+\s+of", re.M)
 NUMBERED_RE = re.compile(r"^\s*(\d+)\.\s+\S", re.M)
-PICK_RE = re.compile(r"^\s*Pick\s+\d+\s+if\b", re.M)
-REC_HEADING_RE = re.compile(r"^###\s+Recommendation:\s+Option\s+\d+\s*$", re.M)
+PICK_RE = re.compile(r"^\s*(?:-\s+)?Pick\s+\d+\s+if\b", re.M)
+BULLETED_PICK_RE = re.compile(r"^\s*-\s+Pick\s+\d+\s+if\b", re.M)
+REC_HEADING_RE = re.compile(
+    r"^###\s+Recommendation:\s+Option\s+(\d+)\s*$", re.M
+)
 IGNORE_RE = re.compile(r"^\s*Safe to ignore for now:", re.M)
 CARD_RE = re.compile(r"^>\s*\*\*Option\s+\d+", re.M)
 LABEL_LINE_RE = re.compile(r"^\s*\*\*[A-Za-z][A-Za-z /]{1,30}:\*\*", re.M)
-ELAB_RE = re.compile(r"compare technical trade-offs", re.I)
+CONTEXT_OPT_RE = re.compile(
+    r"^i need more context,\s*zoom out and give examples$", re.I
+)
+LEGACY_ELAB_RE = re.compile(r"compare technical trade-offs", re.I)
+AUX_MODAL_OPT_RE = re.compile(
+    r"^(?:reopen\s+round\b|customize\s+scan\s+sources\b)", re.I
+)
 CODE_ID_RE = re.compile(r"`|[A-Za-z]\w*_\w+|\b\w+\(\)|\b\w+\.\w+\(")
+SYSTEMS_JARGON_RE = re.compile(
+    r"\b(?:blob\w*|copy-on-write|refcount\w*|reference[- ]count\w*"
+    r"|monotonic\w*|in-flight|file handle\w*|stream handle\w*"
+    r"|in-place overwrite\w*|mint an?\b|idempoten\w*|fan-out"
+    r"|race"
+    r" condition\w*|mid-\w+\s+race\b|couples?\s+\w*\s*deletion|mutex\w*)\b",
+    re.I,
+)
+
+
+def _extract_chat_option_name(line):
+  s = re.sub(r"^\s*\d+\.\s*", "", line).strip()
+  s = s.split(":", 1)[0].strip()
+  s = re.sub(r"^\*\*|\*\*$", "", s).strip()
+  return s
+
+
+def _norm_opt(s):
+  s = re.sub(r"^\(Recommended\)\s*", "", s, flags=re.I).strip()
+  s = re.sub(r"\s*\(Option\s+\d+\)\s*$", "", s, flags=re.I).strip()
+  s = re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
+  return s
+
+
+def _pre_retee_region(text):
+  """Extracts the plain zoom-out explanation preceding '---' or the re-teed headline."""
+  candidates = []
+  for pat in (
+      re.compile(r"^---\s*$", re.M),
+      re.compile(r"^###\s+Devil's Advocate", re.M),
+      re.compile(r"^\*\*(?:Settled|Now)\*\*", re.M),
+      HEADLINE_RE,
+  ):
+    m = pat.search(text)
+    if m:
+      candidates.append(m.start())
+  if not candidates:
+    return ""
+  return text[: min(candidates)].strip()
 
 
 def _asq_options(tool_calls):
@@ -236,28 +291,39 @@ def _asq_options(tool_calls):
   return opts
 
 
-def _body_region(text):
-  """Returns (opener_region, headline_to_last_pick_region)."""
-  hm = HEADLINE_RE.search(text)
-  if not hm:
-    return "", ""
-  after = text[hm.end():]
+def _headline_and_body_region(text):
+  """Returns (headline_line, opener_region, headline_to_last_pick_region)."""
+  matches = list(HEADLINE_RE.finditer(text))
+  if not matches:
+    return "", "", ""
+  hm = matches[-1]
+  line_end = text.find("\n", hm.start())
+  line_end = len(text) if line_end == -1 else line_end
+  headline_line = text[hm.start() : line_end]
+  after = text[line_end:]
   nm = NUMBERED_RE.search(after)
-  opener = after[:nm.start()] if nm else after
-  picks = list(PICK_RE.finditer(text))
+  opener = after[: nm.start()] if nm else after
+  picks = list(PICK_RE.finditer(text[hm.start() :]))
   if picks:
     last = picks[-1]
-    end = text.find("\n", last.end())
+    abs_end = hm.start() + last.end()
+    end = text.find("\n", abs_end)
     end = len(text) if end == -1 else end
-    body = text[hm.start():end]
+    body = text[hm.start() : end]
   else:
-    body = text[hm.start():]
+    body = text[hm.start() :]
+  return headline_line, opener, body
+
+
+def _body_region(text):
+  """Returns (opener_region, headline_to_last_pick_region)."""
+  _, opener, body = _headline_and_body_region(text)
   return opener, body
 
 
 def evaluate_invariants(task, text, tool_calls):
   vetoes = []
-  opener, body = _body_region(text)
+  headline_line, opener, body = _headline_and_body_region(text)
   target_body = body or text
   numbered = NUMBERED_RE.findall(target_body)
   numbered_lines = [l for l in target_body.splitlines() if NUMBERED_RE.match(l)]
@@ -282,13 +348,56 @@ def evaluate_invariants(task, text, tool_calls):
             " context"
         )
     elif inv == "has_pre_turn_explanation":
-      pm = re.search(r"^\*\*(?:Settled|Now)\*\*", text, re.M)
-      pre = text[: pm.start()].strip() if pm else ""
+      pre = _pre_retee_region(text)
       if len(pre.split()) < 25:
         vetoes.append(
-            f"{inv}: fewer than 25 words of explanation before the progress"
-            f" list ({len(pre.split())} words)"
+            f"{inv}: fewer than 25 words of explanation before the re-teed"
+            f" question ({len(pre.split())} words)"
         )
+    elif inv == "has_concrete_example_before_progress":
+      pre = _pre_retee_region(text)
+      if len(pre.split()) < 35:
+        vetoes.append(
+            f"{inv}: fewer than 35 words of workflow zoom-out and concrete"
+            f" examples before the re-teed question ({len(pre.split())} words)"
+        )
+      elif CARD_RE.search(pre):
+        vetoes.append(
+            f"{inv}: rendered blockquote Pros/Cons cards instead of plain"
+            " workflow zoom-out and examples"
+        )
+    elif inv == "no_settled_on_clarification_retee":
+      if re.search(
+          r"^\s*\*\*(?:Settled|Now|Up next)\*\*", text, re.M
+      ) or re.search(
+          r"^(?:Round|Question)\s+\d+(?:\.\d+)?\s+settled:", text, re.M
+      ):
+        vetoes.append(
+            f"{inv}: re-printed Settled/Now/Up next progress list on a"
+            " clarification re-tee when zero items newly settled"
+        )
+    elif inv == "no_systems_jargon_in_turn":
+      turn_surface = f"{headline_line}\n{opener}\n" + "\n".join(numbered_lines)
+      jm = SYSTEMS_JARGON_RE.search(turn_surface)
+      if jm:
+        vetoes.append(
+            f"{inv}: un-translated systems jargon '{jm.group(0)}' in Pass-1"
+            " headline, opener, or numbered options"
+        )
+    elif inv == "grounds_familiar_domain_nouns":
+      combined = f"{headline_line}\n{opener}"
+      for group in task.get("expected_domain_noun_groups", []):
+        if not any(
+            re.search(rf"\b{re.escape(w)}\b", combined, re.I) for w in group
+        ):
+          vetoes.append(
+              f"{inv}: headline/opener omitted familiar domain concept {group}"
+          )
+      for bad in task.get("unanchored_phrases", []):
+        if re.search(re.escape(bad), combined, re.I):
+          vetoes.append(
+              f"{inv}: headline/opener used generic placeholder '{bad}'"
+          )
     elif inv == "rewrites_vague_option_names":
       for phrase in task.get("forbidden_phrases", []):
         if re.search(re.escape(phrase), target_body, re.I) or any(
@@ -340,10 +449,16 @@ def evaluate_invariants(task, text, tool_calls):
         if sentences != 1:
           vetoes.append(f"{inv}: rationale has {sentences} sentences, expected 1")
     elif inv == "has_pick_recap":
+      bulleted_picks = BULLETED_PICK_RE.findall(target_body)
       if len(picks) < 2:
         vetoes.append(f"{inv}: fewer than 2 'Pick N if' lines")
       elif len(numbered) and len(picks) != len(numbered):
         vetoes.append(f"{inv}: {len(picks)} Pick lines for {len(numbered)} options")
+      elif len(bulleted_picks) != len(picks):
+        vetoes.append(
+            f"{inv}: Pick lines must be formatted as Markdown bullets"
+            " ('- Pick N if ...') so CommonMark renders each on its own line"
+        )
     elif inv == "no_pick_recap":
       if picks:
         vetoes.append(f"{inv}: Pick recap rendered on a procedural gate")
@@ -369,14 +484,47 @@ def evaluate_invariants(task, text, tool_calls):
       n = len(body.split())
       if n > limit:
         vetoes.append(f"{inv}: {n} words from headline to last Pick line")
-    elif inv == "modal_options_mirror_pick":
-      core = [o for o in asq_opts if not ELAB_RE.search(o)]
-      if len(core) < len(numbered):
-        vetoes.append(f"{inv}: {len(core)} modal options for {len(numbered)} numbered items")
-      if not any("(Recommended)" in o for o in asq_opts):
-        vetoes.append(f"{inv}: no '(Recommended)' modal option")
-      if core and not all(re.search(r"\(Option\s+\d+\)\s*$", o) for o in core):
-        vetoes.append(f"{inv}: modal options do not end with '(Option N)'")
+    elif inv in (
+        "modal_options_match_chat_options",
+        "modal_options_mirror_pick",
+    ):
+      if any(LEGACY_ELAB_RE.search(o) for o in asq_opts):
+        vetoes.append(
+            f"{inv}: used legacy 'Compare technical trade-offs...' modal option"
+        )
+      chat_names = [_extract_chat_option_name(l) for l in numbered_lines]
+      core = [
+          o
+          for o in asq_opts
+          if not CONTEXT_OPT_RE.search(o.strip())
+          and not LEGACY_ELAB_RE.search(o)
+          and not AUX_MODAL_OPT_RE.search(o.strip())
+      ]
+      rm = REC_HEADING_RE.search(text)
+      if rm and rm.group(1) != "1":
+        vetoes.append(
+            f"{inv}: Recommendation must place Option 1 first (got Option"
+            f" {rm.group(1)}) so modal and chat stay in 1:1 order"
+        )
+      if len(core) != len(chat_names):
+        vetoes.append(
+            f"{inv}: {len(core)} core modal options for {len(chat_names)}"
+            " numbered chat options"
+        )
+      elif core:
+        if not core[0].lstrip().startswith("(Recommended)"):
+          vetoes.append(
+              f"{inv}: first modal option missing '(Recommended)' prefix"
+          )
+        for idx, (m_opt, c_name) in enumerate(zip(core, chat_names), 1):
+          sim = difflib.SequenceMatcher(
+              None, _norm_opt(m_opt), _norm_opt(c_name)
+          ).ratio()
+          if sim < 0.80:
+            vetoes.append(
+                f"{inv}: modal option {idx} ('{m_opt}') did not match chat"
+                f" Option {idx} name ('{c_name}')"
+            )
     elif inv == "has_settled_now_list":
       if not re.search(r"\*\*Now\*\*", text):
         vetoes.append(f"{inv}: missing the Now progress group")
@@ -385,12 +533,36 @@ def evaluate_invariants(task, text, tool_calls):
       bullets = [l for l in (m.group(1).splitlines() if m else []) if l.strip().startswith("-")]
       if len(bullets) > 6 or not any("earlier settled" in b for b in bullets):
         vetoes.append(f"{inv}: {len(bullets)} Settled bullets without a fold line")
-    elif inv == "no_elaboration_option_in_modal":
-      if any(ELAB_RE.search(o) for o in asq_opts):
-        vetoes.append(f"{inv}: elaboration option on a non-architecture decision")
-    elif inv == "has_elaboration_option_in_modal":
-      if not any(ELAB_RE.search(o) for o in asq_opts):
-        vetoes.append(f"{inv}: missing elaboration option on a systems decision")
+      elif any(re.match(r"^\s*-\s*\+\s*\d+", b) for b in bullets):
+        vetoes.append(
+            f"{inv}: used nested double-bullet '- + N earlier settled' instead"
+            " of '- (+N earlier settled)'"
+        )
+    elif inv in (
+        "no_context_option_in_modal",
+        "no_elaboration_option_in_modal",
+    ):
+      if any(
+          CONTEXT_OPT_RE.search(o.strip()) or LEGACY_ELAB_RE.search(o)
+          for o in asq_opts
+      ):
+        vetoes.append(
+            f"{inv}: trailing context/elaboration option on an exempt decision"
+        )
+    elif inv in (
+        "has_context_option_in_modal",
+        "has_elaboration_option_in_modal",
+    ):
+      if any(LEGACY_ELAB_RE.search(o) for o in asq_opts):
+        vetoes.append(
+            f"{inv}: used deprecated 'Compare technical trade-offs...' instead"
+            " of 'I need more context, zoom out and give examples'"
+        )
+      elif not any(CONTEXT_OPT_RE.search(o.strip()) for o in asq_opts):
+        vetoes.append(
+            f"{inv}: missing trailing 'I need more context, zoom out and give"
+            " examples' modal option"
+        )
     elif inv == "no_self_answered_risk_mitigation":
       if re.search(r"\*{1,2}(Risk|Mitigation):\*{1,2}", text):
         vetoes.append(f"{inv}: self-answered Risk/Mitigation list")
@@ -406,7 +578,7 @@ def evaluate_invariants(task, text, tool_calls):
 def judge_qualities(task, text, tool_calls):
   qualities = task.get("qualities", [])
   if not qualities:
-    return 1.0, [], ""
+    return 1.0, [], "", False
   prompt = f"""You are an impartial, rigorous evaluation judge. Score whether the agent's response satisfies each quality criterion.
 
 Task Prompt:
@@ -427,16 +599,29 @@ Return JSON only:
 {"scores": [{"criterion_index": 1, "score": 1.0, "reason": "brief"}],
  "optimizer_feedback": "One or two plain-language sentences describing the user-visible behavior gap, with no literal regexes, labels, or check names."}
 """
-  out, _ = call_gemini(JUDGE_MODELS, prompt, temperature=0.0, json_mode=True)
-  try:
-    parsed = json.loads(re.search(r"\{[\s\S]*\}", out).group(0))
-    scores = parsed.get("scores", [])
-    if scores:
-      avg = sum(float(s.get("score", 0.0)) for s in scores) / len(qualities)
-      return min(1.0, max(0.0, avg)), scores, parsed.get("optimizer_feedback", "")
-  except Exception:  # pylint: disable=broad-except
-    pass
-  return 0.85, [], ""
+  for _ in range(2):
+    out, _ = call_gemini(JUDGE_MODELS, prompt, temperature=0.0, json_mode=True)
+    if out.startswith("[ERROR:"):
+      continue
+    try:
+      parsed = json.loads(re.search(r"\{[\s\S]*\}", out).group(0))
+      scores = parsed.get("scores", [])
+      if scores and len(scores) == len(qualities):
+        avg = sum(float(s.get("score", 0.0)) for s in scores) / len(qualities)
+        return (
+            min(1.0, max(0.0, avg)),
+            scores,
+            parsed.get("optimizer_feedback", ""),
+            False,
+        )
+    except Exception:  # pylint: disable=broad-except
+      continue
+  return (
+      0.0,
+      [],
+      "judge evaluation error (failed to parse structured rubric output)",
+      True,
+  )
 
 
 # --------------------------------------------------------------------------
@@ -464,17 +649,50 @@ def evaluate_single_rollout(system_instruction, task, seed):
       use_tools=True,
       include_read_tools=inc_read,
   )
+  if text.startswith("[ERROR:"):
+    return {
+        "task_id": task["id"],
+        "seed": seed,
+        "vetoes": [f"transport_error: {text}"],
+        "quality_score": 0.0,
+        "final_score": 0.0,
+        "passed": False,
+        "transport_error": True,
+        "judge_error": False,
+        "optimizer_feedback": "",
+        "text_preview": text[:600],
+        "tool_calls": tool_calls,
+    }
   vetoes = evaluate_invariants(task, text, tool_calls)
   if vetoes:
-    return {"task_id": task["id"], "seed": seed, "vetoes": vetoes,
-            "quality_score": 0.0, "final_score": 0.0, "passed": False,
-            "optimizer_feedback": "", "text_preview": text[:600],
-            "tool_calls": tool_calls}
-  q, details, fb = judge_qualities(task, text, tool_calls)
-  return {"task_id": task["id"], "seed": seed, "vetoes": [],
-          "quality_score": q, "final_score": q, "passed": q >= 0.85,
-          "q_details": details, "optimizer_feedback": fb,
-          "text_preview": text[:600], "tool_calls": tool_calls}
+    return {
+        "task_id": task["id"],
+        "seed": seed,
+        "vetoes": vetoes,
+        "quality_score": 0.0,
+        "final_score": 0.0,
+        "passed": False,
+        "transport_error": False,
+        "judge_error": False,
+        "optimizer_feedback": "",
+        "text_preview": text[:600],
+        "tool_calls": tool_calls,
+    }
+  q, details, fb, j_err = judge_qualities(task, text, tool_calls)
+  return {
+      "task_id": task["id"],
+      "seed": seed,
+      "vetoes": [],
+      "quality_score": q,
+      "final_score": q,
+      "passed": (not j_err) and q >= 0.85,
+      "transport_error": False,
+      "judge_error": j_err,
+      "q_details": details,
+      "optimizer_feedback": fb,
+      "text_preview": text[:600],
+      "tool_calls": tool_calls,
+  }
 
 
 def evaluate_split(system_instruction, tasks, split_name, num_seeds, workers):
@@ -482,6 +700,7 @@ def evaluate_split(system_instruction, tasks, split_name, num_seeds, workers):
   print(f"[{split_name}] {len(tasks)} tasks x K={num_seeds} seeds = {total} rollouts",
         flush=True)
   rollouts, jobs = [], []
+  task_by_id = {t["id"]: t for t in tasks}
   with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
     for seed in range(1, num_seeds + 1):
       for task in tasks:
@@ -491,6 +710,23 @@ def evaluate_split(system_instruction, tasks, split_name, num_seeds, workers):
       rollouts.append(r)
       print(f"[{split_name}] {n}/{total} {r['task_id']} seed={r['seed']} "
             f"score={r['final_score']:.2f} vetoes={len(r['vetoes'])}", flush=True)
+  # Deflated Baseline Shield: retry transient transport/judge failures once.
+  err_idxs = [
+      i
+      for i, r in enumerate(rollouts)
+      if r.get("transport_error") or r.get("judge_error")
+  ]
+  if err_idxs:
+    print(
+        f"[{split_name}] Retrying {len(err_idxs)} transient error"
+        " rollout(s)...",
+        flush=True,
+    )
+    for i in err_idxs:
+      old = rollouts[i]
+      rollouts[i] = evaluate_single_rollout(
+          system_instruction, task_by_id[old["task_id"]], old["seed"]
+      )
   seed_scores = []
   for seed in range(1, num_seeds + 1):
     rs = [r for r in rollouts if r["seed"] == seed]
@@ -501,10 +737,22 @@ def evaluate_split(system_instruction, tasks, split_name, num_seeds, workers):
   t_val = {2: 2.920, 3: 1.886, 4: 1.638, 5: 1.533}.get(num_seeds, 1.645)
   lb = mean - t_val * (sd / math.sqrt(num_seeds)) if num_seeds > 1 else mean
   vetoes = sum(len(r["vetoes"]) for r in rollouts)
-  return {"split": split_name, "mean_score": mean, "std_dev": sd, "lb_90": lb,
-          "seed_scores": seed_scores, "total_vetoes": vetoes,
-          "pass_rate": sum(1 for r in rollouts if r["passed"]) / max(1, len(rollouts)),
-          "rollouts": sorted(rollouts, key=lambda r: (r["task_id"], r["seed"]))}
+  t_errs = sum(1 for r in rollouts if r.get("transport_error"))
+  j_errs = sum(1 for r in rollouts if r.get("judge_error"))
+  return {
+      "split": split_name,
+      "mean_score": mean,
+      "std_dev": sd,
+      "lb_90": lb,
+      "seed_scores": seed_scores,
+      "total_vetoes": vetoes,
+      "transport_errors": t_errs,
+      "judge_errors": j_errs,
+      "pass_rate": (
+          sum(1 for r in rollouts if r["passed"]) / max(1, len(rollouts))
+      ),
+      "rollouts": sorted(rollouts, key=lambda r: (r["task_id"], r["seed"])),
+  }
 
 
 # --------------------------------------------------------------------------
@@ -532,12 +780,22 @@ PLAIN_LANGUAGE = {
         "ended the turn without asking the user via the question modal"
     ),
     "no_read_search_tools": (
-        "called a file-read or code-search tool when asked to clarify its own"
-        " option label instead of answering from conversation context"
+        "called a file-read or code-search tool when asked for more context or"
+        " option clarification instead of answering from conversation context"
     ),
     "has_pre_turn_explanation": (
         "did not unpack the options in concrete everyday terms before the"
         " progress list when the user asked for clarification"
+    ),
+    "has_concrete_example_before_progress": (
+        "when asked for more context, did not step back above the progress list"
+        " to explain why the decision arises in the workflow with concrete"
+        " domain examples"
+    ),
+    "grounds_familiar_domain_nouns": (
+        "used generic placeholders or unanchored state qualifiers in the"
+        " headline or opener instead of naming the familiar domain objects from"
+        " the user's request"
     ),
     "rewrites_vague_option_names": (
         "copy-pasted the prior turn's vague option names verbatim instead of"
@@ -570,35 +828,61 @@ PLAIN_LANGUAGE = {
     "has_recommendation_heading_one_sentence": (
         "the recommendation rationale was longer than one sentence or missing"
     ),
-    "has_pick_recap": "did not close with one 'pick this if' line per option",
+    "has_pick_recap": (
+        "did not close with one bulleted '- Pick N if' line per option"
+    ),
     "no_pick_recap": "added a pick recap to an approval step",
     "ends_with_pick_line": "added narration after the pick recap",
     "no_blockquote_cards_default": (
-        "rendered the long pros/cons cards in the default turn"
+        "rendered the long pros/cons cards instead of keeping the compact turn"
     ),
     "zoom_in_renders_cards": (
-        "did not expand to the detailed pros/cons cards when the user asked for"
-        " detail"
+        "did not expand to the detailed pros/cons cards when the user"
+        " explicitly wrote in zoom-in"
     ),
     "no_code_identifiers_in_opener": "used code names in the opening paragraph",
+    "no_systems_jargon_in_turn": (
+        "leaked backend systems jargon (such as blob, copy-on-write, refcount,"
+        " in-flight, or file handles) into a first-pass interview turn"
+    ),
     "word_budget_200": (
         "the body from headline to the last pick line was too long"
     ),
+    "modal_options_match_chat_options": (
+        "the modal choices did not match the numbered option names in 1:1"
+        " order, put the recommended option first, or replace deprecated"
+        " context wording"
+    ),
     "modal_options_mirror_pick": (
-        "the modal options did not mirror the pick conditions, mark the"
-        " recommended one, or end with the option number"
+        "the modal choices did not match the numbered option names in 1:1"
+        " order, put the recommended option first, or replace deprecated"
+        " context wording"
     ),
     "has_settled_now_list": (
         "dropped the Settled / Now progress list mid-interview"
     ),
+    "no_settled_on_clarification_retee": (
+        "repeated the Settled / Now progress list inside a clarification"
+        " re-tee instead of omitting it"
+    ),
     "settled_capped_at_five": (
         "listed more than five settled items without folding older ones"
     ),
+    "no_context_option_in_modal": (
+        "offered a trailing context option on a pure copy choice or procedural"
+        " gate"
+    ),
     "no_elaboration_option_in_modal": (
-        "offered a technical deep-dive option on a copy or layout decision"
+        "offered a trailing context option on a pure copy choice or procedural"
+        " gate"
+    ),
+    "has_context_option_in_modal": (
+        "omitted the trailing request-more-context option on a substantive"
+        " decision modal or used deprecated wording"
     ),
     "has_elaboration_option_in_modal": (
-        "omitted the technical deep-dive option on an infrastructure decision"
+        "omitted the trailing request-more-context option on a substantive"
+        " decision modal or used deprecated wording"
     ),
     "no_self_answered_risk_mitigation": (
         "answered its own devil's-advocate finding with a risk/mitigation list"
@@ -821,13 +1105,20 @@ def main():
     if promoted:
       best_text, best = cand_text, {"train": tr, "val": va}
       data["best"] = best
-      with open(os.path.join(EVALS_DIR, "best_arm_new_track_SKILL.md"), "w",
-                encoding="utf-8") as f:
+      tmp_dir = "/tmp/armature_skillopt_backups"
+      os.makedirs(tmp_dir, exist_ok=True)
+      with open(
+          os.path.join(tmp_dir, "best_arm_new_track_SKILL.md"),
+          "w",
+          encoding="utf-8",
+      ) as f:
         f.write(best_text)
     save_results(data)
   if args.apply and best_text != skill:
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M")
-    bak = os.path.join(ARMATURE_ROOT, SKILL_REL + f".bak_{stamp}")
+    tmp_dir = "/tmp/armature_skillopt_backups"
+    os.makedirs(tmp_dir, exist_ok=True)
+    bak = os.path.join(tmp_dir, f"arm_new_track_SKILL.md.bak_{stamp}")
     with open(bak, "w", encoding="utf-8") as f:
       f.write(skill)
     with open(os.path.join(ARMATURE_ROOT, SKILL_REL), "w", encoding="utf-8") as f:
