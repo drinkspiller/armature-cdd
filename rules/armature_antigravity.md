@@ -11,10 +11,27 @@ capabilities.
 
 ## Interactive Interview Rendering
 
--   **Dynamic Tool Detection:** When presenting choices to the user, inspect
-    your tool capabilities. If `ask_question` is available, MUST use it for
-    interactive UI modals. If unavailable, fall back to clean sequential text
-    formatting.
+-   **Dynamic Tool Detection & Two-Part Turn Contract:** When `ask_question` is
+    available, EVERY interactive question, brownfield setup gate,
+    Need-More-Context / `"zoom out"` / `"too vague"` clarification re-tee,
+    Devil's Advocate finding, ADR triage gate, and spec/plan review gate MUST
+    include **BOTH** parts in the **same response**:
+    1.  **Visible markdown text first (Mandatory First Output — Never Start With
+        a Tool Call):** Your response output MUST ALWAYS begin directly with the
+        non-empty visible markdown turn body (starting with `## Round …`, the
+        settled confirmation + `**Settled**` / `**Now**` list, or the
+        plain-English zoom-out explanation + `---` + rewritten `## Round …`
+        block) ending cleanly on the final `- Pick K if …` bullet with zero
+        transitional self-narration sentences. NEVER emit `ask_question` as the
+        first or only item in your response without writing the full markdown
+        body above it first (an empty message body hides all context,
+        trade-offs, recommendations, and `- Pick N if …` guidance from the
+        user), **AND**
+    2.  **Native `ask_question` tool call second:** Invoke the structured
+        `ask_question` tool call in that **same turn**. Never conclude an
+        interactive turn with markdown prose alone, and never emit a bare
+        `ask_question` call without the visible markdown body. If `ask_question`
+        is unavailable in the environment, fall back to clean sequential text.
 
 ## `ask_question` Best Practices
 
@@ -24,28 +41,24 @@ syntax displays as raw characters. Follow these rules:
 1.  **Short questions only.** The `question` field must be a single concise
     sentence (15 words or fewer). Never put analysis, findings, code references,
     or multi-line content in the question.
-2.  **Report first, ask second.** ALWAYS print your full analysis, findings,
-    candidate item lists, context, and code/spec quotes as regular markdown text
-    in your chat response FIRST before calling `ask_question`. Never ask the
-    user to evaluate or choose from items that were only described in your
-    internal thinking (`thought`) or summarized inside option labels. The modal
-    prompt must only ask the decision question.
-3.  **Options are the user's voice.** Each option reads as something the user
-    would say.
-4.  **Go beyond binary.** Prefer 3-4 meaningful options over Yes/No.
+2.  **Report first, ask second (in the same turn).** ALWAYS output your full
+    visible markdown body FIRST before calling `ask_question` in that same turn.
+    Never ask the user to evaluate or choose from items that were only described
+    in internal thinking (`thought`) or summarized inside option labels.
+3.  **Options match `<Option name>` in 1:1 order.** Place the recommended option
+    first (`1.`), copy each plain-English `<Option name>` (the phrase before `:`)
+    into `ask_question` options `1..K` in exact 1:1 order (prefixing Option 1
+    with `"(Recommended) "`), and never substitute `Pick N if …` clauses.
+4.  **Go beyond binary.** Prefer 2-3 concise options (at most 4) over Yes/No.
 5.  **No explicit 'Other' option needed** - the UI always provides a write-in.
-6.  **Clean markdown termination (Zero trailing meta-narration & Anti-Text-Only
-    Stall).** End your markdown response immediately after the final analysis or
-    rationale paragraph without transitional self-narration (e.g., never say *"I
-    will now ask for your decision on..."* or *"Let's call ask_question..."*),
-    and IMMEDIATELY emit the native `ask_question` tool call in the exact same
-    turn. You are STRICTLY FORBIDDEN from ending your turn with markdown prose
-    alone when presenting choices, rounds, or trade-offs.
-7.  **Native structured tool invocation only.** Invoke `ask_question`
-    exclusively as a structured tool call in the same turn as your markdown
-    analysis. NEVER output raw `call:ask_question{...}` strings inside the
-    markdown text stream, and NEVER omit `ask_question` when user input or a
-    decision is required.
+6.  **Clean markdown boundary & mandatory tool invocation.** Finish the visible
+    markdown response directly on the final `- Pick K if …` bullet without
+    transitional self-narration (never write *"I will now ask..."* or *"Let's
+    call ask_question..."*), and immediately invoke the native structured
+    `ask_question` tool call in the exact same turn. NEVER output raw
+    `call:default_api:ask_question{...}` strings inside the markdown stream, and
+    NEVER end a turn with markdown prose alone when presenting choices or
+    re-tees.
 
 ### Examples
 
@@ -61,11 +74,13 @@ options: ["Current files only", "Search past conversations and commits"]
 **GOOD - stakes, numbered options, recommendation, and Pick recap as text,
 question is short:**
 
-First, output the Interview Turn v2 body as regular markdown (unlabeled opener
-that says what changes for the user, numbered one-line options whose `<Option
-name>` states what happens in everyday words rather than coined architectural
-jargon, a `Safe to ignore for now` line, a one-sentence recommendation, and one
-`Pick N if …` recap line per numbered option; no blockquote cards, tables,
+First, output the Interview Turn v2 body as regular markdown (headline and
+unlabeled opener in plain everyday English anchored directly in familiar domain
+nouns from the user's request with zero code identifiers or backend systems
+jargon, numbered one-line options placing the recommended option first at `1.`
+whose `<Option name>` states what happens in everyday words, a `Safe to ignore
+for now` line, a one-sentence `### Recommendation: Option 1`, and one bulleted
+`- Pick N if …` recap line per numbered option; no blockquote cards, tables,
 icons, emoji, or `[!NOTE]` / `[!TIP]` callouts inside the interview turn block):
 
 ```markdown
@@ -73,42 +88,48 @@ icons, emoji, or `[!NOTE]` / `[!TIP]` callouts inside the interview turn block):
 
 This project already has a commit history and past sessions. If setup reads only
 the checked-out files, the reasons behind reverted approaches and undocumented
-trade-offs never make it into `product.md`, `tech-stack.md`, or the ADRs, and
-they get rediscovered the hard way later.
+trade-offs never make it into the setup docs and get rediscovered the hard way
+later.
 
 The choice here is which sources setup reads before drafting. Here are some options:
 
-1. Deep retroactive archaeology: mines commits and past transcripts in one pass; adds a few minutes before drafting
-2. Current snapshot only: fast and bounded to checked-out files; misses the history behind discarded approaches
+1. Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology): mines history in one batch pass; adds a few minutes before review
+2. Look only at current codebase contents (Current Snapshot Only): fast and bounded to checked-out files; misses the history behind discarded approaches
 
 Safe to ignore for now: transcript parsing, memory search ranking.
 
 ### Recommendation: Option 1
 Commit history is where the project's real invariants and discarded approaches live.
 
-Pick 1 if you want setup artifacts that explain why the code looks the way it does.
-Pick 2 if you only need a quick, file-based starting point.
+- Pick 1 if setup docs should capture why the codebase works the way it does.
+- Pick 2 if a quick file-only starting point is enough.
 ```
 
-Then call `ask_question`:
+Then call `ask_question` matching `<Option name>` from `1..K` directly in 1:1
+order (never replacing `<Option name>` with the `Pick N if` sentences):
 
 ```
 question: "How should Armature gather context to initialize this brownfield project?"
 options: [
-  "(Recommended) I want artifacts that explain why the code looks this way (Option 1)",
-  "A quick file-based starting point is enough (Option 2)",
-  "Customize scan sources (e.g., commits + files only, or manual description)"
+  "(Recommended) Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology)",
+  "Look only at current codebase contents (Current Snapshot Only)",
+  "Customize scan sources (e.g., commits + files only, or manual description)",
+  "I need more context, zoom out and give examples"
 ]
 ```
 
-The full `**Pros:**` / `**Cons:**` / `**Implications:**` blockquote cards are
-the Zoom-In View: render them only when the user selects the trailing "Compare
-technical trade-offs and failure modes in detail" option or replies "zoom in".
-If the user writes in that an option is too vague or asks to explain or zoom
-out, answer directly from conversation context with **zero `view_file` /
-`code_search` calls**, unpack the concrete user scenarios above the progress
-list, and **rewrite** the numbered options and `Pick N if` lines in plain
-everyday words (never copy-pasting the prior turn's wording verbatim).
+When the user selects `"I need more context, zoom out and give examples"` or
+writes in that an option is too vague / asks to explain or zoom out, answer
+directly from conversation context with **zero `view_file` / `code_search`
+calls**, **omit `**Settled**` / `**Now**` / `**Up next**` completely** (so
+nothing splits the explanation from the re-teed question), explain why the
+decision arises in the workflow with 1–2 concrete named domain examples, output
+`---`, and **rewrite** the headline, opener, numbered options (`1..K` matching
+`ask_question` directly), and bulleted `- Pick N if …` lines in plain everyday
+domain words (never copy-pasting the prior turn's wording verbatim) followed by
+`ask_question`. The full `**Pros:**` / `**Cons:**` / `**Implications:**`
+blockquote cards are the Zoom-In View and render strictly when the user
+explicitly writes in `"zoom in"`.
 
 **More examples:**
 

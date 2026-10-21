@@ -139,7 +139,7 @@ Autonomous coding agents move fast when given an execution loop, but velocity wi
 Most AI coding agents jump straight from a short prompt into file edits. When given underspecified requirements, models make silent assumptions about architecture, pick the first familiar pattern that emerges in their context window, and begin generating code without probing failure modes.
 
 The Grill Engine enforces a structured round-and-question interview before any implementation plan is drafted:
-- **Scannable Interview Turns (v2)**: Each turn opens with a one-line note on the last answer and a short progress list (Settled, Now, Up next; at most five settled items shown), then a `Round R, Question Q of N` headline, a plain-English opener that says what changes for the user depending on the answer, `The choice here is … Here are some options:`, numbered one-line options (benefit; cost), a `Safe to ignore for now` line, a one-sentence `Recommendation: Option N`, and a `Pick 1 if … / Pick 2 if …` recap whose conditions become the modal options. The full Pros / Cons / Implications cards render only on request (the "Compare technical trade-offs and failure modes in detail" option or "zoom in").
+- **Scannable Interview Turns (v2)**: Each turn opens with a one-line note on the last answer and a short progress list (Settled, Now, Up next; at most five settled items shown, omitted on pre-selection clarification turns), then a `Round R, Question Q of N` headline grounded in familiar domain nouns from the request, a plain-English opener free of code symbols and backend jargon, `The choice here is … Here are some options:`, numbered one-line options placing the recommended option first (`1. <Option name>: <benefit>; <cost>`), a `Safe to ignore for now` line, a one-sentence `Recommendation: Option 1`, and bulleted `- Pick N if …` recap lines. Modal choices match `<Option name>` in 1-to-1 order followed by `"I need more context, zoom out and give examples"`, which steps back with concrete workflow examples before re-teeing a rewritten question; full `Pros` / `Cons` / `Implications` cards render on explicit `"zoom in"` write-ins.
 - **Dynamic Question Traversal**: Traverses edge cases, concurrency boundaries, error recovery, and security scope up to Depth 2 without unconfirmed dictation.
 - **Post-Interview Devil's Advocate (Phase 5b)**: When all rounds and sub-questions resolve, stress-tests the confirmed design against emergent contradictions, operational hazards, and failure cascades one-by-one.
 - **Pre-Spec ADR Triage Gate (Phase 5c)**: Audits settled decisions against the 3-Pillar Invariant Taxonomy before drafting `spec.md`, offering immediate formalization.
@@ -209,13 +209,13 @@ Armature is benchmarked against alternative Spec-Driven Development (SDD) and Co
 
 | Rank | Framework | Composite Score | Pass Rate (95% CI) | Avg Tokens / Task | Key Takeaway |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **#1** | **Armature (OSS)** *(this)* | **88.0 / 100** | **87.5%** (105/120, ±5.9%) | 3377 tokens | High drift governance (100.0%), detour resilience (100.0%), state safety (91.7%), and surgical velocity (75.0%). |
-| **#2** | **BMAD Method** | **70.0 / 100** | **70.0%** (84/120, ±8.2%) | 2710 tokens | Multi-agent agile role separation with strong safety guardrails (83.3%); high ceremony on surgical micro-fixes. |
-| **#3** | **GitHub Spec Kit** | **61.7 / 100** | **61.7%** (74/120, ±8.7%) | 2712 tokens | Spec-first rigor with 100% detour resilience; heavy planning ceremony and coordination tax on hotfixes (33.3%). |
-| **#4** | **Wayfinder** | **57.5 / 100** | **57.5%** (69/120, ±8.8%) | 3869 tokens | Breadth-first frontier decision mapping; strong detour resilience (95.8%), but high ceremony and token footprint. |
-| **#5** | **Conductor (Canonical Upstream CLI)** | **49.2 / 100** | **49.2%** (59/120, ±8.9%) | 2542 tokens | Efficient linear track orchestration; lacks multi-turn question resolution and OCC analysis. |
-| **#6** | **OpenSpec** | **45.0 / 100** | **45.0%** (54/120, ±8.9%) | 1581 tokens | Compact token footprint (1581 avg); critical failures in drift governance (20.8%) and destructive execution gates. |
-| **#7** | **Memory Bank (Cline / Roo Code)** | **36.7 / 100** | **36.7%** (44/120, ±8.6%) | 2023 tokens | Stateful markdown memory for detours; total absence of drift governance (0%) and architectural contract gating. |
+| **#1** | **Armature (OSS)** *(this)* | **75.8 / 100** | **75.8%** (91/120, ±7.7%) | 4436 tokens | Leads in detour resilience (100.0%), drift governance (91.7%), and surgical velocity (70.8%); higher token footprint per task. |
+| **#2** | **BMAD Method** | **70.8 / 100** | **70.8%** (85/120, ±8.1%) | 4031 tokens | Strongest execution safety guardrails (83.3%) and drift governance (83.3%); high multi-role ceremony on surgical micro-fixes. |
+| **#3** | **OpenSpec** | **63.3 / 100** | **63.3%** (76/120, ±8.6%) | 2234 tokens | Lowest token footprint (2234 avg) and strong detour resilience (95.8%); weak upfront contract gating (37.5%) and proposal overhead on trivial edits. |
+| **#4** | **Conductor (Canonical Upstream CLI)** | **61.7 / 100** | **61.7%** (74/120, ±8.7%) | 2972 tokens | Consistent detour handling (91.7%) and balanced token usage; lacks destructive-teardown refusal gates and multi-turn trade-off resolution. |
+| **#5** | **GitHub Spec Kit** | **60.0 / 100** | **60.0%** (72/120, ±8.8%) | 3441 tokens | Highest specification and plan gating (62.5%) with strong detour handling (91.7%); heavy PRD ceremony on single-line hotfixes (16.7% velocity). |
+| **#6** | **Memory Bank (Cline / Roo Code)** | **59.2 / 100** | **59.2%** (71/120, ±8.8%) | 3711 tokens | Reliable context retention across technical detours (95.8%); bypasses upfront specification gates (25.0%) with markdown churn on micro-patches. |
+| **#7** | **Wayfinder** | **49.2 / 100** | **49.2%** (59/120, ±8.9%) | 3099 tokens | Strong detour context preservation (95.8%); planning-only stance penalizes surgical velocity (25.0%) and destructive-command safety gates (29.2%). |
 
 ---
 
@@ -327,5 +327,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.31.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.32.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 

@@ -31,6 +31,7 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import datetime
 import json
 import math
@@ -44,8 +45,13 @@ import urllib.error
 import urllib.request
 
 API_KEY = os.environ.get("GEMINI_API_KEY")
-TARGET_MODEL = "gemini-3-flash-preview"
-JUDGE_MODEL = "gemini-3-flash-preview"
+TARGET_MODEL = "gemini-flash-latest"
+JUDGE_MODEL = "gemini-flash-latest"
+FALLBACK_MODELS = [
+    "gemini-flash-latest",
+    "gemini-2.5-flash",
+    "gemini-3-flash-preview",
+]
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 FRAMEWORKS_FILE = os.path.join(SCRIPT_DIR, "configs", "frameworks.json")
@@ -219,44 +225,21 @@ def call_gemini(
         return "", 0
     except urllib.error.HTTPError as e:
       err_body = e.read().decode("utf-8") if e.fp else str(e)
-      if e.code == 404 and model == "gemini-3.7-flash":
-        print(
-            f"  [Fallback] Model {model} returned 404. Falling back to"
-            " gemini-3.5-flash..."
-        )
-        return call_gemini(
-            "gemini-3.5-flash",
-            contents,
-            system_instruction,
-            temperature,
-            max_retries,
-        )
-      elif e.code == 404 and model == "gemini-3.1-pro-preview":
-        print(
-            f"  [Fallback] Model {model} returned 404. Falling back to"
-            " gemini-pro-latest..."
-        )
-        return call_gemini(
-            "gemini-pro-latest",
-            contents,
-            system_instruction,
-            temperature,
-            max_retries,
-        )
-      elif e.code in (429, 500, 503):
-        if attempt >= 2 and model == "gemini-3.7-flash":
+      if e.code in (404, 429, 500, 503):
+        next_models = [m for m in FALLBACK_MODELS if m != model]
+        if next_models and (e.code == 404 or attempt >= 2):
+          alt = next_models[(attempt - 1) % len(next_models)]
           print(
-              f"  [Failover on HTTP {e.code}] Failing over from {model} to"
-              " gemini-3.5-flash..."
+              f"  [Failover on HTTP {e.code}] Switching from {model} to {alt}..."
           )
           return call_gemini(
-              "gemini-3.5-flash",
+              alt,
               contents,
               system_instruction,
               temperature,
-              max_retries,
+              max(1, max_retries - 1),
           )
-        sleep_sec = 2 * attempt
+        sleep_sec = min(4, attempt)
         print(
             f"  [HTTP {e.code}] Retrying in {sleep_sec}s (attempt"
             f" {attempt}/{max_retries})..."
@@ -1310,6 +1293,12 @@ def main():
       help="Enable 3-judge ensemble consensus scoring with majority voting",
   )
   parser.add_argument(
+      "--workers",
+      type=int,
+      default=12,
+      help="Maximum concurrent scenario worker threads per framework",
+  )
+  parser.add_argument(
       "--report_only",
       action="store_true",
       help=(
@@ -1421,60 +1410,68 @@ def main():
   detailed_results: Dict[str, Any] = {}
   summary_results: Dict[str, Any] = {}
 
+  def _eval_fw_scenario(
+      fw_key: str, sc: Dict[str, Any]
+  ) -> Tuple[str, str, Dict[str, Any], Dict[str, Any]]:
+    fw_cfg = frameworks[fw_key]
+    sc_id = sc["id"]
+    rollout = run_scenario_rollout(
+        fw_key, fw_cfg, sc, target_model=args.target_model
+    )
+    eval_res = evaluate_trajectory_with_judge(
+        fw_key,
+        sc,
+        rollout,
+        judge_model=args.judge_model,
+        multi_judge=args.multi_judge,
+    )
+    return fw_key, sc_id, rollout, eval_res
+
+  ordered_by_fw: Dict[str, Dict[str, Tuple[Dict[str, Any], Dict[str, Any]]]] = {
+      fw_key: {} for fw_key in target_fws
+  }
+  total_jobs = len(target_fws) * len(target_scens)
+  completed_jobs = 0
+  with concurrent.futures.ThreadPoolExecutor(
+      max_workers=max(1, args.workers)
+  ) as pool:
+    future_map = {
+        pool.submit(_eval_fw_scenario, fw_key, sc): (fw_key, sc)
+        for fw_key in target_fws
+        for sc in target_scens
+    }
+    for fut in concurrent.futures.as_completed(future_map):
+      fw_key, sc = future_map[fut]
+      _, sc_id, rollout, eval_res = fut.result()
+      ordered_by_fw[fw_key][sc_id] = (rollout, eval_res)
+      completed_jobs += 1
+      passed = eval_res["passed_count"]
+      tot = eval_res["total_criteria"]
+      score_color = GREEN if passed == tot else (YELLOW if passed > 0 else RED)
+      print(
+          f"  [{completed_jobs}/{total_jobs}] [{fw_key}] {BOLD}{sc_id}{RESET}:"
+          f" {score_color}{passed}/{tot} ({int(eval_res['score']*100)}%){RESET}"
+          f" | {rollout['total_tokens']} tok | {rollout['elapsed_seconds']}s",
+          flush=True,
+      )
+
   for fw_key in target_fws:
     fw_cfg = frameworks[fw_key]
     fw_name = fw_cfg["name"]
-    print(
-        f"\n{BOLD}{CYAN}------------------------------------------------------------------------{RESET}"
-    )
-    print(
-        f"{BOLD}▶ Running Framework Evaluation: {YELLOW}{fw_name}{RESET}"
-        f" ({fw_cfg['paradigm']})"
-    )
-    print(
-        f"{BOLD}{CYAN}------------------------------------------------------------------------{RESET}"
-    )
-
     fw_scenarios_results: Dict[str, Any] = {}
     total_passed = 0
     total_criteria = 0
     total_tokens = 0
+    ordered_results = ordered_by_fw[fw_key]
 
     for sc in target_scens:
       sc_id = sc["id"]
-      print(f"\n  [Scenario] {BOLD}{sc_id}{RESET}: {sc['description']}")
-
-      # 1. Multi-turn rollout
-      rollout = run_scenario_rollout(
-          fw_key, fw_cfg, sc, target_model=args.target_model
-      )
-      total_tokens += rollout["total_tokens"]
-
-      # 2. Judge evaluation with blinded identity
-      eval_res = evaluate_trajectory_with_judge(
-          fw_key,
-          sc,
-          rollout,
-          judge_model=args.judge_model,
-          multi_judge=args.multi_judge,
-      )
+      rollout, eval_res = ordered_results[sc_id]
       passed = eval_res["passed_count"]
       tot = eval_res["total_criteria"]
+      total_tokens += rollout["total_tokens"]
       total_passed += passed
       total_criteria += tot
-
-      score_color = GREEN if passed == tot else (YELLOW if passed > 0 else RED)
-      print(
-          f"    -> Score: {score_color}{passed}/{tot} criteria passed"
-          f" ({int(eval_res['score']*100)}%){RESET} | Tokens:"
-          f" {rollout['total_tokens']} | Latency: {rollout['elapsed_seconds']}s"
-      )
-      for ev in eval_res["evaluations"]:
-        mark = f"{GREEN}✓{RESET}" if ev.get("passed") else f"{RED}✗{RESET}"
-        print(f"       {mark} {ev.get('criterion_text')}")
-        if not ev.get("passed"):
-          print(f"         {YELLOW}Why: {ev.get('reason')}{RESET}")
-
       fw_scenarios_results[sc_id] = {
           "passed_count": passed,
           "total_criteria": tot,

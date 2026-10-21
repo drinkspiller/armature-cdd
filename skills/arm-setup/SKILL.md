@@ -117,15 +117,15 @@ project).
     -   If indicators are found, this is a **Brownfield** project.
         -   **Report & Interview Turn v2**: Output a brief markdown summary
             reporting the detected brownfield indicators, then the Interview
-            Turn v2 body: an unlabeled opener stating what changes for the user
-            depending on the scope (history-backed artifacts versus a quick
+            Turn v2 body: an unlabeled opener stating what changes in practice
+            depending on the scope (history-backed setup docs versus a quick
             file-based start) ending in `The choice here is which sources setup
             reads before drafting. Here are some options:`, numbered one-line
-            options contrasting **Deep Retroactive Archaeology** (searching past
-            conversations, VCS commit history, and current codebase contents)
-            against **Current Snapshot Only** (inspecting only current on-disk
-            files), a `Safe to ignore for now:` line, `### Recommendation:
-            Option N` with one sentence, and `Pick N if …` lines.
+            options placing `1. Search past conversations, commit history, and
+            current codebase (Deep Retroactive Archaeology): ...` first and `2.
+            Look only at current codebase contents (Current Snapshot Only): ...`
+            second, a `Safe to ignore for now:` line, `### Recommendation:
+            Option 1` with one sentence, and bulleted `- Pick N if …` lines.
             -   In the Deep Retroactive Archaeology option line and the
                 recommendation sentence, explicitly state that it mines VCS
                 commits and past session transcripts to inform all setup
@@ -135,17 +135,24 @@ project).
                 ("Ralph loop")** across all setup artifacts in one uninterrupted
                 pass—pausing **once** at a **Single Unified Review Gate** before
                 committing rather than prompting on every individual file.
-        -   **Context Discovery Scope Gate**: End your markdown immediately
-            after the last `Pick N if …` line (with zero trailing
-            self-narration) and invoke `ask_question` in the same turn:
+        -   **Context Discovery Scope Gate (Two-Part Turn Contract)**: Output
+            **BOTH** non-empty visible markdown (finishing directly on the final
+            `- Pick 2 if …` bullet with zero trailing self-narration and keeping
+            the Interview Turn v2 block `<= 165` words total) **AND** a native
+            structured `ask_question` tool call in that **exact same turn**
+            (never stop with markdown text alone, and never emit a bare
+            `ask_question` call without visible markdown), matching `<Option
+            name>` from `1..2` directly in 1:1 order:
             -   *Question*: `"How should Armature gather context to initialize
                 this brownfield project?"`
             -   *Options*:
-                1.  `"(Recommended) I want artifacts that explain why the code
-                    looks this way (Option 1)"`
-                2.  `"A quick file-based starting point is enough (Option 2)"`
+                1.  `"(Recommended) Search past conversations, commit history,
+                    and current codebase (Deep Retroactive Archaeology)"`
+                2.  `"Look only at current codebase contents (Current Snapshot
+                    Only)"`
                 3.  `"Customize scan sources (e.g., commits + files only, or
                     manual description)"`
+                4.  `"I need more context, zoom out and give examples"`
         -   **Execution by Selected Scope**:
             -   **If Option 1 (Deep Retroactive Archaeology — Current +
                 Commits + Conversations) is selected**:
@@ -220,8 +227,11 @@ project).
                 (`manual_testing/<domain>.md`).
             -   Notify the user with `PathsToReview` pointing to the generated
                 files.
-        -   **Single Unified Review Gate**: End your markdown response cleanly
-            (zero trailing self-narration) and invoke `ask_question` once:
+        -   **Single Unified Review Gate (Mandatory Two-Part Response: `text` +
+            `functionCall: ask_question`)**: Emit **BOTH** the visible **Unified
+            Setup Review Summary** markdown (with zero trailing self-narration)
+            **AND** a structured `ask_question` `functionCall` in that **exact
+            same turn**:
             -   *Question*: `"How would you like to proceed with the synthesized
                 setup artifacts?"`
             -   *Options*:
