@@ -142,6 +142,7 @@ The Grill Engine enforces a structured round-and-question interview before any i
 - **Scannable Interview Turns (v2)**: Each turn opens with a one-line note on the last answer and a short progress list (Settled, Now, Up next; at most five settled items shown, omitted on pre-selection clarification turns), then a `Round R, Question Q of N` headline grounded in familiar domain nouns from the request, a plain-English opener free of code symbols and backend jargon, `The choice here is … Here are some options:`, numbered one-line options placing the recommended option first (`1. <Option name>: <benefit>; <cost>`), a `Safe to ignore for now` line, a one-sentence `Recommendation: Option 1`, and bulleted `- Pick N if …` recap lines. Modal choices match `<Option name>` in 1-to-1 order followed by `"I need more context, zoom out and give examples"`, which steps back with concrete workflow examples before re-teeing a rewritten question; full `Pros` / `Cons` / `Implications` cards render on explicit `"zoom in"` write-ins.
 - **Dynamic Question Traversal**: Traverses edge cases, concurrency boundaries, error recovery, and security scope up to Depth 2 without unconfirmed dictation.
 - **Post-Interview Devil's Advocate (Phase 5b)**: When all rounds and sub-questions resolve, stress-tests the confirmed design against emergent contradictions, operational hazards, and failure cascades one-by-one.
+- **Execution-Ready Specification & Plan Grounding Standard (`ADR 0016`)**: While the Step 5 human interview stays strictly in plain everyday English with zero code identifiers, Step 6 (`spec.md`) and Step 7 (`plan.md`) pivot audience to the downstream execution agent (potentially a smaller or faster worker model operating with zero prior conversation context). By default, `spec.md` and `plan.md` translate settled plain-English choices into verified target file paths, non-obvious imports and build/package manifests, verified symbol/wrapper/element types, 1-line method signatures with exact parameter arity, prerequisite sub-tasks to expose `private` methods/getters/hooks, bidirectional UI-to-wire field bijections and server validation preconditions, self-contained state machines with reload echo-suppression flags, and unit-test fixture overrides—while strictly forbidding multi-line implementation code blocks inside `spec.md` or `plan.md`.
 - **Pre-Spec ADR Triage Gate (Phase 5c)**: Audits settled decisions against the 3-Pillar Invariant Taxonomy before drafting `spec.md`, offering immediate formalization.
 
 ### Architectural Decision Records (`adr/`)
@@ -327,5 +328,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.33.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.34.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 

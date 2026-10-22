@@ -19,14 +19,15 @@ capabilities.
     1.  **Visible markdown text first (Mandatory First Output — Never Start With
         a Tool Call):** Your response output MUST ALWAYS begin directly with the
         non-empty visible markdown turn body (starting with `## Round …`, the
-        settled confirmation + `**Settled**` / `**Now**` list, or the
-        plain-English zoom-out explanation + `---` + rewritten `## Round …`
-        block) ending cleanly on the final `- Pick K if …` bullet with zero
-        transitional self-narration sentences. NEVER emit `ask_question` as the
-        first or only item in your response without writing the full markdown
-        body above it first (an empty message body hides all context,
-        trade-offs, recommendations, and `- Pick N if …` guidance from the
-        user), **AND**
+        settled confirmation + `**Settled**` / `**Now**` list, the plain-English
+        zoom-out explanation + `---` + rewritten `## Round …` block, `###
+        Convergence Summary` in Step 6 before writing `spec.md`, or `### Step 7:
+        Implementation Plan Summary` in Step 7 before writing `plan.md`). NEVER
+        emit `ask_question` or `write_to_file` as the first item in your
+        response without writing the visible markdown summary/body above it
+        first (an empty message body hides all context, trade-offs,
+        convergence/plan summaries, and `- Pick N if …` guidance from the user),
+        **AND**
     2.  **Native `ask_question` tool call second:** Invoke the structured
         `ask_question` tool call in that **same turn**. Never conclude an
         interactive turn with markdown prose alone, and never emit a bare

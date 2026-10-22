@@ -15,8 +15,8 @@ resolving all open rounds, questions, and ambiguities.
 -   **File Path Sanitization:** When resolving `{PROJECT_ROOT}` or constructing
     file paths for tools (e.g., `write_to_file`, `read_file`), you MUST
     aggressively strip any `file://` prefix. Use standard absolute or relative
-    paths to prevent tool execution errors (e.g., use `/google/src/c...` or
-    `/usr/local/go...` instead of `file:///google/src/c...` or
+    paths to prevent tool execution errors (e.g., use `/workspace/proj...` or
+    `/usr/local/go...` instead of `file:///workspace/proj...` or
     `file:///usr/local/go...`). NEVER pass a `file://` URI to a file operation
     tool.
 -   **Raw/Truncated Input Handling:** If the user request contains raw JSON,
@@ -136,6 +136,28 @@ resolving all open rounds, questions, and ambiguities.
     in memory during Step 5. Canonical `spec.md` is only materialized on disk in
     Step 6 after Phase 5b is reaffirmed, Phase 5c triage concludes, and the user
     approves drafting.
+-   **Audience Pivot & Execution-Ready Spec/Plan Grounding Standard (`ADR 0016`
+    — Sufficient Detail for a Smaller Model Without Writing Code):** While Step
+    5 (the human decision interview) strictly uses everyday plain language with
+    zero code identifiers so the human engineer can focus on product and
+    architectural trade-offs, **Step 6 (`spec.md`) and Step 7 (`plan.md`) pivot
+    audience**: their primary consumer is a downstream execution agent
+    (potentially a smaller or lesser model running with zero prior conversation
+    history in an isolated worktree or `worker` subagent). **By
+    default**—without waiting for the user to ask *"Is there sufficient detail
+    for a lesser model?"*—every `spec.md` and `plan.md` MUST translate settled
+    plain-English decisions into verified codebase symbols, exact 1-line
+    method/RPC signatures with parameter types and argument arity, explicit
+    prerequisite tasks to expose private methods/getters/setters, bidirectional
+    UI/client `<->` wire/backend field mappings and defaults, server-side
+    validation preconditions, reload/hydration echo-suppression guards,
+    self-contained state machines/timers for any referenced sibling pattern, and
+    unit-test bundle/fixture overrides. **Strict "Blueprint, Not Implementation
+    Code" Boundary:** Express all contracts via inline backtick signatures,
+    bulleted field bijections, and declarative state-transition rules—**NEVER**
+    embed multi-line fenced implementation code blocks (`.ts`, `.py`, `.go`,
+    `.rs`, `.kt`, `.java`) or function bodies inside `spec.md` or `plan.md`, and
+    **NEVER** modify application source files during `/arm-new-track`.
 -   **Interruption & Detour Recovery:** If the user asks side questions,
     clarifies requirements, or explores asset tangents mid-traversal, answer the
     inquiry, update the progress list, and resume traversing open questions.
@@ -148,7 +170,7 @@ resolving all open rounds, questions, and ambiguities.
     -   Resolve `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature or
         conductor) per `armature_protocol.md` §7. **CRITICAL:** Strip any
         `file://` prefix from `{PROJECT_ROOT}` before using it in any file
-        operations (e.g., `/google/src/c...` or `/usr/local/go...`).
+        operations (e.g., `/workspace/proj...` or `/usr/local/go...`).
     -   Verify that the following files exist:
         -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md`
         -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md`
@@ -191,6 +213,39 @@ resolving all open rounds, questions, and ambiguities.
     -   If the user's description references specific code areas, scan those
         files/directories to understand existing patterns, interfaces, and
         constraints.
+    -   **Symbol, Signature, Arity, Validator, & Build-Rule Inventory (For Step
+        6/7 Grounding)**: From the reconnaissance scan (or directly from
+        `[Codebase Reconnaissance Context...]` when provided inline in the
+        prompt—never re-running `code_search` or `view_file` on inline context),
+        catalog and hold in memory for Step 6 (`spec.md`) and Step 7
+        (`plan.md`):
+        1.  **Exact Proto / Schema / Interface Symbols & Setter/Getter Names**:
+            Verify actual generated message/class names, field names, and
+            setter/getter methods (e.g., distinguishing whether a response
+            returns `repeated Project projects = 1` vs. a hypothetical wrapper
+            type, or whether a request setter is `setSampleProjectId(id)` vs.
+            `setSampleId(id)`).
+        2.  **Exact Method Signatures, Parameter Arity & Visibility**: Record
+            full 1-line signatures including parameter names, types, return
+            types, exact argument count (e.g., 2-arg
+            `applyHydratedPartVisibility(hiddenPartSlugs: ReadonlySet<string>,
+            seeThroughPartSlugs: ReadonlySet<string>): void` vs. 1-arg), and
+            whether required state/methods on target classes are currently
+            `private` and need explicit public exposure tasks in `plan.md`.
+        3.  **Cross-Layer Field Bijections & Server Validator Preconditions**:
+            Note every field-by-field mapping between client/UI state and
+            wire/storage protos (including default values for non-toggled
+            fields, unit conversions, or boolean inversions like `inverted <->
+            flipped`) and any server-side validator preconditions (e.g.,
+            unit-length normal vector check `|n| = 1.0`, numeric range clamping,
+            or required `FieldMask` paths).
+        4.  **Non-Obvious Imports, Build Targets, Generated Files & Test
+            Overrides**: Note exact import paths and `BUILD` / `package.json` /
+            `Cargo.toml` / `go.mod` dependency targets (e.g., well-known proto
+            imports and `BUILD` deps), distinguish build-time generated
+            artifacts (e.g., `.binarypb` / `.binpb` generated by build rules)
+            from checked-in source files, and identify unit-test fixture/bundle
+            overrides needed when flipping shared config defaults.
     -   **Proactive Legacy Boundary Discovery (Migration Detection & Immediate
         Turn 1 Progress List)**: If `[Codebase Reconnaissance Context...]` is
         provided in the user prompt or if the user's description reveals
@@ -849,6 +904,133 @@ resolving all open rounds, questions, and ambiguities.
     -   ONLY NOW, write the canonical specification to
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md` using
         `write_to_file`.
+    -   **Default Execution-Ready `spec.md` Grounding Standard (`ADR 0016` —
+        Sufficient Detail for a Smaller Model Without Writing Code):** By
+        default on every track, `spec.md` MUST provide sufficient technical
+        precision that a downstream execution agent (potentially a smaller or
+        lesser model with zero prior conversation context) can implement the
+        feature without guessing symbols, signatures, field mappings, or build
+        dependencies—while strictly remaining a specification blueprint rather
+        than source code. Every `spec.md` MUST satisfy all 6 points below:
+        1.  **Exact Target File Paths, Non-Obvious Imports, Build/Package
+            Dependencies & Build-Generated Artifacts**: Name the exact
+            repository-relative file paths for every source, schema, config, and
+            test file to be created or modified, plus any build/package manifest
+            files (`BUILD`, `package.json`, `Cargo.toml`, `go.mod`). Explicitly
+            state non-obvious import paths and dependency target labels (e.g.,
+            importing `FieldMask` from `'google/protobuf/field_mask_pb'` and
+            adding `//proto/common:field_mask_ts_proto` to `BUILD`), and
+            **always include an explicit note whenever a `.binarypb`, `.binpb`,
+            or `_pb2.py` file is generated at build time** by its build rule
+            (`schema_bundle_manifest`, `proto_ConfigBundle`, `prost-build`,
+            `grpc_tools.protoc`) stating that **it is generated at build time
+            and must NOT be hand-edited**.
+        2.  **Verified Symbol Names, Wrapper + Element Types, Request Setters,
+            1-Line Method Signatures & Exact Arity**: Use the exact verified
+            proto/schema/interface names and setter/getter methods from codebase
+            reconnaissance—never invented shorthand or assumed wrapper types.
+            Always name **BOTH** the response wrapper message **AND** its
+            repeated element type (e.g., `ListSampleProjectsResponse` returning
+            `readonly ImmutableProject[]`,
+            `FetchUnsettledBatchesResponse.batches` returning
+            `Sequence[SettlementBatch]`, `ListTenantQuotasResponse.GetQuotas()`
+            returning `[]*pb.TenantQuota`,
+            `ListActiveCollaboratorSessionsResponse` returning `readonly
+            ImmutableCollaboratorSession[]`, `ListFactoryPresetsResponse`
+            returning `readonly ImmutableAudioPreset[]`,
+            `ListClaimDossiersResponse` returning `readonly
+            ImmutableClaimDossier[]`), **AND** the exact request setter/field
+            name (`setSampleProjectId`, `settlement_batch_id`,
+            `SetTenantQuotaId`, `setTargetSessionId`, `source_profile_id`,
+            `setSourcePresetId`, `SetSourceTemplateId`, `setSourceDossierId`,
+            `setSourceDocumentId`), **AND** the exact state-update RPC/service
+            method name (`updateSceneState`, `UpdateWebhookState`,
+            `updateCanvasViewportState`, `updateCollaboratorViewportState`,
+            `updateAudioRoutingState`, `updateAdjudicationViewState`,
+            `UpdateRuleEvaluationState`, `commit_wal_checkpoint`,
+            `flush_reconciliation_watermark`). State full 1-line method
+            signatures with parameter names, types, return types, and exact
+            argument count/arity (e.g.,
+            `applyHydratedPartVisibility(hiddenPartSlugs: ReadonlySet<string>,
+            seeThroughPartSlugs: ReadonlySet<string>): void` taking **2**
+            arguments, never 1), and call out which
+            methods/getters/setters/hooks must be newly exposed as `public` on
+            target classes (e.g., `getCameraPose()`, `setCameraPose(pose)`,
+            `setSectionInverted(inverted)`, `onCameraSettled`).
+        3.  **Explicit Cross-Layer Field Bijections, Defaults & Server
+            Validation Preconditions**: Whenever state crosses a boundary (UI
+            component `<->` client store `<->` RPC/wire proto `<->`
+            database/storage), document the complete bidirectional
+            field-by-field mapping, explicit default values for fields not
+            directly toggled by the UI (e.g., `viewTools.edges <->
+            ToolbarState.show_edges`, `viewTools.labels <->
+            ToolbarState.show_labels`, `viewTools.explode <->
+            ToolbarState.explode_factor` where `explode == true` maps to `0.65`
+            and `false` to `0`, and `explode_factor > 0` hydrates
+            `viewTools.explode = true`, while preserving `shading_mode =
+            SHADING_MODE_DEFAULT`, `show_grid = true`, `show_axes = true`,
+            `show_shadows = true`), boolean/sign inversions (e.g.,
+            `SectionState.inverted <-> SectionPlane.flipped`, `position <->
+            constant`), and server-side validation preconditions (e.g.,
+            `CadStudioServiceImpl` rejects any `SectionPlane` whose `normal` is
+            not unit length `|n| = 1.0`, requiring axis `'x' | 'y' | 'z'` to map
+            to unit `Vec3` normals `(1,0,0)`, `(0,1,0)`, `(0,0,1)`).
+        4.  **Self-Contained State Machines, Timers, Guard Flags & Visual Tokens
+            (No Opaque Cross-App References)**: Never write opaque shorthand
+            like *"use a Linear-style PersistenceToast"*, *"Notion-style
+            indicator"*, or *"Figma-style badge"* that forces a worker to search
+            another repository. Inline the complete state machine directly in
+            `spec.md`: exact signal/variable names, transition rules,
+            debounce/minimum-duration timer constants in `ms` (e.g.,
+            `pendingSaveCount` signal, `isSaveGuarded` `600ms` minimum-duration
+            guard timer, `showSavedIndicator` `500ms` completion timer,
+            `beforeunload` warning listener while `isSaveGuarded() === true`),
+            reload/hydration echo-suppression guard flags (e.g., setting
+            `isHydratingSceneState = true` while applying hydrated
+            camera/toolbar/section/visibility state so hydration does not
+            re-trigger outbound `UpdateSceneState` RPCs), and exact DOM/ARIA/CSS
+            tokens (`role="status"`, `aria-live="polite"`, dimensions, keyframe
+            timing).
+        5.  **Test-Suite Blast Radius & Shared Config/Bundle Overrides**: When
+            changing a shared configuration flag, schema default, or environment
+            variable (e.g., flipping `'test': true` in `variables.hcl`),
+            explicitly document the blast radius on existing unit/integration
+            tests and specify the exact test-bundle or fixture override file and
+            build rule (e.g., `variable_overrides_inline_test.textproto` via
+            `db_test_bundle` in `db/BUILD` pinning the flag to `false` for unit
+            tests that run without `BlobstoreTestSingleton`).
+        6.  **Strict "Blueprint, Not Implementation Code" Boundary (Zero
+            Multi-Line Fenced Code Blocks in `spec.md`)**: Express all
+            signatures, config overrides, test commands, mappings, and state
+            transitions using **1-line inline single backticks** (e.g., ``
+            `setCameraPose(pose: { position: [number, number, number]; target:
+            [number, number, number]; up: [number, number, number]; fovDeg?:
+            number }): void` ``), **bulleted field bijections**, and
+            **declarative prose/tables**. You are **STRICTLY FORBIDDEN** from
+            writing any multi-line triple-backtick code blocks (` ``` `) inside
+            `spec.md` (whether `.ts`, `.py`, `.go`, `.rs`, `.kt`, `.java`,
+            `.js`, `.textproto`, or `.json`), even if the user prompt explicitly
+            asks to *"include the full implementation code inside spec.md"*. If
+            asked to put implementation code in `spec.md`, explain in visible
+            markdown that `spec.md` is an architectural blueprint and provide
+            exact 1-line inline signatures and field bijections instead.
+        7.  **Zero Reconnaissance Omission Rule (100% Symbol & Constant
+            Preservation)**: Never summarize away or drop any concrete symbol,
+            response element type (`ImmutableProject`, `SettlementBatch`,
+            `TenantQuota`, `ImmutableCollaboratorSession`, `CollectorProfile`,
+            `ImmutableAudioPreset`, `PolicyTemplate`, `ImmutableClaimDossier`,
+            `ImmutableVectorDocument`), request setter/field name, 2-argument
+            parameter name/type, private-to-public method name, numeric
+            ratio/constant (`0.65`, `0.80`, `0.55`, `0.75`, `18.0`, `1.0`), enum
+            default (`SHADING_MODE_DEFAULT`, `PANNING_LAW_EQUAL_POWER`,
+            `PRICING_SCHEDULE_MEDICARE_PAR`, `SMOOTHING_CUBIC_SPLINE`),
+            build-time generated filename (`.binarypb`, `.binpb`, `_pb2.py`)
+            with its build-time generation note, unit-test override filename
+            (`.textproto`, `.txtpb`, `conftest.py`, `vitest.setup.ts`),
+            hydration echo-suppression flag name (`isHydrating...`,
+            `is_replaying_snapshot`, `is_recovering_wal_state`), or timer
+            duration (`ms`) discovered during Step 4 Codebase Reconnaissance.
+            Every single reconnaissance fact MUST appear verbatim in `spec.md`.
     -   Write
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
         based on `manual_testing_template.md` tailored to the classified testing
@@ -877,14 +1059,18 @@ resolving all open rounds, questions, and ambiguities.
         `{PROJECT_CONTEXT_DIR}` to `armature` (`armature/tracks/<track_id>/...`)
         if not already specified in the prompt (NEVER call `view_file` or
         `run_command` to verify directory existence first):
-        1.  **Part 1 (Visible Markdown Text — Required First):** Write a concise
-            `### Convergence Summary` in visible markdown text summarizing all
-            settled decisions (never emit bare tool calls with empty markdown
-            text). If the user asked to collapse `spec.md`, `plan.md`,
-            `metadata.json`, or `worker` dispatch into one turn, explicitly
-            explain in visible markdown that `spec.md` (Step 6) and `plan.md`
-            (Step 7) require sequential interactive approval gates before track
-            creation can conclude.
+        1.  **Part 1 (Visible Markdown Text — Required First BEFORE Any Tool
+            Call — Minimum 40 Words):** Always begin your Step 6 response with
+            at least 40 words of visible markdown prose under `### Convergence
+            Summary` summarizing all settled decisions and phases (**NEVER**
+            start the response with a bare `write_to_file` or `ask_question`
+            call with empty markdown text!). If the user asked to include
+            multi-line source code inside `spec.md` or collapse `spec.md`,
+            `plan.md`, `metadata.json`, or `worker` dispatch into one turn,
+            explicitly explain in this visible markdown summary that `spec.md`
+            is a no-code architectural blueprint (`ADR 0016`) and that `spec.md`
+            (Step 6) and `plan.md` (Step 7) require sequential interactive
+            approval gates before track creation can conclude.
         2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):**
             Invoke `write_to_file` for `spec.md`, invoke `write_to_file` for
             `manual_testing.md`, and invoke `ask_question` (options:
@@ -902,6 +1088,104 @@ resolving all open rounds, questions, and ambiguities.
         loaded and NEVER call `run_command` (`ls`, `cat`) or `view_file` first.
     -   Generate a hierarchical plan with sequential Phases, Tasks, and
         Sub-tasks with `[ ]` checkboxes:
+        -   **Default Execution-Ready `plan.md` Task Granularity Standard (`ADR
+            0016` — Sufficient Detail for a Smaller Model Without Writing
+            Code):** By default on every track—even if the user asks for a
+            *"quick high-level plan"* or *"3-bullet summary"*—every Phase, Task,
+            and Sub-task in `plan.md` MUST be self-contained and concrete enough
+            for a smaller downstream worker model to execute without
+            architectural guesswork, while never writing multi-line
+            implementation code blocks:
+            1.  **Exact File & Build-Manifest Paths per Task**: Every task MUST
+                name the exact repository-relative source file(s), test file(s),
+                and build/package manifest file(s) (`BUILD`, `BUILD.bazel`,
+                `package.json`, `Cargo.toml`, `go.mod`) to edit or create, plus
+                exact target dependency labels to add (including explicit
+                `fieldmaskpb` / `durationpb` / `field_mask_ts_proto` targets and
+                imports verbatim).
+            2.  **Explicit Phase 1 RPC Contracts & Prerequisite Helper/Exposure
+                Sub-Tasks**: Include an explicit task in `plan.md` on the
+                server/handler/client file (`interceptor.go`, `api_service.ts`,
+                `client.go`, `ingest_client.rs`, `vector_api_service.ts`) that
+                names **BOTH** the list/fetch response wrapper AND its repeated
+                element type (`ListSampleProjectsResponse` ->
+                `ImmutableProject`, `FetchUnsettledBatchesResponse.batches` ->
+                `SettlementBatch`, `ListTenantQuotasResponse.GetQuotas()` ->
+                `[]*pb.TenantQuota`, `ListActiveCollaboratorSessionsResponse` ->
+                `ImmutableCollaboratorSession`, `ListCollectorProfilesResponse`
+                -> `CollectorProfile`, `ListFactoryPresetsResponse` ->
+                `ImmutableAudioPreset`, `ListPolicyTemplatesResponse` ->
+                `PolicyTemplate`, `ListClaimDossiersResponse` ->
+                `ImmutableClaimDossier`, `ListStarterTemplatesResponse` ->
+                `ImmutableVectorDocument`), **AND** the exact
+                clone/remix/replay/override request setter/field
+                (`RemixSampleProjectRequest.setSampleProjectId`,
+                `settlement_batch_id`,
+                `OverrideTenantQuotaRequest.SetTenantQuotaId(id)`,
+                `setTargetSessionId`, `source_profile_id`, `setSourcePresetId`,
+                `SetSourceTemplateId`, `setSourceDossierId`,
+                `setSourceDocumentId`), **AND** the exact state-update
+                RPC/service method (`updateSceneState`, `UpdateWebhookState`,
+                `updateCanvasViewportState`, `updateCollaboratorViewportState`,
+                `updateAudioRoutingState`, `updateAdjudicationViewState`,
+                `UpdateRuleEvaluationState`, `commit_wal_checkpoint`,
+                `flush_reconciliation_watermark`). Never write a caller task
+                that invokes a helper, getter, setter, or callback that is
+                currently `private` or non-existent without first including an
+                explicit sub-task on the target class/module to expose it with
+                its exact 1-line signature and parameter arity (e.g., adding a
+                sub-task on `viewer_stage.ts` to expose `getCameraPose()`,
+                `setCameraPose(pose)`, `setSectionInverted(inverted: boolean):
+                void`, and `onCameraSettled?: (pose) => void` before `app.ts`
+                wires them, and calling
+                `stage.applyHydratedPartVisibility(hiddenPartSlugs,
+                seeThroughPartSlugs)` with its exact 2-argument signature).
+            3.  **Explicit Field-Bijection, Validator & Echo-Suppression
+                Sub-Tasks**: Include explicit sub-tasks for bidirectional
+                UI-to-proto field mappings and default values, server validator
+                precondition compliance (e.g., mapping axis `'x' | 'y' | 'z'` to
+                unit-length `Vec3` normals `(1,0,0)`, `(0,1,0)`, `(0,0,1)` so
+                `|n| = 1.0` validation passes, and explicitly writing the exact
+                plane/axis field bijection `position <-> constant` and `inverted
+                <-> flipped` or `plane_constant` / `flipped_rule` /
+                `plane_offset` / `flipped_polarity` verbatim in `plan.md`),
+                hydration echo-suppression guards (`isHydrating... = true`
+                during initial reload hydration so applying hydrated state does
+                not fire outbound write RPCs), and self-contained timer/signal
+                state transitions (`600ms` guard timer, `500ms` saved indicator
+                timer) without opaque cross-app shorthand (`"Linear-style"`,
+                `"Notion-style"`, `"Figma-style"`).
+            4.  **Explicit Test-Override, Build-Generated Note & Per-Phase
+                Verification Commands**: When a phase modifies shared
+                config/flag defaults, include an explicit note that the
+                `.binarypb` / `.binpb` bundle is generated at build time (and
+                must not be hand-edited), include an explicit task to add or
+                update unit-test override bundles/fixtures (`.textproto`,
+                `.txtpb`) so existing unit tests pass without external
+                singletons, and include the exact copy-pastable build/test
+                command (`bazel test //path/to:target_test`, `cargo test ...`,
+                `pytest ...`) in every task and Phase Completion checkpoint.
+            5.  **Zero Multi-Line Fenced Code Blocks & 100% Reconnaissance
+                Symbol Preservation in `plan.md`**: Use **1-line inline single
+                backticks** (`` `...` ``) and declarative sub-task bullets
+                only—**NEVER** write any multi-line triple-backtick code fences
+                (` ``` `) inside `plan.md` (whether source code, `.textproto`,
+                `.json`, or shell blocks). Preserve every single symbol,
+                response element type (`TenantQuota`, `ImmutableProject`,
+                `PolicyTemplate`, `ImmutableVectorDocument`), setter name
+                (`SetTenantQuotaId`, `setSampleProjectId`,
+                `SetSourceTemplateId`, `setSourceDocumentId`), 2-argument
+                parameter name, public hook name, enum default
+                (`FAILURE_POLICY_FAIL`, `EXPORT_PROTOCOL_OTLP_GRPC`,
+                `RENDER_QUALITY_CRISP_AA`), numeric ratio/bound (`0.65`, `0.35`,
+                `0.50`, `0.25`, `10`, `1.0`), build-generated filename
+                (`.binarypb`, `.binpb`), test-override filename (`.textproto`,
+                `.txtpb`), hydration guard flag (`isHydrating...`,
+                `is_recovering_wal_state`), timer constant (`ms`), and exact
+                copy-pastable test command from `spec.md` and Step 4
+                reconnaissance verbatim in `plan.md`. When `spec.md` or the
+                approved track context defines a phase order (Phase 1, Phase 2,
+                Phase 3), preserve that exact phase numbering in `plan.md`.
         -   **Developer Test Tooling Tasks**: If new routes, state guards, or
             flags are added, ensure Phase 1 includes explicit tasks for
             developer reset tooling, CLI scripts, or fixture seeding needed by
@@ -914,11 +1198,17 @@ resolving all open rounds, questions, and ambiguities.
             end of each Phase.
     -   **Two-Part Step 7 Turn Contract (Visible Plan Summary FIRST ->
         `write_to_file(plan.md)` + `ask_question` SECOND)**:
-        1.  **Part 1 (Visible Markdown Text — Required First):** Output a
-            visible `### Step 7: Implementation Plan Summary` in markdown
-            summarizing the phases, task breakdown, and Phase Completion
-            verification checkpoints (never emit bare tool calls with empty
-            markdown text).
+        1.  **Part 1 (Visible Markdown Text — Required First BEFORE Any Tool
+            Call — Minimum 40 Words):** Always begin your Step 7 response with
+            at least 40 words of visible markdown prose under `### Step 7:
+            Implementation Plan Summary` summarizing the phases, task breakdown,
+            and Phase Completion verification checkpoints (**NEVER** start the
+            response with a bare `write_to_file` or `ask_question` call with
+            empty markdown text!). If the user asked for a vague 3-bullet plan
+            or opaque cross-app shorthand, explicitly explain in this visible
+            markdown summary why `plan.md` must retain full Execution-Ready Task
+            Granularity (`ADR 0016`) so downstream workers can execute without
+            guesswork.
         2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):**
             Invoke `write_to_file` to write
             `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/plan.md` AND
@@ -988,6 +1278,16 @@ resolving all open rounds, questions, and ambiguities.
 -   **Turn-Ending Barriers**: Enforce strict synchronous pauses at Step 5, Step
     6, and Step 7 via `ask_question`.
 -   **Pre-Materialization Barrier**: Hold `spec.md` in memory during Step 5.
+-   **Execution-Ready Spec & Plan Grounding (`ADR 0016` — No-Code Blueprint
+    Standard)**: By default, `spec.md` (Step 6) and `plan.md` (Step 7) must
+    include exact file and build-manifest paths (`BUILD`, `package.json`,
+    `Cargo.toml`, `go.mod`), verified symbol/proto names, 1-line method
+    signatures with exact parameter arity, explicit tasks to expose private
+    methods/getters/setters, bidirectional field bijections and defaults, server
+    validator preconditions, hydration echo-suppression flags, self-contained
+    timer/signal contracts for referenced patterns, and unit-test fixture/bundle
+    overrides—while strictly forbidding multi-line implementation code blocks
+    inside `spec.md` or `plan.md`.
 -   **Continuous Decision-Tree Traversal & Ambiguity Resolution**: Never
     conclude an interview turn while rounds, questions, dependencies, failure
     modes, or architectural ambiguities remain unresolved.

@@ -6,6 +6,74 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.0] - 2026-10-22
+
+### Changed
+
+-   **Default Execution-Ready Specification & Plan Grounding Standard (`ADR
+    0016`)**:
+    -   Upgraded `/arm-new-track` (`skills/arm-new-track/SKILL.md`),
+        `rules/armature_protocol.md` (`§0a Step 14` & `§5`), `/arm-implement`
+        (`skills/arm-implement/SKILL.md` `Step 3.4`), and `/arm-review`
+        (`skills/arm-review/SKILL.md` `Step 2.4`) so that **by default**—without
+        requiring the user to ask *"Is there sufficient detail for a lesser
+        model?"*—`spec.md` (Step 6) and `plan.md` (Step 7) provide
+        self-contained, execution-ready technical grounding for a downstream
+        worker model with zero prior conversation context, while strictly
+        forbidding multi-line implementation code blocks inside specification or
+        plan files.
+    -   Established the **Audience Pivot Rule**: Step 5 (the human decision
+        interview) remains strictly in everyday plain language with zero code
+        identifiers so the human engineer can evaluate product and architectural
+        trade-offs, whereas Step 6 (`spec.md`) and Step 7 (`plan.md`) pivot to a
+        downstream execution agent audience (`worker` subagent, `Task` subagent,
+        or a smaller model) and translate settled plain-English choices into
+        verified codebase symbols and contracts.
+    -   Enforced the **6-Point Execution-Ready Grounding Standard** across Step
+        4 (Codebase Reconnaissance), Step 6 (`spec.md`), and Step 7 (`plan.md`):
+        1.  *Exact Target File Paths, Non-Obvious Imports, Build/Package
+            Dependencies & Build-Generated Artifacts*: Explicit source, test,
+            and build-manifest paths (`BUILD`, `package.json`, `Cargo.toml`,
+            `go.mod`), non-obvious import paths and target labels (`FieldMask`,
+            `fieldmaskpb`), and explicit build-time generation notes for
+            `.binarypb` / `.binpb` / `_pb2.py` files.
+        2.  *Verified Symbol Names, Wrapper + Element Types, Request Setters,
+            1-Line Method Signatures & Exact Arity*: Verified response wrapper
+            messages AND repeated element types (`ImmutableProject`,
+            `SettlementBatch`, `TenantQuota`, `ImmutableCollaboratorSession`,
+            `CollectorProfile`, `ImmutableAudioPreset`, `PolicyTemplate`,
+            `ImmutableClaimDossier`, `ImmutableVectorDocument`), exact request
+            setters/fields, exact 1-line method signatures with parameter arity
+            (e.g., 2-argument hydration helpers), and explicit prerequisite
+            `plan.md` tasks to expose `private` methods/getters/setters/hooks as
+            `public` before callers wire them.
+        3.  *Explicit Cross-Layer Field Bijections, Defaults & Server Validation
+            Preconditions*: Complete bidirectional UI/client `<->` wire/proto
+            field mappings, explicit enum/boolean defaults, sign inversions
+            (`inverted <-> flipped`, `position <-> constant`), and server-side
+            validator preconditions (e.g., unit-length normal `|n| = 1.0`).
+        4.  *Self-Contained State Machines, Timers, Hydration Echo-Suppression
+            Guards & Visual Tokens*: Inlined signal names, debounce and
+            minimum-duration timers (`ms`), reload/hydration echo-suppression
+            guard flags (`isHydrating... = true` during initial reload hydration
+            so applying hydrated state does not re-trigger outbound write RPCs),
+            and ARIA/CSS tokens—banning opaque cross-app shorthand
+            (*"Linear-style"*, *"Notion-style"*, *"Figma-style"*).
+        5.  *Test-Suite Blast Radius & Shared Config/Bundle Overrides*: Explicit
+            unit-test override bundles/fixtures (`.textproto`, `.txtpb`,
+            `conftest.py`, `vitest.setup.ts`) when modifying shared config/flag
+            defaults, plus copy-pastable verification commands at every Phase
+            Completion checkpoint.
+        6.  *Strict "Blueprint, Not Implementation Code" Boundary*: Expresses
+            all contracts via 1-line inline single-backtick signatures and
+            structured lists while strictly forbidding multi-line fenced code
+            blocks (` ``` `) inside `spec.md` or `plan.md`.
+    -   Added **Pre-Delegation Grounding Audit (`Step 3.4` in
+        `/arm-implement`)** and **`spec_and_adr_verifier` Execution-Readiness
+        Checks (`Step 2.4` in `/arm-review`)**, plus a 10-task Two-Tier Rubric
+        `/skill-opt` suite (`train_spec_plan_detail.jsonl`,
+        `val_spec_plan_detail.jsonl`, `run_spec_plan_detail_opt.py`).
+
 ## [0.33.0] - 2026-10-22
 
 ### Changed
