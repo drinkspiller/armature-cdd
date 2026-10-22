@@ -205,8 +205,13 @@ pass with zero file edits when `--report-only` is specified):
 
 Across each pass of the review loop, verify:
 
--   **Intent verification (`spec_and_adr_verifier`):** Does the implementation
-    fulfill requirements in `plan.md` and `spec.md`?
+-   **Intent verification (`spec_and_adr_verifier` — Execution-Ready Grounding
+    Audit per `ADR 0016`):** Does the implementation fulfill every requirement
+    in `plan.md` and `spec.md`, including exact verified symbol/proto names,
+    method signature arity, private-to-public helper exposures, bidirectional UI
+    `<->` wire field bijections and default values, server validator
+    preconditions, hydration echo-suppression guards, self-contained
+    timer/signal state machines, and unit-test fixture/bundle overrides?
 -   **ADR compliance (`spec_and_adr_verifier`):** For each ADR in
     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/` active in the modified modules,
     verify adherence to the recorded decision and its confirmation checklist.

@@ -157,12 +157,34 @@ files in priority order:
 14. **Track-Creation Lifecycle Boundary & Explicit Handoff Invariant
     (`/arm-new-track` ↔ `/arm-implement`):**
 
-    -   **Sequential Approval Gates (Steps 6 & 7):** In `/arm-new-track`,
-        `spec.md` + `manual_testing.md` (Step 6) and `plan.md` (Step 7) require
-        strictly separate turns and separate `ask_question` approval modals.
-        Never write `plan.md` or `metadata.json` in the Step 6 turn, and never
-        write `metadata.json` or `tracks.md` in the Step 7 turn before `plan.md`
-        is approved.
+    -   **Sequential Approval Gates (Steps 6 & 7) & Default Execution-Ready
+        Grounding Standard (`ADR 0016` — Sufficient Detail for a Smaller Model
+        Without Writing Code):** In `/arm-new-track`, `spec.md` +
+        `manual_testing.md` (Step 6) and `plan.md` (Step 7) require strictly
+        separate turns and separate `ask_question` approval modals. While Step 5
+        interviews the human in everyday plain language with zero code
+        identifiers, **Step 6 (`spec.md`) and Step 7 (`plan.md`) pivot
+        audience** to the downstream execution agent (potentially a smaller or
+        lesser model with zero prior conversation context). By default on every
+        track—even if the user asks for a *"quick high-level plan"*—`spec.md`
+        and `plan.md` MUST ground all settled decisions into verified codebase
+        symbols: exact target source/test/manifest paths (`BUILD`,
+        `package.json`, `Cargo.toml`, `go.mod`), non-obvious imports and build
+        target labels, build-time generated file notes, verified
+        proto/interface/setter names, 1-line method signatures with exact
+        parameter types and argument arity, explicit prerequisite tasks in
+        `plan.md` to expose `private` methods/getters/hooks before callers
+        invoke them, bidirectional UI/client `<->` wire/backend field bijections
+        and default values, server-side validation preconditions,
+        reload/hydration echo-suppression flags (`isHydrating... = true`),
+        self-contained signal/timer state machines for any referenced sibling
+        pattern, and unit-test bundle/fixture overrides. **Strict "Blueprint,
+        Not Implementation Code" Boundary:** Express all contracts via inline
+        backtick signatures, bulleted field mappings, and declarative
+        rules—**NEVER** include multi-line fenced implementation code blocks or
+        function bodies in `spec.md` or `plan.md`, and **NEVER** write
+        `plan.md`/`metadata.json` in Step 6 or `metadata.json`/`tracks.md` in
+        Step 7 before `plan.md` is approved.
     -   **Step 10 Hard Terminal Stop & Explicit `<track_id>` Handoff (Two-Part
         Turn Contract):** Once the user approves `plan.md`, execute Steps 8–10
         in a single turn: FIRST output the mandatory completion handoff in
@@ -177,8 +199,8 @@ files in priority order:
         prompt explicitly asks to auto-start implementation or dispatch `worker`
         immediately—or if Turn 1 originally began with `/arm-implement` and
         routed into `/arm-new-track`—you are STRICTLY FORBIDDEN from calling
-        `invoke_subagent`, `define_subagent`, or `schedule`, or setting status
-        to `in_progress` / `[~]` during track creation.
+        `invoke_subagent`, `define_subagent`, `schedule`, or `Task`, or setting
+        status to `in_progress` / `[~]` during track creation.
 
 Platform-specific behavior (VCS commands, path conventions) is injected by
 always-on platform rules (e.g., `armature_antigravity.md`). Do not hardcode VCS
@@ -743,6 +765,52 @@ first. Do NOT create empty commits.
     `SELECT COUNT(*)` verification query with matching filters first, mandate
     taking a pre-mutation backup or transactional dry-run log, and require
     explicit user confirmation with the verified row count before proceeding.
+-   **Execution-Ready Specification & Plan Grounding Standard (`ADR 0016` —
+    Sufficient Detail for a Smaller Model Without Writing Code)** — During
+    `/arm-new-track`, Step 5 (the human decision interview) intentionally bans
+    code identifiers and backend systems jargon so the engineer can reason about
+    product and architectural trade-offs without cognitive overload. Once all
+    rounds settle, **Step 6 (`spec.md`) and Step 7 (`plan.md`) change
+    audience**: their primary consumer is a downstream execution worker
+    (frequently a smaller or faster model operating in an isolated worktree or
+    `worker` subagent with zero access to the planning conversation). By default
+    on every track, `spec.md` and `plan.md` must satisfy the **6-Point
+    Execution-Ready Grounding Standard**:
+    1.  *Exact Target File Paths, Non-Obvious Imports & Build/Package
+        Dependencies*: Every requirement in `spec.md` and every task in
+        `plan.md` names exact repository-relative source, schema, config, test,
+        and build/package manifest paths (`BUILD`, `package.json`, `Cargo.toml`,
+        `go.mod`), exact non-obvious import paths and target labels, and notes
+        build-time generated files vs. checked-in files.
+    2.  *Verified Symbol Names, 1-Line Method Signatures & Exact Arity*: Uses
+        verified proto/schema/interface names and setter/getter methods (never
+        invented wrapper types), full 1-line method signatures with parameter
+        names, types, return types, and exact argument count/arity, and includes
+        explicit prerequisite sub-tasks in `plan.md` to expose `private`
+        methods, getters, setters, or callbacks before callers invoke them.
+    3.  *Explicit Cross-Layer Field Bijections, Defaults & Server Validation
+        Preconditions*: Documents complete bidirectional `UI/Client State <->
+        Wire/Backend/Storage State` field mappings, default values for
+        non-toggled fields, boolean/sign inversions, and server-side validation
+        invariants (e.g., unit-length normal vector `|n| = 1.0`, numeric bounds,
+        required `FieldMask` paths).
+    4.  *Self-Contained State Machines, Timers & Echo-Suppression Guards*:
+        Inlines exact signal/variable names, transition rules, debounce/guard
+        timer constants in `ms`, reload/hydration echo-suppression flags
+        (`isHydrating... = true` to prevent initial hydration from firing
+        outbound write RPCs), and DOM/ARIA/CSS tokens whenever referencing a UI
+        or sibling-app pattern so the worker never needs to inspect another
+        repository.
+    5.  *Test-Suite Blast Radius & Per-Phase Verification Commands*: Identifies
+        unit/integration tests affected by shared config/flag/schema switches,
+        specifies required test-bundle or fixture overrides so existing tests
+        stay green, and includes exact copy-pastable test commands in every task
+        and Phase Completion checkpoint.
+    6.  *Strict "Blueprint, Not Implementation Code" Boundary*: Expresses all
+        contracts via inline backtick signatures, bulleted field bijections, and
+        declarative prose/tables—strictly forbidding multi-line fenced
+        implementation code blocks or function bodies inside `spec.md` or
+        `plan.md`.
 -   **Fixpoint and Drift Auditing (Two-Tier Classification — Auto-Update &
     Notify by Default on Mechanical Drift)** — A feature or track achieves
     completion only when the Fixpoint Auditor reports a "Fixpoint Reached"

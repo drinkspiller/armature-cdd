@@ -214,9 +214,19 @@ deliverables, synchronizing documentation, and managing track cleanup.
             2.  `"Yes, authorize WRITE modifications to <deprecated_path> for
                 this task"`
             3.  `"Cancel modification"`
-    -   **Context Preparation**: Collect the track root, spec path, plan path,
-        specific phase task numbers (e.g. `Tasks 1.1, 1.2, 1.3`), detailed
-        requirements, and any local directory rules (`GEMINI.md` / `AGENTS.md`).
+    -   **Context Preparation & Execution-Ready Contract Propagation (`ADR
+        0016`)**: Collect the track root, spec path, plan path, specific phase
+        task numbers (e.g. `Tasks 1.1, 1.2, 1.3`), detailed requirements,
+        applicable ADR summaries, and any local directory rules (`GEMINI.md` /
+        `AGENTS.md`). Because background workers (`worker` or `Task` subagents)
+        may run on smaller models with zero prior conversation context, always
+        pass the exact target file and build-manifest paths (`BUILD`,
+        `package.json`, `Cargo.toml`, `go.mod`), verified 1-line method/RPC
+        signatures and parameter arity, prerequisite private-to-public helper
+        exposure tasks, bidirectional UI `<->` wire field bijections and server
+        validator preconditions, hydration echo-suppression flags,
+        self-contained signal/timer constants, and unit-test bundle/fixture
+        overrides from `spec.md` and `plan.md` directly in the worker `Prompt`.
     -   **Subagent Fence Injection (`[ACTIVE_LEGACY_FENCES &
         SESSION_UNLOCKS]`)**: When dispatching background workers via
         `invoke_subagent`, you MUST inject an explicit `[ACTIVE_LEGACY_FENCES &
