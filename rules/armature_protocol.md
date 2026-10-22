@@ -64,10 +64,38 @@ files in priority order:
     touches files mapped to a specific domain (or active domain terms from
     `terms.md`), load `{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` on
     demand. Skip unrelated domain runbooks to preserve context token budgets.
-10. **Drift scan:** Run a VCS diff stat against the last checkpoint commit.
-    Cross-reference changed files against ADR scopes, local rules, and manual
-    testing runbooks. Flag contradictions or invoke `/arm-drift` before
-    proceeding (see `armature_cdd_protocols.md` §9).
+10. **Drift scan (Two-Tier Classification — Auto-Update & Notify by Default on
+    Mechanical Drift):** Run a VCS diff stat against the last checkpoint commit
+    and cross-reference changed files and context registries against ADR scopes,
+    local rules, manual testing runbooks, and `tracks.md` / `index.md`.
+    -   **Tier A — Mechanical & Deterministic Documentation Drift (Auto-Update &
+        Notify by Default — Zero Permission Prompt):** Stale track statuses in
+        `tracks.md` / `metadata.json` (`[~]` $\to$ `[x] Completed` when 100% of
+        `plan.md` tasks are `[x]` and the commit/CL is on `HEAD`), multi-line
+        `: :` wrapped Markdown tables in `tracks.md` / `index.md` (restore
+        single-line pipe rows with
+        `<!-- mdformat off(prevent table wrapping) -->` and
+        `<!-- disableFinding(LINE_OVER_80) -->`), missing `tracks.md` /
+        `index.md` registry links, additive `.api_surface_cache.json` /
+        `terms.md` updates, and packaging manifest arrays (`install.sh`,
+        `install.bat`, `plugin.json`, `README.md`). Unless `--check` or
+        `--report-only` was passed, **automatically apply all Tier A fixes
+        in-place in the same turn** via `replace_file_content` / `write_to_file`
+        (including during `/arm-status`, `/arm-drift`, and `/arm-implement`),
+        refresh `{ARTIFACT_DIR}/arm_status.md` in lockstep if present, and
+        notify the user in chat (`✅ Fixpoint Reached (N mechanical drift
+        issue(s) auto-updated)` with a bulleted list of applied updates). Never
+        act as a passive detect-only observer on Tier A drift or prompt via
+        `ask_question` to apply mechanical fixes.
+    -   **Tier B — Semantic / Architectural Contradictions, Breaking Removals &
+        Fence Decisions (Interactive Disambiguation):** Code violating an
+        approved `ADR` or `spec.md`, breaking public API symbol removals
+        (`[ERROR]` major semver bump), `[WARNING] Diff-to-Tag Mismatch`,
+        unauthorized edits in `<deprecated_path>` (`[BLOCKING]`), or deleted
+        legacy fence directories (`[DRIFT] Stale Legacy Fence`). Never silently
+        auto-overwrite approved `spec.md` or `adr/*.md` files; auto-apply any
+        Tier A fixes first, then surface the Tier B finding and prompt via
+        `ask_question` (see `armature_cdd_protocols.md` §9).
 11. **Non-blocking update check:** Run `bash ~/.cache/armature/check-update.sh
     2>/dev/null || true`. If stdout outputs
     `UPDATE_AVAILABLE|<old_ver>|<new_ver>|<upgrade_cmd>`, prepend a compact `>
@@ -715,13 +743,38 @@ first. Do NOT create empty commits.
     `SELECT COUNT(*)` verification query with matching filters first, mandate
     taking a pre-mutation backup or transactional dry-run log, and require
     explicit user confirmation with the verified row count before proceeding.
--   **Fixpoint and Drift Auditing** — A feature or track achieves completion
-    only when the Fixpoint Auditor reports a "Fixpoint Reached" state. At phase
-    checkpoints, track closeout, and pre-submit release gates, the agent audits
-    code, ADRs, manual testing runbooks, API surfaces, and packaging manifests
-    for divergence. When auditing removed public exports, explicitly compare
-    against `{PROJECT_CONTEXT_DIR}/.api_surface_cache.json` and mandate semantic
-    versioning major bump recommendations.
+-   **Fixpoint and Drift Auditing (Two-Tier Classification — Auto-Update &
+    Notify by Default on Mechanical Drift)** — A feature or track achieves
+    completion only when the Fixpoint Auditor reports a "Fixpoint Reached"
+    state. At pre-execution context checks, `/arm-status` checks, phase
+    checkpoints, track closeout, and `/arm-drift` runs, the agent classifies
+    drift into two tiers:
+    1.  *Tier A — Mechanical & Deterministic Documentation Drift (Auto-Update &
+        Notify by Default — Zero Permission Prompt)*: Stale track statuses in
+        `tracks.md` / `metadata.json` (`[~]` $\to$ `[x] Completed` when 100% of
+        `plan.md` tasks are `[x]` and the commit/CL is on `HEAD`), multi-line
+        `: :` wrapped Markdown tables in `tracks.md` / `index.md` missing
+        `<!-- mdformat off(prevent table wrapping) -->` /
+        `<!-- disableFinding(LINE_OVER_80) -->`, missing `tracks.md` /
+        `index.md` links, additive `.api_surface_cache.json` and `terms.md`
+        updates, and installer/packaging manifest arrays (`install.sh`,
+        `install.bat`, `plugin.json`, `README.md`). Unless `--check` or
+        `--report-only` was passed, the agent MUST automatically apply all Tier
+        A fixes in-place via `replace_file_content` / `write_to_file` in the
+        exact same turn, update `{ARTIFACT_DIR}/arm_status.md` in lockstep if
+        present, and notify the user in chat (`✅ Fixpoint Reached (N mechanical
+        drift issue(s) auto-updated)` with a bulleted list of applied updates).
+    2.  *Tier B — Semantic / Architectural Contradictions, Breaking Removals &
+        Fence Decisions (Interactive Disambiguation)*: Source code violating an
+        approved `ADR` or `spec.md` (`CB2`), breaking public API symbol removals
+        compared against `{PROJECT_CONTEXT_DIR}/.api_surface_cache.json`
+        (`[ERROR] Breaking API Surface Change` requiring a semantic versioning
+        major bump recommendation), `[WARNING] Diff-to-Tag Mismatch` (`ADR
+        0010`), unauthorized edits inside `<deprecated_path>` (`[BLOCKING]`,
+        `CB1`), or deleted legacy fence directories (`[DRIFT] Stale Legacy
+        Fence`, `VAL_LF_04`). Never silently auto-overwrite approved `spec.md`
+        or `adr/*.md` files; auto-apply any co-occurring Tier A fixes first,
+        then surface the Tier B finding and prompt via `ask_question`.
 -   **Iterative Multi-Expert Review & Closed-Loop Repair (`ADR 0015`)** — In
     `/arm-review` (`Steps 2.3–2.4`, up to `MAX_ITERATIONS = 3`, or `1` read-only
     pass with `--report-only`) and `/arm-implement` (`Step 3.6` Pre-Closeout

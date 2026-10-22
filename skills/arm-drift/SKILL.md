@@ -14,21 +14,30 @@ reconciliation until the project reaches a verified **Fixpoint Reached** state.
 ## Protocol
 
 > [!IMPORTANT] **Execution & Tooling Guardrails (Zero Delegation / Mandatory
-> Dual Output)**: 1. **FORBIDDEN TOOLS ON INITIAL AUDIT**: NEVER invoke
-> `invoke_subagent` or `ask_question` when `/arm-drift` is invoked. Do NOT
-> delegate workspace scans to subagents and do NOT ask the user for scope/mode
-> confirmation. 2. **MANDATORY VISIBLE CHAT MARKDOWN SUMMARY**: You MUST output
-> visible markdown text in your chat response summarizing: (a) the VCS diff
-> against the last checkpoint commit, (b) the audit of uncommitted changes
-> against ADR scopes (`adr/*.md`), local rules (`GEMINI.md`, `AGENTS.md`), and
-> manual testing runbooks (`manual_testing/*.md`), and (c) the drift findings or
-> `Fixpoint Reached` status. Never emit tool calls alone without visible chat
-> markdown text! 3. **MANDATORY TOOL CALLS (`run_command` & `write_to_file`)**:
-> Alongside your visible markdown summary in the exact same turn, invoke
-> `run_command` to execute the VCS diff against the last checkpoint commit
-> (e.g., `git diff` or `hg diff`) AND invoke
+> Dual Output)**: 1. **FORBIDDEN DELEGATION & SCOPE PROMPTS**: NEVER invoke
+> `invoke_subagent` when `/arm-drift` is invoked, and NEVER invoke
+> `ask_question` to ask the user which scope/mode to run or whether to apply
+> Tier A mechanical fixes (Tier A fixes auto-update in-place by default!). Only
+> invoke `ask_question` at the end of the turn when **Tier B Semantic /
+> Architectural Contradictions (`Step 3.3`)** or **Stale Legacy Fence Garbage
+> Collection (`VAL_LF_04`)** require human decision. 2. **MANDATORY VISIBLE CHAT
+> MARKDOWN SUMMARY**: You MUST output visible markdown text in your chat
+> response summarizing: (a) the VCS diff against the last checkpoint commit, (b)
+> the audit of uncommitted changes against ADR scopes (`adr/*.md`), local rules
+> (`GEMINI.md`, `AGENTS.md`), and manual testing runbooks
+> (`manual_testing/*.md`), and (c) the auto-updated Tier A fixes, remaining Tier
+> B findings, or `Fixpoint Reached` status. Never emit tool calls alone without
+> visible chat markdown text! 3. **MANDATORY SAME-TURN TOOL CALLS (Tier A
+> Auto-Update + `arm_drift.md`)**: Unless `--check` / `--report-only` was
+> passed, in the **exact same turn** alongside your visible markdown summary,
+> you MUST invoke `write_to_file` or `replace_file_content` to **auto-update all
+> detected Tier A mechanical/documentation drift files in-place** (`tracks.md`,
+> `index.md`, `terms.md`, `.api_surface_cache.json`, `install.sh`,
+> `plugin.json`, and `arm_status.md` if present) AND invoke
 > `write_to_file(TargetFile="arm_drift.md", CodeContent="...")` to generate the
-> structured `arm_drift.md` report artifact.
+> structured `arm_drift.md` report artifact (plus `run_command` for VCS diff
+> when diff context is not already provided inline). Never stop with markdown
+> text alone when file mutations are required!
 
 ### Step 1: Scope & Mode Resolution
 
@@ -41,17 +50,30 @@ reconciliation until the project reaches a verified **Fixpoint Reached** state.
         (determined by reading the active track's `plan.md` and/or using VCS
         diff). Audits these changed files against touched ADRs and runbook
         scenarios.
-    -   `--fix`: Automatically apply mechanical auto-fixes (installer arrays, version alignment, table freshness, and `.api_surface_cache.json` refresh).
-    -   `--check`: Non-interactive CI / pre-submit validation mode (verifies fixpoint state and outputs pass/fail status).
-    -   **Default Full-Sweep Execution (Zero-Argument Invocation)**: When
-        `/arm-drift` is invoked without arguments (e.g., `/arm-drift`), default
-        immediately to a **Full 3-Tier Audit** across all tiers. **NEVER** call
-        `ask_question` to ask the user which scope/mode to run, what the active
+    -   `--fix`: Explicit alias for the default behavior — automatically apply
+        all Tier A mechanical and deterministic documentation auto-updates
+        in-place (stale track statuses, Markdown table single-line formatting,
+        missing `index.md` / `tracks.md` links, `.api_surface_cache.json`
+        refresh, additive `terms.md` symbol sync, and installer/packaging
+        manifest arrays) and notify the user.
+    -   `--check` (or `--report-only` / `--dry-run`): Non-interactive read-only
+        CI / pre-submit validation mode. Verifies fixpoint state, outputs
+        pass/fail status, and performs **zero** repository file mutations (never
+        calling `replace_file_content` or `write_to_file` on repository files).
+    -   **Default Full-Sweep & Auto-Update Execution (Zero-Argument
+        Invocation)**: When `/arm-drift` is invoked without `--check` /
+        `--report-only` (e.g., bare `/arm-drift`), default immediately to a
+        **Full 3-Tier Audit with Automatic Tier A Mechanical Remediation &
+        Notification**. **NEVER** call `ask_question` to ask the user which
+        scope/mode to run, whether to apply mechanical fixes, what the active
         context directory is, or whether uncommitted changes exist. Immediately
-        execute Step 2 (running the VCS diff against the last checkpoint commit,
-        auditing uncommitted changes against ADR scopes, local rules, and manual
-        testing runbooks, generating `arm_drift.md` via `write_to_file`, and
-        summarizing drift items in chat).
+        execute Step 2 and Step 3 in a single turn: run the VCS diff against the
+        last checkpoint commit, audit uncommitted changes against ADR scopes,
+        local rules, and manual testing runbooks, **auto-update all Tier A
+        mechanical/documentation drift in-place** via `write_to_file` /
+        `replace_file_content`, generate `arm_drift.md`, refresh
+        `{ARTIFACT_DIR}/arm_status.md` if present, and summarize all applied
+        updates and remaining Tier B findings in chat.
 2.  **Resolve Project Root**: Follow Armature Protocol Rule 7 to locate `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature or conductor).
 
 ### Step 2: Native 3-Tier Scan Execution
@@ -155,22 +177,26 @@ delegate `/arm-drift` scans to `invoke_subagent`):
     -   Verify 100% version agreement across `install.sh` (`VERSION=`), `install.bat` (`set "VERSION="`), `plugin.json` (`"version"`), `.claude-plugin/marketplace.json`, and `CHANGELOG.md`.
 5.  **Phase 4: Legacy-Boundary Context Fence Diff Firewall & Stale Fence Garbage
     Collection**:
-    -   *Immediate Turn 1 Markdown Report First (Zero Tool-Only Stalls)*: When
-        `[Workspace Context...]`, `[Cumulative Branch Diff...]`, or `[Filesystem
-        Check...]` is provided in the user prompt, you are STRICTLY FORBIDDEN
-        from calling `view_file` or `grep_search` on any file (including
-        modified modern files like `new_component.ts`, `tech-stack.md`, or
-        `product.md`) without outputting your complete Fixpoint Audit Report in
-        markdown first! You MUST output your complete markdown Fixpoint Audit
-        Report—including the active Deprecated Code Boundary banner on Turn 1 if
-        not yet shown in the session (`> [!NOTE] **Working in ...**` callout on
-        Turn 1 only; strictly silent on Turn 2+ and intermediate tool steps),
-        explicit
-        confirmation that cumulative branch changes (`git diff main...HEAD` or
-        `git diff main...HEAD`) were audited, explicit statement that whole-file
-        deletions (`status R/!/D`) inside legacy-fenced directories are exempt
-        to support decommissioning cleanup, and a clean Fixpoint pass (`✅
-        [Fixpoint Reached]`)—directly in your text response on Turn 1!
+    -   *Immediate Turn 1 Markdown Report & Same-Turn Execution First (Zero
+        Tool-Only Stalls)*: When `[Workspace Context...]`, `[Cumulative Branch
+        Diff...]`, or `[Filesystem Check...]` is provided in the user prompt,
+        you are STRICTLY FORBIDDEN from calling `view_file` or `grep_search` on
+        any file (including modified modern files like `new_component.ts`,
+        `tech-stack.md`, or `product.md`) without outputting your complete
+        Fixpoint Audit Report in markdown first! You MUST output your complete
+        markdown Fixpoint Audit Report—including the active Deprecated Code
+        Boundary banner on Turn 1 if not yet shown in the session (`> [!NOTE]
+        **Working in ...**` callout on Turn 1 only; strictly silent on Turn 2+
+        and intermediate tool steps), explicit confirmation that cumulative
+        branch changes (`git diff main...HEAD`) were audited, explicit statement
+        that whole-file deletions (`status R/!/D`) inside legacy-fenced
+        directories are exempt to support decommissioning cleanup, and a clean
+        Fixpoint pass (`✅ [Fixpoint Reached]`)—directly in your text response on
+        Turn 1, AND in that **exact same turn** invoke `write_to_file` /
+        `replace_file_content` to auto-update any Tier A mechanical drift files,
+        write `arm_drift.md`, and refresh `arm_status.md` (if present)! Never
+        stop with markdown text alone when file mutations or `ask_question` (for
+        Tier B semantic contradictions or Stale Fence GC) are required.
     -   **Cumulative Branch Diff Auditing**: Always audit cumulative branch
         changes against the base revision (`git diff main...HEAD` in Git/Mercurial
         or `git diff main...HEAD` in Git) against active legacy fences in
@@ -186,7 +212,7 @@ delegate `/arm-drift` scans to `invoke_subagent`):
         `status D` deleted in Git) and pure line removals (`0` added lines /
         dead-code cleanup) inside legacy-fenced directories are **automatically
         exempt** from Legacy Fence violations to support frictionless
-        decommissioning cleanup CLs (`hg rm` / `git rm`). Explicitly state in
+        decommissioning cleanup commits (`git rm` / `hg rm`). Explicitly state in
         your markdown response that whole-file deletions (`status R/!/D`) inside
         legacy-fenced directories are exempt and report a clean Fixpoint pass
         for decommissioning deletions.
@@ -216,19 +242,88 @@ directly in your markdown chat response before any tool call:
     literal `[WARNING]` or `[ERROR]` tag string when reporting a discrepancy or
     calling `ask_question`.
 
-### Step 3: Interactive Reconciliation & Remediation
+### Step 3: Automatic Mechanical Remediation & Semantic Disambiguation
 
 1.  **Zero Drift Detected**:
     -   Display: `✅ [Fixpoint Reached] Zero drift detected.`
     -   Conclude execution.
 
-2.  **Mechanical Drift Detected**:
-    -   Display detected mechanical issues.
-    -   If `--fix` flag was provided, apply fixes directly using file editing tools.
-    -   Otherwise, prompt user via `ask_question`: "Mechanical drift detected in packaging/manifests. Apply automatic fixes?" with options `["(Recommended) Apply mechanical fixes", "Review discrepancies first", "Skip for now"]`.
-    -   Apply approved fixes surgically.
+2.  **Tier A — Mechanical & Deterministic Documentation Drift Detected
+    (Auto-Update & Notify by Default)**:
 
-3.  **Semantic / Architectural Drift Detected**:
-    -   Display architectural divergence findings with file paths, code snippets, and matching ADR/rule quotes.
-    -   Prompt via `ask_question` with structured options: `["Update code to match ADR", "Update ADR to reflect new decision", "Acknowledge as tech debt in spec.md", "Show me the details"]`.
-    -   Apply chosen resolution and re-run check to verify.
+    -   **Included Tier A Drift Categories**:
+        1.  **Stale Track Statuses**: Track marked `[~]` (In Progress / In
+            Review) in `tracks.md` or `"in_progress"` in `metadata.json` when
+            100% of tasks in its `plan.md` are marked `[x]` and its
+            implementation commit/CL is already submitted on `HEAD` ->
+            automatically update to `[x]` (`Completed`).
+        2.  **Markdown Table Wrapping & Formatter Guards**: Tables in
+            `tracks.md` or `index.md` wrapped into multi-line `: :` grid
+            continuations by `mdformat` -> automatically restore single-line
+            pipe rows (`| col | col |`) wrapped in
+            `<!-- mdformat off(prevent table wrapping) -->` and
+            `<!-- disableFinding(LINE_OVER_80) -->`.
+        3.  **Missing Registry / Index Links**: Existing track folders
+            (`tracks/<track_id>/`) or ADR files (`adr/NNNN-*.md`) missing from
+            `tracks.md` or `index.md` -> automatically synchronize rows and
+            links.
+        4.  **Additive API Surface Cache & Glossary Sync**: Newly added public
+            exported symbols missing from `.api_surface_cache.json` or
+            `terms.md` (with zero breaking removals) -> automatically update
+            `.api_surface_cache.json` and append symbol definitions to
+            `terms.md`.
+        5.  **Packaging & Release Manifest Arrays**: Out-of-sync installer
+            arrays (`SUB_SKILL_NAMES`, `RULE_FILE_NAMES`, `ALL_TARGET_FILES`) or
+            version strings across `install.sh`, `install.bat`, `plugin.json`,
+            `.claude-plugin/marketplace.json`, and `README.md` -> automatically
+            align arrays and versions.
+        6.  **Live `arm_status.md` Artifact Lockstep Sync**: If
+            `{ARTIFACT_DIR}/arm_status.md` (or `arm_status.md`) exists in the
+            conversation session and reported prior drift, automatically update
+            `arm_status.md` so `Fixpoint Health` reflects `✅ Fixpoint Reached (N
+            mechanical drift issue(s) auto-updated)`.
+    -   **Default Action (When `--check` / `--report-only` Is NOT Passed)**:
+        -   **Automatically apply all Tier A fixes in-place** using
+            `replace_file_content` or `write_to_file` in the **exact same turn**
+            (`--fix` is the default behavior on `/arm-drift`; never call
+            `ask_question` to ask permission to apply Tier A mechanical fixes).
+        -   Notify the user in both visible chat markdown and `arm_drift.md`
+            with: `✅ [Fixpoint Reached] Auto-updated N mechanical drift
+            issue(s):` followed by a bulleted list of every file and adjustment
+            applied.
+    -   **Read-Only CI Mode (`--check` / `--report-only` / `--dry-run`)**:
+        -   When `--check` or `--report-only` is passed, perform **zero**
+            repository file mutations (never call `replace_file_content` or
+            `write_to_file` on repository files) and report the detected Tier A
+            / Tier B drift items with a non-zero / failing check status.
+
+3.  **Tier B — Semantic / Architectural Contradictions, Breaking Removals &
+    Fence Decisions (Never Silently Overwritten)**:
+
+    -   **Included Tier B Categories**:
+        1.  **Code-vs-ADR or Code-vs-Spec Contradiction (`CB2`)**: Source code
+            violates an active ADR in `adr/*.md` or an approved `spec.md` (e.g.,
+            adding a direct REST mutation where ADR mandates WebSocket). Never
+            silently rewrite an approved `ADR` or `spec.md` to mask code
+            divergence.
+        2.  **Breaking Public API Symbol Removal**: A previously exported public
+            symbol in `.api_surface_cache.json` was removed or incompatibly
+            altered (`[ERROR] Breaking API Surface Change` requiring a **MAJOR**
+            semantic version bump recommendation).
+        3.  **Diff-to-Tag Mismatch (`ADR 0010`)**: Stateful/backend/guard/RPC
+            changes under a `[Micro-Verification Plan]` tag (`[WARNING]
+            Diff-to-Tag Mismatch` requiring escalation of `manual_testing.md` to
+            the **3-Part Fixture Triad**).
+        4.  **Legacy Fence Violations (`[BLOCKING]`) & Stale Fence Garbage
+            Collection (`[DRIFT] Stale Legacy Fence`, `VAL_LF_04`)**:
+            Unauthorized additions/edits inside `<deprecated_path>` (`CB1`:
+            never auto-edit fenced files) or a fenced directory deleted from
+            disk (`VAL_LF_04`: prompt via `ask_question` to confirm 1-click
+            auto-pruning from `tech-stack.md` while preserving active fences).
+    -   **Action**: Auto-apply any co-occurring Tier A mechanical fixes first,
+        display the Tier B architectural/semantic findings with file paths, code
+        snippets, and matching ADR/rule quotes, and (when interactive resolution
+        is required) prompt via `ask_question` with structured options:
+        `["(Recommended) Update code to match ADR", "Update ADR to reflect new
+        decision", "Acknowledge as tech debt in spec.md", "Show me the
+        details"]`.

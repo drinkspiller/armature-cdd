@@ -22,25 +22,58 @@ skill's primary protocol, perform a lightweight drift check:
     literals against authoritative schema declarations (Protobuf definitions,
     SQL DDL, ORM models, or type interfaces). Verify that CLI tool wrappers obey
     execution constraints (e.g., single-statement execution vs batch piping).
-5.  **Resolution:** If drift is detected:
-    -   Present a `> [!WARNING]` callout naming the ADR/rule, the file, and
-        the contradiction.
-    -   Use `ask_question` with a randomized prompt:
-        *   "Drift detected against {source}. How to handle?"
-        *   "The code diverges from {source}. What's the call?"
-        *   *Options*: `["Fix the code now", "Update the ADR",
-            "Acknowledge as tech debt and proceed", "Show me the details"]`
-    -   Handle the selection:
-        -   **Fix the code now**: Apply a targeted fix before proceeding with
-            the originally invoked command.
-        -   **Update the ADR**: Draft an update or amendment to the relevant ADR
-            and enter a Draft Review Loop.
-        -   **Acknowledge as tech debt**: Log the divergence in the active
-            track's `spec.md` under a `## Tech Debt` section (create if absent)
-            and proceed.
-        -   **Show me the details**: Display the full ADR text and the
-            relevant diff, then re-present the resolution options.
-5.  **No drift:** If no scope matches are found or no contradictions are
+5.  **Two-Tier Drift Classification & Resolution (Auto-Update & Notify by
+    Default on Mechanical Drift):**
+    -   **Tier A — Mechanical & Deterministic Documentation Drift (Auto-Update &
+        Notify by Default — Zero Permission Prompt):**
+        -   *Included items:* Stale track status in `tracks.md` /
+            `metadata.json` (`[~]` $\to$ `[x] Completed` when all `plan.md`
+            tasks are `[x]` and the commit/CL is on `HEAD`), multi-line `: :`
+            wrapped Markdown tables in `tracks.md` / `index.md` missing
+            `<!-- mdformat off(prevent table wrapping) -->` /
+            `<!-- disableFinding(LINE_OVER_80) -->`, missing `tracks.md` /
+            `index.md` links for existing tracks/ADRs, additive
+            `.api_surface_cache.json` and `terms.md` symbol sync, and
+            installer/packaging manifest arrays (`install.sh`, `install.bat`,
+            `plugin.json`, `README.md`).
+        -   *Default behavior (unless `--check` / `--report-only` is passed):*
+            Automatically apply all Tier A fixes in-place via
+            `replace_file_content` / `write_to_file` in the **exact same turn**
+            without calling `ask_question`, update
+            `{ARTIFACT_DIR}/arm_status.md` in lockstep if it exists in the
+            session, and notify the user in chat (`✅ Fixpoint Reached (N
+            mechanical drift issue(s) auto-updated)` with a bulleted list of
+            applied updates).
+        -   *Read-only CI exemption (`--check` / `--report-only`):* Perform zero
+            repository file mutations and output pass/fail status.
+    -   **Tier B — Semantic / Architectural Contradictions, Breaking Removals &
+        Fence Decisions (Interactive `ask_question` Gate):**
+        -   *Included items:* Source code contradicting an active ADR
+            (`adr/*.md`) or approved `spec.md` (`CB2`), breaking public API
+            symbol removals (`[ERROR] Breaking API Surface Change` requiring a
+            MAJOR semver bump), `[WARNING] Diff-to-Tag Mismatch` (`ADR 0010`),
+            unauthorized edits inside `<deprecated_path>` (`[BLOCKING] Legacy
+            Fence Violation`, `CB1`), or a fenced directory deleted from disk
+            (`[DRIFT] Stale Legacy Fence`, `VAL_LF_04`).
+        -   *Behavior:* Auto-apply any co-occurring Tier A mechanical fixes
+            first, NEVER silently rewrite an approved `ADR` or `spec.md`,
+            present a `> [!WARNING]` callout naming the ADR/rule, the file, and
+            the contradiction, and use `ask_question`:
+            *   "Drift detected against {source}. How to handle?"
+            *   "The code diverges from {source}. What's the call?"
+            *   *Options*: `["(Recommended) Fix the code now", "Update the ADR",
+                "Acknowledge as tech debt and proceed", "Show me the details"]`
+        -   Handle the selection:
+            -   **Fix the code now**: Apply a targeted fix before proceeding
+                with the originally invoked command.
+            -   **Update the ADR**: Draft an update or amendment to the relevant
+                ADR and enter a Draft Review Loop.
+            -   **Acknowledge as tech debt**: Log the divergence in the active
+                track's `spec.md` under a `## Tech Debt` section (create if
+                absent) and proceed.
+            -   **Show me the details**: Display the full ADR text and the
+                relevant diff, then re-present the resolution options.
+6.  **No drift:** If no scope matches are found or no contradictions are
     detected, proceed silently — no output overhead.
 
 ## 10. ADR Capture Protocol

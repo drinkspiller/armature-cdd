@@ -110,8 +110,28 @@ deliverables, synchronizing documentation, and managing track cleanup.
 
 ### Step 3: Track Implementation & Phase Checkpoints
 
-1.  Before starting tasks, update the selected track's status to `[~]` in
-    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`.
+1.  **Pre-Execution Mechanical Drift Auto-Heal & Live `arm_status.md` Lockstep
+    Sync:**
+    -   Before starting tasks, update the selected track's status to `[~]` in
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`.
+    -   Concurrently inspect `{PROJECT_CONTEXT_DIR}/tracks.md`,
+        `{PROJECT_CONTEXT_DIR}/index.md`, and completed prior tracks for any
+        **Tier A — Mechanical & Deterministic Documentation Drift** (e.g., an
+        earlier completed track left at `[~]` after 100% of its `plan.md` tasks
+        are `[x]` and its commit landed on `HEAD`, `mdformat`-wrapped `: :`
+        tables missing `<!-- mdformat off(prevent table wrapping) -->` /
+        `<!-- disableFinding(LINE_OVER_80) -->`, or missing track/ADR index
+        links) and **auto-update them in-place immediately** without asking for
+        permission.
+    -   **Live `arm_status.md` Artifact Lockstep Sync (Mandatory):** Whenever
+        `/arm-implement` auto-heals mechanical drift in `tracks.md` / `index.md`
+        or transitions track status (`[ ]` $\to$ `[~]` $\to$ `[x]`) in a session
+        where `arm_status.md` already exists in the conversation artifact
+        directory (`{ARTIFACT_DIR}/arm_status.md`), you MUST **also update
+        `arm_status.md` in lockstep in that exact same turn** (`Fixpoint Health:
+        ✅ Fixpoint Reached (N mechanical drift issue(s) auto-updated)`) so the
+        user never sees a stale `⚠️ Drift Detected` banner on the status
+        artifact card!
 2.  Load the track context (`spec.md`, `plan.md`, `workflow.md`).
 3.  **Phase Coupling Classification & Execution Routing (Parallel Worktrees vs.
     Single Worker)**:

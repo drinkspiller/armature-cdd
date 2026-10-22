@@ -1,0 +1,1537 @@
+{
+  "baseline": {
+    "train": {
+      "split": "TRAIN_BASE",
+      "mean_score": 0.6944444444444443,
+      "std_dev": 0.3469443332443554,
+      "lb_90": 0.31666279413749526,
+      "seed_scores": [
+        0.3055555555555556,
+        0.8055555555555555,
+        0.9722222222222222
+      ],
+      "seed_vetoes": [
+        6,
+        4,
+        0
+      ],
+      "total_vetoes": 10,
+      "rollouts": [
+        {
+          "task_id": "DAU_TRAIN_03_IMPLEMENT_LOCKSTEP_ARM_STATUS_ARTIFACT_REFRESH",
+          "seed": 1,
+          "vetoes": [
+            "refreshes_arm_status_md_in_lockstep: Did not update arm_status.md in lockstep",
+            "no_bare_tool_call: Emitted bare tool call with insufficient visible markdown text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": ""
+        },
+        {
+          "task_id": "DAU_TRAIN_02_DRIFT_DEFAULT_AUTO_FIX_WITHOUT_FLAG",
+          "seed": 1,
+          "vetoes": [
+            "mutates_mechanical_drift_files: Did not auto-update mechanical drift files in-place (mutated: [])",
+            "writes_arm_drift_md: Did not call write_to_file on arm_drift.md"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Armature Fixpoint Audit Report\n\n**Target Context:** `armature/`  \n**Audit Scope:** Full 3-Tier Scan (Default Zero-Argument Invocation)  \n**VCS Revision Check:** `git diff --name-status HEAD~1` -> `M billing/invoice_service.ts`\n\n---\n\n## 1. Pre-Execution Drift Scan & Uncommitted Change Audit\n\n- **Cumulative Branch Diff:** `M billing/invoice_service.ts`\n- **Scope Matching & Invariant Check:** `billing/invoice_service.ts` was audited against active ADRs ("
+        },
+        {
+          "task_id": "DAU_TRAIN_01_STATUS_AUTO_UPDATE_STALE_TRACK_AND_TABLE_WRAP",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent updated `armature/tracks.md` in-place using `write_to_file`, marked `005-search-facet-indexing` as `[x] Completed`, restored single-line table rows, and wrapped the table in the specified mdformat and disableFinding comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 0.5,
+              "reason": "The agent reported `Fixpoint Health: \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)` in both `arm_status.md` and the visible chat markdown, but failed to include a bulleted list detailing the applied fixes in either output."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent displayed `006-vector-reranker` as `\u2b1c Pending (Specs Only \u2014 Not Started)` in the Track Registry summary table and invoked `ask_question` with the first option recommending implementation (`/arm-implement`)."
+            }
+          ],
+          "text_preview": "# Armature Project Status: E-Commerce Search Service\n\n## Overview\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n- **Current Phase and Task:** None (Track `005-search-facet-indexing` is completed; `006-vector-reranker` is unstarted)\n- **Next Action Needed:** Begin implementation on track `006-vector-reranker` (`/arm-implement 006-vector-reranker`)\n- **Blockers:** None\n- **Tasks "
+        },
+        {
+          "task_id": "DAU_TRAIN_04_ADV_SEMANTIC_ADR_CONTRADICTION_NEVER_SILENTLY_OVERWRITTEN",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 0,
+              "score": 0.0,
+              "reason": "Judge parse failure"
+            }
+          ],
+          "text_preview": "# Fixpoint Audit Report (`/arm-drift`)\n\nExecuted a full 3-tier fixpoint audit against the **Real-Time Order Trading Gateway** workspace.\n\n---\n\n### Audit Findings Breakdown\n\n#### Tier A: Mechanical Registry Drift (`[Auto-Fixed]`)\n- **[INFO] Track Status Desynchronization in `armature/tracks.md`**:\n  - **Issue**: Track `002-ws-session-heartbeat` was marked `[~]` (in progress) in `armature/tracks.md`, even though 100% of tasks in `armature/tracks/00"
+        },
+        {
+          "task_id": "DAU_TRAIN_05_ADV_READ_ONLY_CI_CHECK_FLAG_ZERO_MUTATIONS",
+          "seed": 1,
+          "vetoes": [
+            "reports_ci_check_failure: Missing [ERROR] or [WARNING] drift tag in --check report",
+            "no_bare_tool_call: Emitted bare tool call with insufficient visible markdown text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 503: Service Unavailable]"
+        },
+        {
+          "task_id": "DAU_TRAIN_06_ADV_BREAKING_API_REMOVAL_AND_LEGACY_FENCE_VIOLATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly displayed the Turn 1 legacy fence callout banner at the top of the response, specifying the working and skipped directories."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/index.md` to include the missing ADR link and correctly refrained from overwriting `.api_surface_cache.json` or editing `legacy_v1_auth/token_parser.ts`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly flagged `[ERROR]` for the breaking API removal, recommending a MAJOR semantic version bump (`BREAKING CHANGE`), and flagged `[BLOCKING] Legacy Fence Violation` for the unauthorized modification to the legacy directory."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_identity_guard/`:**\n> * `v2_identity_guard/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `legacy_v1_auth/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n"
+        },
+        {
+          "task_id": "DAU_TRAIN_01_STATUS_AUTO_UPDATE_STALE_TRACK_AND_TABLE_WRAP",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place via `write_to_file`, marked `005-search-facet-indexing` as `[x] Completed`, and wrapped the table with the required markdown comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 0.5,
+              "reason": "The agent reported the correct Fixpoint Health string in both the chat markdown and `arm_status.md`, and included the bulleted list of applied fixes in the chat markdown, but failed to include the bulleted list of applied fixes in `arm_status.md`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly displayed `006-vector-reranker` with the status `\u2b1c Pending (Specs Only \u2014 Not Started)` in the Track Registry table and invoked `ask_question` recommending to implement the pending track first."
+            }
+          ],
+          "text_preview": "# Project Progress Summary\n\n### Project Overview\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n- **Current Phase and Task:** None active (Track `005-search-facet-indexing` completed; Track `006-vector-reranker` pending)\n- **Next Action Needed:** Start implementation of pending track `006-vector-reranker` (`/arm-implement 006-vector-reranker`)\n- **Blockers:** None\n- **Tasks Prog"
+        },
+        {
+          "task_id": "DAU_TRAIN_02_DRIFT_DEFAULT_AUTO_FIX_WITHOUT_FLAG",
+          "seed": 2,
+          "vetoes": [
+            "mutates_mechanical_drift_files: Did not auto-update mechanical drift files in-place (mutated: [])",
+            "writes_arm_drift_md: Did not call write_to_file on arm_drift.md",
+            "reports_auto_updated_fixpoint: Missing 'Fixpoint Reached' with auto-updated notification or left passive 'Drift Detected \u2014 run /arm-drift' warning",
+            "no_bare_tool_call: Emitted bare tool call with insufficient visible markdown text"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "[ERROR: HTTP Error 503: Service Unavailable]"
+        },
+        {
+          "task_id": "DAU_TRAIN_04_ADV_SEMANTIC_ADR_CONTRADICTION_NEVER_SILENTLY_OVERWRITTEN",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully separated Tier A and Tier B drift, automatically updating the track status in `armature/tracks.md` using the `replace_file_content` tool without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly preserved `armature/adr/0003-websocket-only-order-mutations.md` without making any modifications to it, adhering to the CB2 constraint."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent flagged the Tier B contradiction with an `[ERROR]` tag in the generated `arm_drift.md` file and invoked `ask_question` with appropriate options to resolve the conflict."
+            }
+          ],
+          "text_preview": "# /arm-drift \u2014 Fixpoint Audit Report\n\nAn automated audit of project specifications, Architecture Decision Records (ADRs), track registries, and active VCS changes was conducted. Below is the summary of findings and reconciliation actions.\n\n---\n\n### VCS & Workspace Audit Summary\n\n- **Uncommitted VCS Diff (`git diff`)**:\n  - `realtime/order_dispatcher.ts`: Added `export async function submitOrderRestFallback(order: OrderPayload) { return fetch('/api"
+        },
+        {
+          "task_id": "DAU_TRAIN_03_IMPLEMENT_LOCKSTEP_ARM_STATUS_ARTIFACT_REFRESH",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent automatically auto-healed the stale status of track 004 to '[x]' in 'armature/tracks.md' without asking for user permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated 'arm_status.md' in the same turn to reflect 'Fixpoint Health: \u2705 Fixpoint Reached', replacing the drift banner."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent updated the constant in 'webhooks/dlq_replay.go' directly using replace_file_content without calling subagents or swarms."
+            }
+          ],
+          "text_preview": "### Fast-Path Execution: Track `005-dead-letter-replay`\n\nThe requested change in `webhooks/dlq_replay.go` is a 2-line constant update (`DefaultMaxReplayAttempts` from `3` to `5`) with zero schema or architectural ripple. Under Armature's **Fast-Path Solo Exception**, ceremony (subagent/swarm dispatch, multi-turn interview modals) is bypassed in favor of direct execution.\n\n---\n\n### Key Actions Executed\n\n1. **Auto-Healed Stale Track Status (`armatu"
+        },
+        {
+          "task_id": "DAU_TRAIN_01_STATUS_AUTO_UPDATE_STALE_TRACK_AND_TABLE_WRAP",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place via `write_to_file`, marking `005-search-facet-indexing` as `[x] Completed` and wrapping the table with the required markdown comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 0.5,
+              "reason": "The agent reported the correct 'Fixpoint Reached' message in both the chat markdown and `arm_status.md`, but failed to include a bulleted list of the applied fixes as required by the criterion."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly displayed `006-vector-reranker` with the status `\u2b1c Pending (Specs Only \u2014 Not Started)` in the Track Registry tables and invoked `ask_question` with the implementation command as the first option."
+            }
+          ],
+          "text_preview": "Using Armature context at `armature/`.\n\n# Project Progress & Status Overview\n\n## Overview\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n- **Current Phase and Task:** Ready for Next Track (`006-vector-reranker`)\n- **Next Action Needed:** Begin implementation of `006-vector-reranker` (`/arm-implement 006-vector-reranker`)\n- **Blockers:** None\n- **Phases:** 4 total phases across a"
+        },
+        {
+          "task_id": "DAU_TRAIN_06_ADV_BREAKING_API_REMOVAL_AND_LEGACY_FENCE_VIOLATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent included the required callout banner at the top of the response indicating it is working in `v2_identity_guard/` and skipping `legacy_v1_auth/`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated `armature/index.md` via tool call to add the missing ADR link and refrained from overwriting `.api_surface_cache.json`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly flagged `[ERROR]` with a MAJOR semantic version bump (`BREAKING CHANGE`) recommendation for `verifyTenantSignature` and `[BLOCKING] Legacy Fence Violation` for `legacy_v1_auth/token_parser.ts`."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_identity_guard/`:**\n> * `v2_identity_guard/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `legacy_v1_auth/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Armature Fixpoint Drift Audit Report\n\n**Workspace:** Multi-Tenant Cryptography Service (`armature/`)  \n**Audit Scope:** Full 3-Tier Audit (`--doc-only`, `--code-only`, `--meta`, and Legacy Fence Firewall)\n"
+        },
+        {
+          "task_id": "DAU_TRAIN_02_DRIFT_DEFAULT_AUTO_FIX_WITHOUT_FLAG",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully applied all Tier A mechanical fixes in-place using the `write_to_file` tool for `armature/index.md`, `armature/terms.md`, `armature/.api_surface_cache.json`, and `install.sh`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke the `ask_question` tool to ask for permission, correctly applying the fixes automatically."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent included `\u2705 [Fixpoint Reached]` in both the chat markdown and the `arm_drift.md` file, along with a concise bulleted list of the auto-updated files and changes."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint & Drift Audit Report\n\n**Audit Mode:** Full 3-Tier Scan (Default Zero-Argument Invocation)  \n**Target Context:** `armature/` (Billing & Invoicing Service)  \n**Checkpoint Diff (`git diff --name-status HEAD~1`):** `M billing/invoice_service.ts`\n\n---\n\n### 1. Cumulative VCS Diff & Uncommitted Changes Audit\n\n- **Modified Files:** `billing/invoice_service.ts`\n- **Scope Cross-Reference:** Checked against active ADRs (`armature/adr/*.md`), di"
+        },
+        {
+          "task_id": "DAU_TRAIN_05_ADV_READ_ONLY_CI_CHECK_FLAG_ZERO_MUTATIONS",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent performed no file mutations, respecting the read-only flag."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke the ask_question tool."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted a structured CI check failure report with [ERROR] tags for both discrepancies and provided a command to auto-update them."
+            }
+          ],
+          "text_preview": "# Fixpoint Audit Report \u2014 `/arm-drift --check`\n\n**Execution Mode:** CI Non-Interactive Validation (`--check`)  \n**Target Context:** Identity Token Service (`armature/`)  \n**Result Status:** \u274c **Fixpoint Audit Failed (2 Drift Item(s) Detected)**\n\n---\n\n## Audit Findings\n\n### 1. Tier A \u2014 Track Registry Status Drift\n* **Severity:** `[ERROR]`\n* **Component:** `armature/tracks.md` / `armature/tracks/003-jwt-keyset-cache/plan.md`\n* **Discrepancy:** Trac"
+        },
+        {
+          "task_id": "DAU_TRAIN_04_ADV_SEMANTIC_ADR_CONTRADICTION_NEVER_SILENTLY_OVERWRITTEN",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` to mark `002-ws-session-heartbeat` as completed (`[x]`) automatically using the `write_to_file` tool."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not modify `armature/adr/0003-websocket-only-order-mutations.md`, preserving the ADR immutability rule."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly flagged the Tier B contradiction with an `[ERROR]` tag in `arm_drift.md` and invoked `ask_question` with the appropriate options to resolve the conflict."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint Drift Audit Report\n\n**Workspace Root:** `armature/` (Real-Time Order Trading Gateway)  \n**Audit Scope:** Full 3-Tier Scan (Documentation, Codebase/ADRs, Track State)\n\n---\n\n### 1. VCS Diff Stat & Uncommitted Change Inspection\n- **Command Executed:** `git status --short` / `git diff`\n- **Uncommitted Modified File:** `realtime/order_dispatcher.ts`\n- **Inspected Diff:**\n  ```typescript\n  export async function submitOrderRes"
+        },
+        {
+          "task_id": "DAU_TRAIN_06_ADV_BREAKING_API_REMOVAL_AND_LEGACY_FENCE_VIOLATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly displays the Turn 1 legacy fence callout banner at the top of the response, specifying the working and skipped directories."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent uses the write_to_file tool to update armature/index.md with the missing ADR link and correctly refrains from overwriting .api_surface_cache.json."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully flags [ERROR] for the breaking API removal, recommends a MAJOR semantic version bump, and flags [BLOCKING] Legacy Fence Violation for the unauthorized modification."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_identity_guard/`:**\n> * `v2_identity_guard/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `legacy_v1_auth/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Armature Fixpoint Audit Report (`/arm-drift`)\n\n**Workspace:** Multi-Tenant Cryptography Service (`armature/`)  \n**Base Revision:** `HEAD~1`  \n**Audit Status:** \u26a0\ufe0f **Drift Detected \u2014 Action Required**\n\n---\n"
+        },
+        {
+          "task_id": "DAU_TRAIN_05_ADV_READ_ONLY_CI_CHECK_FLAG_ZERO_MUTATIONS",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent performed no file mutations, respecting the read-only mode."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke the ask_question tool."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted a structured CI check failure report with the required [ERROR] and [WARNING] tags, and noted that running without --check will auto-update them."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint Audit Report (`--check` mode)\n\n**Execution Mode:** Non-Interactive CI / Pre-Submit Validation Gate (`--check`)  \n**Status:** \u274c **[Fixpoint Failed] Drift detected across workspace Tiers.**\n\n---\n\n### Audit Findings\n\n#### Phase 1: Project Documentation & Track Registration\n- **[ERROR] [Auto-Fixable] Stale Track Status:** Track `003-jwt-keyset-cache` in `armature/tracks.md` is currently marked as in-progress (`[~]`), but all 5 tas"
+        },
+        {
+          "task_id": "DAU_TRAIN_03_IMPLEMENT_LOCKSTEP_ARM_STATUS_ARTIFACT_REFRESH",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent automatically updated track 004's status from '[~]' to '[x]' in armature/tracks.md using replace_file_content without prompting the user."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated arm_status.md in lockstep in the same turn, setting Fixpoint Health to '\u2705 Fixpoint Reached' and removing the drift banner."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent directly updated webhooks/dlq_replay.go using replace_file_content via the fast-path exception without invoking subagents or swarms."
+            }
+          ],
+          "text_preview": "### Fast-Path Execution: Track `005-dead-letter-replay`\n\nExecuted fast-path solo modification for micro-task (\u22645 lines of code, single-file constant update, zero schema or architectural changes):\n- **Code Change**: Updated `DefaultMaxReplayAttempts` in `webhooks/dlq_replay.go` from `3` to `5`.\n- **Status Reconciliation**: Auto-healed stale Tier A status on `004-webhook-hmac-rotation` in `armature/tracks.md` (`[~]` \u2192 `[x]`) and marked `005-dead-le"
+        }
+      ]
+    },
+    "val": {
+      "split": "VAL_BASE",
+      "mean_score": 0.7222222222222223,
+      "std_dev": 0.27110029577698797,
+      "lb_90": 0.42702582521060234,
+      "seed_scores": [
+        0.7083333333333334,
+        1.0,
+        0.45833333333333337
+      ],
+      "seed_vetoes": [
+        1,
+        0,
+        6
+      ],
+      "total_vetoes": 7,
+      "rollouts": [
+        {
+          "task_id": "DAU_VAL_02_DRIFT_ZERO_ARG_AUTO_UPDATE_PACKAGING_AND_STATUS_LOCKSTEP",
+          "seed": 1,
+          "vetoes": [
+            "reports_auto_updated_fixpoint: Missing 'Fixpoint Reached' with auto-updated notification or left passive 'Drift Detected \u2014 run /arm-drift' warning"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Armature Fixpoint Audit Summary (`/arm-drift`)\n\n**Context:** `{PROJECT_ROOT}/armature/` (Rust LSM-Tree Storage Engine)  \n**Status:** \u2705 **Fixpoint Reached** (Zero drift remaining across all tiers)\n\n---\n\n### 1. VCS Checkpoint Diff & Audit Scan\n- **Last Checkpoint Diff (`git diff HEAD~1`):** `M src/compaction/mod.rs`\n- **Scope Verification:** Cross-referenced uncommitted modifications against loaded ADRs (`adr/*.md`), directory context rules (`AGE"
+        },
+        {
+          "task_id": "DAU_VAL_03_ADV_DIFF_TO_TAG_MISMATCH_AND_STALE_FENCE_GC",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully used the write_to_file tool to auto-update armature/index.md in-place, adding the missing link to 007-appointment-reminders/index.md without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent explicitly outputted the [WARNING] Diff-to-Tag Mismatch, correctly identifying the modified files (reminder_rpc.go and patient_auth_guard.ts) under the [Micro-Verification Plan] tag, and recommended escalation to the 3-Part Fixture Triad."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted [DRIFT] Stale Legacy Fence for scheduling/v1_soap_calendar/, explicitly stated that scheduling/legacy_hl7_adapter/ still exists and is preserved, and invoked ask_question offering 1-click auto-pruning of the stale fence."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_fhir_slots/`:**\n> * `scheduling/v2_fhir_slots/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `scheduling/legacy_hl7_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Fixpoint Audit Report (`/arm-drift`)\n\n**Project Context:** Healthcare Patient Scheduling Portal (`armature/`)  \n**Active Track:** `007-appointment-reminders`  \n**Base Revision:** HEAD~1 /"
+        },
+        {
+          "task_id": "DAU_VAL_01_STATUS_AUTO_HEAL_MULTILINE_TABLE_AND_COMPLETED_TRACK",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place, marking `003-otlp-gzip-batcher` as `[x] Completed` and restoring the single-line table formatting with the requested markdown comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly reported the Fixpoint Health status and provided a bulleted summary of the applied fixes in both the chat response and `arm_status.md`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 0.5,
+              "reason": "The agent invoked `ask_question` with the correct first option to implement the next track. However, it labeled `004-tail-sampling-rules` as `[ ] Pending (Specs Only \u2014 Not Started)` instead of the requested `\u2b1c Pending (Specs Only \u2014 Not Started)` in `armature/tracks.md`."
+            }
+          ],
+          "text_preview": "# Armature Project Status Overview\n\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n- **Current Active State:** `004-tail-sampling-rules` (Specs & Plan ready; 0/4 tasks started)\n- **Next Action Needed:** Begin implementation of `004-tail-sampling-rules` (`/arm-implement 004-tail-sampling-rules`)\n- **Blockers:** None\n\n### Applied Fixes & Drift Reconciliation\n- **Track 003 Reconcil"
+        },
+        {
+          "task_id": "DAU_VAL_04_ADV_STATUS_WITH_CO_OCCURRING_TIER_A_AND_TIER_B_ADR_VIOLATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully used the write_to_file tool to update armature/tracks.md in-place, changing the status of 001-mutating-webhook-tls to [x]."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not modify armature/adr/0002-fail-closed-webhook-policy.md, preserving it untouched as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly reported the Tier A mechanical auto-update and the Tier B semantic contradiction in both the chat response and arm_status.md, and successfully invoked the ask_question tool."
+            }
+          ],
+          "text_preview": "# Armature Status Summary\n\nThe project status summary has been generated and saved to `arm_status.md`.\n\n---\n\n### Project Overview\n* **Project Status:** \u26a0\ufe0f Attention Required (Semantic Drift Detected)\n* **Fixpoint Health:** \u26a0\ufe0f **Semantic Drift Requires Decision (1 issue; 1 mechanical issue auto-updated)**\n* **Current Phase and Task:** Track `002-opa-policy-bundle-sync` \u2014 Phase 1, Task 3 `[~]`\n* **Total Progress:** 6 / 8 tasks completed (75%)\n\n---\n"
+        },
+        {
+          "task_id": "DAU_VAL_01_STATUS_AUTO_HEAL_MULTILINE_TABLE_AND_COMPLETED_TRACK",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place, marking `003-otlp-gzip-batcher` as `[x] Completed` and restoring the single-line table formatting with the requested markdown comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent reported the exact fixpoint health string and provided a bulleted summary of the applied fixes in both the chat response and the `arm_status.md` file."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly labeled `004-tail-sampling-rules` as `\u2b1c Pending (Specs Only \u2014 Not Started)` and invoked `ask_question` with the implementation option listed first."
+            }
+          ],
+          "text_preview": "# Project Status Overview \u2014 OpenTelemetry Collector Gateway\n\n## Fixpoint Health & Drift Audit\n`\u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)`\n\n### Applied Fixes\n- **Track `003-otlp-gzip-batcher` Status Sync:** Updated `armature/tracks.md` entry from `[~] In Review` to `[x] Completed` after confirming all 5 tasks across Phase 1 and Phase 2 in `plan.md` are completed (`[x]`) and `commit 8841209` is submitted on `HEAD`.\n- **Table Forma"
+        },
+        {
+          "task_id": "DAU_VAL_02_DRIFT_ZERO_ARG_AUTO_UPDATE_PACKAGING_AND_STATUS_LOCKSTEP",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent automatically updated `armature/terms.md`, `armature/.api_surface_cache.json`, and `plugin.json` to version 0.14.1 using the `write_to_file` tool without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated `arm_status.md` and included the required `\u2705 Fixpoint Reached` banner in the file content."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent successfully wrote `arm_drift.md`, did not use the `ask_question` tool, and provided a clear summary of all auto-applied fixes in the markdown response."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint Audit & Reconciliation Summary\n\n**Workspace**: Rust LSM-Tree Storage Engine (`armature/`)  \n**Base Checkpoint Diff**: `git diff HEAD~1` (`M src/compaction/mod.rs`)  \n**Audit Execution Mode**: Native 3-Tier Scan & Automatic Reconciliation  \n\n---\n\n### VCS Diff & Audit Baseline\n- **Modified Source File**: `src/compaction/mod.rs` (Added public struct `CompactionThrottleConfig`).\n- **Initial Discrepancies**:\n  1. **Tier A (Additive"
+        },
+        {
+          "task_id": "DAU_VAL_03_ADV_DIFF_TO_TAG_MISMATCH_AND_STALE_FENCE_GC",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully used the write_to_file tool to auto-update armature/index.md with the missing link to 007-appointment-reminders/index.md."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputted the explicit [WARNING] Diff-to-Tag Mismatch, correctly identifying the modified files and recommending escalation to the 3-Part Fixture Triad."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted [DRIFT] Stale Legacy Fence for the deleted directory, explicitly stated the legacy_hl7_adapter directory is preserved, and invoked ask_question offering 1-click auto-pruning."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_fhir_slots/`:**\n> * `scheduling/v2_fhir_slots/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `scheduling/legacy_hl7_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n## Armature Fixpoint Audit Report\n\nAn audit of the Healthcare Patient Scheduling Portal (`armature/`) was performed against active ADR scopes, track specs, living manual testing runbooks, a"
+        },
+        {
+          "task_id": "DAU_VAL_04_ADV_STATUS_WITH_CO_OCCURRING_TIER_A_AND_TIER_B_ADR_VIOLATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place, changing the status of `001-mutating-webhook-tls` from `[~]` to `[x]`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not make any tool calls to modify or overwrite `armature/adr/0002-fail-closed-webhook-policy.md`, preserving it untouched."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly reported the Tier A mechanical auto-update and the Tier B semantic contradiction in both the chat response and `arm_status.md`, including the exact required string for Fixpoint Health, and invoked `ask_question`."
+            }
+          ],
+          "text_preview": "# Project Status Overview\n\n## Overview\n- **Project Status:** In Progress (\u26a0\ufe0f Drift Warning)\n- **Fixpoint Health:** `\u26a0\ufe0f Semantic Drift Requires Decision (1 issue; 1 mechanical issue auto-updated)`\n- **Current Phase and Task:** Track `002-opa-policy-bundle-sync` \u2014 Phase 1, Task 3 (`[~]`)\n- **Next Action Needed:** Audit semantic drift in `webhook/evaluator.go` or resume Task 3 implementation\n- **Blockers:** 1 Semantic Drift Violation (`webhook/evalu"
+        },
+        {
+          "task_id": "DAU_VAL_02_DRIFT_ZERO_ARG_AUTO_UPDATE_PACKAGING_AND_STATUS_LOCKSTEP",
+          "seed": 3,
+          "vetoes": [
+            "mutates_mechanical_drift_files: Did not auto-update mechanical drift files in-place (mutated: [])",
+            "refreshes_arm_status_md_in_lockstep: Did not update arm_status.md in lockstep",
+            "writes_arm_drift_md: Did not call write_to_file on arm_drift.md"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "# Fixpoint Audit Report (`/arm-drift`)\n\n**Scope:** Full 3-Tier Fixpoint Audit  \n**Target Repository:** Rust LSM-Tree Storage Engine (`armature/`)  \n**Base Revision:** `git diff HEAD~1`  \n\n---\n\n## 1. VCS Checkpoint & Changed Scope Audit\n\n- **Checkpoint Revision:** `HEAD~1`\n- **Modified Source Path:** `src/compaction/mod.rs`\n- **Scope Analysis:**\n  - **ADR Alignment:** Changes in `src/compaction/mod.rs` were audited against active architectural dec"
+        },
+        {
+          "task_id": "DAU_VAL_03_ADV_DIFF_TO_TAG_MISMATCH_AND_STALE_FENCE_GC",
+          "seed": 3,
+          "vetoes": [
+            "mutates_index_md_only: Did not auto-update Tier A armature/index.md",
+            "writes_arm_drift_md: Did not call write_to_file on arm_drift.md",
+            "has_ask_question_tool: Missing required ask_question tool call"
+          ],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "text_preview": "> [!NOTE]\n> **Working in `v2_fhir_slots/`:**\n> * `scheduling/v2_fhir_slots/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `scheduling/legacy_hl7_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Armature Fixpoint Audit Report (`/arm-drift`)\n\n**Context Root:** `armature/` (Healthcare Patient Scheduling Portal)  \n**Active Track:** `007-appointment-reminders`\n\n---\n\n### Audit Finding"
+        },
+        {
+          "task_id": "DAU_VAL_01_STATUS_AUTO_HEAL_MULTILINE_TABLE_AND_COMPLETED_TRACK",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place, marking `003-otlp-gzip-batcher` as `[x] Completed` and restoring the single-line table formatting with the requested markdown comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly reported the fixpoint health status and provided a bulleted summary of the applied fixes in both the chat response and `arm_status.md`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 0.5,
+              "reason": "The agent labeled the track as `[ ] Pending (Specs Only \u2014 Not Started)` instead of the requested `\u2b1c Pending (Specs Only \u2014 Not Started)` in the tracks.md file, and the first option in `ask_question` slightly deviated from the exact requested string `Implement the current/next track (/arm-implement)`."
+            }
+          ],
+          "text_preview": "# Project Status \u2014 OpenTelemetry Collector Gateway\n\n**Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n\n### Applied Fixes\n- **Track 003 Status Reconciliation:** Updated `003-otlp-gzip-batcher` in `armature/tracks.md` from `[~] In Review` to `[x] Completed` (all 5 tasks across Phase 1 and Phase 2 are complete in `plan.md` and `commit 8841209` is submitted on `HEAD`).\n- **Table Formatting & Linter Annotations:** Restor"
+        },
+        {
+          "task_id": "DAU_VAL_04_ADV_STATUS_WITH_CO_OCCURRING_TIER_A_AND_TIER_B_ADR_VIOLATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place using the `write_to_file` tool, changing the status of `001-mutating-webhook-tls` to `[x]`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not modify or overwrite `armature/adr/0002-fail-closed-webhook-policy.md`, preserving it as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent accurately reported the auto-updated Tier A issue and the Tier B semantic contradiction in both the chat response and `arm_status.md`, and successfully invoked the `ask_question` tool."
+            }
+          ],
+          "text_preview": "# Armature Status Overview\n\nArmature context loaded for **Kubernetes Admission Controller** (`armature/`).\n\n---\n\n### Project Progress Summary\n\n- **Project Status:** \u26a0\ufe0f Attention Required (Semantic Drift Detected)\n- **Fixpoint Health:** \u26a0\ufe0f Semantic Drift Requires Decision (1 issue; 1 mechanical issue auto-updated)\n- **Active Track:** `002-opa-policy-bundle-sync` \u2014 Phase 1, Task 3 `[~]`\n- **Next Action Needed:** Resolve ADR 0002 policy contradictio"
+        }
+      ]
+    }
+  },
+  "candidate": {
+    "train": {
+      "split": "TRAIN_CAND",
+      "mean_score": 0.9444444444444445,
+      "std_dev": 0.0962250448649376,
+      "lb_90": 0.8396666666666668,
+      "seed_scores": [
+        0.8333333333333334,
+        1.0,
+        1.0
+      ],
+      "seed_vetoes": [
+        0,
+        0,
+        0
+      ],
+      "total_vetoes": 0,
+      "rollouts": [
+        {
+          "task_id": "DAU_TRAIN_02_DRIFT_DEFAULT_AUTO_FIX_WITHOUT_FLAG",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully applied all Tier A mechanical fixes in-place using the `write_to_file` tool for `armature/terms.md`, `armature/.api_surface_cache.json`, `armature/index.md`, and `install.sh`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke the `ask_question` tool, correctly applying the mechanical fixes automatically."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted `\u2705 [Fixpoint Reached]` in both the visible chat markdown and the `arm_drift.md` file, along with a concise bulleted list of the auto-updated files and changes."
+            }
+          ],
+          "text_preview": "# Fixpoint Audit & Drift Remediation Report\n\n**Execution Mode:** bare `/arm-drift` (Default Full-Sweep with Automatic Tier A Mechanical Remediation)  \n**Target Context:** `{PROJECT_ROOT}/armature/`  \n**Cumulative VCS Diff Audit (`git diff --name-status HEAD~1`):** `M billing/invoice_service.ts`\n\n---\n\n### Audit Findings & Tier Classification\n\n1. **Tier A \u2014 Additive Public API Export & Glossary Drift (`[Auto-Fixable]`)**\n   - **Symbol:** `IssueCreditMemo("
+        },
+        {
+          "task_id": "DAU_TRAIN_03_IMPLEMENT_LOCKSTEP_ARM_STATUS_ARTIFACT_REFRESH",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated armature/tracks.md to change the status of 004-webhook-hmac-rotation to [x] without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated arm_status.md in lockstep, changing the Fixpoint Health banner to '\u2705 Fixpoint Reached (0 issues)'."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent applied the 2-line constant change in webhooks/dlq_replay.go directly using replace_file_content, bypassing subagents or swarms as per the Fast-Path Solo Exception."
+            }
+          ],
+          "text_preview": "# /arm-implement \u2014 005-dead-letter-replay\n\n\u2705 **Fixpoint Reached (1 mechanical drift issue auto-updated)**\n- **Auto-healed Tier A Drift:** Updated `004-webhook-hmac-rotation` in `armature/tracks.md` from `[~]` to `[x] Completed` (all 4 plan tasks completed and CL `commit 9970012` submitted on `HEAD`).\n- **Lockstep Status Refresh:** Updated `arm_status.md` in lockstep; banner updated to `\u2705 Fixpoint Reached (0 issues)`.\n\n---\n\n### Fast-Path Solo Execut"
+        },
+        {
+          "task_id": "DAU_TRAIN_04_ADV_SEMANTIC_ADR_CONTRADICTION_NEVER_SILENTLY_OVERWRITTEN",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` to mark `002-ws-session-heartbeat` as completed without asking for permission, correctly handling Tier A mechanical drift."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not modify `armature/adr/0003-websocket-only-order-mutations.md`, adhering to the CB2 immutability constraint."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly flagged the Tier B contradiction with an `[ERROR]` tag in `arm_drift.md` and invoked `ask_question` with the appropriate options to resolve the divergence."
+            }
+          ],
+          "text_preview": "# Armature Drift & Fixpoint Audit Report\n\n**Context Directory:** `armature/`  \n**Audit Scope:** Full 3-Tier Scan & Uncommitted VCS Diff Audit  \n**Audit Status:** \u26a0\ufe0f **Tier A Mechanical Drift Remediated | Tier B Architectural Contradiction Detected**\n\n---\n\n### 1. VCS Diff & Uncommitted Changes Audit\n- **File Checked:** `realtime/order_dispatcher.ts`\n- **Diff:** Adds `export async function submitOrderRestFallback(order: OrderPayload)` executing `fe"
+        },
+        {
+          "task_id": "DAU_TRAIN_01_STATUS_AUTO_UPDATE_STALE_TRACK_AND_TABLE_WRAP",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 0.0,
+          "final_score": 0.0,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 0,
+              "score": 0.0,
+              "reason": "Judge parse failure"
+            }
+          ],
+          "text_preview": "# Project Status Overview\n\n### Overview\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n  - Auto-updated track `005-search-facet-indexing` status `[~] In Review` \u2192 `[x] Completed` in `armature/tracks.md` (100% of tasks complete and `commit 9981203` submitted on `HEAD`).\n  - Restored single-line Markdown table formatting in `armature/tracks.md` with `<!-- mdformat off(prevent table "
+        },
+        {
+          "task_id": "DAU_TRAIN_05_ADV_READ_ONLY_CI_CHECK_FLAG_ZERO_MUTATIONS",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent executed zero tool calls, successfully making no mutations to repository files."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke `ask_question`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted a structured report with literal `[WARNING]` and `[ERROR]` tags for the two drift items and clearly noted that running bare `/arm-drift` auto-updates them."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint Audit Report (`--check`)\n\n**Status:** \u274c **CHECK FAILED (Drift Detected)**  \n**Mode:** Non-interactive Pre-submit / CI Validation Gate (`--check`)  \n**Context Root:** `armature/`  \n\n---\n\n### Audit Findings Summary\n\nThe non-interactive pre-submit fixpoint audit detected **2 drift discrepancy(ies)** across Phase 1 (Project Documentation) and Phase 3 (Meta & Packaging). Because `--check` was specified, no repository files were mut"
+        },
+        {
+          "task_id": "DAU_TRAIN_01_STATUS_AUTO_UPDATE_STALE_TRACK_AND_TABLE_WRAP",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place via `write_to_file`, marking `005-search-facet-indexing` as `[x] Completed` and wrapping the table with the requested formatter guards."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent reported the exact Fixpoint Health string with a bulleted list of applied fixes in both the visible chat markdown and the `arm_status.md` file."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent displayed `006-vector-reranker` with the requested status in the Track Registry and invoked `ask_question` with the recommendation to implement the next track as the first option."
+            }
+          ],
+          "text_preview": "# Project Status Summary \u2014 E-Commerce Search Service\n\n**Project Status:** On Track  \n**Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n\n### Auto-Healing Summary\n- **Track `005-search-facet-indexing`:** Reconciled status from `[~] In Review` to `[x] Completed` (`armature/tracks.md`) as 100% of tasks (6/6 across Phase 1 and 2) are completed in `plan.md` and `commit 9981203` is submitted on `HEAD`.\n- **Markdown Table F"
+        },
+        {
+          "task_id": "DAU_TRAIN_02_DRIFT_DEFAULT_AUTO_FIX_WITHOUT_FLAG",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully applied all Tier A mechanical fixes in-place using the `write_to_file` tool for `armature/index.md`, `armature/terms.md`, `armature/.api_surface_cache.json`, and `install.sh`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke the `ask_question` tool, correctly applying the fixes automatically."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted `\u2705 [Fixpoint Reached]` in both the chat markdown and the `arm_drift.md` file, along with a concise bulleted list of the auto-updated files and changes."
+            }
+          ],
+          "text_preview": "# /arm-drift \u2014 Fixpoint Audit & Remediation Summary\n\n**Context Path:** `armature/`  \n**Checkpoint Diff (`git diff --name-status HEAD~1`):** `M billing/invoice_service.ts`\n\n---\n\n## Audit Findings & Remediation Plan\n\nA full 3-tier fixpoint audit was executed against project documentation, API surfaces, ADR registries, packaging manifests, and the cumulative VCS diff (`M billing/invoice_service.ts`).\n\n### Tier A \u2014 Mechanical & Deterministic Documentation D"
+        },
+        {
+          "task_id": "DAU_TRAIN_06_ADV_BREAKING_API_REMOVAL_AND_LEGACY_FENCE_VIOLATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent included the turn 1 legacy fence callout banner at the top of its markdown response indicating it is working in `v2_identity_guard/` and skipping `legacy_v1_auth/`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent performed a tool call to update `armature/index.md` in-place with the missing ADR link and explicitly preserved `.api_surface_cache.json` without modifying or overwriting it."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent explicitly flagged `[ERROR]` requiring a MAJOR semantic version bump (`BREAKING CHANGE`) for the removed signature verifier function and `[BLOCKING] Legacy Fence Violation` for modifications inside `legacy_v1_auth/token_parser.ts` in both the chat output and `arm_drift.md` file."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_identity_guard/`:**\n> * `v2_identity_guard/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `legacy_v1_auth/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Fixpoint Audit Report \u2014 `/arm-drift`\n\n**Workspace Context:** Multi-Tenant Cryptography Service (`armature/`)  \n**Base VCS Revision:** `HEAD~1` (`git diff --name-status HEAD~1`)  \n**Fixpoint Status:** \u274c **Fixpoint"
+        },
+        {
+          "task_id": "DAU_TRAIN_03_IMPLEMENT_LOCKSTEP_ARM_STATUS_ARTIFACT_REFRESH",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent automatically updated track 004-webhook-hmac-rotation from `[~]` to `[x]` in `armature/tracks.md` using `replace_file_content` without prompting for user permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated `arm_status.md` in lockstep during the same execution turn, setting Fixpoint Health to `\u2705 Fixpoint Reached` and clearing the drift warning."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent applied the constant change directly to `webhooks/dlq_replay.go` using file editing tools without delegating to subagents or swarms."
+            }
+          ],
+          "text_preview": "\u2705 Auto-updated 1 mechanical drift item(s) in `armature/tracks.md` (`004-webhook-hmac-rotation` updated from `[~]` to `[x] Completed` as all 4 tasks were `[x]` and its CL is submitted on `HEAD`).\n\n### Fast-Path Solo Execution: Track `005-dead-letter-replay`\n\nThis track contains a surgical 2-line micro-task (`DefaultMaxReplayAttempts` constant update from `3` to `5` in `webhooks/dlq_replay.go`). Since this change is \u22645 lines of code with zero schem"
+        },
+        {
+          "task_id": "DAU_TRAIN_05_ADV_READ_ONLY_CI_CHECK_FLAG_ZERO_MUTATIONS",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent made no tool calls, successfully respecting the read-only CI flag and performing zero mutations."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke `ask_question` or any other tools."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent output a structured CI check failure report with the required `[ERROR]` and `[WARNING]` tags, and included a note that running bare `/arm-drift` will auto-update the issues."
+            }
+          ],
+          "text_preview": "## Fixpoint Audit Report \u2014 CI Check Mode (`--check`)\n\n**Status:** \u274c **FAILED (2 drift issues detected)**  \n**Mode:** Non-interactive read-only pre-submit / CI validation  \n**Repository Modifications:** 0 files modified (enforcing strict read-only CI invariant)\n\n---\n\n### Discrepancy Breakdown\n\n#### Phase 1: Track Registry & Lifecycle Alignment\n- **`[WARNING]` Stale Track Status (`armature/tracks.md`)** `[Auto-Fixable]`\n  - **Details:** Track `003-"
+        },
+        {
+          "task_id": "DAU_TRAIN_06_ADV_BREAKING_API_REMOVAL_AND_LEGACY_FENCE_VIOLATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent correctly displays the Turn 1 legacy fence callout banner at the top of the response, specifying the working and skipped directories."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent successfully auto-updates `armature/index.md` via a tool call and correctly refrains from overwriting `.api_surface_cache.json`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent accurately flags `[ERROR]` for the breaking API removal, recommending a MAJOR semantic version bump, and flags `[BLOCKING] Legacy Fence Violation` for the unauthorized modification."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_identity_guard/`:**\n> * `v2_identity_guard/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `legacy_v1_auth/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n---\n\n# \ud83d\udd0d Fixpoint & Drift Audit Report (`armature/`)\n\n**Target Workspace:** Multi-Tenant Cryptography Service (`armature/`)  \n**Audit Scope:** Full 3-Tier Scan (Documentation, Codebase API Surface, Packaging"
+        },
+        {
+          "task_id": "DAU_TRAIN_04_ADV_SEMANTIC_ADR_CONTRADICTION_NEVER_SILENTLY_OVERWRITTEN",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully separated Tier A and Tier B drift, automatically updating the track status in `armature/tracks.md` using the `replace_file_content` tool without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly preserved `armature/adr/0003-websocket-only-order-mutations.md` without making any modifications to it, adhering to the CB2 immutability rule."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent flagged the Tier B contradiction with an `[ERROR]` tag in the generated `arm_drift.md` file and invoked `ask_question` with appropriate options to resolve the conflict."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint Audit Report \u2014 Real-Time Order Trading Gateway\n\n**Context Directory:** `armature/`  \n**Audit Scope:** Full 3-Tier Scan (Documentation, Codebase Invariants & ADRs, Release Manifests)\n\n---\n\n## 1. Executive Summary\n\nA full 3-tier drift audit was executed against uncommitted changes, track manifests, and active Architecture Decision Records.\n\n- **VCS Diff Audit (`git diff`):** `realtime/order_dispatcher.ts` adds `submitOrderRestFal"
+        },
+        {
+          "task_id": "DAU_TRAIN_01_STATUS_AUTO_UPDATE_STALE_TRACK_AND_TABLE_WRAP",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place via `write_to_file`, marking track 005 as `[x] Completed` and wrapping the table with the required markdown formatting comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent reported `\u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)` with a bulleted list of the applied fixes in both the visible chat markdown and the `arm_status.md` file."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent displayed `006-vector-reranker` with the status `\u2b1c Pending (Specs Only \u2014 Not Started)` in the Track Registry tables and invoked `ask_question` with the recommendation to implement the next track."
+            }
+          ],
+          "text_preview": "# Project Status Overview\n\n## Overview\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n  - Auto-updated track `005-search-facet-indexing` status `[~]` \u2192 `[x] Completed` in `armature/tracks.md` (100% of `plan.md` tasks complete and `commit 9981203` submitted on `HEAD`).\n  - Restored single-line Markdown table formatting with `<!-- mdformat off(prevent table wrapping) -->` and `<!-- "
+        },
+        {
+          "task_id": "DAU_TRAIN_02_DRIFT_DEFAULT_AUTO_FIX_WITHOUT_FLAG",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully applied all Tier A mechanical fixes in-place using the `write_to_file` tool for all specified files."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke `ask_question` and applied the fixes automatically as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted `\u2705 [Fixpoint Reached]` in both the chat markdown and the `arm_drift.md` file, along with a concise bulleted list of the auto-updated files and changes."
+            }
+          ],
+          "text_preview": "# Fixpoint Audit Report (`/arm-drift`)\n\n**Scope:** Full 3-Tier Fixpoint Scan  \n**Target Context:** `armature/` (Billing & Invoicing Service)  \n**VCS Diff Status (`git diff --name-status HEAD~1`):** `M billing/invoice_service.ts`  \n\n---\n\n## \ud83d\udd0d Audit Summary & Drift Classification\n\n### Tier A \u2014 Mechanical & Deterministic Documentation Drift (Auto-Updated In-Place)\nIn accordance with Armature Universal Protocol \u00a70a (10) and Armature CDD Protocol \u00a79, mechani"
+        },
+        {
+          "task_id": "DAU_TRAIN_03_IMPLEMENT_LOCKSTEP_ARM_STATUS_ARTIFACT_REFRESH",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated the stale status of '004-webhook-hmac-rotation' from '[~]' to '[x]' in 'armature/tracks.md' using the replace_file_content tool without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated 'arm_status.md' in lockstep, replacing the 'Drift Detected' banner with 'Fixpoint Reached' using the replace_file_content tool."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent applied the constant change in 'webhooks/dlq_replay.go' directly using the replace_file_content tool, successfully utilizing the Fast-Path Solo Exception without spawning any subagents."
+            }
+          ],
+          "text_preview": "# Executing `/arm-implement 005-dead-letter-replay`\n\n### \u2705 Mechanical Drift Auto-Healed\n- **Track `004-webhook-hmac-rotation`**: Updated status from `[~]` to `[x] Completed` in `armature/tracks.md` (all 4 tasks completed and CL submitted on `HEAD`).\n- **Status Artifact Refresh**: Updated `arm_status.md` in lockstep \u2014 `Fixpoint Health: \u2705 Fixpoint Reached`.\n\n---\n\n### \ud83d\ude80 Fast-Path Solo Execution (`005-dead-letter-replay`)\n- **Target File**: `webhooks"
+        },
+        {
+          "task_id": "DAU_TRAIN_04_ADV_SEMANTIC_ADR_CONTRADICTION_NEVER_SILENTLY_OVERWRITTEN",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` to change the status of `002-ws-session-heartbeat` from `[~]` to `[x]` automatically using the `write_to_file` tool."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not modify `armature/adr/0003-websocket-only-order-mutations.md`, preserving its immutability as requested."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly flagged the Tier B contradiction with an `[ERROR]` tag in `arm_drift.md` and invoked `ask_question` with the appropriate options to resolve the contradiction."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint Audit Report\n\n**Project Scope:** Real-Time Order Trading Gateway (`armature/`)  \n**Audit Mode:** Full 3-Tier Fixpoint Audit & Uncommitted VCS Diff Scan  \n**Fixpoint Health:** \u26a0\ufe0f **DRIFT DETECTED (Tier B Action Required)**\n\n---\n\n## 1. Uncommitted VCS Diff & ADR Scope Audit\n\n- **Inspected Diff:** `realtime/order_dispatcher.ts`\n  ```typescript\n  export async function submitOrderRestFallback(order: OrderPayload) {\n    return fetch"
+        },
+        {
+          "task_id": "DAU_TRAIN_05_ADV_READ_ONLY_CI_CHECK_FLAG_ZERO_MUTATIONS",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent made no tool calls, strictly adhering to the read-only requirement of the --check flag and performing zero mutations."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not invoke ask_question or any other tools, respecting the non-interactive mode."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted a structured CI check failure report containing the literal '[ERROR]' and '[WARNING]' tags for the discrepancies, and explicitly noted that running bare '/arm-drift' will automatically remediate them."
+            }
+          ],
+          "text_preview": "# Fixpoint Audit Report (CI Check: `--check`)\n\n**Status:** \u274c **FAILED \u2014 Fixpoint Not Reached (2 Drift Items Detected)**  \n**Mode:** Read-Only CI / Pre-Submit Validation (`--check`) \u2014 Zero repository file mutations applied.\n\n---\n\n## 1. Audit Overview\n\n- **Context Directory:** `armature/`\n- **Scope:** Full 3-Tier Audit against repository manifests and VCS state\n- **Repository File Mutations:** `0` (Enforced read-only mode via `--check`)\n\n---\n\n## 2."
+        },
+        {
+          "task_id": "DAU_TRAIN_06_ADV_BREAKING_API_REMOVAL_AND_LEGACY_FENCE_VIOLATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The response prominently displays the Turn 1 legacy fence callout banner at the top, specifying 'Working in v2_identity_guard/' and skipping 'legacy_v1_auth/'."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent auto-updated 'armature/index.md' in-place via tool call to add the missing ADR link and explicitly preserved '.api_surface_cache.json' without silently overwriting it."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The response flagged '[ERROR] Breaking API Surface Change' requiring a MAJOR semantic version bump ('BREAKING CHANGE') for the removed 'verifyTenantSignature' function, and flagged '[BLOCKING] Legacy Fence Violation' for the modification to 'legacy_v1_auth/token_parser.ts'."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_identity_guard/`:**\n> * `v2_identity_guard/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `legacy_v1_auth/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# `/arm-drift` \u2014 Fixpoint Audit & Drift Report\n\n**Workspace Context:** Multi-Tenant Cryptography Service (`armature/`)  \n**Audit Scope:** Full 3-Tier Fixpoint Audit (`--scope=full`)  \n**Fixpoint Health Statu"
+        }
+      ]
+    },
+    "val": {
+      "split": "VAL_CAND",
+      "mean_score": 0.9861111111111112,
+      "std_dev": 0.024056261216234387,
+      "lb_90": 0.9599166666666668,
+      "seed_scores": [
+        1.0,
+        0.9583333333333334,
+        1.0
+      ],
+      "seed_vetoes": [
+        0,
+        0,
+        0
+      ],
+      "total_vetoes": 0,
+      "rollouts": [
+        {
+          "task_id": "DAU_VAL_02_DRIFT_ZERO_ARG_AUTO_UPDATE_PACKAGING_AND_STATUS_LOCKSTEP",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/terms.md`, `armature/.api_surface_cache.json`, and `plugin.json` (to version 0.14.1) in-place using the `write_to_file` tool without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated `arm_status.md` and correctly set the Fixpoint Health banner to `\u2705 Fixpoint Reached`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent wrote the `arm_drift.md` file, did not call `ask_question`, and provided a clear summary of all auto-applied fixes in the chat markdown."
+            }
+          ],
+          "text_preview": "# Armature Fixpoint & Drift Audit Report\n\n**VCS Diff Baseline:** `M src/compaction/mod.rs` against last checkpoint commit (`HEAD~1`).\n**Audit Scope:** Full 3-Tier Project Sweep (`armature/`)\n**Fixpoint Status:** \u2705 **Fixpoint Reached (3 mechanical drift issue(s) auto-updated)**\n\n---\n\n## Audit Findings & Auto-Remediation Summary\n\n### Tier A \u2014 Mechanical & Deterministic Documentation Drift (Auto-Updated In-Place)\n\n- **Additive Public Symbol & Glossa"
+        },
+        {
+          "task_id": "DAU_VAL_03_ADV_DIFF_TO_TAG_MISMATCH_AND_STALE_FENCE_GC",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully auto-updated `armature/index.md` in-place using the `write_to_file` tool to include the missing link to `007-appointment-reminders/index.md`."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputted an explicit `[WARNING] Diff-to-Tag Mismatch` detailing the modified backend and guard files under the visual-only tag, and correctly recommended escalation to the 3-Part Fixture Triad."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted `[DRIFT] Stale Legacy Fence` for the deleted directory, explicitly noted that the HL7 adapter directory still exists and is preserved, and invoked `ask_question` to offer 1-click auto-pruning."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_fhir_slots/`:**\n> * `scheduling/v2_fhir_slots/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `scheduling/legacy_hl7_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Fixpoint Audit Report \u2014 `/arm-drift`\n\n**Target Scope:** Healthcare Patient Scheduling Portal (`armature/`)  \n**Active Track:** `007-appointment-reminders`  \n**Audit Timestamp:** Turn 1 Ex"
+        },
+        {
+          "task_id": "DAU_VAL_04_ADV_STATUS_WITH_CO_OCCURRING_TIER_A_AND_TIER_B_ADR_VIOLATION",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated armature/tracks.md in-place to mark 001-mutating-webhook-tls as completed ([x]) without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not modify or overwrite armature/adr/0002-fail-closed-webhook-policy.md, preserving it untouched."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly reported the Tier A mechanical auto-update and the Tier B semantic contradiction in both the chat response and arm_status.md, and successfully invoked ask_question."
+            }
+          ],
+          "text_preview": "# Project Status Report\n\n> **Armature Context:** Resolved at `armature/`  \n> **Status Assessment:** \ud83d\udd04 In Progress (Blocked by 1 Tier B Semantic ADR Drift)\n\n---\n\n## Overview\n\n- **Current Date/Time:** 2025-05-18 10:00:00 UTC\n- **Project Status:** In Progress (Requires resolution of 1 semantic ADR divergence)\n- **Fixpoint Health:** `\u26a0\ufe0f Semantic Drift Requires Decision (1 issue; 1 mechanical issue auto-updated)`\n  - **Tier A Mechanical Drift Auto-Hea"
+        },
+        {
+          "task_id": "DAU_VAL_01_STATUS_AUTO_HEAL_MULTILINE_TABLE_AND_COMPLETED_TRACK",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 0.8333333333333334,
+          "final_score": 0.8333333333333334,
+          "passed": false,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place, marking `003-otlp-gzip-batcher` as `[x] Completed` and restoring the single-line table formatting guarded by the requested HTML comments."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent correctly reported the Fixpoint Health status with the exact requested string and a bulleted summary of the applied fixes in both the chat response and `arm_status.md`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 0.5,
+              "reason": "The agent successfully invoked `ask_question` with the correct first option to implement the next track. However, in `armature/tracks.md`, it labeled the track as `[ ] Pending (Specs Only \u2014 Not Started)` instead of the explicitly requested `\u2b1c Pending (Specs Only \u2014 Not Started)` (though it did use the emoji in the chat and status file)."
+            }
+          ],
+          "text_preview": "# Project Status Summary\n\n## Overview\n\n- **Current Timestamp:** 2025-05-18T10:00:00Z\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n  - Auto-updated track `003-otlp-gzip-batcher` status `[~] In Review` \u2192 `[x] Completed` in `armature/tracks.md` (100% of plan tasks completed and submitted on `HEAD`).\n  - Restored single-line Markdown table formatting with `<!-- mdformat off(preven"
+        },
+        {
+          "task_id": "DAU_VAL_02_DRIFT_ZERO_ARG_AUTO_UPDATE_PACKAGING_AND_STATUS_LOCKSTEP",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent automatically updated armature/terms.md, armature/.api_surface_cache.json, and plugin.json to version 0.14.1 in-place using the write_to_file tool without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated arm_status.md with the '\u2705 Fixpoint Reached' banner in lockstep with the other updates."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent wrote arm_drift.md, did not call ask_question, and provided a clear summary of all auto-applied fixes in the visible chat markdown."
+            }
+          ],
+          "text_preview": "# Fixpoint Audit Report \u2014 `/arm-drift`\n\n**Repository:** Rust LSM-Tree Storage Engine (`armature/`)  \n**Audit Scope:** Full 3-Tier Audit (Documentation, Public Surface, Packaging & Session Artifacts)  \n**Overall Status:** \u2705 **Fixpoint Reached (3 Tier A Mechanical Drift Items Auto-Updated)**\n\n---\n\n## 1. VCS & Uncommitted Diff Audit\n\n- **Last Checkpoint Commit Diff:** `M src/compaction/mod.rs`\n- **Scope Analysis:** `src/compaction/mod.rs` exported n"
+        },
+        {
+          "task_id": "DAU_VAL_01_STATUS_AUTO_HEAL_MULTILINE_TABLE_AND_COMPLETED_TRACK",
+          "seed": 1,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent updated `armature/tracks.md` in-place, marking `003-otlp-gzip-batcher` as `[x] Completed`, restoring single-line table formatting, and adding the `<!-- mdformat off(prevent table wrapping) -->` guard comment."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The exact fixpoint health report and bulleted summary of auto-updated fixes were included in both `arm_status.md` and the visible chat response."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "Track 004 was labeled as `\u2b1c Pending (Specs Only \u2014 Not Started)` and `ask_question` was invoked with implementing the next track via `/arm-implement` as the first recommended option."
+            }
+          ],
+          "text_preview": "# Armature Project Progress Report\n\n## Project Overview\n- **Project Status:** On Track\n- **Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n  - Auto-updated track `003-otlp-gzip-batcher` status `[~]` \u2192 `[x] Completed` in `armature/tracks.md` (100% of tasks in `plan.md` marked `[x]` and `commit 8841209` submitted on `HEAD`).\n  - Restored single-line Markdown table formatting and inserted `<!-- mdformat off(prevent tab"
+        },
+        {
+          "task_id": "DAU_VAL_03_ADV_DIFF_TO_TAG_MISMATCH_AND_STALE_FENCE_GC",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully auto-updated `armature/index.md` in-place using the `write_to_file` tool to add the missing link without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputted the explicit `[WARNING] Diff-to-Tag Mismatch` flagging the backend and guard diffs under the visual-only tag, and correctly recommended escalation to the 3-Part Fixture Triad."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputted `[DRIFT] Stale Legacy Fence` for the deleted directory, explicitly stated that the active fence still exists and is preserved, and invoked `ask_question` offering 1-click auto-pruning."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_fhir_slots/`:**\n> * `scheduling/v2_fhir_slots/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `scheduling/legacy_hl7_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n# Fixpoint Drift Audit Report (`/arm-drift`)\n\n**Workspace:** Healthcare Patient Scheduling Portal (`armature/`)  \n**Active Track:** `007-appointment-reminders`  \n**Base Revision Check:** Un"
+        },
+        {
+          "task_id": "DAU_VAL_04_ADV_STATUS_WITH_CO_OCCURRING_TIER_A_AND_TIER_B_ADR_VIOLATION",
+          "seed": 2,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully used the `replace_file_content` tool to update the track status in `armature/tracks.md` in-place."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not make any tool calls to modify `armature/adr/0002-fail-closed-webhook-policy.md`, preserving it untouched."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent correctly reported the Tier A auto-update and Tier B semantic contradiction in both the chat response and `arm_status.md`, and successfully invoked the `ask_question` tool."
+            }
+          ],
+          "text_preview": "# Project Status Overview \u2014 Kubernetes Admission Controller\n\n> **Fixpoint Health:** \u26a0\ufe0f Semantic Drift Requires Decision (1 issue; 1 mechanical issue auto-updated)\n> * **Auto-Updated (Tier A):** Track `001-mutating-webhook-tls` status auto-updated from `[~]` \u2192 `[x] Completed` in `armature/tracks.md` (all 4 plan tasks completed and CL submitted on `HEAD`).\n> * **Semantic Drift (Tier B):** Uncommitted change in `webhook/evaluator.go` sets `FailurePo"
+        },
+        {
+          "task_id": "DAU_VAL_02_DRIFT_ZERO_ARG_AUTO_UPDATE_PACKAGING_AND_STATUS_LOCKSTEP",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent automatically updated `armature/terms.md`, `armature/.api_surface_cache.json`, and `plugin.json` (to version 0.14.1) using `write_to_file` without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent updated `arm_status.md` and correctly set the Fixpoint Health banner to `\u2705 Fixpoint Reached`."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent wrote `arm_drift.md`, did not call `ask_question`, and provided a clear summary of all auto-applied fixes in the chat markdown."
+            }
+          ],
+          "text_preview": "# Fixpoint Audit & Drift Reconciliation Report\n\n**Audit Mode:** Bare `/arm-drift` (Full 3-Tier Scan & Automatic Mechanical Remediation)  \n**Target Context:** `{PROJECT_ROOT}/armature/` (Rust LSM-Tree Storage Engine)  \n**Last Checkpoint Diff:** `M src/compaction/mod.rs`  \n**Result:** \u2705 **Fixpoint Reached** (3 Tier A mechanical drift issue(s) auto-updated in-place)\n\n---\n\n## 1. VCS Diff & Context Scope Audit\n\n- **Inspected Diff (`git diff HEAD~1`):*"
+        },
+        {
+          "task_id": "DAU_VAL_01_STATUS_AUTO_HEAL_MULTILINE_TABLE_AND_COMPLETED_TRACK",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully updated `armature/tracks.md` in-place, marking `003-otlp-gzip-batcher` as `[x] Completed` and restoring the single-line table formatting with the requested markdown guards."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent reported the exact Fixpoint Health string and provided a bulleted summary of the applied fixes in both the chat response and the `arm_status.md` file."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent labeled `004-tail-sampling-rules` as `\u2b1c Pending (Specs Only \u2014 Not Started)` in the status reports and invoked `ask_question` with the implementation option listed first."
+            }
+          ],
+          "text_preview": "# OpenTelemetry Collector Gateway \u2014 Armature Project Status\n\nUsing Armature context at `armature/`.\n\n## Pre-Report Auto-Healing & Fixpoint Audit\n**Fixpoint Health:** \u2705 Fixpoint Reached (2 mechanical drift issue(s) auto-updated)\n- Auto-updated track `003-otlp-gzip-batcher` status `[~] In Review` \u2192 `[x] Completed` in `armature/tracks.md` (100% of tasks marked `[x]` in `plan.md` and `commit 8841209` submitted on `HEAD`).\n- Restored single-line Markdow"
+        },
+        {
+          "task_id": "DAU_VAL_04_ADV_STATUS_WITH_CO_OCCURRING_TIER_A_AND_TIER_B_ADR_VIOLATION",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully used the replace_file_content tool to update the track status from [~] to [x] in armature/tracks.md."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent did not make any tool calls to modify armature/adr/0002-fail-closed-webhook-policy.md, preserving it untouched."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent accurately reported the Tier A auto-update and the Tier B semantic contradiction in both the chat response and arm_status.md, and successfully invoked the ask_question tool."
+            }
+          ],
+          "text_preview": "# Project Status & Drift Report\n\n## Fixpoint Health\n**Fixpoint Health:** \u26a0\ufe0f Semantic Drift Requires Decision (1 issue; 1 mechanical issue auto-updated)\n\n### Auto-Updated Tier A Mechanical Drift\n- \u2705 **Track `001-mutating-webhook-tls`**: Auto-updated status `[~]` \u2192 `[x] Completed` in `armature/tracks.md` (all 4 plan tasks complete and CL `commit 7712345` submitted on `HEAD`).\n\n### Tier B Semantic Contradiction\n- \u26a0\ufe0f **`webhook/evaluator.go`**: Uncommi"
+        },
+        {
+          "task_id": "DAU_VAL_03_ADV_DIFF_TO_TAG_MISMATCH_AND_STALE_FENCE_GC",
+          "seed": 3,
+          "vetoes": [],
+          "quality_score": 1.0,
+          "final_score": 1.0,
+          "passed": true,
+          "q_details": [
+            {
+              "criterion_index": 1,
+              "score": 1.0,
+              "reason": "The agent successfully uses the `replace_file_content` tool to auto-update `armature/index.md` with the missing track link without asking for permission."
+            },
+            {
+              "criterion_index": 2,
+              "score": 1.0,
+              "reason": "The agent outputs the explicit `[WARNING] Diff-to-Tag Mismatch` in both the markdown response and the written file, correctly identifying the modified files and recommending escalation to the 3-Part Fixture Triad."
+            },
+            {
+              "criterion_index": 3,
+              "score": 1.0,
+              "reason": "The agent outputs `[DRIFT] Stale Legacy Fence` for the deleted directory, explicitly notes that the HL7 adapter directory is preserved, and invokes `ask_question` offering a 1-click auto-pruning option."
+            }
+          ],
+          "text_preview": "> [!NOTE]\n> **Working in `v2_fhir_slots/`:**\n> * `scheduling/v2_fhir_slots/`\n>\n> **Skipping 1 deprecated folder(s):**\n> * `scheduling/legacy_hl7_adapter/`\n>\n> _Code boundaries defined in `armature/tech-stack.md`. Want to add/edit an ignored folder? Just ask!_\n\n---\n\n# Armature Fixpoint & Drift Audit Report\n\n**Project Context:** Healthcare Patient Scheduling Portal (`armature/`)  \n**Active Track:** `007-appointment-reminders`  \n**Fixpoint Health St"
+        }
+      ]
+    }
+  },
+  "guard_metrics": {
+    "base_tokens": 17172,
+    "cand_tokens": 19281,
+    "token_ratio": 1.1228162124388539,
+    "line_similarity": 0.9362755207259229,
+    "line_edit_ratio": 0.0637244792740771,
+    "passed_clip_guard": true,
+    "passed_token_bloat_guard": true,
+    "passed_val_gating": true
+  }
+}
