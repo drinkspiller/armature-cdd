@@ -6,6 +6,47 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.33.0] - 2026-10-22
+
+### Changed
+
+-   **Two-Tier Drift Classification & Auto-Update and Notify by Default on
+    Mechanical Drift (`ADR 0007`)**:
+    -   Upgraded `/arm-status` (`skills/arm-status/SKILL.md`), `/arm-drift`
+        (`skills/arm-drift/SKILL.md`), `/arm-implement`
+        (`skills/arm-implement/SKILL.md`), `rules/armature_protocol.md` (§0a
+        Step 10 & §5), and `rules/armature_cdd_protocols.md` (§9) so **Tier
+        A — Mechanical & Deterministic Documentation Drift** automatically
+        updates in-place and notifies the user by default in the same turn
+        without requiring `--fix` or an `ask_question` permission prompt.
+    -   Tier A auto-updated drift categories include: (1) completed tracks left
+        at `[~]` in `tracks.md` or `"in_progress"` in `metadata.json` when 100%
+        of tasks in `plan.md` are `[x]` and the commit is on `HEAD`; (2)
+        Markdown tables in `tracks.md` / `index.md` wrapped into multi-line
+        `: :` grid continuations by formatters (restoring single-line pipe rows
+        with `<!-- mdformat off(prevent table wrapping) -->` and
+        `<!-- disableFinding(LINE_OVER_80) -->`); (3) missing `tracks.md` /
+        `index.md` links for existing tracks and ADRs; (4) additive
+        `.api_surface_cache.json` and `terms.md` symbol exports; and (5)
+        installer/packaging manifest arrays and version alignment (`install.sh`,
+        `install.bat`, `plugin.json`, `README.md`).
+    -   Added **Live `arm_status.md` Artifact Lockstep Sync**: whenever
+        `/arm-implement` or `/arm-drift` resolves mechanical drift or
+        transitions track status in a session where
+        `{ARTIFACT_DIR}/arm_status.md` exists, it refreshes `arm_status.md` in
+        lockstep (`Fixpoint Health: ✅ Fixpoint Reached`) so status artifacts
+        never retain stale `⚠️ Drift Detected` banners. Enforced unambiguous `⬜
+        Pending (Specs Only — Not Started)` labels for unstarted spec-only
+        tracks in `arm_status.md`.
+    -   Preserved strict **Tier B — Semantic & Boundary Safeguards**: source
+        code contradicting an approved `ADR` or `spec.md` (`CB2`), breaking
+        public API symbol removals (`[ERROR]` major semver bump), `[WARNING]
+        Diff-to-Tag Mismatch` (`ADR 0010`), unauthorized edits inside
+        `<deprecated_path>` (`[BLOCKING]`, `CB1`), deleted legacy fence
+        directories (`[DRIFT] Stale Legacy Fence`, `VAL_LF_04`), and read-only
+        CI gates (`/arm-drift --check`) never silently overwrite approved
+        specs/ADRs or mutate repository files when prohibited.
+
 ## [0.32.0] - 2026-10-21
 
 ### Changed
