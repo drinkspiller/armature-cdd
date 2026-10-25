@@ -61,7 +61,7 @@ Whenever `/arm-bash` is invoked, you MUST prepend the following experimental sta
 ### 3. Hybrid Smart Gate Environment Preparation
 
 1. **Prerequisites & Service Startup:**
-   - Display a clear `##### Prerequisites` block with exact startup commands (e.g., `npm run dev`, `docker compose up`) and fully qualified copy-pastable URLs (`http://localhost:<PORT>/<path>` or Preview URL).
+   - Display a clear `##### Prerequisites` block with exact startup commands from the project's canonical runner (e.g., `./scripts/run.sh`, `./run.sh`, `npm run dev`, `docker compose up`) and provide strictly the `localhost` URL (`http://localhost:<PORT>/<path>`, or the project's documented local tunnel / Preview URL) — **NEVER** show internal remote workstation hostnames (`<REMOTE_HOST>.example.com:<PORT>`) and **NEVER** substitute a standalone HTML harness (`file://` or `data:`) for the live application server.
 2. **Execute Safe Setup / Gate Destructive Commands:**
    - Run non-destructive seed/setup commands automatically.
    - If a setup command contains destructive keywords (`reset`, `clean`, `wipe`, `DROP`, `DELETE`, `rm -rf`), prompt the user via `ask_question` before running.

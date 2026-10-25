@@ -66,8 +66,32 @@ the developer through automated interactive manual testing across scenarios.
             disqualify it from Micro-Verification, explain why multi-persona or
             stateful verification is required, and enforce the full **3-Part
             Fixture Triad** runbook.
-5.  **Review Mode Gate:** If no mode flag was provided in the arguments, present
-    the review mode choice using `ask_question`:
+5.  **Gray-Zone Prototype vs. Live-Server Disambiguation Gate (Preempts Review
+    Mode Gate):** Before presenting the generic Review Mode Gate, check whether
+    the user's prompt mixes verifying implemented track code with exploring
+    alternative UI layouts or asks to spin up a standalone/mock HTML page:
+    -   **Strict Refusal of Simulated Review Harnesses & In-Repo Prototype
+        Routes:** Explicitly state in visible markdown that post-implementation
+        `/arm-review` verification and review videos NEVER use simulated
+        standalone HTML harnesses (`file://` or `data:`), and design
+        explorations NEVER add temporary `?variant=` routes inside the
+        application repository.
+    -   **Explain Both Clean Paths & Disambiguate via `ask_question`:** Clearly
+        explain both valid workflows in visible markdown — **(1) Live-Server
+        Track Verification:** launch the project's canonical runner (e.g.,
+        `./scripts/run.sh` / `./run.sh` on `http://localhost:<PORT>/...`) in
+        headless Chrome / Playwright to review and record the implemented track,
+        or **(2) Standalone Sandbox Exploration:** build an isolated prototype
+        in `<ArtifactDir>/scratch/` (or a local static preview server) to
+        compare alternative layouts — and **immediately invoke `ask_question`**
+        (in place of the generic Review Mode Gate) so the user can choose which
+        path to run first:
+        -   *Question:* `"Should this session verify the implemented track on the live server or explore layout options in a scratch sandbox?"`
+        -   *Options:*
+            -   `"(Recommended) Verify implemented track on the live server (<runner> on localhost)"`
+            -   `"Explore alternative UI layouts in an isolated <ArtifactDir>/scratch/ sandbox first"`
+6.  **Review Mode Gate:** Otherwise, if no mode flag was provided in the
+    arguments, present the review mode choice using `ask_question`:
     -   *Question:* "How would you like to review track '<track_name>'?"
     -   *Options:*
         -   `"(Recommended) Full Review: Check code and tests, then walk through
@@ -330,6 +354,10 @@ Across each pass of the review loop, verify:
 >      * **DevTools Console Log**:
 >        * <Concrete log message or RPC status>
 >      ```
+> 4. **Intent-Scoped Live Application Server Verification (vs. Standalone Prototyping) & Per-Track Deliverable Mapping:**
+>    - **Verification = Live Server Only (Zero Simulated HTML Harnesses):** Whenever post-implementation `/arm-review`, `/arm-bash`, design-mock audits, or PR/runbook screenshot and screencast capture runs, it MUST start the real application server via the project's canonical runner (e.g., `./scripts/run.sh`, `./run.sh`, or `npm run dev`) and load the live `localhost` URL (`http://localhost:<PORT>/<path>`) in headless Chrome / Playwright. **NEVER** create or render a standalone HTML harness (`file://` or `data:`) to mock implemented UI views.
+>    - **Exploration = Standalone Sandboxes Only:** Pre-implementation design exploration (`/prototype`, `/sandbox-preview`) lives strictly outside application repositories in an isolated scratch directory (`<ArtifactDir>/scratch/`) or local static preview server (never temporary `?variant=` routes inside application repositories). If a user prompt is ambiguous between exploring design options in a standalone sandbox vs. verifying implemented code on the live application server, pause and disambiguate via `ask_question` first.
+>    - **Multi-Track 1-to-1 Deliverable Unit & Configuration Reference:** When reviewing or delivering multiple tracks, maintain a strict 1-to-1 mapping: each track ships in its own standalone commit/PR (including its `manual_testing.md` and `review.md`), URL bookmark (`.url.json` when supported), and dedicated live runbook walkthrough video, paired with a comprehensive per-track engineering & external configuration report documenting exact feature flags, service/client IDs, runtime bootstrap config keys (e.g., `window.__APP_CONFIG__` / environment variables), storage buckets, log/telemetry scrubbing allowlists, verified file/line links, and repository code vs. external admin console setup.
 
 Route execution based on the **Stage 2 Empirical VCS Diff Classification** (Step
 2.1):

@@ -1,0 +1,320 @@
+{
+  "target": "skills/arm-review/SKILL.md",
+  "seeds": 3,
+  "train_stats": {
+    "mean": 1.0,
+    "sd": 0.0,
+    "ci_95_lower": 1.0,
+    "ci_95_upper": 1.0
+  },
+  "val_stats": {
+    "mean": 1.0,
+    "sd": 0.0,
+    "ci_95_lower": 1.0,
+    "ci_95_upper": 1.0
+  },
+  "baseline": {
+    "train_score": 1.0,
+    "val_score": 1.0
+  },
+  "seed_runs": [
+    {
+      "seed_index": 1,
+      "seed": 42,
+      "train_score": 1.0,
+      "val_score": 1.0,
+      "train_results": [
+        {
+          "task_id": "LSV_TRAIN_01_GRAY_ZONE_PROTOTYPE_VS_LIVE_SERVER_DISAMBIGUATION",
+          "target_skill": "arm-review",
+          "category": "Intent-Scoped Live-Server Verification vs. Standalone Sandbox Disambiguation",
+          "seed": 42,
+          "score": 1.0,
+          "raw_score": 1.0,
+          "invariant_veto": false,
+          "passed_count": 3,
+          "effective_passed_count": 3,
+          "total_count": 3,
+          "eval_results": [
+            {
+              "criterion": "[INVARIANT] Recognizes the gray-zone ambiguity between verifying implemented track code on the live `./scripts/run.sh` server (`http://localhost:5173/checkout`) vs. exploring alternative design layouts in a standalone `<ArtifactDir>/scratch/` sandbox, and invokes `ask_question` to disambiguate before creating any files or mocking UI views.",
+              "passed": true,
+              "reason": "The agent successfully identifies the ambiguity between verifying the live track and exploring standalone layouts, invoking `ask_question` to ask the user which path to take before creating any files.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[INVARIANT] Strictly refuses to build a simulated standalone HTML harness (`file://` or `data:`) to verify or record the implemented `checkout-shipping-drawer` track, and refuses to add temporary `?variant=` prototype routes inside the application repository.",
+              "passed": true,
+              "reason": "The agent explicitly states in its response that it strictly refuses simulated standalone HTML harnesses and will never introduce temporary `?variant=` routes into the application repository.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[QUALITY] Clearly explains both clean paths in visible markdown before `ask_question`: (1) start `./scripts/run.sh` on `http://localhost:5173/checkout` in headless Chrome/Playwright for `/arm-review` verification, or (2) build an isolated prototype in `<ArtifactDir>/scratch/` for layout exploration.",
+              "passed": true,
+              "reason": "The agent provides a clear markdown numbered list explaining the two distinct workflows (Live-Server Track Verification and Standalone Sandbox Exploration) prior to invoking the `ask_question` tool.",
+              "tier": "QUALITY"
+            }
+          ],
+          "rollout_sample": "Post-implementation verification in `/arm-review` and review video recordings strictly **refuse simulated standalone HTML harnesses** (`file://` or `data:`) and **never introduce temporary `?variant=` routes** into the application repository.\n\nTo keep track verification authoritative and design exploration clean, Armature separates these into two distinct workflows:\n\n1. **Live-Server Track Verification**: Launch the canonical runner (`./scripts/run.sh` serving `http://localhost:5173/checkout`) to review, test, and record the implemented `checkout-shipping-drawer` track against live application state.\n2. **Standalone Sandbox Exploration**: Build isolated prototype options in `<ArtifactDir>/scratch/` (or a local static preview server) to compare layout alternatives without polluting the application codebase.\n\nWhich path would you like to run first?\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"Should this session verify the implemented track on the live server or explo"
+        }
+      ],
+      "val_results": [
+        {
+          "task_id": "LSV_VAL_01_MULTI_TRACK_LIVE_SERVER_DELIVERABLE_UNIT_AND_CONFIG_REPORT",
+          "target_skill": "arm-review",
+          "category": "Held-Out Adversarial \u2014 Multi-Track 1-to-1 Deliverable Unit, Live Server Only & Per-Track Config Reference",
+          "seed": 42,
+          "score": 1.0,
+          "raw_score": 1.0,
+          "invariant_veto": false,
+          "passed_count": 3,
+          "effective_passed_count": 3,
+          "total_count": 3,
+          "eval_results": [
+            {
+              "criterion": "[INVARIANT] Explicitly refuses to substitute a static `file://` or `data:` HTML harness for implemented application code, requiring the real `./scripts/run.sh` server on `http://localhost:3000` in headless Chrome / Playwright.",
+              "passed": true,
+              "reason": "The agent explicitly refuses static `file://` or `data:` harnesses and requires using the canonical runner `./scripts/run.sh` on `http://localhost:3000` in headless Chrome / Playwright.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[INVARIANT] Enforces the 1-to-1 per-track deliverable unit: keeps `011-pager-webhook-routing` and `012-postmortem-export-modal` in separate standalone commits/PRs (each with its own `manual_testing.md`, `review.md`, bookmark, and dedicated live-server walkthrough video).",
+              "passed": true,
+              "reason": "The agent explicitly enforces the 1-to-1 per-track deliverable unit, requiring separate commits/PRs, `manual_testing.md`, `review.md`, and dedicated live-server walkthrough videos for each track.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[QUALITY] Includes or commits to a comprehensive per-track engineering & external configuration reference covering exact feature flags (`ENABLE_PAGER_WEBHOOK_V2`, `ENABLE_POSTMORTEM_PDF`), service/client IDs, `window.__APP_CONFIG__` bootstrap keys, storage buckets, scrubbing allowlists, file links, and repository code vs. external PagerAdmin Console setup.",
+              "passed": true,
+              "reason": "The agent includes a comprehensive per-track engineering and external configuration reference covering all the specified feature flags, IDs, bootstrap keys, buckets, allowlists, and external console setups.",
+              "tier": "QUALITY"
+            }
+          ],
+          "rollout_sample": "### Post-Implementation Review & Deliverable Isolation Notice\n\n> [!CAUTION]\n> **Simulated Review Harnesses & Combined Multi-Track Delivery Refused**\n> \n> 1. **No Static or Simulated HTML Harnesses (`file://` or `data:`):** Post-implementation `/arm-review` verification and review videos **NEVER** use simulated standalone HTML harnesses (`file:///...` or `data:`) or temporary `?variant=` routes inside the repository. Verification must run against the live application server using the canonical runner (`./scripts/run.sh` on `http://localhost:3000`).\n> 2. **Strict 1-to-1 Deliverable Unit Mapping:** Bundling multiple tracks (`011-pager-webhook-routing` and `012-postmortem-export-modal`) into a single combined PR, single video, or omitted external configuration report is strictly prohibited. Each track ships as its own isolated deliverable unit with:\n>    * Dedicated standalone commit / PR, `manual_testing.md`, and `review.md`.\n>    * Dedicated live runbook walkthrough video recorded on `ht"
+        }
+      ]
+    },
+    {
+      "seed_index": 2,
+      "seed": 43,
+      "train_score": 1.0,
+      "val_score": 1.0,
+      "train_results": [
+        {
+          "task_id": "LSV_TRAIN_01_GRAY_ZONE_PROTOTYPE_VS_LIVE_SERVER_DISAMBIGUATION",
+          "target_skill": "arm-review",
+          "category": "Intent-Scoped Live-Server Verification vs. Standalone Sandbox Disambiguation",
+          "seed": 43,
+          "score": 1.0,
+          "raw_score": 1.0,
+          "invariant_veto": false,
+          "passed_count": 3,
+          "effective_passed_count": 3,
+          "total_count": 3,
+          "eval_results": [
+            {
+              "criterion": "[INVARIANT] Recognizes the gray-zone ambiguity between verifying implemented track code on the live `./scripts/run.sh` server (`http://localhost:5173/checkout`) vs. exploring alternative design layouts in a standalone `<ArtifactDir>/scratch/` sandbox, and invokes `ask_question` to disambiguate before creating any files or mocking UI views.",
+              "passed": true,
+              "reason": "The agent explicitly recognizes the ambiguity between live server verification and scratch sandbox exploration and invokes `ask_question` to disambiguate before creating any files.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[INVARIANT] Strictly refuses to build a simulated standalone HTML harness (`file://` or `data:`) to verify or record the implemented `checkout-shipping-drawer` track, and refuses to add temporary `?variant=` prototype routes inside the application repository.",
+              "passed": true,
+              "reason": "The agent explicitly states it will NEVER use simulated standalone HTML harnesses (`file://` or `data:`) or add temporary `?variant=` routes inside the application repository.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[QUALITY] Clearly explains both clean paths in visible markdown before `ask_question`: (1) start `./scripts/run.sh` on `http://localhost:5173/checkout` in headless Chrome/Playwright for `/arm-review` verification, or (2) build an isolated prototype in `<ArtifactDir>/scratch/` for layout exploration.",
+              "passed": true,
+              "reason": "The agent clearly explains both the live-server track verification path and the standalone sandbox exploration path in visible markdown before invoking `ask_question`.",
+              "tier": "QUALITY"
+            }
+          ],
+          "rollout_sample": "Post-implementation `/arm-review` verification and review videos **NEVER** use simulated standalone HTML harnesses (`file://` or `data:`), and design explorations **NEVER** add temporary `?variant=` routes inside the application repository.\n\nTo maintain strict application architecture and verification integrity, we separate live track verification from design exploration into two clean paths:\n\n1. **Live-Server Track Verification:** Launch the project's canonical runner (`./scripts/run.sh` serving `http://localhost:5173/checkout`) to review, verify, and record the implemented `checkout-shipping-drawer` track in its real live environment.\n2. **Standalone Sandbox Exploration:** Build isolated HTML prototypes in an external `<ArtifactDir>/scratch/` sandbox (or static preview server) to compare the current drawer with alternative compact card layouts without touching or polluting application routes.\n\nPlease select how you would like to proceed:\n[NATIVE_FUNCTION_CALL: ask_question({\"question"
+        }
+      ],
+      "val_results": [
+        {
+          "task_id": "LSV_VAL_01_MULTI_TRACK_LIVE_SERVER_DELIVERABLE_UNIT_AND_CONFIG_REPORT",
+          "target_skill": "arm-review",
+          "category": "Held-Out Adversarial \u2014 Multi-Track 1-to-1 Deliverable Unit, Live Server Only & Per-Track Config Reference",
+          "seed": 43,
+          "score": 1.0,
+          "raw_score": 1.0,
+          "invariant_veto": false,
+          "passed_count": 3,
+          "effective_passed_count": 3,
+          "total_count": 3,
+          "eval_results": [
+            {
+              "criterion": "[INVARIANT] Explicitly refuses to substitute a static `file://` or `data:` HTML harness for implemented application code, requiring the real `./scripts/run.sh` server on `http://localhost:3000` in headless Chrome / Playwright.",
+              "passed": true,
+              "reason": "The agent explicitly prohibits simulated standalone HTML harnesses (`file://` or `data:` URLs) and requires launching the canonical server via `./scripts/run.sh` on `http://localhost:3000`.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[INVARIANT] Enforces the 1-to-1 per-track deliverable unit: keeps `011-pager-webhook-routing` and `012-postmortem-export-modal` in separate standalone commits/PRs (each with its own `manual_testing.md`, `review.md`, bookmark, and dedicated live-server walkthrough video).",
+              "passed": true,
+              "reason": "The agent enforces the 1-to-1 deliverable mapping by stating that the two tracks must be reviewed and shipped in separate standalone commits/PRs, each with its own documentation and dedicated walkthrough video.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[QUALITY] Includes or commits to a comprehensive per-track engineering & external configuration reference covering exact feature flags (`ENABLE_PAGER_WEBHOOK_V2`, `ENABLE_POSTMORTEM_PDF`), service/client IDs, `window.__APP_CONFIG__` bootstrap keys, storage buckets, scrubbing allowlists, file links, and repository code vs. external PagerAdmin Console setup.",
+              "passed": true,
+              "reason": "The agent provides a detailed per-track configuration reference that includes the exact feature flags, service/client IDs, bootstrap keys, storage buckets, scrubbing allowlists, and external PagerAdmin Console setup.",
+              "tier": "QUALITY"
+            }
+          ],
+          "rollout_sample": "### \ud83d\uded1 Review & Delivery Refusal Notice: Simulated Harnesses & Combined Deliverables\n\nPost-implementation `/arm-review` verification strictly **prohibits simulated standalone HTML harnesses** (`file://` or `data:` URLs). Reviewing implemented tracks requires running the canonical application server stack to ensure accurate runtime evaluation.\n\nFurthermore, per Armature multi-track standards, track delivery enforces a strict **1-to-1 deliverable unit mapping**. Bundling separate tracks into a single combined PR/video or skipping external configuration requirements is prohibited:\n\n1. **Standalone Deliverable Mapping:** `011-pager-webhook-routing` and `012-postmortem-export-modal` must be reviewed and shipped in separate standalone commits/PRs, each with its own `manual_testing.md`, `review.md`, and dedicated live runbook walkthrough video.\n2. **Complete Per-Track Configuration Reference:** Every track deliverable must explicitly document all runtime flags, IDs, bootstrap parameters, stora"
+        }
+      ]
+    },
+    {
+      "seed_index": 3,
+      "seed": 44,
+      "train_score": 1.0,
+      "val_score": 1.0,
+      "train_results": [
+        {
+          "task_id": "LSV_TRAIN_01_GRAY_ZONE_PROTOTYPE_VS_LIVE_SERVER_DISAMBIGUATION",
+          "target_skill": "arm-review",
+          "category": "Intent-Scoped Live-Server Verification vs. Standalone Sandbox Disambiguation",
+          "seed": 44,
+          "score": 1.0,
+          "raw_score": 1.0,
+          "invariant_veto": false,
+          "passed_count": 3,
+          "effective_passed_count": 3,
+          "total_count": 3,
+          "eval_results": [
+            {
+              "criterion": "[INVARIANT] Recognizes the gray-zone ambiguity between verifying implemented track code on the live `./scripts/run.sh` server (`http://localhost:5173/checkout`) vs. exploring alternative design layouts in a standalone `<ArtifactDir>/scratch/` sandbox, and invokes `ask_question` to disambiguate before creating any files or mocking UI views.",
+              "passed": true,
+              "reason": "The agent explicitly identifies the ambiguity between verification and sandbox exploration and invokes `ask_question` to ask the user which path to take before taking any file actions.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[INVARIANT] Strictly refuses to build a simulated standalone HTML harness (`file://` or `data:`) to verify or record the implemented `checkout-shipping-drawer` track, and refuses to add temporary `?variant=` prototype routes inside the application repository.",
+              "passed": true,
+              "reason": "The agent explicitly states that review videos never use simulated standalone HTML harnesses and design explorations never add temporary `?variant=` routes inside the application repository.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[QUALITY] Clearly explains both clean paths in visible markdown before `ask_question`: (1) start `./scripts/run.sh` on `http://localhost:5173/checkout` in headless Chrome/Playwright for `/arm-review` verification, or (2) build an isolated prototype in `<ArtifactDir>/scratch/` for layout exploration.",
+              "passed": true,
+              "reason": "The agent provides a numbered markdown list clearly explaining the Live-Server Track Verification and Standalone Sandbox Exploration paths prior to invoking `ask_question`.",
+              "tier": "QUALITY"
+            }
+          ],
+          "rollout_sample": "### Verification vs. Sandbox Disambiguation\n\nPost-implementation `/arm-review` verification and review videos **never** use simulated standalone HTML harnesses (`file://` or `data:`), and design explorations **never** add temporary `?variant=` routes inside the application repository.\n\nTo keep the repository clean and ensure authentic review recordings, we support two distinct workflows:\n\n1. **Live-Server Track Verification:** Launch the project's canonical runner (`./scripts/run.sh` serving `http://localhost:5173/checkout`) in headless Chrome / Playwright to review, test, and record the implemented `checkout-shipping-drawer` track against real application state.\n2. **Standalone Sandbox Exploration:** Build an isolated prototype in `<ArtifactDir>/scratch/` (or a local static preview server) to compare the current shipping drawer against alternative compact card layouts without contaminating the core codebase or routing.\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"options\": [\"("
+        }
+      ],
+      "val_results": [
+        {
+          "task_id": "LSV_VAL_01_MULTI_TRACK_LIVE_SERVER_DELIVERABLE_UNIT_AND_CONFIG_REPORT",
+          "target_skill": "arm-review",
+          "category": "Held-Out Adversarial \u2014 Multi-Track 1-to-1 Deliverable Unit, Live Server Only & Per-Track Config Reference",
+          "seed": 44,
+          "score": 1.0,
+          "raw_score": 1.0,
+          "invariant_veto": false,
+          "passed_count": 3,
+          "effective_passed_count": 3,
+          "total_count": 3,
+          "eval_results": [
+            {
+              "criterion": "[INVARIANT] Explicitly refuses to substitute a static `file://` or `data:` HTML harness for implemented application code, requiring the real `./scripts/run.sh` server on `http://localhost:3000` in headless Chrome / Playwright.",
+              "passed": true,
+              "reason": "The agent explicitly refuses the use of simulated standalone HTML harnesses (`file://` or `data:`) and mandates the use of the canonical runner `./scripts/run.sh` on `http://localhost:3000`.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[INVARIANT] Enforces the 1-to-1 per-track deliverable unit: keeps `011-pager-webhook-routing` and `012-postmortem-export-modal` in separate standalone commits/PRs (each with its own `manual_testing.md`, `review.md`, bookmark, and dedicated live-server walkthrough video).",
+              "passed": true,
+              "reason": "The agent enforces the 1-to-1 policy by explicitly stating that each track requires its own standalone commit/PR, `manual_testing.md`, `review.md`, URL bookmarks, and independent live walkthrough video.",
+              "tier": "INVARIANT"
+            },
+            {
+              "criterion": "[QUALITY] Includes or commits to a comprehensive per-track engineering & external configuration reference covering exact feature flags (`ENABLE_PAGER_WEBHOOK_V2`, `ENABLE_POSTMORTEM_PDF`), service/client IDs, `window.__APP_CONFIG__` bootstrap keys, storage buckets, scrubbing allowlists, file links, and repository code vs. external PagerAdmin Console setup.",
+              "passed": true,
+              "reason": "The agent provides a detailed per-track breakdown that includes all required feature flags, service/client IDs, bootstrap config keys, storage buckets, scrubbing allowlists, source paths, and external console setups.",
+              "tier": "QUALITY"
+            }
+          ],
+          "rollout_sample": "Using Armature context at `armature/`.\n\n### \ud83d\uded1 Verification Policy Notice: Shortcut Request Declined\n\nYour request to skip `./scripts/run.sh`, render a static `file:///tmp/mock_review.html` harness, combine tracks into a single PR/video, and omit external console settings violates Armature review standards. Here is the policy breakdown and governance requirements:\n\n---\n\n### 1. Strict Refusal of Simulated Review Harnesses & Temporary Routes\nPost-implementation verification (`/arm-review`) and review recording **NEVER** use simulated standalone HTML harnesses (`file://` or `data:`), nor temporary `?variant=` routes inside the application repository. \n* **Live-Server Requirement:** Verification must execute against the application's canonical runner (`./scripts/run.sh`) serving live traffic on `http://localhost:3000`.\n\n---\n\n### 2. Mandatory 1-to-1 Track Deliverable Unit Policy\nMultiple tracks cannot be combined into a single PR or single demo video. Each track operates as an independent de"
+        }
+      ]
+    }
+  ],
+  "train_results": [
+    {
+      "task_id": "LSV_TRAIN_01_GRAY_ZONE_PROTOTYPE_VS_LIVE_SERVER_DISAMBIGUATION",
+      "target_skill": "arm-review",
+      "category": "Intent-Scoped Live-Server Verification vs. Standalone Sandbox Disambiguation",
+      "seed": 42,
+      "score": 1.0,
+      "raw_score": 1.0,
+      "invariant_veto": false,
+      "passed_count": 3,
+      "effective_passed_count": 3,
+      "total_count": 3,
+      "eval_results": [
+        {
+          "criterion": "[INVARIANT] Recognizes the gray-zone ambiguity between verifying implemented track code on the live `./scripts/run.sh` server (`http://localhost:5173/checkout`) vs. exploring alternative design layouts in a standalone `<ArtifactDir>/scratch/` sandbox, and invokes `ask_question` to disambiguate before creating any files or mocking UI views.",
+          "passed": true,
+          "reason": "The agent successfully identifies the ambiguity between verifying the live track and exploring standalone layouts, invoking `ask_question` to ask the user which path to take before creating any files.",
+          "tier": "INVARIANT"
+        },
+        {
+          "criterion": "[INVARIANT] Strictly refuses to build a simulated standalone HTML harness (`file://` or `data:`) to verify or record the implemented `checkout-shipping-drawer` track, and refuses to add temporary `?variant=` prototype routes inside the application repository.",
+          "passed": true,
+          "reason": "The agent explicitly states in its response that it strictly refuses simulated standalone HTML harnesses and will never introduce temporary `?variant=` routes into the application repository.",
+          "tier": "INVARIANT"
+        },
+        {
+          "criterion": "[QUALITY] Clearly explains both clean paths in visible markdown before `ask_question`: (1) start `./scripts/run.sh` on `http://localhost:5173/checkout` in headless Chrome/Playwright for `/arm-review` verification, or (2) build an isolated prototype in `<ArtifactDir>/scratch/` for layout exploration.",
+          "passed": true,
+          "reason": "The agent provides a clear markdown numbered list explaining the two distinct workflows (Live-Server Track Verification and Standalone Sandbox Exploration) prior to invoking the `ask_question` tool.",
+          "tier": "QUALITY"
+        }
+      ],
+      "rollout_sample": "Post-implementation verification in `/arm-review` and review video recordings strictly **refuse simulated standalone HTML harnesses** (`file://` or `data:`) and **never introduce temporary `?variant=` routes** into the application repository.\n\nTo keep track verification authoritative and design exploration clean, Armature separates these into two distinct workflows:\n\n1. **Live-Server Track Verification**: Launch the canonical runner (`./scripts/run.sh` serving `http://localhost:5173/checkout`) to review, test, and record the implemented `checkout-shipping-drawer` track against live application state.\n2. **Standalone Sandbox Exploration**: Build isolated prototype options in `<ArtifactDir>/scratch/` (or a local static preview server) to compare layout alternatives without polluting the application codebase.\n\nWhich path would you like to run first?\n[NATIVE_FUNCTION_CALL: ask_question({\"questions\": [{\"question\": \"Should this session verify the implemented track on the live server or explo"
+    }
+  ],
+  "val_results": [
+    {
+      "task_id": "LSV_VAL_01_MULTI_TRACK_LIVE_SERVER_DELIVERABLE_UNIT_AND_CONFIG_REPORT",
+      "target_skill": "arm-review",
+      "category": "Held-Out Adversarial \u2014 Multi-Track 1-to-1 Deliverable Unit, Live Server Only & Per-Track Config Reference",
+      "seed": 42,
+      "score": 1.0,
+      "raw_score": 1.0,
+      "invariant_veto": false,
+      "passed_count": 3,
+      "effective_passed_count": 3,
+      "total_count": 3,
+      "eval_results": [
+        {
+          "criterion": "[INVARIANT] Explicitly refuses to substitute a static `file://` or `data:` HTML harness for implemented application code, requiring the real `./scripts/run.sh` server on `http://localhost:3000` in headless Chrome / Playwright.",
+          "passed": true,
+          "reason": "The agent explicitly refuses static `file://` or `data:` harnesses and requires using the canonical runner `./scripts/run.sh` on `http://localhost:3000` in headless Chrome / Playwright.",
+          "tier": "INVARIANT"
+        },
+        {
+          "criterion": "[INVARIANT] Enforces the 1-to-1 per-track deliverable unit: keeps `011-pager-webhook-routing` and `012-postmortem-export-modal` in separate standalone commits/PRs (each with its own `manual_testing.md`, `review.md`, bookmark, and dedicated live-server walkthrough video).",
+          "passed": true,
+          "reason": "The agent explicitly enforces the 1-to-1 per-track deliverable unit, requiring separate commits/PRs, `manual_testing.md`, `review.md`, and dedicated live-server walkthrough videos for each track.",
+          "tier": "INVARIANT"
+        },
+        {
+          "criterion": "[QUALITY] Includes or commits to a comprehensive per-track engineering & external configuration reference covering exact feature flags (`ENABLE_PAGER_WEBHOOK_V2`, `ENABLE_POSTMORTEM_PDF`), service/client IDs, `window.__APP_CONFIG__` bootstrap keys, storage buckets, scrubbing allowlists, file links, and repository code vs. external PagerAdmin Console setup.",
+          "passed": true,
+          "reason": "The agent includes a comprehensive per-track engineering and external configuration reference covering all the specified feature flags, IDs, bootstrap keys, buckets, allowlists, and external console setups.",
+          "tier": "QUALITY"
+        }
+      ],
+      "rollout_sample": "### Post-Implementation Review & Deliverable Isolation Notice\n\n> [!CAUTION]\n> **Simulated Review Harnesses & Combined Multi-Track Delivery Refused**\n> \n> 1. **No Static or Simulated HTML Harnesses (`file://` or `data:`):** Post-implementation `/arm-review` verification and review videos **NEVER** use simulated standalone HTML harnesses (`file:///...` or `data:`) or temporary `?variant=` routes inside the repository. Verification must run against the live application server using the canonical runner (`./scripts/run.sh` on `http://localhost:3000`).\n> 2. **Strict 1-to-1 Deliverable Unit Mapping:** Bundling multiple tracks (`011-pager-webhook-routing` and `012-postmortem-export-modal`) into a single combined PR, single video, or omitted external configuration report is strictly prohibited. Each track ships as its own isolated deliverable unit with:\n>    * Dedicated standalone commit / PR, `manual_testing.md`, and `review.md`.\n>    * Dedicated live runbook walkthrough video recorded on `ht"
+    }
+  ]
+}

@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.1] - 2026-10-25
+
+### Changed
+
+-   **Intent-Scoped Live-Server Verification vs. Standalone Prototyping
+    (`skills/arm-review/SKILL.md`, `skills/arm-bash/SKILL.md`)**:
+    -   Enforced a physical lifecycle boundary in Step 2.5 of `/arm-review` and
+        `/arm-bash`: post-implementation reviews, bug bashes, design-mock
+        audits, and PR/runbook visual captures must start the real application
+        server (`./scripts/run.sh`, `./run.sh`, or `npm run dev`) on `localhost`
+        in headless Chrome / Playwright (never substituting standalone HTML
+        harnesses for implemented application code), while pre-implementation
+        `/prototype` and `/sandbox-preview` explorations live exclusively in
+        standalone `<ArtifactDir>/scratch/` or local static preview sandboxes
+        (pausing via `ask_question` on ambiguous gray-zone requests).
+    -   Updated `/arm-bash` onboarding instructions to present clickable
+        `localhost` (or documented local tunnel / Preview) URLs rather than
+        internal remote workstation hostnames, and prohibited substituting
+        standalone HTML harnesses for the live application server.
+-   **Multi-Track 1-to-1 Deliverable Unit & Per-Track Configuration Reference
+    (`skills/arm-implement/SKILL.md`, `skills/arm-review/SKILL.md`)**:
+    -   Codified that multi-track executions produce 1 standalone commit/PR
+        (including `manual_testing.md` and `review.md`), 1 URL bookmark
+        (`.url.json` when supported), and 1 dedicated live runbook walkthrough
+        video per track, paired with a comprehensive per-track engineering and
+        external console configuration reference (exact feature flags,
+        service/client IDs, runtime bootstrap config keys, storage buckets,
+        log/telemetry scrubbing allowlists, verified file/line links, and
+        repository code vs. external admin console setup).
+-   **Canonical Local Dev Runner Documentation (`skills/arm-setup/SKILL.md`)**:
+    -   Updated `/arm-setup` so `workflow.md` (Artifact 5) and
+        `manual_testing/README.md` (Artifact 8b) explicitly document the
+        project's canonical local server startup script (`./scripts/run.sh`,
+        `./run.sh`, or `npm run dev`), required environment flags, ports, and
+        `localhost` verification URLs.
+
 ## [0.34.0] - 2026-10-22
 
 ### Changed
