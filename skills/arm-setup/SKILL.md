@@ -320,9 +320,11 @@ Draft language style guides in
 Draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md`:
 
 -   **Brownfield Batch Mode**: Pre-populate actual repository commit message
-    formats, build/test commands, commit frequency, and verification habits
-    observed in commit logs and past session transcripts alongside standard TDD
-    conventions.
+    formats, build/test commands, **canonical local dev server runner commands**
+    (e.g., `./scripts/run.sh`, `./run.sh`, `npm run dev`, including required
+    flags, target `localhost` port/URL, and health-check barriers), commit
+    frequency, and verification habits observed in commit logs and past session
+    transcripts alongside standard TDD conventions.
 -   **Greenfield / Interactive Step-by-Step Mode**: Use `ask_question` to
     present `"Default"` or `"Customize"` before running the Draft Review Loop.
 
@@ -372,7 +374,13 @@ Draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/terms.md`:
 Initialize `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/`:
 
 -   Copy bundled `manual_testing_template.md` template into
-    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/`.
+    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/`, and create or update
+    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/README.md` documenting
+    the repository's **canonical local application server startup script**
+    (e.g., `./scripts/run.sh`, `./run.sh`, or `npm run dev`), required
+    environment flags, and `localhost` verification URL so downstream
+    `/arm-review` and `/arm-bash` runs always launch the real server rather than
+    guessing ad-hoc commands or static HTML mocks.
 -   For brownfield projects with identifiable functional domains (e.g., auth,
     billing, navigation), create initial domain runbooks
     (`{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`) seeded with baseline

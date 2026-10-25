@@ -639,3 +639,14 @@ Synchronization has been handled.
     printing summaries or draft commit descriptions. You MUST invoke
     `ask_question` to offer the user clear next steps (Manual testing with the
     guide, Pushing changes, Running `/arm-review`, or Archiving the track).
+-   **Multi-Track 1-to-1 Deliverable Unit & Live Server Verification**: When
+    implementing or closing out multiple tracks in parallel or batch mode, keep
+    each track in its own standalone commit/PR (containing its code/tests,
+    `manual_testing.md`, and `review.md`), paired 1-to-1 with its own URL
+    bookmark (`.url.json` when supported), dedicated live application
+    walkthrough video (recorded against the real `./scripts/run.sh` / `./run.sh`
+    server on `localhost`, never a simulated HTML harness), and a comprehensive
+    per-track engineering & external-console configuration reference (exact
+    feature flags, service/client IDs, runtime bootstrap config keys, storage
+    buckets, log/telemetry scrubbing allowlists, verified file/line links, and
+    repository code vs. external admin console setup).
