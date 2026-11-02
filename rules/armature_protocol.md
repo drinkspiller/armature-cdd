@@ -455,15 +455,22 @@ code change, or workflow transition:
     (never copy-pasting the prior turn's wording verbatim), and call
     `ask_question` in that same turn.
 -   **Two-Part Turn Contract (Non-Empty Visible Markdown FIRST + Native
-    `ask_question` SECOND):** Every interactive interview or gate turn MUST
-    contain BOTH (1) non-empty visible markdown text (answering any inline
-    `@[Quote]` or write-in clarification questions and rendering the required
-    progress list and interview turn, `### Devil's Advocate Analysis`, `### ADR
-    Candidate Triage Table`, or `### Convergence Summary`) FIRST, and (2) the
-    native `ask_question` tool call SECOND in that same turn. Never emit a bare
-    `ask_question` or `write_to_file` call with empty visible markdown text
-    (`""`), and never end a turn with a conversational prose question
-    (`tools=[]`).
+    `ask_question` SECOND — Never Leave Output Inside `thinking` or Abandon
+    `ask_question`):** Every interactive interview or gate turn MUST contain
+    BOTH (1) non-empty visible markdown text emitted into the user-visible
+    response stream (never drafted only inside internal `thinking` / `thought`,
+    which is invisible to the user; answering any inline `@[Quote]` or write-in
+    clarification questions and rendering the required progress list and
+    interview turn, `### Devil's Advocate Analysis`, `### ADR Candidate Triage
+    Table`, or `### Convergence Summary`) FIRST, and (2) the native
+    `ask_question` tool call (`{"questions": [{"question": "...", "options":
+    [...]}]}`) SECOND in that same turn. Never emit a bare `ask_question` or
+    `write_to_file` call with empty visible markdown text (`""`), never end a
+    turn with a conversational prose question (`tools=[]`), and if the user ever
+    notes that a prior turn showed only the question box without chat text,
+    recognize that the prior turn leaked its prose into `thinking` (never assume
+    `ask_question` hides chat text)—emit both the visible markdown reply and
+    `ask_question` on the recovery turn.
 -   **Single-Gate Phase Isolation (`/arm-new-track` Phase 5a → 5b → 5c → Step
     6):** Never collapse multiple interactive gates into a single turn.
     Resolving the final open question in Phase 5a transitions in that turn to

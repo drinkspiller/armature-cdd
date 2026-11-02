@@ -20,21 +20,30 @@ project).
     `list_dir`, `code_search`, or `view_file` to re-verify directories or search
     for files.
 -   **Universal Atomic Two-Part Response Contract (Zero Bare Tool Calls Across
-    ALL Modes):** Across EVERY turn of `/arm-setup`—whether presenting
+    ALL Modes — Never Leave Output Inside `thinking` or Abandon
+    `ask_question`):** Across EVERY turn of `/arm-setup`—whether presenting
     Brownfield Context Discovery Scope (§2.0), Greenfield Mode B Initialization
     (§3.2), Tier 1/2 Resumption (§1.2), Surgical Amendments, or the Single
     Unified Review Gate (§3.1)—you MUST output a two-part atomic response in the
     exact same turn:
-    1.  *Part 1 (Mandatory Markdown Prose FIRST)*: Always output clear markdown
-        text FIRST explaining your detection findings, state summary, trade-off
-        analysis, or Unified Setup Review Summary. Emitting bare tool calls
-        (`write_to_file`, `replace_file_content`, or `ask_question`) without
-        preceding markdown text is strictly forbidden.
-    2.  *Part 2 (Mandatory Native Tool Call(s) SECOND)*: End your markdown prose
-        cleanly (zero trailing self-narration sentences) and invoke the required
-        structured tool call(s) (`ask_question`, `write_to_file`,
-        `replace_file_content`) in that **exact same turn**. Ending a turn with
-        markdown prose alone without invoking `ask_question` is strictly
+    1.  *Part 1 (Mandatory Visible Markdown Prose FIRST — Never Inside
+        `thinking`)*: Always close internal `thinking` (`thought`) first and
+        output clear markdown text into the user-visible response `content`
+        stream FIRST explaining your detection findings, state summary,
+        trade-off analysis, or Unified Setup Review Summary. Internal `thinking`
+        is invisible to the user; drafting the explanation in `thinking` and
+        calling `ask_question` with empty `content: ""` renders a bare question
+        box. Emitting bare tool calls (`write_to_file`, `replace_file_content`,
+        or `ask_question`) without preceding visible markdown text is strictly
+        forbidden.
+    2.  *Part 2 (Mandatory Native Tool Call(s) SECOND — `questions: [...]`
+        Wrapper)*: End your markdown prose cleanly (zero trailing self-narration
+        sentences) and invoke the required structured tool call(s)
+        (`ask_question` wrapped in `{"questions": [{"question": "...",
+        "options": [...]}]}`, `write_to_file`, `replace_file_content`) in that
+        **exact same turn**. Ending a turn with markdown prose alone without
+        invoking `ask_question` (or abandoning `ask_question` if a user reports
+        missing chat text from a prior `thinking`-only turn) is strictly
         forbidden.
 -   **User-Specified Scope Direct Execution Invariant (§2.0 -> §3.1):**
     -   If a brownfield workspace is detected and the user has **NOT** yet
