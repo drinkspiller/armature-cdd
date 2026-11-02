@@ -1099,6 +1099,12 @@ def evaluate_task(
     with open(proto_path, "r", encoding="utf-8") as f:
       proto_text = f.read()
 
+  adapter_path = os.path.join(ARMATURE_ROOT, "rules", "armature_antigravity.md")
+  adapter_text = ""
+  if os.path.exists(adapter_path):
+    with open(adapter_path, "r", encoding="utf-8") as f:
+      adapter_text = f.read()
+
   system_instruction = (
       "You are an AI assistant executing instructions in the Armature"
       f" '{target_skill_name}' skill document"
@@ -1106,6 +1112,12 @@ def evaluate_task(
       + (
           f"Armature Universal Protocol:\n```markdown\n{proto_text}\n```\n\n"
           if proto_text
+          else ""
+      )
+      + (
+          "Armature Antigravity UX Adapter (View"
+          f" Layer):\n```markdown\n{adapter_text}\n```\n\n"
+          if adapter_text
           else ""
       )
       + "Follow all guardrails, turn-ending barriers, step sequencing, and"

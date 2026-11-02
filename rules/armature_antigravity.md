@@ -17,35 +17,69 @@ capabilities.
     Devil's Advocate finding, ADR triage gate, and spec/plan review gate MUST
     include **BOTH** parts in the **same response**:
     1.  **Visible markdown text first (Mandatory First Output — Never Start With
-        a Tool Call):** Your response output MUST ALWAYS begin directly with the
-        non-empty visible markdown turn body (starting with `## Round …`, the
+        a Tool Call or Leave Text Inside `thinking`):** Your response output
+        MUST ALWAYS begin directly with the non-empty visible markdown turn body
+        in the user-facing `content` stream (starting with `## Round …`, the
         settled confirmation + `**Settled**` / `**Now**` list, the plain-English
         zoom-out explanation + `---` + rewritten `## Round …` block, `###
         Convergence Summary` in Step 6 before writing `spec.md`, or `### Step 7:
-        Implementation Plan Summary` in Step 7 before writing `plan.md`). NEVER
-        emit `ask_question` or `write_to_file` as the first item in your
-        response without writing the visible markdown summary/body above it
-        first (an empty message body hides all context, trade-offs,
-        convergence/plan summaries, and `- Pick N if …` guidance from the user),
-        **AND**
-    2.  **Native `ask_question` tool call second:** Invoke the structured
-        `ask_question` tool call in that **same turn**. Never conclude an
+        Implementation Plan Summary` in Step 7 before writing `plan.md`).
+        **`thinking` vs. Visible `content` Channel Separation:** Internal
+        reasoning (`thinking` / `thought`) is strictly invisible to the user;
+        drafting the explanation or Interview Turn v2 block inside `thinking`
+        and then calling `ask_question` with empty `content: ""` renders a bare
+        modal with zero chat message above it. Close your `thinking` block first
+        and emit the full visible markdown body into `content` before invoking
+        `ask_question` or `write_to_file`, **AND**
+    2.  **Native `ask_question` tool call second (`questions: [...]` Wrapper):**
+        Invoke the structured `ask_question` tool call in that **same turn**
+        using the required top-level `questions` array schema (`{"questions":
+        [{"question": "...", "options": [...]}]}`). Never conclude an
         interactive turn with markdown prose alone, and never emit a bare
         `ask_question` call without the visible markdown body. If `ask_question`
         is unavailable in the environment, fall back to clean sequential text.
+-   **Zero `ask_question` Abandonment & Missing-Chat-Text Recovery Rule:** If
+    the user ever reports *"you didn't answer me in chat"*, *"I only see the
+    question box"*, or *"where is the explanation?"*, the cause is ALWAYS that
+    your prior step accidentally wrote its reply inside internal `thinking` with
+    empty visible `content: ""`—NEVER that `ask_question` suppresses or hides
+    chat text. On the recovery turn (and every subsequent interview, detour,
+    Devil's Advocate, ADR triage, or approval gate turn), emit the full visible
+    markdown explanation into `content` AND still invoke `ask_question` in that
+    same turn. Never boycott `ask_question` or fall back to plain-text prompts
+    like *"Reply with 1, 2, or 3 in chat"*. Likewise, if an `ask_question` call
+    ever fails schema validation (e.g., `missing property 'questions'`), the
+    retry turn MUST re-emit a concise visible markdown prompt before calling
+    `ask_question` (never a bare `content: ""` retry).
+-   **Streaming Flush Before Heavy `write_to_file` Calls (Step 6 & Step 7):**
+    When a turn writes large artifacts (`spec.md`, `manual_testing.md`,
+    `plan.md`) alongside `ask_question`, keep the visible chat `### Convergence
+    Summary` or `### Step 7: Implementation Plan Summary` concise (**40–200
+    words**—do not duplicate multi-kilobyte spec/plan tables in chat before
+    writing the files) and end the visible markdown block with a complete
+    closing status line followed by a trailing blank line (`\n\n_Materializing
+    the track artifacts and opening the approval prompt..._\n\n`) before calling
+    `write_to_file` and `ask_question`. Ending with a flushed paragraph break
+    prevents the streaming UI renderer from holding back the final words of the
+    sentence (`"...confirm whether to proceed to Step"`) while multi-kilobyte
+    `write_to_file` JSON streams.
 
 ## `ask_question` Best Practices
 
 The `ask_question` modal renders text with **limited formatting** - markdown
 syntax displays as raw characters. Follow these rules:
 
-1.  **Short questions only.** The `question` field must be a single concise
-    sentence (15 words or fewer). Never put analysis, findings, code references,
-    or multi-line content in the question.
-2.  **Report first, ask second (in the same turn).** ALWAYS output your full
-    visible markdown body FIRST before calling `ask_question` in that same turn.
-    Never ask the user to evaluate or choose from items that were only described
-    in internal thinking (`thought`) or summarized inside option labels.
+1.  **Short questions wrapped in `questions: [...]`.** Always pass arguments
+    wrapped in the top-level `questions` list (`questions: [{ question: "...",
+    options: [...] }]`, never flat top-level `question` / `options` keys). Each
+    `question` string must be a single concise sentence (15 words or fewer).
+    Never put analysis, findings, code references, or multi-line content in the
+    question.
+2.  **Report first in visible `content`, ask second (in the same turn).** ALWAYS
+    output your full visible markdown body in `content` FIRST before calling
+    `ask_question` in that same turn. Never ask the user to evaluate or choose
+    from items that were only described in internal thinking (`thought`) or
+    summarized inside option labels.
 3.  **Options match `<Option name>` in 1:1 order.** Place the recommended option
     first (`1.`), copy each plain-English `<Option name>` (the phrase before `:`)
     into `ask_question` options `1..K` in exact 1:1 order (prefixing Option 1
@@ -63,26 +97,27 @@ syntax displays as raw characters. Follow these rules:
 
 ### Examples
 
-**BAD - analysis dumped into question:**
+**BAD - analysis dumped into question (and missing `questions` array wrapper):**
 
+```json
+{
+  "question": "A brownfield project detected. Found package.json with React 18, TypeScript 5.3, 47 source files in src/, 12 test files, BUILD files present. Should I scan only current files or also search past conversations and commits?",
+  "options": ["Current files only", "Search past conversations and commits"]
+}
 ```
-question: "A brownfield project detected. Found package.json with React 18,
-TypeScript 5.3, 47 source files in src/, 12 test files, BUILD files present.
-Should I scan only current files or also search past conversations and commits?"
-options: ["Current files only", "Search past conversations and commits"]
-```
 
-**GOOD - stakes, numbered options, recommendation, and Pick recap as text,
-question is short:**
+**GOOD - stakes, numbered options, recommendation, and Pick recap as visible
+markdown text, followed by `ask_question` with `questions: [...]`:**
 
-First, output the Interview Turn v2 body as regular markdown (headline and
-unlabeled opener in plain everyday English anchored directly in familiar domain
-nouns from the user's request with zero code identifiers or backend systems
-jargon, numbered one-line options placing the recommended option first at `1.`
-whose `<Option name>` states what happens in everyday words, a `Safe to ignore
-for now` line, a one-sentence `### Recommendation: Option 1`, and one bulleted
-`- Pick N if …` recap line per numbered option; no blockquote cards, tables,
-icons, emoji, or `[!NOTE]` / `[!TIP]` callouts inside the interview turn block):
+First, output the Interview Turn v2 body as regular visible markdown (headline
+and unlabeled opener in plain everyday English anchored directly in familiar
+domain nouns from the user's request with zero code identifiers or backend
+systems jargon, numbered one-line options placing the recommended option first
+at `1.` whose `<Option name>` states what happens in everyday words, a `Safe to
+ignore for now` line, a one-sentence `### Recommendation: Option 1`, and one
+bulleted `- Pick N if …` recap line per numbered option; no blockquote cards,
+tables, icons, emoji, or `[!NOTE]` / `[!TIP]` callouts inside the interview turn
+block):
 
 ```markdown
 ## Round 1, Question 1 of 1: How setup gathers context
@@ -106,17 +141,24 @@ Commit history is where the project's real invariants and discarded approaches l
 - Pick 2 if a quick file-only starting point is enough.
 ```
 
-Then call `ask_question` matching `<Option name>` from `1..K` directly in 1:1
-order (never replacing `<Option name>` with the `Pick N if` sentences):
+Then call `ask_question` using the `questions` array wrapper and matching
+`<Option name>` from `1..K` directly in 1:1 order (never replacing `<Option
+name>` with the `Pick N if` sentences):
 
-```
-question: "How should Armature gather context to initialize this brownfield project?"
-options: [
-  "(Recommended) Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology)",
-  "Look only at current codebase contents (Current Snapshot Only)",
-  "Customize scan sources (e.g., commits + files only, or manual description)",
-  "I need more context, zoom out and give examples"
-]
+```json
+{
+  "questions": [
+    {
+      "question": "How should Armature gather context to initialize this brownfield project?",
+      "options": [
+        "(Recommended) Search past conversations, commit history, and current codebase (Deep Retroactive Archaeology)",
+        "Look only at current codebase contents (Current Snapshot Only)",
+        "Customize scan sources (e.g., commits + files only, or manual description)",
+        "I need more context, zoom out and give examples"
+      ]
+    }
+  ]
+}
 ```
 
 When the user selects `"I need more context, zoom out and give examples"` or
@@ -134,22 +176,34 @@ explicitly writes in `"zoom in"`.
 
 **More examples:**
 
-```
-question: "How should I draft product.md?"
-options: [
-  "Interactive - walk me through questions",
-  "Autogenerate from project context",
-  "Start from a template I'll customize"
-]
+```json
+{
+  "questions": [
+    {
+      "question": "How should I draft product.md?",
+      "options": [
+        "(Recommended) Interactive - walk me through questions",
+        "Autogenerate from project context",
+        "Start from a template I'll customize"
+      ]
+    }
+  ]
+}
 ```
 
-```
-question: "Here's the draft. What do you think?"
-options: [
-  "Approve - looks good",
-  "Suggest changes - I'll describe them",
-  "Start over with a different approach"
-]
+```json
+{
+  "questions": [
+    {
+      "question": "Here's the draft. What do you think?",
+      "options": [
+        "(Recommended) Approve - looks good",
+        "Suggest changes - I'll describe them",
+        "Start over with a different approach"
+      ]
+    }
+  ]
+}
 ```
 
 ## Artifact Rendering

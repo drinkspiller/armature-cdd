@@ -6,6 +6,56 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.3] - 2026-11-02
+
+### Fixed
+
+-   **`thinking` vs. Visible `content` Channel Separation & Zero `ask_question`
+    Abandonment (`rules/armature_antigravity.md`, `rules/armature_protocol.md`,
+    `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`)**:
+    -   Enforced strict separation between internal reasoning (`thinking` /
+        `thought`, which is invisible to the user) and the user-facing response
+        `content` stream so models never draft the Interview Turn v2 body or
+        clarification answer inside `thinking` and then emit a bare
+        `ask_question` modal with `content: ""`.
+    -   Added the **Zero `ask_question` Abandonment & Missing-Chat-Text Recovery
+        Rule**: if a user reports *"you didn't answer me in chat"* or *"I only
+        see the question box"*, the agent recognizes that the prior turn bled
+        into `thinking` with `content: ""` (rather than assuming `ask_question`
+        suppresses chat text), re-emits the visible markdown in `content`, and
+        continues invoking `ask_question` in the same turn and on all subsequent
+        interview/gate turns.
+-   **Step 6 & Step 7 Streaming Flush Before Heavy `write_to_file` Calls
+    (`rules/armature_antigravity.md`, `skills/arm-new-track/SKILL.md`)**:
+    -   Bounded visible chat `### Convergence Summary` (Step 6) and `### Step 7:
+        Implementation Plan Summary` (Step 7) to a concise 40–200 word executive
+        summary (avoiding duplicate multi-kilobyte spec/plan dumps in chat) and
+        required terminating the visible markdown block with a complete closing
+        status line plus a trailing blank line (`\n\n_Materializing ... and
+        opening the approval prompt..._\n\n`) before calling `write_to_file` and
+        `ask_question`, preventing the streaming UI renderer from holding back
+        the final words of the sentence while multi-kilobyte `write_to_file`
+        JSON payloads stream.
+-   **Canonical `questions: [...]` Array Wrapper in All `ask_question` Schema
+    Examples & Schema-Error Retry Guard (`rules/armature_antigravity.md`,
+    `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`)**:
+    -   Updated all `ask_question` examples to use the required top-level
+        `questions: [{ question: "...", options: [...], is_multi_select: ... }]`
+        array wrapper instead of flat top-level `question:` / `options:` keys,
+        and mandated re-emitting a concise visible markdown prompt if a tool
+        call ever retries after schema validation failure.
+
+## [0.34.2] - 2026-10-30
+
+### Fixed
+
+-   **Verified Tool References (`skills/arm-new-track/SKILL.md` Step 4 item
+    5)**: Every checker, validator, linter, or CLI a plan names must be located
+    by exact repository path and its usage checked against the target files.
+    It is run during planning only when fast, read-only, and used outside its
+    home package or as a pass/fail gate; otherwise the plan's first task
+    captures a pre-edit baseline and pass means "no new findings vs. baseline".
+
 ## [0.34.1] - 2026-10-25
 
 ### Changed
