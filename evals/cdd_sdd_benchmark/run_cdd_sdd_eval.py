@@ -49,8 +49,7 @@ TARGET_MODEL = "gemini-flash-latest"
 JUDGE_MODEL = "gemini-flash-latest"
 FALLBACK_MODELS = [
     "gemini-flash-latest",
-    "gemini-2.5-flash",
-    "gemini-3-flash-preview",
+        "gemini-3-flash-preview",
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -237,7 +236,7 @@ def call_gemini(
               contents,
               system_instruction,
               temperature,
-              max(1, max_retries - 1),
+              max(3, max_retries - 1),
           )
         sleep_sec = min(4, attempt)
         print(

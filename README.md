@@ -210,7 +210,7 @@ Armature is benchmarked against alternative Spec-Driven Development (SDD) and Co
 
 | Rank | Framework | Composite Score | Pass Rate (95% CI) | Avg Tokens / Task | Key Takeaway |
 | :---: | :--- | :---: | :---: | :---: | :--- |
-| **#1** | **Armature (OSS)** *(this)* | **75.8 / 100** | **75.8%** (91/120, ±7.7%) | 4436 tokens | Leads in detour resilience (100.0%), drift governance (91.7%), and surgical velocity (70.8%); higher token footprint per task. |
+| **#1** | **Armature (OSS)** *(this)* | **86.7 / 100** | **86.7%** (104/120, ±6.1%) | 4050 tokens | Leads in detour resilience (100.0%), drift governance (95.8%), spec gating (79.2%), and surgical velocity (75.0%); higher token footprint per task. |
 | **#2** | **BMAD Method** | **70.8 / 100** | **70.8%** (85/120, ±8.1%) | 4031 tokens | Strongest execution safety guardrails (83.3%) and drift governance (83.3%); high multi-role ceremony on surgical micro-fixes. |
 | **#3** | **OpenSpec** | **63.3 / 100** | **63.3%** (76/120, ±8.6%) | 2234 tokens | Lowest token footprint (2234 avg) and strong detour resilience (95.8%); weak upfront contract gating (37.5%) and proposal overhead on trivial edits. |
 | **#4** | **Conductor (Canonical Upstream CLI)** | **61.7 / 100** | **61.7%** (74/120, ±8.7%) | 2972 tokens | Consistent detour handling (91.7%) and balanced token usage; lacks destructive-teardown refusal gates and multi-turn trade-off resolution. |
@@ -328,5 +328,5 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.34.3** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.34.4** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
 

@@ -574,9 +574,17 @@ resolving all open rounds, questions, and ambiguities.
                 `ask_question` with empty `content: ""` renders a bare question
                 modal with no chat text above it), and immediately invoke the
                 native `ask_question` tool call (`{"questions": [{"question":
-                "...", "options": [...]}]}`) in that same turn. If the user ever
-                reports *"you didn't answer me in chat"* or *"I only see the
-                question box"*, recognize that your prior turn bled into
+                "...", "options": [...]}]}`) in that same turn. If you use your
+                internal `thinking` block to draft the text or count words to
+                meet strict length caps, ALWAYS end your `thinking` block by
+                explicitly planning or drafting the `ask_question` tool call
+                (e.g., *"Now emit the markdown and call ask_question"*). Never
+                end `thinking` on word-count math alone (e.g., *"Total: 150
+                words. Perfect."*), which reliably shifts attention to the
+                markdown stream and causes the model to completely forget to
+                append the `ask_question` tool call (a text-only stall). If the
+                user ever reports *"you didn't answer me in chat"* or *"I only
+                see the question box"*, recognize that your prior turn bled into
                 `thinking` with `content: ""` (NEVER assume `ask_question` hides
                 chat text)—emit the visible markdown in `content` AND still call
                 `ask_question` in that same turn (never fall back to plain-text
