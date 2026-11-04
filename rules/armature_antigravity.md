@@ -36,8 +36,16 @@ capabilities.
         using the required top-level `questions` array schema (`{"questions":
         [{"question": "...", "options": [...]}]}`). Never conclude an
         interactive turn with markdown prose alone, and never emit a bare
-        `ask_question` call without the visible markdown body. If `ask_question`
-        is unavailable in the environment, fall back to clean sequential text.
+        `ask_question` call without the visible markdown body. **`thinking`
+        Block Word-Count Trap (Dropped Tool Calls):** If you use `thinking` to
+        count words to meet strict length caps, ALWAYS end your `thinking`
+        block by explicitly planning the `ask_question` tool call (e.g., *"Now
+        emit `content` and call `ask_question`"*). Never end `thinking` on
+        word-count math alone (e.g., *"Total: 150 words. Perfect."*), which
+        reliably shifts attention to the markdown stream and causes the model
+        to completely forget to append the `ask_question` tool call, leaving
+        the user stranded without a UI modal. If `ask_question` is unavailable
+        in the environment, fall back to clean sequential text.
 -   **Zero `ask_question` Abandonment & Missing-Chat-Text Recovery Rule:** If
     the user ever reports *"you didn't answer me in chat"*, *"I only see the
     question box"*, or *"where is the explanation?"*, the cause is ALWAYS that

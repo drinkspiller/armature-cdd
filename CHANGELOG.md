@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.34.4] - 2026-11-04
+
+### Fixed
+
+-   **`thinking` Block Word-Count Trap (Dropped `ask_question` Tool Calls)
+    (`rules/armature_antigravity.md`, `skills/arm-new-track/SKILL.md`)**:
+    -   Enforced a strict boundary rule preventing models from ending their
+        internal `thinking` block on literal word-count math (e.g., *"Total: 150
+        words. Perfect."*) when meeting strict `<= 165` word caps. Ending
+        `thinking` on math shifts attention entirely to the markdown stream and
+        causes the model to drop the `ask_question` tool call, leaving the user
+        stranded without a UI modal. Models must now explicitly end `thinking`
+        by planning the `ask_question` tool invocation.
+
+### Changed
+
+-   **SkillOpt & CDD Benchmark Suite Re-Certification**:
+    -   Re-certified the SkillOpt Interview Format Optimizer (`94.44%` held-out
+        validation pass rate, `LB90 0.9243`, `0` vetoes across 27/27 rollouts),
+        the multi-turn trajectory evaluator (`4/4` passed, `100.0%`), and the
+        7-framework CDD/SDD live benchmark battery.
+
 ## [0.34.3] - 2026-11-02
 
 ### Fixed
