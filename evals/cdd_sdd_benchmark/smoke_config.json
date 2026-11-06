@@ -1,0 +1,21 @@
+{
+  "seeds": [1],
+  "models": ["gemini-3.5-flash"],
+  "scenarios_per_pillar": 3,
+  "pillars": [
+    "spec_gating",
+    "surgical_velocity",
+    "drift_governance",
+    "state_safety",
+    "context_continuity"
+  ],
+  "frameworks": [
+    "armature_oss",
+    "wayfinder",
+    "bmad_method",
+    "memory_bank",
+    "github_spec_kit"
+  ],
+  "max_regression_pp": 3.0,
+  "judge": false
+}

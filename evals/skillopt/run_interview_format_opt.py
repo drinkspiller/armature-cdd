@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""SkillOpt harness for the Armature Interview Turn v2 format.
+"""SkillOpt harness for the Armature Focus + Succinct /zoom-out interview format.
 
-Evaluates and optimizes the compact interview turn (unlabeled stakes opener,
-numbered one-line options, ignore line, one-sentence recommendation, Pick-if
-recap, mirrored ask_question options) across K seeds with a Two-Tier rubric:
-deterministic [INVARIANT] vetoes plus LLM-judged [QUALITY] partial credit.
+Evaluates and optimizes the focused interview turn (zero chat progress-list
+clutter, clean topic headline, 1-3 line ASCII mental-model flow diagram,
+unlabeled 2-3 sentence orientation opener, numbered one-line options, ignore
+line, one-sentence recommendation, Pick-if recap, mirrored ask_question
+options) across K seeds with a Two-Tier rubric: deterministic [INVARIANT]
+vetoes plus LLM-judged [QUALITY] partial credit.
 
 Phases:
   --phase baseline   Score the pre-change files (origin/main, falling back to
@@ -95,6 +97,25 @@ BASE_TOOL_DECLARATIONS = [{
                 "required": ["TargetFile", "CodeContent"],
             },
         },
+        {
+            "name": "replace_file_content",
+            "description": (
+                "Edit an existing file by replacing a contiguous block of text."
+            ),
+            "parameters": {
+                "type": "OBJECT",
+                "properties": {
+                    "TargetFile": {"type": "STRING"},
+                    "TargetContent": {"type": "STRING"},
+                    "ReplacementContent": {"type": "STRING"},
+                },
+                "required": [
+                    "TargetFile",
+                    "TargetContent",
+                    "ReplacementContent",
+                ],
+            },
+        },
     ]
 }]
 
@@ -142,7 +163,7 @@ def call_gemini(
     use_tools=False,
     include_read_tools=False,
     max_retries=6,
-    max_output_tokens=8192,
+    max_output_tokens=16384,
     json_mode=False,
 ):
   if not API_KEY:
@@ -155,7 +176,7 @@ def call_gemini(
       if json_mode:
         gen_cfg["responseMimeType"] = "application/json"
       payload = {
-          "contents": [{"parts": [{"text": prompt}]}],
+          "contents": [{"role": "user", "parts": [{"text": prompt}]}],
           "generationConfig": gen_cfg,
           "safetySettings": [
               {"category": c, "threshold": "BLOCK_NONE"} for c in (
@@ -173,22 +194,52 @@ def call_gemini(
             if include_read_tools
             else BASE_TOOL_DECLARATIONS
         )
-      data = json.dumps(payload).encode("utf-8")
       try:
-        req = urllib.request.Request(
-            url, data=data, headers={"Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=120) as resp:
-          res_json = json.loads(resp.read().decode("utf-8"))
-        candidates = res_json.get("candidates", [])
-        if not candidates or "content" not in candidates[0]:
-          return "", []
-        text_out, tool_calls = [], []
-        for p in candidates[0]["content"].get("parts", []):
-          if p.get("text"):
-            text_out.append(p["text"])
-          if "functionCall" in p:
-            tool_calls.append(p["functionCall"])
-        return "\n".join(text_out), tool_calls
+        all_text_out, all_tool_calls = [], []
+        max_tool_steps = 5 if use_tools else 1
+        for _ in range(max_tool_steps):
+          data = json.dumps(payload).encode("utf-8")
+          req = urllib.request.Request(
+              url, data=data, headers={"Content-Type": "application/json"}
+          )
+          with urllib.request.urlopen(req, timeout=120) as resp:
+            res_json = json.loads(resp.read().decode("utf-8"))
+          candidates = res_json.get("candidates", [])
+          if not candidates or "content" not in candidates[0]:
+            break
+          model_content = candidates[0]["content"]
+          step_calls = []
+          for p in model_content.get("parts", []):
+            if p.get("text") and not p.get("thought"):
+              all_text_out.append(p["text"])
+            if "functionCall" in p:
+              fc = p["functionCall"]
+              step_calls.append(fc)
+              all_tool_calls.append(fc)
+          if (
+              not use_tools
+              or not step_calls
+              or any(fc.get("name") == "ask_question" for fc in step_calls)
+              or not all(
+                  fc.get("name") in ("write_to_file", "replace_file_content")
+                  for fc in step_calls
+              )
+          ):
+            break
+          payload["contents"].append(model_content)
+          payload["contents"].append({
+              "role": "user",
+              "parts": [
+                  {
+                      "functionResponse": {
+                          "name": fc["name"],
+                          "response": {"result": "ok"},
+                      }
+                  }
+                  for fc in step_calls
+              ],
+          })
+        return "\n".join(all_text_out), all_tool_calls
       except urllib.error.HTTPError as e:
         if e.code == 404:
           print(
@@ -220,9 +271,36 @@ def call_gemini(
 # --------------------------------------------------------------------------
 # Deterministic invariant checks
 # --------------------------------------------------------------------------
-HEADLINE_RE = re.compile(r"^#{2,4}\s+(?:Round\s+\d+,\s+Question\s+\d+\s+of\s+\d+|(?:Phase 5b,\s*)?Finding\s+\d+(?:\s+of\s+\d+)?):\s*\S", re.M)
-ROUND_HEADLINE_RE = re.compile(r"^##\s+Round\s+\d+,\s+Question\s+\d+\s+of\s+\d+:\s*\S", re.M)
-BAD_HEADLINE_RE = re.compile(r"^##\s+Round\s+\d+,\s+Question\s+\d+\.\d+\s+of", re.M)
+TOPIC_HEADLINE_RE = re.compile(
+    r"^##\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*$",
+    re.M | re.I,
+)
+FINDING_HEADLINE_RE = re.compile(
+    r"^#{2,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*$",
+    re.M | re.I,
+)
+HEADLINE_RE = re.compile(
+    r"^(?:##\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*"
+    r"|#{2,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*)$",
+    re.M | re.I,
+)
+ROUND_BOOKKEEPING_HEADLINE_RE = re.compile(
+    r"^#{2,4}\s*(?:Round\s+\d+|Question\s+\d+(?:\.\d+)?)\b",
+    re.M | re.I,
+)
+CHAT_PROGRESS_LIST_RE = re.compile(
+    r"(?:^\s*\*\*(?:Settled|Now|Up next)\*\*:?"
+    r"|^(?:Round|Question)\s+\d+(?:\.\d+)?\s+settled:"
+    r"|^###?\s+(?:Active\s+)?Decision Tree (?:Ledger|Status))",
+    re.M | re.I,
+)
+FLOW_BLOCK_RE = re.compile(
+    r"```(?:text|plaintext|ascii)?\s*\n([\s\S]*?)```",
+    re.I,
+)
+FLOW_ARROW_OR_STAGE_RE = re.compile(r"(?:►|→|->|──>|==>|\[\s*★|\[\S[^\]]*\])")
 NUMBERED_RE = re.compile(r"^\s*(\d+)\.\s+\S", re.M)
 PICK_RE = re.compile(r"^\s*(?:-\s+)?Pick\s+\d+\s+if\b", re.M)
 BULLETED_PICK_RE = re.compile(r"^\s*-\s+Pick\s+\d+\s+if\b", re.M)
@@ -240,6 +318,7 @@ AUX_MODAL_OPT_RE = re.compile(
     r"^(?:reopen\s+round\b|customize\s+scan\s+sources\b)", re.I
 )
 CODE_ID_RE = re.compile(r"`|[A-Za-z]\w*_\w+|\b\w+\(\)|\b\w+\.\w+\(")
+CODE_ID_NO_BACKTICK_RE = re.compile(r"[A-Za-z]\w*_\w+|\b\w+\(\)|\b\w+\.\w+\(")
 SYSTEMS_JARGON_RE = re.compile(
     r"\b(?:blob\w*|copy-on-write|refcount\w*|reference[- ]count\w*"
     r"|monotonic\w*|in-flight|file handle\w*|stream handle\w*"
@@ -266,9 +345,11 @@ def _norm_opt(s):
 
 def _pre_retee_region(text):
   """Extracts the plain zoom-out explanation preceding '---' or the re-teed headline."""
+  hr = re.search(r"^---\s*$", text, re.M)
+  if hr:
+    return text[: hr.start()].strip()
   candidates = []
   for pat in (
-      re.compile(r"^---\s*$", re.M),
       re.compile(r"^###\s+Devil's Advocate", re.M),
       re.compile(r"^\*\*(?:Settled|Now)\*\*", re.M),
       HEADLINE_RE,
@@ -293,25 +374,35 @@ def _asq_options(tool_calls):
 
 def _headline_and_body_region(text):
   """Returns (headline_line, opener_region, headline_to_last_pick_region)."""
-  matches = list(HEADLINE_RE.finditer(text))
+  hr_matches = list(re.finditer(r"^---\s*$", text, re.M))
+  search_base = hr_matches[-1].end() if hr_matches else 0
+  sub = text[search_base:]
+  matches = list(HEADLINE_RE.finditer(sub))
+  if not matches and search_base > 0:
+    sub = text
+    search_base = 0
+    matches = list(HEADLINE_RE.finditer(sub))
   if not matches:
     return "", "", ""
   hm = matches[-1]
-  line_end = text.find("\n", hm.start())
+  abs_hm_start = search_base + hm.start()
+  line_end = text.find("\n", abs_hm_start)
   line_end = len(text) if line_end == -1 else line_end
-  headline_line = text[hm.start() : line_end]
+  headline_line = text[abs_hm_start:line_end]
   after = text[line_end:]
-  nm = NUMBERED_RE.search(after)
-  opener = after[: nm.start()] if nm else after
-  picks = list(PICK_RE.finditer(text[hm.start() :]))
+  fb = FLOW_BLOCK_RE.search(after)
+  num_search_offset = fb.end() if (fb and fb.start() < 80) else 0
+  nm = NUMBERED_RE.search(after[num_search_offset:])
+  opener = after[: num_search_offset + nm.start()] if nm else after
+  picks = list(PICK_RE.finditer(text[abs_hm_start:]))
   if picks:
     last = picks[-1]
-    abs_end = hm.start() + last.end()
+    abs_end = abs_hm_start + last.end()
     end = text.find("\n", abs_end)
     end = len(text) if end == -1 else end
-    body = text[hm.start() : end]
+    body = text[abs_hm_start:end]
   else:
-    body = text[hm.start() :]
+    body = text[abs_hm_start:]
   return headline_line, opener, body
 
 
@@ -324,6 +415,9 @@ def _body_region(text):
 def evaluate_invariants(task, text, tool_calls):
   vetoes = []
   headline_line, opener, body = _headline_and_body_region(text)
+  opener_prose = FLOW_BLOCK_RE.sub("", opener).strip()
+  flow_match = FLOW_BLOCK_RE.search(opener)
+  flow_text = flow_match.group(1) if flow_match else ""
   target_body = body or text
   numbered = NUMBERED_RE.findall(target_body)
   numbered_lines = [l for l in target_body.splitlines() if NUMBERED_RE.match(l)]
@@ -366,26 +460,25 @@ def evaluate_invariants(task, text, tool_calls):
             f"{inv}: rendered blockquote Pros/Cons cards instead of plain"
             " workflow zoom-out and examples"
         )
-    elif inv == "no_settled_on_clarification_retee":
-      if re.search(
-          r"^\s*\*\*(?:Settled|Now|Up next)\*\*", text, re.M
-      ) or re.search(
-          r"^(?:Round|Question)\s+\d+(?:\.\d+)?\s+settled:", text, re.M
-      ):
+    elif inv in ("no_chat_progress_list", "no_settled_on_clarification_retee"):
+      if CHAT_PROGRESS_LIST_RE.search(text):
         vetoes.append(
-            f"{inv}: re-printed Settled/Now/Up next progress list on a"
-            " clarification re-tee when zero items newly settled"
+            f"{inv}: printed Settled/Now/Up next progress list or Round"
+            " settled line in chat instead of keeping progress on disk"
         )
     elif inv == "no_systems_jargon_in_turn":
-      turn_surface = f"{headline_line}\n{opener}\n" + "\n".join(numbered_lines)
+      turn_surface = (
+          f"{headline_line}\n{flow_text}\n{opener_prose}\n"
+          + "\n".join(numbered_lines)
+      )
       jm = SYSTEMS_JARGON_RE.search(turn_surface)
       if jm:
         vetoes.append(
             f"{inv}: un-translated systems jargon '{jm.group(0)}' in Pass-1"
-            " headline, opener, or numbered options"
+            " headline, flow diagram, opener, or numbered options"
         )
     elif inv == "grounds_familiar_domain_nouns":
-      combined = f"{headline_line}\n{opener}"
+      combined = f"{headline_line}\n{flow_text}\n{opener_prose}"
       for group in task.get("expected_domain_noun_groups", []):
         if not any(
             re.search(rf"\b{re.escape(w)}\b", combined, re.I) for w in group
@@ -407,14 +500,41 @@ def evaluate_invariants(task, text, tool_calls):
               f"{inv}: repeated vague phrase '{phrase}' verbatim in rewritten"
               " options"
           )
-    elif inv == "headline_round_question_format":
-      if not ROUND_HEADLINE_RE.search(text) or BAD_HEADLINE_RE.search(text):
-        vetoes.append(f"{inv}: headline missing or uses 'Question R.Q of N'")
+    elif inv in ("headline_clean_topic_format", "headline_round_question_format"):
+      if (
+          not headline_line
+          or not TOPIC_HEADLINE_RE.search(headline_line)
+          or ROUND_BOOKKEEPING_HEADLINE_RE.search(headline_line)
+      ):
+        vetoes.append(
+            f"{inv}: headline missing or uses 'Round R, Question Q' bookkeeping"
+            f" prefix ('{headline_line}')"
+        )
+    elif inv == "has_succinct_zoom_out_flow":
+      if not flow_match:
+        vetoes.append(
+            f"{inv}: missing compact fenced text ASCII zoom-out flow diagram"
+            " beneath headline"
+        )
+      else:
+        flow_lines = [l for l in flow_text.splitlines() if l.strip()]
+        if not (1 <= len(flow_lines) <= 4):
+          vetoes.append(
+              f"{inv}: zoom-out flow diagram has {len(flow_lines)} non-empty"
+              " lines, expected 1-3"
+          )
+        elif not FLOW_ARROW_OR_STAGE_RE.search(flow_text):
+          vetoes.append(
+              f"{inv}: fenced block lacks flow arrows or bracketed workflow"
+              " stages"
+          )
     elif inv == "no_labeled_opener":
-      if not opener.strip():
-        vetoes.append(f"{inv}: no opener paragraph between headline and options")
-      elif LABEL_LINE_RE.search(opener):
-        vetoes.append(f"{inv}: opener carries a bold label")
+      if not opener_prose:
+        vetoes.append(
+            f"{inv}: no orientation paragraph between headline/flow and options"
+        )
+      elif LABEL_LINE_RE.search(opener_prose):
+        vetoes.append(f"{inv}: orientation paragraph carries a bold label")
     elif inv == "no_problem_label":
       if re.search(r"\*\*Problem:?\*\*", text):
         vetoes.append(f"{inv}: found a Problem label")
@@ -473,15 +593,20 @@ def evaluate_invariants(task, text, tool_calls):
           re.search(rf"\*\*{k}:\*\*", text) for k in ("Pros", "Cons", "Implications")):
         vetoes.append(f"{inv}: zoom-in did not render Pros/Cons/Implications cards")
     elif inv == "no_code_identifiers_in_opener":
-      if CODE_ID_RE.search(opener):
-        vetoes.append(f"{inv}: code identifier in opener")
-    elif inv == "word_budget_200":
+      if CODE_ID_RE.search(opener_prose) or CODE_ID_NO_BACKTICK_RE.search(
+          flow_text
+      ):
+        vetoes.append(
+            f"{inv}: code identifier or inline backtick in opener or flow"
+            " diagram"
+        )
+    elif inv in ("word_budget_220", "word_budget_200"):
       limit = (
-          260
+          280
           if "rewrites_vague_option_names" in task.get("invariants", [])
-          else 200
+          else 220
       )
-      n = len(body.split())
+      n = len(target_body.split())
       if n > limit:
         vetoes.append(f"{inv}: {n} words from headline to last Pick line")
     elif inv in (
@@ -493,13 +618,17 @@ def evaluate_invariants(task, text, tool_calls):
             f"{inv}: used legacy 'Compare technical trade-offs...' modal option"
         )
       chat_names = [_extract_chat_option_name(l) for l in numbered_lines]
-      core = [
+      non_ctx = [
           o
           for o in asq_opts
           if not CONTEXT_OPT_RE.search(o.strip())
           and not LEGACY_ELAB_RE.search(o)
-          and not AUX_MODAL_OPT_RE.search(o.strip())
       ]
+      core = (
+          [o for o in non_ctx if not AUX_MODAL_OPT_RE.search(o.strip())]
+          if len(non_ctx) > len(chat_names)
+          else non_ctx
+      )
       rm = REC_HEADING_RE.search(text)
       if rm and rm.group(1) != "1":
         vetoes.append(
@@ -784,11 +913,11 @@ PLAIN_LANGUAGE = {
         " option clarification instead of answering from conversation context"
     ),
     "has_pre_turn_explanation": (
-        "did not unpack the options in concrete everyday terms before the"
-        " progress list when the user asked for clarification"
+        "did not unpack the options in concrete everyday terms before the '---'"
+        " divider and re-teed question when the user asked for clarification"
     ),
     "has_concrete_example_before_progress": (
-        "when asked for more context, did not step back above the progress list"
+        "when asked for more context, did not step back above the '---' divider"
         " to explain why the decision arises in the workflow with concrete"
         " domain examples"
     ),
@@ -801,9 +930,21 @@ PLAIN_LANGUAGE = {
         "copy-pasted the prior turn's vague option names verbatim instead of"
         " rewriting them in plain user-action terms"
     ),
+    "headline_clean_topic_format": (
+        "the topic headline was missing or included Round/Question bookkeeping"
+        " prefixes instead of a clean ## <Topic> heading"
+    ),
     "headline_round_question_format": (
-        "the round headline was missing or numbered the question like a"
-        " sub-section"
+        "the topic headline was missing or included Round/Question bookkeeping"
+        " prefixes instead of a clean ## <Topic> heading"
+    ),
+    "has_succinct_zoom_out_flow": (
+        "did not include a compact 1-3 line fenced text ASCII workflow diagram"
+        " right beneath the headline"
+    ),
+    "no_chat_progress_list": (
+        "printed Settled / Now / Up next lists or Round settled lines in chat"
+        " instead of keeping progress silently on disk"
     ),
     "no_labeled_opener": (
         "the opening paragraph was missing or started with a bold label"
@@ -845,8 +986,11 @@ PLAIN_LANGUAGE = {
         "leaked backend systems jargon (such as blob, copy-on-write, refcount,"
         " in-flight, or file handles) into a first-pass interview turn"
     ),
+    "word_budget_220": (
+        "the body from headline to the last pick line exceeded 220 words"
+    ),
     "word_budget_200": (
-        "the body from headline to the last pick line was too long"
+        "the body from headline to the last pick line exceeded 220 words"
     ),
     "modal_options_match_chat_options": (
         "the modal choices did not match the numbered option names in 1:1"
@@ -991,7 +1135,7 @@ def summarize(label, res):
 
 
 def write_report(data):
-  lines = ["# SkillOpt Report: Interview Turn v2 (`arm-new-track` + protocol rules)", ""]
+  lines = ["# SkillOpt Report: Focus + Succinct `/zoom-out` Interview Turn (`arm-new-track` + protocol rules)", ""]
   lines.append(f"Generated: {datetime.datetime.now().isoformat(timespec='seconds')}")
   lines.append("")
   lines.append("| Pass | Train mean | Train vetoes | Val mean | Val LB90 | Val vetoes | Val pass rate |")
@@ -1040,8 +1184,11 @@ def main():
 
   train, val = load_tasks(TRAIN_PATH), load_tasks(VAL_PATH)
   data = load_results()
-  print(f"=== Interview Turn v2 harness | phase={args.phase} | K={args.seeds} ===",
-        flush=True)
+  print(
+      "=== Focus + Succinct /zoom-out Interview Harness |"
+      f" phase={args.phase} | K={args.seeds} ===",
+      flush=True,
+  )
 
   if args.phase == "baseline":
     si = build_system_instruction(read_parent(PROTOCOL_REL), read_parent(ANTIGRAVITY_REL),

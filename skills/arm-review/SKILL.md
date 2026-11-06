@@ -15,9 +15,12 @@ the developer through automated interactive manual testing across scenarios.
 ### 1. Initialization
 
 1.  **Context Resolution & Setup Check:**
-    -   Resolve `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature or conductor) per `armature_protocol.md` §7.
-    -   Verify that core files exist: `tracks.md`, `product.md`, `tech-stack.md`, `workflow.md`, `product-guidelines.md`.
-    -   If any are missing, halt execution and inform the user that Armature is not fully initialized.
+    -   Resolve `{PROJECT_ROOT}` and `{PROJECT_CONTEXT_DIR}` (armature or
+        conductor) per `armature_protocol.md` §7.
+    -   Verify that core files exist: `tracks.md`, `product.md`,
+        `tech-stack.md`, `workflow.md`, `product-guidelines.md`.
+    -   If any are missing, halt execution and inform the user that Armature is
+        not fully initialized.
 
 ### 2. Execution Phase
 
@@ -56,11 +59,11 @@ the developer through automated interactive manual testing across scenarios.
             data-fetching hooks.
         -   Any modification to router navigation guards (`canActivate`),
             authentication checks, or role/permission conditional rendering
-            gates (`*ngIf="user.isAdmin"`, `*ngIf="user.role ===
-            'SUPER_ADMIN'"`, `@if (hasPermission)`).
-        -   Any modification to RPC/API service callers (e.g., `await
-            api.deleteAccount()`), backend handlers, Protobuf definitions, or
-            database schemas/migrations.
+            gates (`*ngIf="user.isAdmin"`,
+            `*ngIf="user.role === 'SUPER_ADMIN'"`, `@if (hasPermission)`).
+        -   Any modification to RPC/API service callers (e.g.,
+            `await api.deleteAccount()`), backend handlers, Protobuf
+            definitions, or database schemas/migrations.
         -   *Adversarial Trap Guardrail*: If a template or component diff alters
             an auth/role gate or invokes an RPC mutation, you MUST strictly
             disqualify it from Micro-Verification, explain why multi-persona or
@@ -86,10 +89,13 @@ the developer through automated interactive manual testing across scenarios.
         compare alternative layouts — and **immediately invoke `ask_question`**
         (in place of the generic Review Mode Gate) so the user can choose which
         path to run first:
-        -   *Question:* `"Should this session verify the implemented track on the live server or explore layout options in a scratch sandbox?"`
+        -   *Question:* `"Should this session verify the implemented track on
+            the live server or explore layout options in a scratch sandbox?"`
         -   *Options:*
-            -   `"(Recommended) Verify implemented track on the live server (<runner> on localhost)"`
-            -   `"Explore alternative UI layouts in an isolated <ArtifactDir>/scratch/ sandbox first"`
+            -   `"(Recommended) Verify implemented track on the live server
+                (<runner> on localhost)"`
+            -   `"Explore alternative UI layouts in an isolated
+                <ArtifactDir>/scratch/ sandbox first"`
 6.  **Review Mode Gate:** Otherwise, if no mode flag was provided in the
     arguments, present the review mode choice using `ask_question`:
     -   *Question:* "How would you like to review track '<track_name>'?"
@@ -172,8 +178,8 @@ pass with zero file edits when `--report-only` is specified):
     -   **Accurate Top-Level `len(comments)` Counting:** Always compute each
         iteration's `Total Comments` strictly from the top-level `len(comments)`
         array. Never use `execution_metadata.reviewer_comments_count`, which
-        double-counts skill-based reviewers and inflates the `Review Loop
-        Iteration Breakdown` table.
+        double-counts skill-based reviewers and inflates the
+        `Review Loop Iteration Breakdown` table.
     -   **Spec/ADR Precedence Rule (`status: skipped_spec_adr_precedence`):**
         Whenever a finding from a blinded reviewer (`code_taste_style_verifier`
         or `correctness_security_verifier` running with `include_intent: false`
@@ -182,11 +188,11 @@ pass with zero file edits when `--report-only` is specified):
         Spec/ADR automatically takes precedence during cross-reviewer
         deduplication. Do **NOT** apply the conflicting style suggestion and do
         **NOT** modify `spec.md` or `adr/*.md`; record the suppressed suggestion
-        under `Unapplied Comments & Rationale` (`status:
-        skipped_spec_adr_precedence`), explicitly stating that the reviewer ran
-        blinded (`include_intent: false` to prevent confirmation bias) and was
-        overridden during cross-reviewer deduplication by the governing
-        `spec.md` section or ADR number.
+        under `Unapplied Comments & Rationale`
+        (`status: skipped_spec_adr_precedence`), explicitly stating that the
+        reviewer ran blinded (`include_intent: false` to prevent confirmation
+        bias) and was overridden during cross-reviewer deduplication by the
+        governing `spec.md` section or ADR number.
     -   **Convergence Check:** If `len(comments) == 0` (zero actionable findings
         remain), exit the repair loop immediately.
 
@@ -196,17 +202,17 @@ pass with zero file edits when `--report-only` is specified):
     -   Apply fixes strictly in `P0 -> P1 -> P2 -> P3` order (and `S0 -> S3`
         within each priority tier) so structural and contract changes settle
         before local implementation or formatting polish.
-    -   **Circuit Breaker 1 — Legacy-Boundary Context Fence Firewall (`status:
-        blocked_by_legacy_fence`):** Never auto-edit any file inside an active
-        legacy-fenced directory (`<deprecated_path>` without `fence_overrides`)
-        during the repair loop. Redirect the remediation to
-        `<modern_replacement>` or record the comment under `Unapplied Comments &
-        Rationale` (`status: blocked_by_legacy_fence`).
-    -   **Circuit Breaker 2 — Approved Spec & ADR Immutability (`status:
-        deferred_spec_conflict`):** Never mutate user-approved `spec.md`,
-        `plan.md`, or `adr/*.md` files to silence a code review comment. Log
-        genuine design contradictions under `Unapplied Comments & Rationale`
-        (`status: deferred_spec_conflict`).
+    -   **Circuit Breaker 1 — Legacy-Boundary Context Fence Firewall
+        (`status: blocked_by_legacy_fence`):** Never auto-edit any file inside
+        an active legacy-fenced directory (`<deprecated_path>` without
+        `fence_overrides`) during the repair loop. Redirect the remediation to
+        `<modern_replacement>` or record the comment under
+        `Unapplied Comments & Rationale` (`status: blocked_by_legacy_fence`).
+    -   **Circuit Breaker 2 — Approved Spec & ADR Immutability
+        (`status: deferred_spec_conflict`):** Never mutate user-approved
+        `spec.md`, `plan.md`, or `adr/*.md` files to silence a code review
+        comment. Log genuine design contradictions under
+        `Unapplied Comments & Rationale` (`status: deferred_spec_conflict`).
     -   **Circuit Breaker 3 — Unit-Test Regression Reversion & Anti-Oscillation
         Ledger (`status: reverted_test_regression`):** After applying repairs in
         Iteration $N$, run the affected automated unit test target(s). If a
@@ -220,8 +226,8 @@ pass with zero file edits when `--report-only` is specified):
         Guarantee:** Restrict `S2`/`S3` improvements strictly to lines modified
         by the track diff (never refactor untouched surrounding code or extract
         speculative single-use helpers), and **always apply valid, test-passing
-        fixes discovered on the final iteration (`iteration ==
-        MAX_ITERATIONS`)** before exiting the loop.
+        fixes discovered on the final iteration
+        (`iteration == MAX_ITERATIONS`)** before exiting the loop.
 
 #### 2.4 Analysis Checklist & Pre-Manual-Testing Blocker Gate (Code Audit)
 
@@ -254,9 +260,9 @@ Across each pass of the review loop, verify:
     complete Code Audit report in markdown in that same turn:
     -   **Blocking Violations (`+` Added Lines):** If any file inside a
         legacy-fenced directory has status `A` (added) or status `M` (modified)
-        with $>0$ added lines (e.g., `client/legacy_canvas/widget.ts` with `+15
-        lines added`) and is not listed in `fence_overrides`, you MUST flag it
-        in markdown as a **`[BLOCKING] Legacy Fence Violation`** (`P0/S0`),
+        with $>0$ added lines (e.g., `client/legacy_canvas/widget.ts` with
+        `+15 lines added`) and is not listed in `fence_overrides`, you MUST flag
+        it in markdown as a **`[BLOCKING] Legacy Fence Violation`** (`P0/S0`),
         refuse auto-editing the fenced file (`status: blocked_by_legacy_fence`),
         and explicitly direct remediation to the modern replacement directory
         (`<modern_replacement>`, e.g., `client/react_scf/`).
@@ -302,62 +308,113 @@ Across each pass of the review loop, verify:
             turn**, render the `## Review Loop Iteration Breakdown` markdown
             table at the top of your chat response, proceed **directly into Step
             2.5** by rendering **Scenario 1** (using the canonical 6-part
-            structure with sanitized `localhost` URL and `##### Expected
-            Observations`), and **IMMEDIATELY invoke the native `ask_question`
-            tool in the same turn** asking `"Did Scenario 1 meet the expected
-            outcome?"` with the Step 2.5 verification options (`"(Recommended)
-            Verified: ..."`, `"Didn't match expectation (I will describe what
-            occurred)"`, `"Skip to next scenario"`).
+            structure with sanitized `localhost` URL and
+            `##### Expected Observations`), and **IMMEDIATELY invoke the native
+            `ask_question` tool in the same turn** asking
+            `"Did Scenario 1 meet the expected outcome?"` with the Step 2.5
+            verification options (`"(Recommended) Verified: ..."`,
+            `"Didn't match expectation (I will describe what occurred)"`,
+            `"Skip to next scenario"`).
 
 #### 2.5 Interactive Verification Phase (Guided Manual Testing)
 
 *(Skipped if mode is Code Audit only)*
 
 > [!IMPORTANT] **MANDATORY STEP 2.5 EXECUTION BARRIERS (ZERO BARE TOOL CALLS &
-> ZERO PREMATURE `review.md` WRITES):**
-> 1. **Never Write `review.md` Before Verification Completes:** During Step 2.5, do **NOT** call `write_to_file` to generate `review.md`. You MUST present the interactive verification walkthrough in chat and pause via `ask_question` to collect the user's empirical verification result first.
-> 2. **Strict Zero-Echo Sanitization Invariant (Never Quote Legacy Draft Strings):** When reading an input `manual_testing.md` draft that contains remote workstation hostnames (`<REMOTE_HOST>.example.com`), `"Expected Observables"` headers, or un-reproduced snippet instructions (`"paste the snippet from Scenario 1"`), **NEVER** echo, quote, or mention those forbidden strings anywhere in your chat response (not even to explain that you replaced them). Silently output **ONLY** the sanitized `localhost` URL (`http://localhost:<PORT>/<path>` or `http://localhost:<PORT>/<path>`), the exact `##### Expected Observations` header, and the complete inline copy-pastable code snippet. When disqualifying a stateful/auth/RPC diff from Micro-Verification, explain the disqualification in plain English without rendering or quoting the `┌─ [Micro-Verification Plan]` ASCII box header.
-> 3. **Mandatory Markdown Walkthrough Before Every `ask_question` Call:** Never emit a bare `ask_question` tool call without a complete markdown response in the exact same turn:
->    - For **Path A (Visual-Only)**, always render the full `┌─ [Micro-Verification Plan] ──┐` ASCII card in chat text before calling `ask_question` with the exact escape hatch option `"Run full domain runbook instead (execute database seed & multi-role scenarios)"`.
->    - For **Path B (Stateful / Disqualified Diffs)**, even when a setup command triggers the Hybrid Smart Gate confirmation prompt or when disqualifying a false-visual diff (e.g. an `*ngIf` auth guard or RPC mutation), you MUST first output the complete **6-Part Scenario Structure** in markdown before invoking `ask_question`:
+> ZERO PREMATURE `review.md` WRITES):** 1. **Never Write `review.md` Before
+> Verification Completes:** During Step 2.5, do **NOT** call `write_to_file` to
+> generate `review.md`. You MUST present the interactive verification
+> walkthrough in chat and pause via `ask_question` to collect the user's
+> empirical verification result first. 2. **Strict Zero-Echo Sanitization
+> Invariant (Never Quote Legacy Draft Strings):** When reading an input
+> `manual_testing.md` draft that contains remote workstation hostnames
+> (`<REMOTE_HOST>.example.com`), `"Expected Observables"` headers, or
+> un-reproduced snippet instructions (`"paste the snippet from Scenario 1"`),
+> **NEVER** echo, quote, or mention those forbidden strings anywhere in your
+> chat response (not even to explain that you replaced them). Silently output
+> **ONLY** the sanitized `localhost` URL (`http://localhost:<PORT>/<path>` or
+> `http://localhost:<PORT>/<path>`), the exact `##### Expected Observations`
+> header, and the complete inline copy-pastable code snippet. When disqualifying
+> a stateful/auth/RPC diff from Micro-Verification, explain the disqualification
+> in plain English without rendering or quoting the
+> `┌─ [Micro-Verification Plan]` ASCII box header. 3. **Mandatory Markdown
+> Walkthrough Before Every `ask_question` Call:** Never emit a bare
+> `ask_question` tool call without a complete markdown response in the exact
+> same turn: - For **Path A (Visual-Only)**, always render the full
+> `┌─ [Micro-Verification Plan] ──┐` ASCII card in chat text before calling
+> `ask_question` with the exact escape hatch option `"Run full domain runbook
+> instead (execute database seed & multi-role scenarios)"`. - For **Path B
+> (Stateful / Disqualified Diffs)**, even when a setup command triggers the
+> Hybrid Smart Gate confirmation prompt or when disqualifying a false-visual
+> diff (e.g. an `*ngIf` auth guard or RPC mutation), you MUST first output the
+> complete **6-Part Scenario Structure** in markdown before invoking
+> `ask_question`:
 >
->      ```markdown
->      #### Scenario <ID>: <Title> — <Synopsis>
+> ````
+>  ```markdown
+>  #### Scenario <ID>: <Title> — <Synopsis>
 >
->      <1–2 sentence verification synopsis explaining what behavior, timeout, or state transition is verified.>
+>  <1–2 sentence verification synopsis explaining what behavior, timeout, or state transition is verified.>
 >
->      ##### Prerequisites
->      Ensure your local development server is running:
->      ```bash
->      <exact dev server startup command, e.g. ./run.sh>
->      ```
+>  ##### Prerequisites
+>  Ensure your local development server is running:
+>  ```bash
+>  <exact dev server startup command, e.g. ./run.sh>
+>  ```
 >
->      ##### Target URL
->      Navigate to the target view in Google Chrome:
->      `http://localhost:<PORT>/<path>`
+>  ##### Target URL
+>  Navigate to the target view in Google Chrome:
+>  `http://localhost:<PORT>/<path>`
 >
->      ##### Step-by-Step Setup
->      1. <Step-by-step setup instruction>
->      2. <Complete, self-contained copy-pastable setup snippet reproduced inline:>
->      ```javascript
->      <complete self-contained snippet, e.g. window.__appSim = ...; window.__appSim.enable();>
->      ```
->      *(<Concise italicized explanation of what the snippet simulates.>)*
+>  ##### Step-by-Step Setup
+>  1. <Step-by-step setup instruction>
+>  2. <Complete, self-contained copy-pastable setup snippet reproduced inline:>
+>  ```javascript
+>  <complete self-contained snippet, e.g. window.__appSim = ...; window.__appSim.enable();>
+>  ```
+>  *(<Concise italicized explanation of what the snippet simulates.>)*
 >
->      ##### Action Steps
->      1. <Action step 1 (what to do and where)>
->      2. <Action step 2>
+>  ##### Action Steps
+>  1. <Action step 1 (what to do and where)>
+>  2. <Action step 2>
 >
->      ##### Expected Observations
->      * **UI Behavior**:
->        * <Concrete visual state, spinner duration, toast message, or route update>
->      * **DevTools Console Log**:
->        * <Concrete log message or RPC status>
->      ```
-> 4. **Intent-Scoped Live Application Server Verification (vs. Standalone Prototyping) & Per-Track Deliverable Mapping:**
->    - **Verification = Live Server Only (Zero Simulated HTML Harnesses):** Whenever post-implementation `/arm-review`, `/arm-bash`, design-mock audits, or PR/runbook screenshot and screencast capture runs, it MUST start the real application server via the project's canonical runner (e.g., `./scripts/run.sh`, `./run.sh`, or `npm run dev`) and load the live `localhost` URL (`http://localhost:<PORT>/<path>`) in headless Chrome / Playwright. **NEVER** create or render a standalone HTML harness (`file://` or `data:`) to mock implemented UI views.
->    - **Exploration = Standalone Sandboxes Only:** Pre-implementation design exploration (`/prototype`, `/sandbox-preview`) lives strictly outside application repositories in an isolated scratch directory (`<ArtifactDir>/scratch/`) or local static preview server (never temporary `?variant=` routes inside application repositories). If a user prompt is ambiguous between exploring design options in a standalone sandbox vs. verifying implemented code on the live application server, pause and disambiguate via `ask_question` first.
->    - **Multi-Track 1-to-1 Deliverable Unit & Configuration Reference:** When reviewing or delivering multiple tracks, maintain a strict 1-to-1 mapping: each track ships in its own standalone commit/PR (including its `manual_testing.md` and `review.md`), URL bookmark (`.url.json` when supported), and dedicated live runbook walkthrough video, paired with a comprehensive per-track engineering & external configuration report documenting exact feature flags, service/client IDs, runtime bootstrap config keys (e.g., `window.__APP_CONFIG__` / environment variables), storage buckets, log/telemetry scrubbing allowlists, verified file/line links, and repository code vs. external admin console setup.
+>  ##### Expected Observations
+>  * **UI Behavior**:
+>    * <Concrete visual state, spinner duration, toast message, or route update>
+>  * **DevTools Console Log**:
+>    * <Concrete log message or RPC status>
+>  ```
+> ````
+>
+> 4.  **Intent-Scoped Live Application Server Verification (vs. Standalone
+>     Prototyping) & Per-Track Deliverable Mapping:**
+>     -   **Verification = Live Server Only (Zero Simulated HTML Harnesses):**
+>         Whenever post-implementation `/arm-review`, `/arm-bash`, design-mock
+>         audits, or PR/runbook screenshot and screencast capture runs, it MUST
+>         start the real application server via the project's canonical runner
+>         (e.g., `./scripts/run.sh`, `./run.sh`, or `npm run dev`) and load the
+>         live `localhost` URL (`http://localhost:<PORT>/<path>`) in headless
+>         Chrome / Playwright. **NEVER** create or render a standalone HTML
+>         harness (`file://` or `data:`) to mock implemented UI views.
+>     -   **Exploration = Standalone Sandboxes Only:** Pre-implementation design
+>         exploration (`/prototype`, `/sandbox-preview`) lives strictly outside
+>         application repositories in an isolated scratch directory
+>         (`<ArtifactDir>/scratch/`) or local static preview server (never
+>         temporary `?variant=` routes inside application repositories). If a
+>         user prompt is ambiguous between exploring design options in a
+>         standalone sandbox vs. verifying implemented code on the live
+>         application server, pause and disambiguate via `ask_question` first.
+>     -   **Multi-Track 1-to-1 Deliverable Unit & Configuration Reference:**
+>         When reviewing or delivering multiple tracks, maintain a strict 1-to-1
+>         mapping: each track ships in its own standalone commit/PR (including
+>         its `manual_testing.md` and `review.md`), URL bookmark (`.url.json`
+>         when supported), and dedicated live runbook walkthrough video, paired
+>         with a comprehensive per-track engineering & external configuration
+>         report documenting exact feature flags, service/client IDs, runtime
+>         bootstrap config keys (e.g., `window.__APP_CONFIG__` / environment
+>         variables), storage buckets, log/telemetry scrubbing allowlists,
+>         verified file/line links, and repository code vs. external admin
+>         console setup.
 
 Route execution based on the **Stage 2 Empirical VCS Diff Classification** (Step
 2.1):
@@ -396,13 +453,12 @@ When the empirical VCS diff qualifies as **Visual-Only** (including the
         one-line session hint to `Step 1`: `(requires active logged-in session)`
         (e.g., `[•] Step 1: Run local server (./run.sh) (requires active
         logged-in session)`).
-    -   **Strict `localhost` URL Standard (`Step 2`)**: All target URLs in `Step
-        2` MUST strictly use complete, clickable
-        `http://localhost:<PORT>/<path>` (or
-        `http://localhost:<PORT>/<path>`) formatting. **NEVER**
-        output bare partial routes (e.g., `/groups`) and **NEVER** output
-        remote workstation hostnames (`<REMOTE_HOST>.example.com`) in Micro-Verification
-        cards.
+    -   **Strict `localhost` URL Standard (`Step 2`)**: All target URLs in
+        `Step 2` MUST strictly use complete, clickable
+        `http://localhost:<PORT>/<path>` (or `http://localhost:<PORT>/<path>`)
+        formatting. **NEVER** output bare partial routes (e.g., `/groups`) and
+        **NEVER** output remote workstation hostnames
+        (`<REMOTE_HOST>.example.com`) in Micro-Verification cards.
     -   **Semantic Visual Assertions (`Verify`)**: Anchor assertions on visible
         text labels or semantic ARIA roles rather than brittle CSS classes.
 3.  **Multi-Route Consolidation vs. Sequential Walkthroughs**:
@@ -420,8 +476,8 @@ When the empirical VCS diff qualifies as **Visual-Only** (including the
 
     -   Immediately following the card, call `ask_question` with the mandatory
         inline escape hatch:
-        -   *Question:* `"Did the visual verification match the expected
-            outcome?"`
+        -   *Question:*
+            `"Did the visual verification match the expected outcome?"`
         -   *Options:*
             1.  `"(Recommended) Verified: <concise expected visual outcome>"`
             2.  `"Run full domain runbook instead (execute database seed &
@@ -441,7 +497,8 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/manual_testing.md`
         for personas and scenarios:
         -   Preconditions & State Setup commands (`bash`, `sql`, CLI scripts).
-        -   Test Scenario Title & Synopsis (`#### Scenario <ID>: <Title> — <Synopsis>`).
+        -   Test Scenario Title & Synopsis
+            (`#### Scenario <ID>: <Title> — <Synopsis>`).
         -   Action steps (URLs, routes, screens, buttons, CLI invocations).
         -   Expected Observations and barrier checks.
     -   Maintain a real-time `### Manual Testing Verification Ledger` in chat
@@ -455,12 +512,14 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
 
     -   **Environment Preparation (Hybrid Smart Gate):**
         -   Inspect the precondition/setup command.
-        -   *Destructive Safety Filter*: If the command or script contains
-            destructive operations (matching keywords in commands, script names,
-            or arguments: `DROP`, `DELETE`, `TRUNCATE`, `rm -rf`, `reset`,
-            `clean`, `wipe`, `reseed`, `kill`), you MUST first output the
-            complete markdown **6-Part Scenario Structure** below so the user has
-            full context, and then call `ask_question`:
+        -   *Destructive Safety Filter*: When a setup step, script, or QA
+            checklist mixes read-only inspection or health-check commands with
+            state-mutating, destructive, or data-wiping steps (or targets a
+            shared or non-local host), run the read-only checks directly and
+            never execute the state-mutating or destructive step autonomously.
+            Output the complete markdown **6-Part Scenario Structure** below (or
+            skip the destructive checklist command while executing only safe
+            read-only checks) and call `ask_question`:
             -   *Question:* "Setup step has destructive commands: `<command>`.
                 Proceed with execution?"
             -   *Options:*
@@ -468,6 +527,10 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 -   `"No, skip automated execution (I'll prepare state
                     manually)"`
                 -   `"Skip this scenario"`
+        -   *Live Server Fidelity & Pre-Flight Provenance*: Never launch a live
+            interactive review server with unit-test stub or mock flags enabled.
+            During pre-flight checks, verify real backend or generator
+            provenance rather than structural file headers alone.
         -   *Non-Destructive Execution*: Standard fixtures (inserting test
             records, running seed scripts like `node scripts/seed_users.js`,
             minting tokens, exporting env vars) execute **automatically** via
@@ -479,65 +542,68 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             **NEVER** instruct the user to manually run non-destructive seed or
             setup scripts in their terminal.
         -   Verify command exit code 0 before prompting the user.
-    -   **Sequential Guidance Presentation (Canonical 6-Part Scenario Structure):**
-        Output markdown describing the active scenario using strictly this
-        6-part structure:
+    -   **Sequential Guidance Presentation (Canonical 6-Part Scenario
+        Structure):** Output markdown describing the active scenario using
+        strictly this 6-part structure:
 
         -   **1. Scenario Heading with Name & Synopsis**:
-            `#### Scenario <ID>: <Title> — <Synopsis>`
-            *(Include `(Persona: <Persona>)` when testing multi-role permissions).*
-        -   **2. Succinct Verification Synopsis**:
-            Immediately beneath the heading, write a concise 1–2 sentence
-            paragraph stating what specific end-to-end behavior, timeout,
-            concurrency guard, or state transition is being verified.
+            `#### Scenario <ID>: <Title> — <Synopsis>` *(Include
+            `(Persona: <Persona>)` when testing multi-role permissions).*
+        -   **2. Succinct Verification Synopsis**: Immediately beneath the
+            heading, write a concise 1–2 sentence paragraph stating what
+            specific end-to-end behavior, timeout, concurrency guard, or state
+            transition is being verified.
         -   **3. `##### Prerequisites`**:
             -   Explicitly document all long-running development server startup
-                commands or background daemon commands (e.g., `./run.sh`, `npm
-                run dev`, `./scripts/run.sh`) inside a
-                copy-pastable `bash` fenced code block.
-                *(Note: One-off seed/setup commands executed automatically by
-                the Hybrid Smart Gate must be reported as completed setup steps
-                above, NOT listed as manual commands for the user to run).*
+                commands or background daemon commands (e.g., `./run.sh`,
+                `npm run dev`, `./scripts/run.sh`) inside a copy-pastable `bash`
+                fenced code block. *(Note: One-off seed/setup commands executed
+                automatically by the Hybrid Smart Gate must be reported as
+                completed setup steps above, NOT listed as manual commands for
+                the user to run).*
             -   Explicitly instruct the user to ensure the local development
                 server is running before navigating.
         -   **4. `##### Target URL`**:
             -   Provide the exact browser destination using **strictly the
                 complete `localhost` URL form** inside a code block or prominent
-                link:
-                `http://localhost:<PORT>/<path>` or
+                link: `http://localhost:<PORT>/<path>` or
                 `http://localhost:<PORT>/<path>`.
-            -   **Strict Localhost-Only Invariant (Zero remote workstation Hostname Leaks)**:
-                **NEVER** output bare partial routes alone (e.g., `/settings`)
-                and **NEVER** show or include remote workstation host URLs
-                (`<REMOTE_HOST>.example.com:<PORT>`) in chat responses, links,
-                or runbooks. If an input `manual_testing.md` file contains a
-                remote workstation hostname URL, automatically normalize and replace it
-                with the corresponding `localhost` URL.
+            -   **Strict Localhost-Only Invariant (Zero remote workstation
+                Hostname Leaks)**: **NEVER** output bare partial routes alone
+                (e.g., `/settings`) and **NEVER** show or include remote
+                workstation host URLs (`<REMOTE_HOST>.example.com:<PORT>`) in
+                chat responses, links, or runbooks. If an input
+                `manual_testing.md` file contains a remote workstation hostname
+                URL, automatically normalize and replace it with the
+                corresponding `localhost` URL.
         -   **5. `##### Step-by-Step Setup` (or `##### Simulation Setup`)**:
             -   Numbered step-by-step instructions guiding DevTools console,
                 mock state, or environment setup prior to triggering the UI
                 action.
-            -   **Self-Contained Copy-Pasteable Snippet Invariant (Zero Clipboard Hunting)**:
-                Whenever a step requires pasting or running a JavaScript console
-                snippet, simulation mock, payload, or CLI command (e.g.,
-                `window.__appSim.enable()`), you MUST reproduce the **complete,
-                self-contained, copy-pastable code block directly inline** in
-                that scenario's setup section. **NEVER** write instructions like
-                *"paste the snippet you loaded earlier"* or *"use the snippet
-                from Scenario 1"* without reproducing the full code block, as
-                the user's clipboard may no longer contain it. Below the code
-                block, include a concise italicized note explaining what the
-                snippet configures or simulates.
+            -   **Self-Contained Copy-Pasteable Snippet Invariant (Zero
+                Clipboard Hunting)**: Whenever a step requires pasting or
+                running a JavaScript console snippet, simulation mock, payload,
+                or CLI command (e.g., `window.__appSim.enable()`), you MUST
+                reproduce the **complete, self-contained, copy-pastable code
+                block directly inline** in that scenario's setup section.
+                **NEVER** write instructions like *"paste the snippet you loaded
+                earlier"* or *"use the snippet from Scenario 1"* without
+                reproducing the full code block, as the user's clipboard may no
+                longer contain it. Below the code block, include a concise
+                italicized note explaining what the snippet configures or
+                simulates.
         -   **6. `##### Action Steps`**:
             -   Numbered, imperative steps telling the user exactly what actions
-                to perform and where in order to test (e.g., `1. In the
-                Workspace Settings UI, select...`, `2. Click Delete Group...`).
+                to perform and where in order to test (e.g.,
+                `1. In the Workspace Settings UI, select...`,
+                `2. Click Delete Group...`).
         -   **7. `##### Expected Observations`**:
-            -   **Strict Terminology Invariant (Never Use `"Expected Observables"`)**:
-                Always title this section `##### Expected Observations`.
-                **NEVER** use the heading `"Expected Observables"` (even if the
-                draft runbook contains it), because `"Observables"` is easily
-                confused with RxJS `Observable` streams.
+            -   **Strict Terminology Invariant (Never Use
+                `"Expected Observables"`)**: Always title this section
+                `##### Expected Observations`. **NEVER** use the heading
+                `"Expected Observables"` (even if the draft runbook contains
+                it), because `"Observables"` is easily confused with RxJS
+                `Observable` streams.
             -   Categorize expected observations by domain where applicable
                 (e.g., `**UI Behavior:**`, `**DevTools Console Log:**`,
                 `**Network / Telemetry:**`, `**Database / Backend State:**`),
@@ -545,18 +611,19 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 toast strings, or log lines to observe.
     -   **Verification Gate (`ask_question`):**
 
-        -   *Question:* "Did Scenario <ID> meet the expected outcome?"
+        -   *Question:* `"Did Scenario <ID> meet the expected outcome?"`
         -   *Options:*
             -   `"(Recommended) Verified: <brief expected result observed>"`
             -   `"Didn't match expectation (I will describe what occurred)"`
             -   `"Skip to next scenario"`
         -   *Guardrail (Empirical Verification Only):* Verification gates test
             empirical application state, not architectural trade-offs. Do
-            **NOT** output the Interview Turn v2 body (stakes opener, numbered
-            options, `### Recommendation: Option N`, `Pick N if …` lines), the
-            Zoom-In View cards (`**Pros:**` / `**Cons:**` /
-            `**Implications:**`), or the `"I need more context, zoom out and
-            give examples"` option on scenario verification prompts.
+            **NOT** output the interview option-comparison body (ASCII flow
+            diagram, orientation opener, numbered options, `### Recommendation:
+            Option N`, `Pick N if …` lines), the Zoom-In View cards (`**Pros:**`
+            / `**Cons:**` / `**Implications:**`), or the
+            `"I need more context, zoom out and give examples"` option on
+            scenario verification prompts.
     -   **In-Flight Discrepancy Triage:**
 
         -   If the user reports a mismatch, enter diagnostic mode: inspect
@@ -571,7 +638,12 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                     outdated)"`
         -   *In-Flight Hotfix & Cascade Invalidation*: If the user chooses to
             fix the code now:
-            -   Apply the minimal targeted fix.
+            -   Apply the minimal targeted fix. Whenever a scenario failure
+                traces to a stubbed fallback, missing serialization branch, or
+                broken helper, inspect all callers and sibling conditional
+                branches in that module and audit the code paths for remaining
+                Scenarios `N+1..M` in the same turn before handing back the
+                verification prompt.
             -   Re-run the scenario setup command and prompt the user to
                 re-verify.
             -   **Cascade Invalidation Tracking**: Mark previously verified
@@ -582,10 +654,10 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             to the next scenario.
 3.  **Mandatory Post-Testing Reconciliation Gate:**
 
-    -   If ANY scenario remains marked `[!] Logged Issue` or `[~] Requires Quick
-        Re-check` after the walkthrough:
-    -   The agent **strictly halts** before report completion and outputs: `###
-        Logged Discrepancies Requiring Attention` listing all open issues.
+    -   If ANY scenario remains marked `[!] Logged Issue` or
+        `[~] Requires Quick Re-check` after the walkthrough:
+    -   The agent **strictly halts** before report completion and outputs:
+        `### Logged Discrepancies Requiring Attention` listing all open issues.
     -   Prompt via `ask_question`:
         -   *Question:* "Interactive testing has N open issues. How should we
             resolve them?"
@@ -617,13 +689,13 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
 > three: 1. **Visible Markdown Report in Chat:** Print the complete markdown
 > report directly in your visible chat response (starting with the
 > once-per-session Turn 1 legacy fence callout banner if `legacy_fences` exist
-> and have not yet been shown in the session, the `##
-> Review Loop Iteration Breakdown` markdown table counting `Total Comments`
+> and have not yet been shown in the session, the
+> `## Review Loop Iteration Breakdown` markdown table counting `Total Comments`
 > strictly from top-level `len(comments)`, `## Summary of Applied Fixes`
 > explicitly ordered in strict `P0 -> P1 -> P2 -> P3` priority order and
 > explicitly stating when a final-pass fix was applied per the **Final-Pass
-> Application Guarantee** (`iteration == MAX_ITERATIONS`), and `## Unapplied
-> Comments & Rationale` documenting exact status codes
+> Application Guarantee** (`iteration == MAX_ITERATIONS`), and
+> `## Unapplied Comments & Rationale` documenting exact status codes
 > `reverted_test_regression`, `skipped_spec_adr_precedence` with
 > `include_intent: false` confirmation-bias and deduplication rationale,
 > `blocked_by_legacy_fence`, and `deferred_spec_conflict`). 2. **Persist
@@ -698,6 +770,6 @@ Use the following strict output format for `review.md`:
 
 Use `ask_question` to present structured next steps:
 
-1. "Approve and proceed to track completion (/arm-implement Step 5)"
-2. "Address findings and re-review"
-3. "Acknowledge findings as tech debt"
+1.  "Approve and proceed to track completion (/arm-implement Step 5)"
+2.  "Address findings and re-review"
+3.  "Acknowledge findings as tech debt"

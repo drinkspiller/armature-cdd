@@ -1,0 +1,61 @@
+{
+  "comment": "Development registry for evaluating unreleased OSS working trees via local_path (ADR 0018 R3). Never included in default --publish runs; pass explicitly via --registry frameworks/registry_dev.json.",
+  "frameworks": [
+    {
+      "key": "armature_oss_dev",
+      "display_name": "Armature (OSS, unreleased working tree)",
+      "paradigm": "Context-Driven Development",
+      "visibility": "public",
+      "source": {
+        "type": "local_path",
+        "env": "CDD_BENCH_ARMATURE_OSS_ROOT"
+      },
+      "always_on": [
+        "rules/armature_protocol.md",
+        "rules/armature_antigravity.md"
+      ],
+      "skills_index": {
+        "arm-setup": "skills/arm-setup/SKILL.md",
+        "arm-new-track": "skills/arm-new-track/SKILL.md",
+        "arm-implement": "skills/arm-implement/SKILL.md",
+        "arm-status": "skills/arm-status/SKILL.md",
+        "arm-review": "skills/arm-review/SKILL.md",
+        "arm-undo": "skills/arm-undo/SKILL.md",
+        "arm-drift": "skills/arm-drift/SKILL.md",
+        "arm-chat": "skills/arm-chat/SKILL.md"
+      },
+      "extra_files": [
+        "rules/armature_adr_preflight.md",
+        "rules/armature_cdd_protocols.md",
+        "skills/arm-setup/assets/*.md",
+        "skills/*/references/*.md"
+      ],
+      "path_rewrites": [
+        [
+          "~/.gemini/config/plugins/armature-cdd/",
+          ".agent/armature_oss/"
+        ]
+      ],
+      "intent_map": {
+        "feature_plan": "arm-new-track",
+        "hotfix": null,
+        "drift_audit": "arm-drift",
+        "ops_request": null,
+        "review": null,
+        "resume": "arm-implement"
+      },
+      "context_layout": "armature",
+      "pack_commands": [],
+      "identifiers": [
+        "Armature",
+        "armature-cdd",
+        "Armature CDD",
+        "/arm-"
+      ],
+      "bare_name_tokens": [
+        "arm-"
+      ],
+      "notes": "Unreleased OSS working tree resolved from $CDD_BENCH_ARMATURE_OSS_ROOT (ADR 0018 R3). Mirrors armature_oss fields."
+    }
+  ]
+}

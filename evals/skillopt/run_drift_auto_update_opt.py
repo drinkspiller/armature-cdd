@@ -47,7 +47,7 @@ ARMATURE_ROOT = os.path.abspath(os.path.join(EVALS_DIR, "..", ".."))
 
 PROTOCOL_REL = "rules/armature_protocol.md"
 CDD_PROTOCOLS_REL = "rules/armature_cdd_protocols.md"
-GOOGLE3_REL = "rules/armature_workspace.md"
+WORKSPACE_REL = "rules/armature_workspace.md"
 ARM_STATUS_REL = "skills/arm-status/SKILL.md"
 ARM_DRIFT_REL = "skills/arm-drift/SKILL.md"
 ARM_IMPLEMENT_REL = "skills/arm-implement/SKILL.md"
@@ -185,7 +185,7 @@ def load_bundle(use_hg_cat: bool = False) -> dict[str, str]:
       "cdd_protocols": load_file_version(
           CDD_PROTOCOLS_REL, use_hg_cat=use_hg_cat
       ),
-      "workspace": load_file_version(GOOGLE3_REL, use_hg_cat=use_hg_cat),
+      "workspace": load_file_version(WORKSPACE_REL, use_hg_cat=use_hg_cat),
       "arm-status": load_file_version(ARM_STATUS_REL, use_hg_cat=use_hg_cat),
       "arm-drift": load_file_version(ARM_DRIFT_REL, use_hg_cat=use_hg_cat),
       "arm-implement": load_file_version(
@@ -734,7 +734,7 @@ def evaluate_single_rollout(
 === CDD PROTOCOLS (rules/armature_cdd_protocols.md) ===
 {bundle['cdd_protocols']}
 
-=== GOOGLE3 HOST ADAPTER (rules/armature_workspace.md) ===
+=== WORKSPACE HOST ADAPTER (rules/armature_workspace.md) ===
 {bundle['workspace']}
 
 === ACTIVE SKILL ({skill_name}) ===

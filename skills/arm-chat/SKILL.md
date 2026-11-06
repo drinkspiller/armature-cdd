@@ -38,11 +38,14 @@ artifacts, summaries, or status reports for the loading process itself.
 
 Read the following files in order:
 
-1.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` — Product definition & vision
-2.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product-guidelines.md` — Tone, visual identity, UX
-3.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md` — Technical choices & frameworks
-4.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md` — Task workflow & coding practices
-5.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md` — Track registry
+1.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md` (if present) — Compact session scratchpad (`<= 40` lines: active track, settled decisions, modified files, next task)
+2.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` — Product definition & vision
+3.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product-guidelines.md` — Tone, visual identity, UX
+4.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md` — Technical choices & frameworks
+5.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md` — Task workflow & coding practices
+6.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md` — Track registry
+7.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/terms.md` (if present) — Canonical domain glossary
+8.  Scan `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/` (if present) and run the **Pre-Edit Context Check** (`git status --short` + `git diff` vs. `adr/`, `terms.md`, and active `spec.md`) before modifying any source file.
 
 #### Tier 2: Active Track Context (loaded selectively)
 
@@ -73,7 +76,17 @@ After context is loaded, determine next action:
 
 ## Guardrails
 
--   **Permitted File Updates**: You are explicitly permitted to update `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`.
+-   **Permitted File Updates & Active Context Scratchpad**: You are explicitly
+    permitted to update
+    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` and
+    `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md` (keeping
+    `active_context.md` `<= 60` lines with active track, settled decisions,
+    modified files, and next task across detours and handoffs).
+-   **Pre-Edit Context Check**: Before editing any source file, check
+    `{PROJECT_CONTEXT_DIR}/adr/`, `{PROJECT_CONTEXT_DIR}/terms.md`, active
+    `{PROJECT_CONTEXT_DIR}/tracks/*/spec.md`, and uncommitted `git diff`. If an
+    uncommitted change or requested edit contradicts an accepted ADR or glossary
+    term, surface the conflict and options via `ask_question` before proceeding.
 -   **Read-Only Files**: Do NOT modify `product.md`, `tech-stack.md`,
     `product-guidelines.md`, `tracks.md`, or track `spec.md`/`plan.md` unless
     requested (or when persisting a Legacy Fence via the Reactive Self-Healing

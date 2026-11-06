@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.34.4"
+VERSION="0.35.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -318,6 +318,11 @@ build_target_list() {
   fi
   for sub_skill in "${ACTIVE_SKILL_NAMES[@]}"; do
     ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/SKILL.md")
+    if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/references" ]]; then
+      for skill_ref in "${SCRIPT_DIR}/skills/${sub_skill}/references"/*.md; do
+        [[ -f "$skill_ref" ]] && ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/references/$(basename "$skill_ref")")
+      done
+    fi
   done
   for rule_file in "${RULE_FILE_NAMES[@]}"; do
     ALL_TARGET_FILES+=("${TARGET_RULES_ROOT}/${rule_file}")
@@ -826,6 +831,11 @@ section "🔧 Installing Armature Core Command Skills"
 echo ""
 for sub_skill in "${CORE_SKILL_NAMES[@]}"; do
   install_file "${SCRIPT_DIR}/skills/${sub_skill}/SKILL.md" "${TARGET_SKILLS_ROOT}/${sub_skill}/SKILL.md"
+  if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/references" ]]; then
+    for skill_ref in "${SCRIPT_DIR}/skills/${sub_skill}/references"/*.md; do
+      [[ -f "$skill_ref" ]] && install_file "$skill_ref" "${TARGET_SKILLS_ROOT}/${sub_skill}/references/$(basename "$skill_ref")"
+    done
+  fi
 done
 
 if [[ "${FLAGS_experimental}" -eq "${FLAGS_TRUE}" ]]; then

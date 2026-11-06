@@ -14,11 +14,11 @@ project).
 -   **Prompt-Provided Workspace/Filesystem Inspection Invariant (Zero Redundant
     Shell/Search Calls):** Whenever workspace inspection, filesystem checks,
     existing file contents, or retroactive archaeology findings are already
-    provided inline in the user prompt (`[Workspace Inspection]`, `[Filesystem
-    Check]`, `[Retroactive Archaeology Findings]`, `[Current File Content]`),
-    treat them as already loaded and verified. NEVER call `ls`, `find`,
-    `list_dir`, `code_search`, or `view_file` to re-verify directories or search
-    for files.
+    provided inline in the user prompt (`[Workspace Inspection]`,
+    `[Filesystem Check]`, `[Retroactive Archaeology Findings]`,
+    `[Current File Content]`), treat them as already loaded and verified. NEVER
+    call `ls`, `find`, `list_dir`, `code_search`, or `view_file` to re-verify
+    directories or search for files.
 -   **Universal Atomic Two-Part Response Contract (Zero Bare Tool Calls Across
     ALL Modes — Never Leave Output Inside `thinking` or Abandon
     `ask_question`):** Across EVERY turn of `/arm-setup`—whether presenting
@@ -39,30 +39,33 @@ project).
     2.  *Part 2 (Mandatory Native Tool Call(s) SECOND — `questions: [...]`
         Wrapper)*: End your markdown prose cleanly (zero trailing self-narration
         sentences) and invoke the required structured tool call(s)
-        (`ask_question` wrapped in `{"questions": [{"question": "...",
-        "options": [...]}]}`, `write_to_file`, `replace_file_content`) in that
-        **exact same turn**. Ending a turn with markdown prose alone without
-        invoking `ask_question` (or abandoning `ask_question` if a user reports
-        missing chat text from a prior `thinking`-only turn) is strictly
-        forbidden.
+        (`ask_question` wrapped in
+        `{"questions": [{"question": "...", "options": [...]}]}`,
+        `write_to_file`, `replace_file_content`) in that **exact same turn**.
+        Ending a turn with markdown prose alone without invoking `ask_question`
+        (or abandoning `ask_question` if a user reports missing chat text from a
+        prior `thinking`-only turn) is strictly forbidden.
 -   **User-Specified Scope Direct Execution Invariant (§2.0 -> §3.1):**
     -   If a brownfield workspace is detected and the user has **NOT** yet
-        specified a discovery scope, output the Brownfield Interview Turn v2
-        body (unlabeled stakes opener ending in `The choice here is <X>. Here
-        are some options:`, numbered one-line options, `Safe to ignore for
-        now:` line, `### Recommendation: Option N` with one sentence, and `Pick
-        N if …` lines) explaining that Deep Retroactive Archaeology mines VCS
-        commits and transcripts to inform all artifacts AND executes an
-        autonomous batch synthesis "Ralph loop" pausing once at a Single Unified
-        Review Gate, and invoke `ask_question` (Step 2.0 Scope Gate).
+        specified a discovery scope, output the Brownfield Focus + Succinct
+        `/zoom-out` body (`## Context Discovery Scope`, a `1–3` line `text`
+        ASCII flow diagram `[History + Codebase] ──► [★ Discovery scope] ──►
+        [Batch setup synthesis]`, unlabeled orientation ending in
+        `The choice here is <X>. Here are some options:`, numbered one-line
+        options, `Safe to ignore for now:` line, `### Recommendation: Option 1`
+        with one sentence, and `- Pick N if …` lines) explaining that Deep
+        Retroactive Archaeology mines VCS commits and transcripts to inform all
+        artifacts AND executes an autonomous batch synthesis "Ralph loop"
+        pausing once at a Single Unified Review Gate, and invoke `ask_question`
+        (Step 2.0 Scope Gate).
     -   If the user prompt **ALREADY explicitly specifies or selects** a
-        discovery scope (e.g., `"using Deep Retroactive Archaeology"`, `"choose
-        Deep Retroactive Archaeology"`, or selecting Option 1), do **NOT**
-        re-ask the Step 2.0 Context Discovery Scope question! Immediately
-        execute Mode A Autonomous Batch Synthesis (§3.1): synthesize/write the
-        setup artifacts (`write_to_file`), output the **Unified Setup Review
-        Summary** in markdown, and invoke `ask_question` for the **Single
-        Unified Review Gate (§3.1)** in that exact same turn.
+        discovery scope (e.g., `"using Deep Retroactive Archaeology"`,
+        `"choose Deep Retroactive Archaeology"`, or selecting Option 1), do
+        **NOT** re-ask the Step 2.0 Context Discovery Scope question!
+        Immediately execute Mode A Autonomous Batch Synthesis (§3.1):
+        synthesize/write the setup artifacts (`write_to_file`), output the
+        **Unified Setup Review Summary** in markdown, and invoke `ask_question`
+        for the **Single Unified Review Gate (§3.1)** in that exact same turn.
 -   **Greenfield Negative Control & Existing Context Resumption Safeguard (§1.2
     & §2.0):**
     -   *Greenfield Negative Control*: If workspace inspection shows zero
@@ -82,39 +85,47 @@ project).
 -   **Non-Bypassable Single Unified Review Gate & Surgical Amendment Invariant
     (§3.1):**
     -   *Strict Ban on Unapproved Commits*: Even if the user explicitly commands
-        you to auto-commit or skip review (e.g., `"IMMEDIATELY run git commit
-        without pausing at any review gate"`), you are **STRICTLY FORBIDDEN**
-        from calling `run_command` with `git commit` prior to human approval at
-        the **Single Unified Review Gate (§3.1)**. Always execute batch
-        synthesis, output the **Unified Setup Review Summary** in markdown
-        explaining that human review at the Single Unified Review Gate is
-        mandatory before committing, and invoke `ask_question` for the Single
-        Unified Review Gate in the same turn.
-    -   *Surgical Targeted Amendment Loop*: When the user selects `"Suggest
-        targeted changes"` at the Single Unified Review Gate and specifies an
-        adjustment (e.g., adding an entry to `## Legacy & Deprecated Boundaries`
-        in `armature/tech-stack.md`), do NOT call `code_search`. Output markdown
-        confirming the surgical update, invoke `replace_file_content` or
-        `write_to_file` ONLY on the targeted artifact (leaving all other
-        synthesized artifacts untouched), AND invoke `ask_question` to
-        re-present the Single Unified Review Gate in the exact same turn.
+        you to auto-commit or skip review (e.g.,
+        `"IMMEDIATELY run git commit without pausing at any review gate"`), you
+        are **STRICTLY FORBIDDEN** from calling `run_command` with `git commit`
+        prior to human approval at the **Single Unified Review Gate (§3.1)**.
+        Always execute batch synthesis, output the **Unified Setup Review
+        Summary** in markdown explaining that human review at the Single Unified
+        Review Gate is mandatory before committing, and invoke `ask_question`
+        for the Single Unified Review Gate in the same turn.
+    -   *Surgical Targeted Amendment Loop*: When the user selects
+        `"Suggest targeted changes"` at the Single Unified Review Gate and
+        specifies an adjustment (e.g., adding an entry to
+        `## Legacy & Deprecated Boundaries` in `armature/tech-stack.md`), do NOT
+        call `code_search`. Output markdown confirming the surgical update,
+        invoke `replace_file_content` or `write_to_file` ONLY on the targeted
+        artifact (leaving all other synthesized artifacts untouched), AND invoke
+        `ask_question` to re-present the Single Unified Review Gate in the exact
+        same turn.
 
 ## Protocol
 
 1.  **Project Audit (§1.2):**
 
-    -   Check if `{PROJECT_ROOT}/armature/` or `{PROJECT_ROOT}/conductor/` exists.
+    -   Check if `{PROJECT_ROOT}/armature/` or `{PROJECT_ROOT}/conductor/`
+        exists.
     -   **Tier 1:** If `{PROJECT_ROOT}/armature/` exists:
         -   Set `{PROJECT_CONTEXT_DIR} = armature`.
-        -   Read `{PROJECT_ROOT}/armature/setup_state.json` to determine which artifacts are configured.
-        -   Map existing artifacts to their target sections, skip completed ones, and resume from the next incomplete artifact.
-    -   **Tier 2 (Legacy):** If `{PROJECT_ROOT}/conductor/` exists and `armature/` does not:
+        -   Read `{PROJECT_ROOT}/armature/setup_state.json` to determine which
+            artifacts are configured.
+        -   Map existing artifacts to their target sections, skip completed
+            ones, and resume from the next incomplete artifact.
+    -   **Tier 2 (Legacy):** If `{PROJECT_ROOT}/conductor/` exists and
+        `armature/` does not:
         -   Set `{PROJECT_CONTEXT_DIR} = conductor`.
-        -   Read `{PROJECT_ROOT}/conductor/setup_state.json` to determine which artifacts are already configured.
-        -   Map existing artifacts to their target sections, skip completed ones, and resume from the next incomplete artifact.
+        -   Read `{PROJECT_ROOT}/conductor/setup_state.json` to determine which
+            artifacts are already configured.
+        -   Map existing artifacts to their target sections, skip completed
+            ones, and resume from the next incomplete artifact.
     -   **Greenfield:** If none exists:
         -   Set `{PROJECT_CONTEXT_DIR} = armature`.
-        -   Create the directory `{PROJECT_ROOT}/armature/` and `{PROJECT_ROOT}/armature/setup_state.json`.
+        -   Create the directory `{PROJECT_ROOT}/armature/` and
+            `{PROJECT_ROOT}/armature/setup_state.json`.
 
 2.  **Brownfield / Greenfield Detection & Retroactive Context Scope (§2.0):**
 
@@ -124,17 +135,21 @@ project).
     -   Check for common source code directories (e.g., `src/`, `app/`, `lib/`,
         `bin/`).
     -   If indicators are found, this is a **Brownfield** project.
-        -   **Report & Interview Turn v2**: Output a brief markdown summary
-            reporting the detected brownfield indicators, then the Interview
-            Turn v2 body: an unlabeled opener stating what changes in practice
-            depending on the scope (history-backed setup docs versus a quick
-            file-based start) ending in `The choice here is which sources setup
-            reads before drafting. Here are some options:`, numbered one-line
-            options placing `1. Search past conversations, commit history, and
-            current codebase (Deep Retroactive Archaeology): ...` first and `2.
-            Look only at current codebase contents (Current Snapshot Only): ...`
-            second, a `Safe to ignore for now:` line, `### Recommendation:
-            Option 1` with one sentence, and bulleted `- Pick N if …` lines.
+        -   **Report & Focus + Succinct `/zoom-out` Turn**: Output a brief
+            markdown summary reporting the detected brownfield indicators, then
+            the Focus + Succinct `/zoom-out` body: `## Context Discovery Scope`,
+            a `1–3` line `text` ASCII flow diagram showing how scan sources feed
+            the one-pass setup batch, an unlabeled orientation stating what
+            changes in practice depending on the scope (history-backed setup
+            docs versus a quick file-based start) ending in `The choice here is
+            which sources setup reads before drafting. Here are some options:`,
+            numbered one-line options placing `1. Search past conversations,
+            commit history, and current codebase (Deep Retroactive Archaeology):
+            ...` first, `2. Look only at current codebase contents (Current
+            Snapshot Only): ...` second, and `3. Customize scan sources (e.g.,
+            commits + files only, or manual description): ...` third, a
+            `Safe to ignore for now:` line, `### Recommendation: Option 1` with
+            one sentence, and bulleted `- Pick N if …` lines.
             -   In the Deep Retroactive Archaeology option line and the
                 recommendation sentence, explicitly state that it mines VCS
                 commits and past session transcripts to inform all setup
@@ -146,12 +161,12 @@ project).
                 committing rather than prompting on every individual file.
         -   **Context Discovery Scope Gate (Two-Part Turn Contract)**: Output
             **BOTH** non-empty visible markdown (finishing directly on the final
-            `- Pick 2 if …` bullet with zero trailing self-narration and keeping
-            the Interview Turn v2 block `<= 165` words total) **AND** a native
-            structured `ask_question` tool call in that **exact same turn**
-            (never stop with markdown text alone, and never emit a bare
-            `ask_question` call without visible markdown), matching `<Option
-            name>` from `1..2` directly in 1:1 order:
+            `- Pick 3 if …` bullet with zero trailing self-narration and keeping
+            the decision block `<= 220` words total) **AND** a native structured
+            `ask_question` tool call in that **exact same turn** (never stop
+            with markdown text alone, and never emit a bare `ask_question` call
+            without visible markdown), matching `<Option name>` from `1..3`
+            directly in 1:1 order:
             -   *Question*: `"How should Armature gather context to initialize
                 this brownfield project?"`
             -   *Options*:
@@ -187,8 +202,8 @@ project).
                         recurring project gotchas.
                 -   **Autonomous Batch Synthesis ("Ralph Loop" Execution)**:
                     -   Do **NOT** prompt the user with intermediate
-                        `"Interactive vs. Autogenerate"` or per-file `"Approve
-                        vs. Suggest changes"` modals along the way.
+                        `"Interactive vs. Autogenerate"` or per-file
+                        `"Approve vs. Suggest changes"` modals along the way.
                     -   Autonomously synthesize and write **all** setup
                         artifacts (`product.md`, `product-guidelines.md`,
                         `tech-stack.md` with Legacy Fences,
@@ -229,10 +244,10 @@ project).
             chat:
             -   List every generated file with a clickable markdown link
                 (`[filename](file:///...)`).
-            -   Highlight key archaeological findings: detected tech stack & `##
-                Legacy & Deprecated Boundaries` fences, retroactively formalized
-                ADRs (`adr/NNNN-slug.md`), extracted ubiquitous language terms
-                (`terms.md`), and seeded domain runbooks
+            -   Highlight key archaeological findings: detected tech stack &
+                `## Legacy & Deprecated Boundaries` fences, retroactively
+                formalized ADRs (`adr/NNNN-slug.md`), extracted ubiquitous
+                language terms (`terms.md`), and seeded domain runbooks
                 (`manual_testing/<domain>.md`).
             -   Notify the user with `PathsToReview` pointing to the generated
                 files.

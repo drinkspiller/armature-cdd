@@ -1,0 +1,4 @@
+# Third-party framework packs are fetched here by fetch_packs.py; never commit.
+.pack_cache/
+__pycache__/
+*.pyc
