@@ -25,41 +25,45 @@ deliverables, synchronizing documentation, and managing track cleanup.
 
 ### Step 2: Track Selection & Milestone Routing
 
-1.  **Direct Milestone Routing**: If the user prompt specifically instructs you
-    to execute a particular milestone or phase (e.g., "Execute Phase N
-    checkpoint", "Finalize and synchronize documentation", "Proceed to Step 5",
-    "Proceed to track closeout", or "What should we do now?"), jump directly to
-    that targeted step without pausing for exploratory file listing or selection
-    confirmation.
+1.  **Direct Milestone Routing & Unified Gate Fast-Forward**: If the user prompt
+    specifically instructs you to execute a particular milestone or phase (e.g.,
+    "Execute Phase N checkpoint", "Finalize and synchronize documentation",
+    "Proceed to Step 5", "Proceed to track closeout", or "What should we do
+    now?"), OR if `/arm-implement` is triggered directly from `/arm-new-track`
+    Step 5d's **Unified Spec+Plan Approval Gate** (`"(Recommended) Approve spec
+    +   plan and begin implementation"` or Explicit-Sign-Off Fast-Forward), jump
+        directly to that targeted step without requiring a separate slash
+        command or exploratory file listing.
 2.  **New-Track Design Intent Mismatch & Cross-Skill Routing Invariant
     (`/arm-implement` → `/arm-new-track`)**:
     -   **Turn 1 Mismatch Routing**: If `/arm-implement` is invoked with a
         prompt that requests thinking through, designing, reworking, or scoping
-        a new feature or architecture (e.g., `"Let's think through..."`, `"Let's
-        design..."`, `"Rework..."`) AND no matching planned/active track exists
-        in `tracks.md` (e.g., `tracks.md` contains `_No active tracks._`), you
-        MUST NOT call `run_command` (`ls`, `cat`, `find`), MUST NOT pack
-        multiple questions into `ask_question`, MUST NOT write `spec.md` or
-        `plan.md`, and MUST NOT call `invoke_subagent` or `define_subagent`.
-        Instead, in that exact turn:
+        a new feature or architecture (e.g., `"Let's think through..."`,
+        `"Let's design..."`, `"Rework..."`) AND no matching planned/active track
+        exists in `tracks.md` (e.g., `tracks.md` contains
+        `_No active tracks._`), you MUST NOT call `run_command` (`ls`, `cat`,
+        `find`), MUST NOT pack multiple questions into `ask_question`, MUST NOT
+        write `spec.md` or `plan.md`, and MUST NOT call `invoke_subagent` or
+        `define_subagent`. Instead, in that exact turn:
         1.  Explicitly state in visible markdown that no active track exists in
             `tracks.md` for this request, so Armature is routing into
             `/arm-new-track` one-question-at-a-time planning (and will halt upon
             track creation so the user can run `/arm-implement <track_id>`).
-        2.  Render the canonical `/arm-new-track` Turn 1 layout in visible
-            markdown:
-            -   Grouped progress list (`**Now**\n- Round 1, <Topic>` and `**Up
-                next**\n- Round 2, <Topic>\n- Round 3, <Topic>`)
-            -   Horizontal rule (`---`)
-            -   Headline (`## Round 1, Question 1 of 1: <Topic>`)
-            -   Unlabeled stakes opener (1–3 plain-English sentences, no
-                `**Context:**` label, no code identifiers) ending in `The
-                choice here is <X>. Here are some options:`
+        2.  Render the canonical `/arm-new-track` Turn 1 Focus + Succinct
+            `/zoom-out` layout in visible markdown (with zero `**Settled**`,
+            `**Now**`, or `**Up next**` lists):
+            -   Clean topic headline (`## <Topic>`, no `Round 1, Question 1`
+                prefix)
+            -   Succinct `1–3` line `text` ASCII mental-model flow diagram
+                (`[Trigger / Before] ──► [★ This choice] ──► [Outcome]`)
+            -   Unlabeled 2–3 sentence plain-English orientation (no
+                `**Context:**` label, no prose code identifiers) ending in
+                `The choice here is <X>. Here are some options:`
             -   Numbered one-line options (`1. <Name>: <benefit>; <cost>`, 2–4
-                items, no `(Recommended)` tag)
+                items, recommended at `1.`, no `(Recommended)` tag)
             -   `Safe to ignore for now: <2–3 mechanics>.`
             -   `### Recommendation: Option 1` with exactly one sentence
-            -   `Pick N if <condition>.` one line per option
+            -   `- Pick N if <condition>.` one bullet per option
         3.  Invoke `ask_question` natively in the same turn with strictly ONE
             question (`len(questions) == 1`) and 3–4 options.
     -   **Post-Interview Step 10 Terminal Stop Preservation (Two-Part Step 8–10
@@ -75,8 +79,8 @@ deliverables, synchronizing documentation, and managing track cleanup.
             tool calls with empty markdown text): ``✅ Track \`<track_id>\`
             created! Run \`/arm-implement <track_id>\` to start working through
             the plan.`` (and explain that `/arm-new-track` concludes upon track
-            creation and implementation requires invoking `/arm-implement
-            <track_id>` as a separate command).
+            creation and implementation requires invoking
+            `/arm-implement <track_id>` as a separate command).
         2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):** Call
             `write_to_file` for `metadata.json` (`"status": "planned"` — NEVER
             `"in_progress"`), call `write_to_file` for `index.md`, call
@@ -132,7 +136,24 @@ deliverables, synchronizing documentation, and managing track cleanup.
         ✅ Fixpoint Reached (N mechanical drift issue(s) auto-updated)`) so the
         user never sees a stale `⚠️ Drift Detected` banner on the status
         artifact card!
-2.  Load the track context (`spec.md`, `plan.md`, `workflow.md`).
+2.  **Load Track Context & Approved Specification Gate**:
+    -   Load `spec.md`, `plan.md`, `workflow.md`, and (if present)
+        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md`.
+    -   **Approved Specification Gate & Cross-Session Resumption Priority**:
+        Inspect the YAML frontmatter (if present) of `spec.md` and `plan.md`. If
+        either file has `status: draft` and the user has NOT explicitly
+        instructed to implement or update the target file in the current turn,
+        **refuse to execute code changes** and route to the `/arm-new-track`
+        Unified Spec+Plan Gate (`ask_question`) to obtain approval first. When
+        resuming a prior session (`spec.md` with `status: draft` or
+        `active_context.md` with settled decisions) and the user explicitly
+        instructs to implement or update a target file (e.g., `"go ahead"`,
+        `"implement"`, `"update <file> with what we agreed on"`), **do NOT read
+        `/arm-new-track` `SKILL.md` and do NOT ask remaining `## Open Questions`
+        stubs**—apply the settled decisions to the target production/config file
+        **first**, run tests, and promote `spec.md` to `status: approved` and
+        update `active_context.md` afterward without spending turns generating
+        extra track boilerplate files first.
 3.  **Phase Coupling Classification & Execution Routing (Parallel Worktrees vs.
     Single Worker)**:
     -   *Fast-Path Solo Exception (Ceremony Scaling)*: If the task is a verified
@@ -167,8 +188,8 @@ deliverables, synchronizing documentation, and managing track cleanup.
         *   When a phase (or set of phases) is **Independent (Disjoint)**:
             -   **On Antigravity**: Dispatch parallel `worker` subagents in a
                 single `invoke_subagent` call with `Workspace: "share"` for each
-                entry and arm `schedule(DurationSeconds=90,
-                TimerCondition="any")`.
+                entry and arm
+                `schedule(DurationSeconds=90, TimerCondition="any")`.
             -   **On Claude Code**: Dispatch parallel `Task` subagents in
                 isolated `git worktree` checkouts.
             -   **On Single-Threaded Harnesses**: Fall back to sequential
@@ -199,13 +220,14 @@ deliverables, synchronizing documentation, and managing track cleanup.
 
     -   **Intent-Aware Write Escalation Gate (Mandatory Pre-Mutation Check)**:
         Even if session `READ` access was previously unlocked by the user for a
-        legacy-fenced directory (`tech-stack.md` under `## Legacy & Deprecated
-        Boundaries` or track `metadata.json` under `legacy_fences`), session
-        `READ` access NEVER authorizes write mutations (`replace_file_content`,
-        `write_to_file`). If the user requests modifying, updating, or fixing a
-        file inside a legacy-fenced directory (`<deprecated_path>`), you MUST
-        NOT call `replace_file_content` or `write_to_file` on that file. Halt
-        immediately and invoke `ask_question`:
+        legacy-fenced directory (`tech-stack.md` under
+        `## Legacy & Deprecated Boundaries` or track `metadata.json` under
+        `legacy_fences`), session `READ` access NEVER authorizes write mutations
+        (`replace_file_content`, `write_to_file`). If the user requests
+        modifying, updating, or fixing a file inside a legacy-fenced directory
+        (`<deprecated_path>`), you MUST NOT call `replace_file_content` or
+        `write_to_file` on that file. Halt immediately and invoke
+        `ask_question`:
         -   Prompt: `"WARNING: Modifying files in legacy-fenced directory
             (<deprecated_path>). Are you sure you want to proceed?"`
         -   Options:
@@ -214,9 +236,9 @@ deliverables, synchronizing documentation, and managing track cleanup.
             2.  `"Yes, authorize WRITE modifications to <deprecated_path> for
                 this task"`
             3.  `"Cancel modification"`
-    -   **Context Preparation & Execution-Ready Contract Propagation (`ADR
-        0016`)**: Collect the track root, spec path, plan path, specific phase
-        task numbers (e.g. `Tasks 1.1, 1.2, 1.3`), detailed requirements,
+    -   **Context Preparation & Execution-Ready Contract Propagation
+        (`ADR 0016`)**: Collect the track root, spec path, plan path, specific
+        phase task numbers (e.g. `Tasks 1.1, 1.2, 1.3`), detailed requirements,
         applicable ADR summaries, and any local directory rules (`GEMINI.md` /
         `AGENTS.md`). Because background workers (`worker` or `Task` subagents)
         may run on smaller models with zero prior conversation context, always
@@ -227,10 +249,11 @@ deliverables, synchronizing documentation, and managing track cleanup.
         validator preconditions, hydration echo-suppression flags,
         self-contained signal/timer constants, and unit-test bundle/fixture
         overrides from `spec.md` and `plan.md` directly in the worker `Prompt`.
-    -   **Subagent Fence Injection (`[ACTIVE_LEGACY_FENCES &
-        SESSION_UNLOCKS]`)**: When dispatching background workers via
-        `invoke_subagent`, you MUST inject an explicit `[ACTIVE_LEGACY_FENCES &
-        SESSION_UNLOCKS]` block inside the subagent `Prompt`:
+    -   **Subagent Fence Injection
+        (`[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`)**: When dispatching
+        background workers via `invoke_subagent`, you MUST inject an explicit
+        `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]` block inside the subagent
+        `Prompt`:
 
         ```markdown
         [ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]
@@ -243,11 +266,9 @@ deliverables, synchronizing documentation, and managing track cleanup.
         Search / No `find` or `ls` Probing)**: When track plan and/or legacy
         fence context are provided in the user prompt (e.g. `[Active Track Plan
 
-        -   Phase 1]: ...`or`Plan contains Phase 1: ..., Phase 2: ...`), you are
-            STRICTLY FORBIDDEN from calling`grep_search`, `view_file`,
-            or`run_command` (`find`, `ls`, `cat`, `head`) to search for the
-            track name,`tracks.md`, `plan.md`, or directory contents before
-            dispatching. Immediately in Turn 1:
+        -   Phase 1]: ...`or`Plan contains Phase 1: ..., Phase 2:
+            ...`), you are STRICTLY FORBIDDEN from calling`grep_search`, `view_file`, or`run_command` (`find`, `ls`, `cat`, `head`) to search for the track name,`tracks.md`, `plan.md`,
+            or directory contents before dispatching. Immediately in Turn 1:
 
         1.  Output markdown chat text starting with the 20-block progress bar
             (`` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)`` followed by `\n\n`
@@ -258,20 +279,21 @@ deliverables, synchronizing documentation, and managing track cleanup.
             session: once-per-session `> [!NOTE] **Working in ...**` callout on
             Turn 1; strictly silent on Turn 2+ when `[Prior Session History]` is
             present and across intermediate tool steps).
-        2.  **Intent-Aware Write Escalation Gate on Fenced Targets (`TRAIN_LF_02`)**:
-            If the active plan task or user request targets a file inside an
-            active legacy-fenced directory (`<deprecated_path>`) without a prior
-            `WRITE` override in `metadata.json` (`fence_overrides`), do **NOT**
-            call `replace_file_content`, `write_to_file`, or `invoke_subagent`
-            to modify the fenced file. Instead, explain the high-risk legacy
-            mutation warning in markdown (directing new work to
-            `<modern_replacement>`, without repeating the general session banner
-            if `[Prior Session History]` shows Turn 1 already rendered it) and
-            immediately invoke `ask_question` in the same turn with the
-            Intent-Aware Write Escalation Gate options (`"(Recommended) Apply
-            changes to modern replacement (<modern_replacement>) instead"`,
-            `"Yes, unlock WRITE access to <deprecated_path> and record in track
-            metadata.json"`, `"Abort task"`).
+        2.  **Intent-Aware Write Escalation Gate on Fenced Targets
+            (`TRAIN_LF_02`)**: If the active plan task or user request targets a
+            file inside an active legacy-fenced directory (`<deprecated_path>`)
+            without a prior `WRITE` override in `metadata.json`
+            (`fence_overrides`), do **NOT** call `replace_file_content`,
+            `write_to_file`, or `invoke_subagent` to modify the fenced file.
+            Instead, explain the high-risk legacy mutation warning in markdown
+            (directing new work to `<modern_replacement>`, without repeating the
+            general session banner if `[Prior Session History]` shows Turn 1
+            already rendered it) and immediately invoke `ask_question` in the
+            same turn with the Intent-Aware Write Escalation Gate options
+            (`"(Recommended) Apply changes to modern replacement
+            (<modern_replacement>) instead"`, `"Yes, unlock WRITE access to
+            <deprecated_path> and record in track metadata.json"`,
+            `"Abort task"`).
         3.  Invoke `invoke_subagent` with `TypeName: "worker"` (whose `Prompt`
             contains the literal `[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`
             block when legacy fences are active) AND concurrently invoke
@@ -290,8 +312,8 @@ deliverables, synchronizing documentation, and managing track cleanup.
             required, halt immediately and return a structured escalation
             request to the parent orchestrator.\n\nContext:\n1. Follow TDD
             Red/Green/Refactor. Edit only your assigned source/test files; do
-            not modify shared track files (plan.md, metadata.json, tracks.md,
-            or .api_surface_cache.json) when running in parallel worktrees." }])
+            not modify shared track files (plan.md, metadata.json, tracks.md, or
+            .api_surface_cache.json) when running in parallel worktrees." }])
             schedule( DurationSeconds=90, TimerCondition="subagent-worker-1",
             Prompt="Check subagent progress and post a 20-block progress bar
             update in main chat." )`
@@ -306,15 +328,16 @@ deliverables, synchronizing documentation, and managing track cleanup.
             (NEVER emit bare tool calls with empty markdown text):
             1.  **Visible Chat Progress Bar & Functional Summary (Mandatory in
                 Every Turn)**: Output a leading blank line (`\n\n`), the
-                20-block progress bar `` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of
-                Y)``, a blank line (`\n\n`), and a 1–2 sentence light functional
-                summary of what the subagent finished and what component/file it
-                is currently editing (avoiding raw variable names and low-level
-                code mechanics). If the user prompt already includes the active
-                subagent transcript summary (e.g., `transcript shows it finished
-                ... and is currently editing ...`), synthesize and print that
-                functional summary immediately in your markdown response
-                alongside your tool calls in the same turn!
+                20-block progress bar
+                `` `▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░ XX%` (Task X of Y)``, a blank line
+                (`\n\n`), and a 1–2 sentence light functional summary of what
+                the subagent finished and what component/file it is currently
+                editing (avoiding raw variable names and low-level code
+                mechanics). If the user prompt already includes the active
+                subagent transcript summary (e.g.,
+                `transcript shows it finished ... and is currently editing ...`),
+                synthesize and print that functional summary immediately in your
+                markdown response alongside your tool calls in the same turn!
             2.  **Concurrent Inspection & Conditional Timer Re-Arm**: In the
                 same turn, call `manage_subagents(Action="list")` (and inspect
                 the active worker `transcript.jsonl` if not already provided)
@@ -330,6 +353,7 @@ deliverables, synchronizing documentation, and managing track cleanup.
             alongside its next tool call every ~3–4 turns or ~10 tool calls all
             the way until completion, and echo each incoming `[Progress]`
             message in main chat before yielding.
+
 5.  **Phase Checkpointing & Autonomous Continuous Advance**: When `worker`
     completes all tasks in a phase:
 
@@ -353,13 +377,14 @@ deliverables, synchronizing documentation, and managing track cleanup.
                 (`*ngIf="user.isAdmin"`, `@if`), or RPC/API callers, you MUST
                 **automatically escalate** `manual_testing.md` from a
                 provisional `Micro-Verification Plan` to a full **Tier 1
-                Standard Stateful 3-Part Fixture Triad** runbook (`Migration ->
-                Seed -> Reset` and multi-persona scenarios).
+                Standard Stateful 3-Part Fixture Triad** runbook
+                (`Migration -> Seed -> Reset` and multi-persona scenarios).
             -   If the phase diff remained visual-only, maintain the concise
-                Tier 2 `Micro-Verification Plan` card (`Step 1: Run local server
-                (<cmd>)` with optional one-line session hint, `Step 2: Navigate
-                to http://localhost:<PORT>/<path>`, and `Verify: <visual
-                assertion>`).
+                Tier 2 `Micro-Verification Plan` card
+                (`Step 1: Run local server (<cmd>)` with optional one-line
+                session hint,
+                `Step 2: Navigate to http://localhost:<PORT>/<path>`, and
+                `Verify: <visual assertion>`).
         -   Update
             `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
             with the verified reproduction steps, URLs, and assertions for the
@@ -368,8 +393,8 @@ deliverables, synchronizing documentation, and managing track cleanup.
             precision, but do NOT execute mutative SQL, database resets, or
             environment teardowns autonomously.
     -   **Incremental Drift Audit**: Perform an incremental drift check on
-        modified files against touched ADRs and runbooks (`/arm-drift
-        --scope=phase`).
+        modified files against touched ADRs and runbooks
+        (`/arm-drift --scope=phase`).
     -   **Walkthrough Artifact**: Write
         `{ARTIFACT_DIR}/arm_implement_phase_N_verification.md` using
         `write_to_file`.
@@ -401,13 +426,13 @@ deliverables, synchronizing documentation, and managing track cleanup.
             the Fast-Path Solo Exception.
         -   **Skip on Visual-Only Tracks (`[Micro-Verification Plan]`):** If the
             Stage 2 Empirical VCS Diff Classifier (`Step 3.5`) confirms the
-            track is strictly presentational/visual (`[Micro-Verification
-            Plan]`, including the Orphaned Dead-Code Cleanup Exemption with zero
-            state, auth-guard, or RPC changes), **skip Step 3.6** and advance
-            directly to `Step 4: Document Synchronization`, noting in your chat
-            summary under `### Verification Audit`: `"Step 3.6 Pre-Closeout
-            Review Loop skipped (Visual-Only [Micro-Verification Plan]
-            track)."`.
+            track is strictly presentational/visual
+            (`[Micro-Verification Plan]`, including the Orphaned Dead-Code
+            Cleanup Exemption with zero state, auth-guard, or RPC changes),
+            **skip Step 3.6** and advance directly to
+            `Step 4: Document Synchronization`, noting in your chat summary
+            under `### Verification Audit`: `"Step 3.6 Pre-Closeout Review Loop
+            skipped (Visual-Only [Micro-Verification Plan] track)."`.
     -   **2-Pass Multi-Expert Review-and-Repair Execution (`MAX_ITERATIONS = 2`
         on Behavioral Code Tracks):**
 
@@ -441,9 +466,9 @@ deliverables, synchronizing documentation, and managing track cleanup.
 
             Below the table under `### Verification Audit`, explicitly state:
 
-            1.  That `Step 3.6` (`MAX_ITERATIONS = 2`) ran **before** `Step 4:
-                Document Synchronization` so `.api_surface_cache.json` and
-                `terms.md` captured the post-repair symbols.
+            1.  That `Step 3.6` (`MAX_ITERATIONS = 2`) ran **before**
+                `Step 4: Document Synchronization` so `.api_surface_cache.json`
+                and `terms.md` captured the post-repair symbols.
             2.  The selective author-intent blinding configuration
                 (`include_intent: true` for `spec_and_adr_verifier`;
                 `include_intent: false` for `code_taste_style_verifier` and
@@ -457,11 +482,12 @@ tasks), you MUST execute all steps of Step 4 AND Step 5.1 & Step 5.2 in a single
 turn. Execute all file operations (`write_to_file`), edits, commits, and
 retrospective review tasks autonomously without pausing to ask intermediate
 questions before Step 5.2. **CRITICAL (Mandatory Same-Turn Markdown Summary):**
-You MUST output the structured markdown summary sections (`### Extracted Domain
-Terms`, `### ADR Updates & Alignment`, `### Living Runbook Synchronization`, and
-`### Verification Audit`) directly in your visible chat markdown response in the
-**exact same turn** alongside your `write_to_file` tool calls—never emit bare
-`write_to_file` tool calls without accompanying markdown text.
+You MUST output the structured markdown summary sections
+(`### Extracted Domain Terms`, `### ADR Updates & Alignment`,
+`### Living Runbook Synchronization`, and `### Verification Audit`) directly in
+your visible chat markdown response in the **exact same turn** alongside your
+`write_to_file` tool calls—never emit bare `write_to_file` tool calls without
+accompanying markdown text.
 
 When all tasks in the track are complete (or when asked to finalize and
 synchronize documentation):
@@ -486,9 +512,9 @@ synchronize documentation):
         *   `### Extracted Domain Terms`
         *   `### ADR Updates & Alignment`
         *   `### Living Runbook Synchronization` (MUST explicitly list any
-            pruned scenario IDs, e.g., `- **Pruned Obsolete Scenario**: Test
-            <Domain>.<ID> (<Title>)`, or state any cold-start deferred fixture
-            stamps applied)
+            pruned scenario IDs, e.g.,
+            `- **Pruned Obsolete Scenario**: Test <Domain>.<ID> (<Title>)`, or
+            state any cold-start deferred fixture stamps applied)
         *   `### Verification Audit` (When Step 3.6 executed on a behavioral
             track, you MUST render a `#### Review Loop Iteration Breakdown`
             markdown table `| Iteration | Reviewers Executed | Reviewer Skipped
@@ -509,8 +535,8 @@ synchronize documentation):
     -   Reconcile into
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md` using
         structured headings (`### Test <Domain>.<ID>`) without an `ask_question`
-        confirmation gate. Verify `git status` before and after
-        writing to prevent silent workspace write-back races.
+        confirmation gate. Verify `git status` before and after writing to
+        prevent silent workspace write-back races.
     -   **Surgical Assertion Delta Sync (Visual-Only Tracks)**:
         -   When synchronizing a visual-only track into an existing
             `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`,
@@ -529,25 +555,26 @@ synchronize documentation):
             leaving broken ghost instructions.
         -   **Mandatory Chat & Artifact Reporting**: Whenever a scenario is
             pruned, you MUST explicitly report the exact pruned scenario ID
-            (e.g., `Test Groups.03`) under a `### Living Runbook
-            Synchronization` heading BOTH in your visible chat markdown text
-            (printed before your tool calls) AND at the bottom of the updated
-            `manual_testing/<domain>.md` / artifact file.
+            (e.g., `Test Groups.03`) under a
+            `### Living Runbook Synchronization` heading BOTH in your visible
+            chat markdown text (printed before your tool calls) AND at the
+            bottom of the updated `manual_testing/<domain>.md` / artifact file.
     -   **Cold-Start Domain Runbook Seeding & Deferred Fixture Stamping**:
         -   If `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/manual_testing/<domain>.md`
             does not exist yet when syncing a visual-only track, create the file
-            with the verified `localhost` visual baseline and stamp `## 2.
-            Fixture Provisioning & Reset Tooling` with: `> [!NOTE] Stateful
-            3-Part Fixture Triad deferred (initial track was visual-only).`
+            with the verified `localhost` visual baseline and stamp
+            `## 2. Fixture Provisioning & Reset Tooling` with: `> [!NOTE]
+            Stateful 3-Part Fixture Triad deferred (initial track was
+            visual-only).`
         -   Do **NOT** fabricate or hallucinate speculative SQL seed commands
             for a cold-start visual domain.
         -   **Mandatory Chat & Artifact Reporting**: Whenever a cold-start
             domain runbook is initialized with a deferred fixture stamp, you
             MUST explicitly report the created domain file, verified `localhost`
             visual baseline URL, and the exact cold-start deferred fixture stamp
-            (`Stateful 3-Part Fixture Triad deferred`) under the `### Living
-            Runbook Synchronization` heading in your visible chat markdown text
-            (printed before your tool calls).
+            (`Stateful 3-Part Fixture Triad deferred`) under the
+            `### Living Runbook Synchronization` heading in your visible chat
+            markdown text (printed before your tool calls).
     -   **Artifact Generation & Chat Reference**: Write the finalized domain
         manual testing runbook as an artifact
         (`{ARTIFACT_DIR}/arm_manual_testing_<domain>.md`).
@@ -557,8 +584,8 @@ synchronize documentation):
         `[arm_manual_testing_<domain>.md](file://...)`).
 6.  **Fixpoint Verification Gate**: Run the full 3-tier Fixpoint Audit
     (`/arm-drift --check`) to verify zero drift.
-7.  Commit documentation changes: `docs(armature): Synchronize docs for track
-    '<description>'`.
+7.  Commit documentation changes:
+    `docs(armature): Synchronize docs for track '<description>'`.
 
 ### Step 5: Track Completion & Next Steps Orchestration
 
@@ -566,8 +593,8 @@ This step occurs **only** after all plan tasks are marked `[x]` and Document
 Synchronization has been handled.
 
 1.  **Stage 2 Living ADR Reconciliation & Code Diff Harvest**:
-    -   Audit the final code diff (`git diff`), touched directories,
-        and completed `spec.md` against the **3-Pillar Invariant Taxonomy**:
+    -   Audit the final code diff (`git diff`), touched directories, and
+        completed `spec.md` against the **3-Pillar Invariant Taxonomy**:
         1.  *Cross-Cutting Invariant:* New conventions, state invariants, or
             safety guards extending beyond this track.
         2.  *Architecture / Dependency Binding:* Unplanned dependencies or
@@ -589,11 +616,11 @@ Synchronization has been handled.
         (while ensuring you still print the Step 4 markdown summary sections in
         your chat response text).
 2.  **Next Steps Elicitation Gate (Mandatory Turn Barrier)**:
-    -   First, output the Step 4 markdown summary sections (`### Extracted
-        Domain Terms`, `### ADR Updates & Alignment`, `### Living Runbook
-        Synchronization` listing any pruned scenario IDs or deferred fixture
-        stamps, and `### Verification Audit`) in your visible chat response
-        text.
+    -   First, output the Step 4 markdown summary sections
+        (`### Extracted Domain Terms`, `### ADR Updates & Alignment`,
+        `### Living Runbook Synchronization` listing any pruned scenario IDs or
+        deferred fixture stamps, and `### Verification Audit`) in your visible
+        chat response text.
     -   Immediately after the markdown summary text in the same turn, invoke
         `ask_question` to ask the user what they want to do next:
     -   *Question:* "All tasks and documentation for track '<track_name>' are
@@ -601,7 +628,7 @@ Synchronization has been handled.
     -   *Options:*
         *   `"(Recommended) Test the implementation with the manual testing
             guide ([<domain>.md](file://...))"`
-        *   `"Upload CL to system / Push changes"`
+        *   `"Push changes / open PR"`
         *   `"Run full code review (/arm-review)"`
         *   `"Archive completed track and finish"`
         *   `"Keep track active and finish"`

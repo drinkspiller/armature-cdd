@@ -1,0 +1,75 @@
+# Focus + Succinct Zoom-Out Interview Turn Standard
+
+This reference defines the visual layout and everyday plain-language rules for
+interactive interview turns in `/arm-new-track` (Step 5) and `/arm-setup`.
+
+## 1. Everyday Plain-Language Standard (Zero Code Identifiers in Step 5)
+
+During Step 5 (the human decision interview), questions, options, and trade-offs
+must be written in everyday plain English anchored in familiar domain nouns from
+the user's request:
+
+- **Zero code identifiers or inline backticks** in prose (the orientation
+  paragraph, numbered option lines, recommendation, or `Pick N if …` bullets).
+- **Zero un-translated backend jargon** (*"blob"*, *"copy-on-write"*,
+  *"refcount"*, *"in-flight"*, *"idempotent"*, *"fan-out"*, *"mutex"*).
+- **Silent On-Disk State Checkpointing (Zero Chat Ledger Clutter):** Persist
+  settled decisions and remaining open questions strictly on disk in `spec.md`
+  (`status: draft`, under `## Settled Decisions` and `## Open Questions`) and
+  `armature/active_context.md`. **Never** output `Round X settled:` lines or
+  `**Settled**`, `**Now**`, or `**Up next**` lists in chat so the user can focus
+  entirely on the active question.
+- **Audience Pivot at Step 6/7 (`ADR 0016`):** Once the interview converges and
+  drafts `spec.md` (Step 6) and `plan.md` (Step 7), pivot audience to the
+  downstream execution agent and ground every settled decision into verified
+  codebase symbols, 1-line method signatures, field bijections, and test
+  commands.
+
+## 2. Canonical Focus + Succinct Zoom-Out Turn Structure
+
+Every Step 5 decision turn must render the following visible Markdown structure
+in `content` before invoking `ask_question`:
+
+1. **Clean topic headline:** `## <Topic>` (or `### Devil's Advocate Analysis`
+   followed by `#### Finding <F> of <N>: <Topic>` in Phase 5b). Omit `Round <R>,
+   Question <Q> of <N>:` bookkeeping prefixes from the headline.
+2. **Succinct `/zoom-out` mental-model flow (`1–3` lines, `<= 4` stages):** a
+   compact `text` fenced ASCII diagram situating where this decision sits in the
+   end-to-end user or system workflow, marking the active fork with `★`:
+   ```text
+   [Trigger / Before] ──► [★ This decision] ──► [Downstream effect]
+   ```
+3. **Unlabeled succinct orientation (`2–3` plain-English sentences + bridge):**
+   adult plain-English sentences anchored in familiar domain nouns stating what
+   happens right before and right after this moment in the workflow (when a
+   follow-up question was opened by the user's prior choice, weave that prior
+   choice naturally into the opening clause rather than printing a separate
+   settled line), followed by `The choice here is <5-9 words>. Here are some
+   options:`.
+4. **Numbered one-line options (`1..K`, recommended first at `1.`):**
+   `1. <Option name>: <plain-English benefit>; <plain-English cost>`
+5. **Deferred mechanics line:** `Safe to ignore for now: <2-3 low-level details>.`
+6. **Recommendation (strictly 1 sentence):**
+   `### Recommendation: Option 1` followed by strictly a single plain-English
+   sentence (never 2 sentences).
+7. **Decision recap bullets (exact `- Pick N if ` prefix):**
+   `- Pick N if <short condition>.` (strictly one bullet per numbered option
+   `1..K` using the exact words `- Pick N if `, never `- Pick N to `; target
+   `130–185` words total from headline through the final `- Pick` bullet, hard
+   cap `<= 220` words). Never insert unnumbered options (such as `"Reopen Round
+   <R>..."`) into `ask_question` alone—if reopening a prior decision is warranted
+   in Phase 5b, include it as one of the numbered `1..K` options in chat so chat
+   `1..K` and modal `1..K` match strictly 1:1 (Option 1 prefixed with
+   `"(Recommended) "`). Always emit the full visible Markdown block into
+   `content` **first** before invoking any draft `write_file`/`edit_file` calls
+   and `ask_question`.
+
+## 3. Deeper Zoom-Out & Zoom-In Handling
+
+- **Need More Context (`"I need more context, zoom out and give examples"` /
+  `"too vague"` / `"zoom out"`):** Make zero read/search tool calls, step back
+  further in plain everyday English to walk through 1–2 concrete named domain
+  examples above a `---` separator, and rewrite the Focus + Succinct Zoom-Out
+  interview turn in simpler everyday words followed by `ask_question`.
+- **Zoom-In (`"zoom in"`):** Render `**Pros:**` / `**Cons:**` /
+  `**Implications:**` blockquote cards only when explicitly requested.

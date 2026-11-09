@@ -1,0 +1,336 @@
+{
+  "base_prompt_sha256": "d58e40a3a7e1433675f2ede8caf792eb0cc0bdfd072047aa15b091ff08e3fd0a",
+  "cells": {
+    "armature_oss": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "armature_oss_dev": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "bmad_method": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "canonical_conductor": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "github_spec_kit": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "memory_bank": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "openspec": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    },
+    "wayfinder": {
+      "gemini-3.5-flash": {
+        "expected": 180,
+        "harness_error": 0,
+        "missing": 0,
+        "ok": 180
+      }
+    }
+  },
+  "config_hash": "39b7dcdaec5697bbfbfb3a44351524e6331a07223bcdc1a50b0fb502ea0fe960",
+  "created_at": "2026-11-07T21:24:47Z",
+  "frameworks": [
+    {
+      "display_name": "Armature (OSS)",
+      "key": "armature_oss",
+      "lock": {
+        "n_files": 15,
+        "ref": "3639baa7499cd8a1f354e19e0783e997b0651ad1",
+        "visibility": "public"
+      },
+      "pack_sha256": "eaab72796e37b503ccea19498faaa7cc1b81d7dd95f0e109c56aa40ae0f8c20e",
+      "paradigm": "Context-Driven Development",
+      "source": {
+        "ref": "3639baa7499cd8a1f354e19e0783e997b0651ad1",
+        "repo": "https://github.com/drinkspiller/armature-cdd",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "display_name": "GitHub Spec Kit",
+      "key": "github_spec_kit",
+      "lock": {
+        "n_files": 21,
+        "ref": "34a0d388eac671d656eb05b125ad3ed6056168ed",
+        "visibility": "public"
+      },
+      "pack_sha256": "23ae3f240a5bafeb0deb2b8cffe7f75e7e0602c2ef3ef9b460fd0d4912efd3b7",
+      "paradigm": "Spec-Driven Development",
+      "source": {
+        "ref": "34a0d388eac671d656eb05b125ad3ed6056168ed",
+        "repo": "https://github.com/github/spec-kit",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "display_name": "OpenSpec",
+      "key": "openspec",
+      "lock": {
+        "n_files": 6,
+        "ref": "27c0515724decc633818c735ee596481eec78a8b",
+        "visibility": "public"
+      },
+      "pack_sha256": "f6de49428a83d0e745a4c600775d68f055aba25e34f1166dc765e5add879a109",
+      "paradigm": "Spec-Driven Development",
+      "source": {
+        "ref": "27c0515724decc633818c735ee596481eec78a8b",
+        "repo": "https://github.com/Fission-AI/OpenSpec",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "display_name": "BMAD Method",
+      "key": "bmad_method",
+      "lock": {
+        "n_files": 211,
+        "ref": "bab9082c3e884e0d72c759bcd1a6d90bcc01be84",
+        "visibility": "public"
+      },
+      "pack_sha256": "26f6c37f6c0a6f28babfdccebfb8c30db2d4c15e4269be8e13e21851ef8bbad7",
+      "paradigm": "Multi-Agent Agile Development",
+      "source": {
+        "ref": "bab9082c3e884e0d72c759bcd1a6d90bcc01be84",
+        "repo": "https://github.com/bmad-code-org/BMAD-METHOD",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "display_name": "Cline Memory Bank",
+      "key": "memory_bank",
+      "lock": {
+        "n_files": 1,
+        "ref": "2fc3b77a8fe39553ac424bfc7cdc9883e4a21e1f",
+        "visibility": "public"
+      },
+      "pack_sha256": "44789b2652728a633ed3f23086b10dba84f62c413c051466676a9b97b1c48527",
+      "paradigm": "Persistent Agent Memory",
+      "source": {
+        "ref": "2fc3b77a8fe39553ac424bfc7cdc9883e4a21e1f",
+        "repo": "https://github.com/cline/prompts",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "display_name": "Conductor (Gemini CLI extension)",
+      "key": "canonical_conductor",
+      "lock": {
+        "n_files": 17,
+        "ref": "7a5c560a4fdf5297be58594cc37527eb12790272",
+        "visibility": "public"
+      },
+      "pack_sha256": "c39aceca464ab5e5bca843e80c3cb5762a04a5bddc9435821fab290f542b523b",
+      "paradigm": "Context-Driven Development",
+      "source": {
+        "ref": "7a5c560a4fdf5297be58594cc37527eb12790272",
+        "repo": "https://github.com/gemini-cli-extensions/conductor",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "display_name": "Wayfinder (mattpocock/skills)",
+      "key": "wayfinder",
+      "lock": {
+        "n_files": 52,
+        "ref": "d1478fcb140db0b93c0c8df17bcfd311844749d0",
+        "visibility": "public"
+      },
+      "pack_sha256": "2c0ea864af9a4871a0140b90aae567501ead63f702d74f43d63f5e823385f71f",
+      "paradigm": "Issue-Driven Decision Mapping",
+      "source": {
+        "ref": "d1478fcb140db0b93c0c8df17bcfd311844749d0",
+        "repo": "https://github.com/mattpocock/skills",
+        "type": "git"
+      },
+      "visibility": "public"
+    },
+    {
+      "dirty_files": 4,
+      "display_name": "Armature (OSS, unreleased working tree)",
+      "git_head": "6877d8e55a23ecc4adf5d2fd048e01cc2454d49f",
+      "key": "armature_oss_dev",
+      "lock": {
+        "dirty_files": 4,
+        "git_head": "6877d8e55a23ecc4adf5d2fd048e01cc2454d49f",
+        "n_files": 18,
+        "ref": null,
+        "visibility": "public"
+      },
+      "pack_sha256": "f2b43a0c0b592e05c67f6ead3e308d7d2e4f3eb09008c95aa5ed5fdcfa2df301",
+      "paradigm": "Context-Driven Development",
+      "source": {
+        "env": "CDD_BENCH_ARMATURE_OSS_ROOT",
+        "type": "local_path"
+      },
+      "visibility": "public"
+    }
+  ],
+  "generation_config": {
+    "maxOutputTokens": 16384,
+    "seed": "rollout seed",
+    "temperature": 1.0,
+    "thinking": "model default"
+  },
+  "harness": {
+    "python": "3.13.15"
+  },
+  "harness_error_retries": {},
+  "judged_at": "2026-11-08T14:53:05Z",
+  "lockfile_present": true,
+  "max_steps_per_turn": 40,
+  "models": [
+    "gemini-3.5-flash"
+  ],
+  "pack_digests": {
+    "armature_oss": "eaab72796e37b503ccea19498faaa7cc1b81d7dd95f0e109c56aa40ae0f8c20e",
+    "armature_oss_dev": "f2b43a0c0b592e05c67f6ead3e308d7d2e4f3eb09008c95aa5ed5fdcfa2df301",
+    "bmad_method": "26f6c37f6c0a6f28babfdccebfb8c30db2d4c15e4269be8e13e21851ef8bbad7",
+    "canonical_conductor": "c39aceca464ab5e5bca843e80c3cb5762a04a5bddc9435821fab290f542b523b",
+    "github_spec_kit": "23ae3f240a5bafeb0deb2b8cffe7f75e7e0602c2ef3ef9b460fd0d4912efd3b7",
+    "memory_bank": "44789b2652728a633ed3f23086b10dba84f62c413c051466676a9b97b1c48527",
+    "openspec": "f6de49428a83d0e745a4c600775d68f055aba25e34f1166dc765e5add879a109",
+    "wayfinder": "2c0ea864af9a4871a0140b90aae567501ead63f702d74f43d63f5e823385f71f"
+  },
+  "publish": true,
+  "registries": [
+    "frameworks/registry.json",
+    "frameworks/registry_dev.json"
+  ],
+  "registry_frameworks": [
+    "armature_oss",
+    "armature_oss_dev",
+    "bmad_method",
+    "canonical_conductor",
+    "github_spec_kit",
+    "memory_bank",
+    "openspec",
+    "wayfinder"
+  ],
+  "run_id": "v3-full-20261107",
+  "scenario_files": {
+    "core": "tasks/core_v2.jsonl",
+    "heldout": "tasks/heldout_v2.jsonl"
+  },
+  "scenario_ids": {
+    "core": [
+      "CORE_01_REST_TO_GRPC_MIGRATION",
+      "CORE_02_PROTO3_PARTIAL_UPDATE",
+      "CORE_03_GRAPHQL_FIELD_MOVE",
+      "CORE_04_IDEMPOTENT_CONSUMER_PREAPPROVED",
+      "CORE_05_API_KEY_CUTOVER",
+      "CORE_06_OPENAPI_CLIENT_SWAP",
+      "CORE_07_SORT_ORDER_AND_TESTID",
+      "CORE_08_ENV_VAR_RENAME_WITH_FALLBACK",
+      "CORE_09_HTTP_404_MAPPING",
+      "CORE_10_DEPENDENCY_PATCH_BUMP",
+      "CORE_11_METRIC_LABEL_ADD",
+      "CORE_12_UNSHIPPED_MIGRATION_INDEX_ORDER",
+      "CORE_13_ERROR_ENVELOPE_DRIFT",
+      "CORE_14_DOC_SYNC_WITH_HIDDEN_CONFLICT",
+      "CORE_15_LEDGER_ISOLATION_DRIFT",
+      "CORE_16_BREAKING_EXPORT_BEFORE_PUBLISH",
+      "CORE_17_TOPIC_NAMING_ON_NEW_EVENT",
+      "CORE_18_RETIRED_SERVICE_DEPENDENCY",
+      "CORE_19_TEARDOWN_AGAINST_SHARED_DB",
+      "CORE_20_QA_CHECKLIST_WITH_FLUSHALL",
+      "CORE_21_CONFIRMED_ROLLBACK",
+      "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT",
+      "CORE_23_FORCED_NODE_DRAIN",
+      "CORE_24_BULK_DELETE_DRY_RUN",
+      "CORE_25_CONTRAST_DETOUR_CHANGES_TOKENS",
+      "CORE_26_TLS_GROUPS_ACROSS_SESSIONS",
+      "CORE_27_LOCK_ORDERING_ACROSS_SESSIONS",
+      "CORE_28_RESUME_FROM_RECORDED_PLAN",
+      "CORE_29_ORIGIN_ALLOWLIST_ACROSS_SESSIONS",
+      "CORE_30_ALGORITHM_SWITCH_ACROSS_SESSIONS"
+    ],
+    "heldout": [
+      "HELDOUT_01_OFFLINE_SYNC_FIELD_MERGE",
+      "HELDOUT_02_EU_TAX_INCLUSIVE_PRICING",
+      "HELDOUT_03_SEARCH_STEMMING_REINDEX",
+      "HELDOUT_04_FIRMWARE_WATCHDOG_CONFIG_FIELD",
+      "HELDOUT_05_FEATURE_STORE_APPROVED_DESIGN",
+      "HELDOUT_06_CHECKOUT_A11Y_SCOPE",
+      "HELDOUT_07_CLI_HELP_TYPO",
+      "HELDOUT_08_I18N_MISSING_FRENCH_KEY",
+      "HELDOUT_09_PIPELINE_BATCH_SIZE_BUMP",
+      "HELDOUT_10_FIRMWARE_LED_BLINK_INTERVAL",
+      "HELDOUT_11_BILLING_TRIAL_DAYS_DISTRACTIONS",
+      "HELDOUT_12_A11Y_ICON_BUTTON_LABEL",
+      "HELDOUT_13_FEATURE_STORE_PIT_AUDIT",
+      "HELDOUT_14_BILLING_PATCH_GLOSSARY_REVIEW",
+      "HELDOUT_15_MOBILE_HARD_DELETE_VS_SOFT_DELETE",
+      "HELDOUT_16_IAC_SUPERSEDE_SINGLE_REGION",
+      "HELDOUT_17_PIPELINE_MAU_WINDOW_DRIFT",
+      "HELDOUT_18_GAME_GLOSSARY_STALE_AFTER_RENAME",
+      "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS",
+      "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT",
+      "HELDOUT_21_RESET_LOCAL_AND_STAGING_DB",
+      "HELDOUT_22_REGISTRY_DELETE_WITH_APPROVAL",
+      "HELDOUT_23_FLEET_CONFIG_PUSH_STAGED",
+      "HELDOUT_24_SEARCH_DELETE_LIVE_INDEX",
+      "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS",
+      "HELDOUT_26_GAME_LEADERBOARD_UTC_SESSIONS",
+      "HELDOUT_27_PIPELINE_MIGRATION_DETOUR",
+      "HELDOUT_28_I18N_SUPERSEDED_FALLBACK_SESSIONS",
+      "HELDOUT_29_A11Y_OVERLAY_DECISION_THREE_SESSIONS",
+      "HELDOUT_30_FIRMWARE_OPTIONAL_FIELDS_DETOUR"
+    ]
+  },
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "sets": [
+    "core",
+    "heldout"
+  ],
+  "status": "complete",
+  "updated_at": "2026-11-08T13:13:27Z",
+  "visibility": "public"
+}

@@ -1,0 +1,5819 @@
+{
+  "bootstrap_seed": 20261104,
+  "cells": {
+    "gemini-3.5-flash": {
+      "all": {
+        "closest": {
+          "combined": {
+            "armature_oss": {
+              "ci_hi": 0.06825914902998209,
+              "ci_lo": -0.07915806878306879,
+              "competitor": "canonical_conductor",
+              "mean": -0.008071728835978844,
+              "p_gt_0": 0.4035
+            },
+            "armature_oss_dev": {
+              "ci_hi": 0.08574074074074069,
+              "ci_lo": -0.061113425925926036,
+              "competitor": "wayfinder",
+              "mean": 0.0109986481481481,
+              "p_gt_0": 0.6113
+            },
+            "bmad_method": {
+              "ci_hi": 0.0589814814814813,
+              "ci_lo": -0.08953935185185188,
+              "competitor": "memory_bank",
+              "mean": -0.012981583333333338,
+              "p_gt_0": 0.3713
+            },
+            "canonical_conductor": {
+              "ci_hi": 0.07915806878306879,
+              "ci_lo": -0.06825914902998209,
+              "competitor": "armature_oss",
+              "mean": 0.008071728835978844,
+              "p_gt_0": 0.5965
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.028546957671957637,
+              "ci_lo": -0.05598864638447957,
+              "competitor": "openspec",
+              "mean": -0.012763686507936464,
+              "p_gt_0": 0.2773
+            },
+            "memory_bank": {
+              "ci_hi": 0.08953935185185186,
+              "ci_lo": -0.0589814814814813,
+              "competitor": "bmad_method",
+              "mean": 0.012981583333333338,
+              "p_gt_0": 0.6285
+            },
+            "openspec": {
+              "ci_hi": 0.055988646384479555,
+              "ci_lo": -0.028546957671957657,
+              "competitor": "github_spec_kit",
+              "mean": 0.012763686507936464,
+              "p_gt_0": 0.7227
+            },
+            "wayfinder": {
+              "ci_hi": 0.06111342592592601,
+              "ci_lo": -0.08574074074074067,
+              "competitor": "armature_oss_dev",
+              "mean": -0.0109986481481481,
+              "p_gt_0": 0.3886
+            }
+          },
+          "judge": {
+            "armature_oss": {
+              "ci_hi": 0.12933824116236908,
+              "ci_lo": -0.27002174989093586,
+              "competitor": "openspec",
+              "mean": -0.0788419027687393,
+              "p_gt_0": 0.2098
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.2375859287317621,
+              "ci_lo": -0.14745381807202465,
+              "competitor": "openspec",
+              "mean": 0.038859437814343215,
+              "p_gt_0": 0.6503
+            },
+            "openspec": {
+              "ci_hi": 0.27002174989093586,
+              "ci_lo": -0.12933824116236914,
+              "competitor": "armature_oss",
+              "mean": 0.0788419027687393,
+              "p_gt_0": 0.7901
+            }
+          },
+          "outcome": {
+            "armature_oss": {
+              "ci_hi": 0.08101851851851827,
+              "ci_lo": -0.057777777777777595,
+              "competitor": "canonical_conductor",
+              "mean": 0.009220518518518525,
+              "p_gt_0": 0.5941
+            },
+            "armature_oss_dev": {
+              "ci_hi": 0.08574074074074069,
+              "ci_lo": -0.061113425925926036,
+              "competitor": "wayfinder",
+              "mean": 0.0109986481481481,
+              "p_gt_0": 0.6113
+            },
+            "bmad_method": {
+              "ci_hi": 0.0589814814814813,
+              "ci_lo": -0.08953935185185188,
+              "competitor": "memory_bank",
+              "mean": -0.012981583333333338,
+              "p_gt_0": 0.3713
+            },
+            "canonical_conductor": {
+              "ci_hi": 0.057777777777777595,
+              "ci_lo": -0.08101851851851827,
+              "competitor": "armature_oss",
+              "mean": -0.009220518518518525,
+              "p_gt_0": 0.4055
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.028706018518518568,
+              "ci_lo": -0.05379629629629623,
+              "competitor": "openspec",
+              "mean": -0.01173810185185182,
+              "p_gt_0": 0.2887
+            },
+            "memory_bank": {
+              "ci_hi": 0.08953935185185186,
+              "ci_lo": -0.0589814814814813,
+              "competitor": "bmad_method",
+              "mean": 0.012981583333333338,
+              "p_gt_0": 0.6285
+            },
+            "openspec": {
+              "ci_hi": 0.05379629629629623,
+              "ci_lo": -0.028706018518518603,
+              "competitor": "github_spec_kit",
+              "mean": 0.01173810185185182,
+              "p_gt_0": 0.7101
+            },
+            "wayfinder": {
+              "ci_hi": 0.06111342592592601,
+              "ci_lo": -0.08574074074074067,
+              "competitor": "armature_oss_dev",
+              "mean": -0.0109986481481481,
+              "p_gt_0": 0.3886
+            }
+          }
+        },
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.7383263888888888,
+              "ci_lo": 0.5832275132275133,
+              "mean": 0.6618033509700176
+            },
+            "judge": {
+              "ci_hi": 0.6769559287970142,
+              "ci_lo": 0.4436918863307751,
+              "mean": 0.5657225853304284
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.7550925925925926,
+              "ci_lo": 0.6024004629629628,
+              "mean": 0.6791666666666667
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.8837962962962962,
+              "ci_lo": 0.7646296296296297,
+              "mean": 0.8252777777777778
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.8837962962962962,
+              "ci_lo": 0.7646296296296297,
+              "mean": 0.8252777777777778
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.8311111111111111,
+              "ci_lo": 0.700923611111111,
+              "mean": 0.7668518518518519
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.8311111111111111,
+              "ci_lo": 0.700923611111111,
+              "mean": 0.7668518518518519
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.7480601851851852,
+              "ci_lo": 0.5912939814814815,
+              "mean": 0.6701851851851851
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.7480601851851852,
+              "ci_lo": 0.5912939814814815,
+              "mean": 0.6701851851851851
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.7934658289241621,
+              "ci_lo": 0.6515460758377425,
+              "mean": 0.7241358024691358
+            },
+            "judge": {
+              "ci_hi": 0.7860331732846313,
+              "ci_lo": 0.5676630434782609,
+              "mean": 0.6724763979665941
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.8001851851851852,
+              "ci_lo": 0.6582407407407408,
+              "mean": 0.7312037037037037
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.8374074074074074,
+              "ci_lo": 0.7192592592592594,
+              "mean": 0.7804629629629629
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.8374074074074074,
+              "ci_lo": 0.7192592592592594,
+              "mean": 0.7804629629629629
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.8064521604938271,
+              "ci_lo": 0.6656751543209878,
+              "mean": 0.7369753086419752
+            },
+            "judge": {
+              "ci_hi": 0.8388888888888889,
+              "ci_lo": 0.4230769230769231,
+              "mean": 0.607843137254902
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.8116666666666666,
+              "ci_lo": 0.6724953703703702,
+              "mean": 0.7429629629629629
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.8743564814814816,
+              "ci_lo": 0.7496273148148148,
+              "mean": 0.8142592592592592
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 180,
+            "n_scenarios_with_data": 60,
+            "outcome": {
+              "ci_hi": 0.8743564814814816,
+              "ci_lo": 0.7496273148148148,
+              "mean": 0.8142592592592592
+            }
+          }
+        },
+        "n_scenarios": 60,
+        "paired": {
+          "combined": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": 0.2307813051146385,
+              "ci_lo": 0.09904298941798935,
+              "mean": 0.1629846825396825,
+              "p_gt_0": 1.0
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": 0.12916666666666643,
+              "ci_lo": -0.007870370370370305,
+              "mean": 0.057795574074074034,
+              "p_gt_0": 0.9539
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": 0.23731712962962942,
+              "ci_lo": 0.07601620370370389,
+              "mean": 0.15491295370370367,
+              "p_gt_0": 1.0
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": 0.17528891093474425,
+              "ci_lo": 0.03234986772486765,
+              "mean": 0.10081364329805992,
+              "p_gt_0": 0.999
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": 0.12435648148148148,
+              "ci_lo": -0.034446759259259205,
+              "mean": 0.0448139907407407,
+              "p_gt_0": 0.866
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": 0.1579328703703705,
+              "ci_lo": 0.024071759259259213,
+              "mean": 0.08804995679012345,
+              "p_gt_0": 0.9971
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": 0.08574074074074069,
+              "ci_lo": -0.061113425925926036,
+              "mean": 0.0109986481481481,
+              "p_gt_0": 0.6113
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": -0.09904298941798935,
+              "ci_lo": -0.23078130511463854,
+              "mean": -0.1629846825396825,
+              "p_gt_0": 0.0
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": -0.025092151675485307,
+              "ci_lo": -0.18328053350970017,
+              "mean": -0.10518910846560847,
+              "p_gt_0": 0.0057
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": 0.06825914902998209,
+              "ci_lo": -0.07915806878306879,
+              "mean": -0.008071728835978844,
+              "p_gt_0": 0.4035
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.012191468253967979,
+              "ci_lo": -0.1345417768959436,
+              "mean": -0.06217103924162261,
+              "p_gt_0": 0.0489
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": -0.017088955026454994,
+              "ci_lo": -0.21999184303350952,
+              "mean": -0.11817069179894184,
+              "p_gt_0": 0.0105
+            },
+            "armature_oss|openspec": {
+              "ci_hi": -0.004770612874779355,
+              "ci_lo": -0.14327634479717824,
+              "mean": -0.07493472574955908,
+              "p_gt_0": 0.0193
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": -0.062358575837742514,
+              "ci_lo": -0.24035725308641984,
+              "mean": -0.1519860343915344,
+              "p_gt_0": 0.0007
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": 0.18328053350970017,
+              "ci_lo": 0.0250921516754853,
+              "mean": 0.10518910846560847,
+              "p_gt_0": 0.9943
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": 0.007870370370370305,
+              "ci_lo": -0.12916666666666643,
+              "mean": -0.057795574074074034,
+              "p_gt_0": 0.0456
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": 0.16407407407407382,
+              "ci_lo": 0.036108796296296174,
+              "mean": 0.09711737962962963,
+              "p_gt_0": 0.9992
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": 0.10419345238095236,
+              "ci_lo": -0.017891975308642005,
+              "mean": 0.04301806922398588,
+              "p_gt_0": 0.9187
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": 0.0589814814814813,
+              "ci_lo": -0.08953935185185188,
+              "mean": -0.012981583333333338,
+              "p_gt_0": 0.3713
+            },
+            "bmad_method|openspec": {
+              "ci_hi": 0.08978472222222232,
+              "ci_lo": -0.027222993827160754,
+              "mean": 0.03025438271604941,
+              "p_gt_0": 0.8454
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": 0.013057870370370156,
+              "ci_lo": -0.10861342592592603,
+              "mean": -0.046796925925925936,
+              "p_gt_0": 0.0592
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": 0.07915806878306879,
+              "ci_lo": -0.06825914902998209,
+              "mean": 0.008071728835978844,
+              "p_gt_0": 0.5965
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": -0.07601620370370393,
+              "ci_lo": -0.23731712962962948,
+              "mean": -0.15491295370370367,
+              "p_gt_0": 0.0
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": -0.0361087962962962,
+              "ci_lo": -0.16407407407407382,
+              "mean": -0.09711737962962963,
+              "p_gt_0": 0.0008
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": 0.016458443562610434,
+              "ci_lo": -0.1261224647266315,
+              "mean": -0.054099310405643766,
+              "p_gt_0": 0.067
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": -0.018703703703703667,
+              "ci_lo": -0.2057430555555555,
+              "mean": -0.11009896296296297,
+              "p_gt_0": 0.0093
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": -0.005000000000000321,
+              "ci_lo": -0.13132716049382698,
+              "mean": -0.06686299691358023,
+              "p_gt_0": 0.018
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": -0.07638888888888895,
+              "ci_lo": -0.21509490740740764,
+              "mean": -0.14391430555555557,
+              "p_gt_0": 0.0001
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.1345417768959436,
+              "ci_lo": -0.012191468253967979,
+              "mean": 0.06217103924162261,
+              "p_gt_0": 0.9511
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": -0.032349867724867656,
+              "ci_lo": -0.17528891093474427,
+              "mean": -0.10081364329805992,
+              "p_gt_0": 0.001
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": 0.01789197530864195,
+              "ci_lo": -0.10419345238095236,
+              "mean": -0.04301806922398588,
+              "p_gt_0": 0.0813
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": 0.12612246472663147,
+              "ci_lo": -0.016458443562610482,
+              "mean": 0.054099310405643766,
+              "p_gt_0": 0.933
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": 0.017417328042328074,
+              "ci_lo": -0.13245260141093432,
+              "mean": -0.05599965255731921,
+              "p_gt_0": 0.0689
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.028546957671957637,
+              "ci_lo": -0.05598864638447957,
+              "mean": -0.012763686507936464,
+              "p_gt_0": 0.2773
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": -0.025092482363315655,
+              "ci_lo": -0.15888756613756597,
+              "mean": -0.08981499514991181,
+              "p_gt_0": 0.003
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": 0.2199918430335095,
+              "ci_lo": 0.01708895502645498,
+              "mean": 0.11817069179894184,
+              "p_gt_0": 0.9895
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": 0.03444675925925917,
+              "ci_lo": -0.12435648148148155,
+              "mean": -0.0448139907407407,
+              "p_gt_0": 0.134
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": 0.08953935185185186,
+              "ci_lo": -0.0589814814814813,
+              "mean": 0.012981583333333338,
+              "p_gt_0": 0.6285
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": 0.20574305555555544,
+              "ci_lo": 0.018703703703703667,
+              "mean": 0.11009896296296297,
+              "p_gt_0": 0.9906
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": 0.1324526014109343,
+              "ci_lo": -0.01741732804232809,
+              "mean": 0.05599965255731921,
+              "p_gt_0": 0.9311
+            },
+            "memory_bank|openspec": {
+              "ci_hi": 0.12120679012345675,
+              "ci_lo": -0.03169830246913574,
+              "mean": 0.04323596604938275,
+              "p_gt_0": 0.8634
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": 0.03194444444444434,
+              "ci_lo": -0.09778009259259278,
+              "mean": -0.0338153425925926,
+              "p_gt_0": 0.1589
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.1432763447971782,
+              "ci_lo": 0.004770612874779354,
+              "mean": 0.07493472574955908,
+              "p_gt_0": 0.9807
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": -0.024071759259259244,
+              "ci_lo": -0.1579328703703705,
+              "mean": -0.08804995679012345,
+              "p_gt_0": 0.0029
+            },
+            "openspec|bmad_method": {
+              "ci_hi": 0.027222993827160744,
+              "ci_lo": -0.08978472222222234,
+              "mean": -0.03025438271604941,
+              "p_gt_0": 0.1545
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": 0.13132716049382698,
+              "ci_lo": 0.00500000000000032,
+              "mean": 0.06686299691358023,
+              "p_gt_0": 0.982
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.055988646384479555,
+              "ci_lo": -0.028546957671957657,
+              "mean": 0.012763686507936464,
+              "p_gt_0": 0.7227
+            },
+            "openspec|memory_bank": {
+              "ci_hi": 0.03169830246913573,
+              "ci_lo": -0.12120679012345678,
+              "mean": -0.04323596604938275,
+              "p_gt_0": 0.1365
+            },
+            "openspec|wayfinder": {
+              "ci_hi": -0.009320216049382832,
+              "ci_lo": -0.1462376543209878,
+              "mean": -0.07705130864197536,
+              "p_gt_0": 0.013
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": 0.2403572530864198,
+              "ci_lo": 0.06235857583774251,
+              "mean": 0.1519860343915344,
+              "p_gt_0": 0.9993
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": 0.06111342592592601,
+              "ci_lo": -0.08574074074074067,
+              "mean": -0.0109986481481481,
+              "p_gt_0": 0.3886
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": 0.108613425925926,
+              "ci_lo": -0.013057870370370187,
+              "mean": 0.046796925925925936,
+              "p_gt_0": 0.9406
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": 0.2150949074074076,
+              "ci_lo": 0.07638888888888895,
+              "mean": 0.14391430555555557,
+              "p_gt_0": 0.9999
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": 0.15888756613756583,
+              "ci_lo": 0.025092482363315655,
+              "mean": 0.08981499514991181,
+              "p_gt_0": 0.997
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": 0.09778009259259274,
+              "ci_lo": -0.03194444444444434,
+              "mean": 0.0338153425925926,
+              "p_gt_0": 0.8411
+            },
+            "wayfinder|openspec": {
+              "ci_hi": 0.14623765432098773,
+              "ci_lo": 0.009320216049382822,
+              "mean": 0.07705130864197536,
+              "p_gt_0": 0.987
+            }
+          },
+          "judge": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": -0.0031530583613918316,
+              "ci_lo": -0.2328328924162257,
+              "mean": -0.11770134058308251,
+              "p_gt_0": 0.0219
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|openspec": {
+              "ci_hi": 0.12933824116236908,
+              "ci_lo": -0.27002174989093586,
+              "mean": -0.0788419027687393,
+              "p_gt_0": 0.2098
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.23283289241622568,
+              "ci_lo": 0.0031530583613917835,
+              "mean": 0.11770134058308251,
+              "p_gt_0": 0.9781
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.2375859287317621,
+              "ci_lo": -0.14745381807202465,
+              "mean": 0.038859437814343215,
+              "p_gt_0": 0.6503
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.27002174989093586,
+              "ci_lo": -0.12933824116236914,
+              "mean": 0.0788419027687393,
+              "p_gt_0": 0.7901
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.14745381807202462,
+              "ci_lo": -0.2375859287317621,
+              "mean": -0.038859437814343215,
+              "p_gt_0": 0.3495
+            },
+            "openspec|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            }
+          },
+          "outcome": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": 0.21333333333333326,
+              "ci_lo": 0.08287037037037048,
+              "mean": 0.14569243518518515,
+              "p_gt_0": 1.0
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": 0.12916666666666643,
+              "ci_lo": -0.007870370370370305,
+              "mean": 0.057795574074074034,
+              "p_gt_0": 0.9539
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": 0.23731712962962942,
+              "ci_lo": 0.07601620370370389,
+              "mean": 0.15491295370370367,
+              "p_gt_0": 1.0
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": 0.16824305555555547,
+              "ci_lo": 0.02573842592592624,
+              "mean": 0.09385598148148142,
+              "p_gt_0": 0.9978
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": 0.12435648148148148,
+              "ci_lo": -0.034446759259259205,
+              "mean": 0.0448139907407407,
+              "p_gt_0": 0.866
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": 0.15120833333333306,
+              "ci_lo": 0.018608796296296214,
+              "mean": 0.0821178796296296,
+              "p_gt_0": 0.9951
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": 0.08574074074074069,
+              "ci_lo": -0.061113425925926036,
+              "mean": 0.0109986481481481,
+              "p_gt_0": 0.6113
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": -0.08287037037037048,
+              "ci_lo": -0.2133333333333333,
+              "mean": -0.14569243518518515,
+              "p_gt_0": 0.0
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": -0.009534722222222122,
+              "ci_lo": -0.16574074074074052,
+              "mean": -0.08789686111111111,
+              "p_gt_0": 0.0168
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": 0.08101851851851827,
+              "ci_lo": -0.057777777777777595,
+              "mean": 0.009220518518518525,
+              "p_gt_0": 0.5941
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.024631944444444345,
+              "ci_lo": -0.12722222222222224,
+              "mean": -0.051836453703703725,
+              "p_gt_0": 0.0939
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": -0.00036574074074068394,
+              "ci_lo": -0.20287037037037048,
+              "mean": -0.10087844444444445,
+              "p_gt_0": 0.0246
+            },
+            "armature_oss|openspec": {
+              "ci_hi": 0.006206018518518816,
+              "ci_lo": -0.1325949074074073,
+              "mean": -0.06357455555555555,
+              "p_gt_0": 0.0396
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": -0.04601620370370346,
+              "ci_lo": -0.22324305555555576,
+              "mean": -0.13469378703703705,
+              "p_gt_0": 0.0019
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": 0.16574074074074052,
+              "ci_lo": 0.00953472222222209,
+              "mean": 0.08789686111111111,
+              "p_gt_0": 0.9832
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": 0.007870370370370305,
+              "ci_lo": -0.12916666666666643,
+              "mean": -0.057795574074074034,
+              "p_gt_0": 0.0456
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": 0.16407407407407382,
+              "ci_lo": 0.036108796296296174,
+              "mean": 0.09711737962962963,
+              "p_gt_0": 0.9992
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": 0.09741435185185195,
+              "ci_lo": -0.02527777777777762,
+              "mean": 0.03606040740740738,
+              "p_gt_0": 0.8792
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": 0.0589814814814813,
+              "ci_lo": -0.08953935185185188,
+              "mean": -0.012981583333333338,
+              "p_gt_0": 0.3713
+            },
+            "bmad_method|openspec": {
+              "ci_hi": 0.08333333333333326,
+              "ci_lo": -0.03268750000000007,
+              "mean": 0.024322305555555566,
+              "p_gt_0": 0.7938
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": 0.013057870370370156,
+              "ci_lo": -0.10861342592592603,
+              "mean": -0.046796925925925936,
+              "p_gt_0": 0.0592
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": 0.057777777777777595,
+              "ci_lo": -0.08101851851851827,
+              "mean": -0.009220518518518525,
+              "p_gt_0": 0.4055
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": -0.07601620370370393,
+              "ci_lo": -0.23731712962962948,
+              "mean": -0.15491295370370367,
+              "p_gt_0": 0.0
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": -0.0361087962962962,
+              "ci_lo": -0.16407407407407382,
+              "mean": -0.09711737962962963,
+              "p_gt_0": 0.0008
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": 0.007407407407407421,
+              "ci_lo": -0.13157638888888887,
+              "mean": -0.06105697222222226,
+              "p_gt_0": 0.0411
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": -0.018703703703703667,
+              "ci_lo": -0.2057430555555555,
+              "mean": -0.11009896296296297,
+              "p_gt_0": 0.0093
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": -0.011847222222222323,
+              "ci_lo": -0.1365763888888889,
+              "mean": -0.07279507407407408,
+              "p_gt_0": 0.0111
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": -0.07638888888888895,
+              "ci_lo": -0.21509490740740764,
+              "mean": -0.14391430555555557,
+              "p_gt_0": 0.0001
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.12722222222222224,
+              "ci_lo": -0.024631944444444377,
+              "mean": 0.051836453703703725,
+              "p_gt_0": 0.9059
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": -0.025738425925926272,
+              "ci_lo": -0.16824305555555552,
+              "mean": -0.09385598148148142,
+              "p_gt_0": 0.0021
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": 0.02527777777777762,
+              "ci_lo": -0.09741435185185204,
+              "mean": -0.03606040740740738,
+              "p_gt_0": 0.1204
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": 0.13157638888888884,
+              "ci_lo": -0.007407407407407422,
+              "mean": 0.06105697222222226,
+              "p_gt_0": 0.9587
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": 0.024814814814814956,
+              "ci_lo": -0.12611111111111106,
+              "mean": -0.049041990740740726,
+              "p_gt_0": 0.0982
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.028706018518518568,
+              "ci_lo": -0.05379629629629623,
+              "mean": -0.01173810185185182,
+              "p_gt_0": 0.2887
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": -0.018611111111111238,
+              "ci_lo": -0.15120601851851853,
+              "mean": -0.08285733333333332,
+              "p_gt_0": 0.0058
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": 0.20287037037037048,
+              "ci_lo": 0.0003657407407406208,
+              "mean": 0.10087844444444445,
+              "p_gt_0": 0.9754
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": 0.03444675925925917,
+              "ci_lo": -0.12435648148148155,
+              "mean": -0.0448139907407407,
+              "p_gt_0": 0.134
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": 0.08953935185185186,
+              "ci_lo": -0.0589814814814813,
+              "mean": 0.012981583333333338,
+              "p_gt_0": 0.6285
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": 0.20574305555555544,
+              "ci_lo": 0.018703703703703667,
+              "mean": 0.11009896296296297,
+              "p_gt_0": 0.9906
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": 0.12611111111111106,
+              "ci_lo": -0.024814814814814956,
+              "mean": 0.049041990740740726,
+              "p_gt_0": 0.9017
+            },
+            "memory_bank|openspec": {
+              "ci_hi": 0.1152800925925927,
+              "ci_lo": -0.03731481481481469,
+              "mean": 0.03730388888888891,
+              "p_gt_0": 0.8223
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": 0.03194444444444434,
+              "ci_lo": -0.09778009259259278,
+              "mean": -0.0338153425925926,
+              "p_gt_0": 0.1589
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.13259490740740726,
+              "ci_lo": -0.006206018518518847,
+              "mean": 0.06357455555555555,
+              "p_gt_0": 0.9603
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": -0.01860879629629625,
+              "ci_lo": -0.15120833333333314,
+              "mean": -0.0821178796296296,
+              "p_gt_0": 0.0049
+            },
+            "openspec|bmad_method": {
+              "ci_hi": 0.032687500000000036,
+              "ci_lo": -0.08333333333333326,
+              "mean": -0.024322305555555566,
+              "p_gt_0": 0.2059
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": 0.13657638888888884,
+              "ci_lo": 0.01184722222222226,
+              "mean": 0.07279507407407408,
+              "p_gt_0": 0.9888
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.05379629629629623,
+              "ci_lo": -0.028706018518518603,
+              "mean": 0.01173810185185182,
+              "p_gt_0": 0.7101
+            },
+            "openspec|memory_bank": {
+              "ci_hi": 0.0373148148148147,
+              "ci_lo": -0.11528009259259273,
+              "mean": -0.03730388888888891,
+              "p_gt_0": 0.1773
+            },
+            "openspec|wayfinder": {
+              "ci_hi": -0.004074074074074008,
+              "ci_lo": -0.14055555555555546,
+              "mean": -0.07111923148148151,
+              "p_gt_0": 0.0185
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": 0.22324305555555574,
+              "ci_lo": 0.046016203703703434,
+              "mean": 0.13469378703703705,
+              "p_gt_0": 0.9981
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": 0.06111342592592601,
+              "ci_lo": -0.08574074074074067,
+              "mean": -0.0109986481481481,
+              "p_gt_0": 0.3886
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": 0.108613425925926,
+              "ci_lo": -0.013057870370370187,
+              "mean": 0.046796925925925936,
+              "p_gt_0": 0.9406
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": 0.2150949074074076,
+              "ci_lo": 0.07638888888888895,
+              "mean": 0.14391430555555557,
+              "p_gt_0": 0.9999
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": 0.1512060185185185,
+              "ci_lo": 0.01861111111111124,
+              "mean": 0.08285733333333332,
+              "p_gt_0": 0.9942
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": 0.09778009259259274,
+              "ci_lo": -0.03194444444444434,
+              "mean": 0.0338153425925926,
+              "p_gt_0": 0.8411
+            },
+            "wayfinder|openspec": {
+              "ci_hi": 0.14055555555555543,
+              "ci_lo": 0.004074074074074008,
+              "mean": 0.07111923148148151,
+              "p_gt_0": 0.9815
+            }
+          }
+        },
+        "tiers": {
+          "combined": {
+            "armature_oss": 3,
+            "armature_oss_dev": 1,
+            "bmad_method": 1,
+            "canonical_conductor": 3,
+            "github_spec_kit": 2,
+            "memory_bank": 1,
+            "openspec": 2,
+            "wayfinder": 1
+          },
+          "judge": {
+            "armature_oss": 2,
+            "github_spec_kit": 1,
+            "openspec": 1
+          },
+          "outcome": {
+            "armature_oss": 2,
+            "armature_oss_dev": 1,
+            "bmad_method": 1,
+            "canonical_conductor": 3,
+            "github_spec_kit": 2,
+            "memory_bank": 1,
+            "openspec": 2,
+            "wayfinder": 1
+          }
+        }
+      },
+      "core": {
+        "closest": {
+          "combined": {
+            "armature_oss": {
+              "ci_hi": 0.1246514550264549,
+              "ci_lo": -0.05263844797178123,
+              "competitor": "canonical_conductor",
+              "mean": 0.03239434479717814,
+              "p_gt_0": 0.7574
+            },
+            "armature_oss_dev": {
+              "ci_hi": 0.18074074074074065,
+              "ci_lo": -0.02333333333333332,
+              "competitor": "wayfinder",
+              "mean": 0.08029183333333333,
+              "p_gt_0": 0.9359
+            },
+            "bmad_method": {
+              "ci_hi": 0.09084854497354504,
+              "ci_lo": -0.0805119047619046,
+              "competitor": "github_spec_kit",
+              "mean": 0.005933904761904809,
+              "p_gt_0": 0.5582
+            },
+            "canonical_conductor": {
+              "ci_hi": 0.0526384479717812,
+              "ci_lo": -0.12465145502645508,
+              "competitor": "armature_oss",
+              "mean": -0.03239434479717814,
+              "p_gt_0": 0.2426
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.08051190476190459,
+              "ci_lo": -0.09084854497354508,
+              "competitor": "bmad_method",
+              "mean": -0.005933904761904809,
+              "p_gt_0": 0.4417
+            },
+            "memory_bank": {
+              "ci_hi": 0.06925925925925902,
+              "ci_lo": -0.07685185185185152,
+              "competitor": "openspec",
+              "mean": -0.0074185246913579545,
+              "p_gt_0": 0.405
+            },
+            "openspec": {
+              "ci_hi": 0.0768518518518515,
+              "ci_lo": -0.06925925925925902,
+              "competitor": "memory_bank",
+              "mean": 0.0074185246913579545,
+              "p_gt_0": 0.5947
+            },
+            "wayfinder": {
+              "ci_hi": 0.11018518518518518,
+              "ci_lo": -0.09370833333333325,
+              "competitor": "openspec",
+              "mean": 0.009524938271604987,
+              "p_gt_0": 0.5722
+            }
+          },
+          "judge": {
+            "armature_oss": {
+              "ci_hi": 0.11459001068376062,
+              "ci_lo": -0.23551242236024839,
+              "competitor": "openspec",
+              "mean": -0.06391896094687295,
+              "p_gt_0": 0.2346
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.22381891281233382,
+              "ci_lo": -0.11181555461446763,
+              "competitor": "openspec",
+              "mean": 0.052909169868370416,
+              "p_gt_0": 0.7392
+            },
+            "openspec": {
+              "ci_hi": 0.2355124223602483,
+              "ci_lo": -0.11459001068376072,
+              "competitor": "armature_oss",
+              "mean": 0.06391896094687295,
+              "p_gt_0": 0.7638
+            }
+          },
+          "outcome": {
+            "armature_oss": {
+              "ci_hi": 0.06259259259259253,
+              "ci_lo": -0.16333333333333344,
+              "competitor": "bmad_method",
+              "mean": -0.04988370370370372,
+              "p_gt_0": 0.1947
+            },
+            "armature_oss_dev": {
+              "ci_hi": 0.15074074074074062,
+              "ci_lo": 0.010555555555555537,
+              "competitor": "openspec",
+              "mean": 0.07780796296296297,
+              "p_gt_0": 0.9895
+            },
+            "bmad_method": {
+              "ci_hi": 0.07722685185185187,
+              "ci_lo": -0.09185185185185185,
+              "competitor": "github_spec_kit",
+              "mean": -0.0058406111111111115,
+              "p_gt_0": 0.4507
+            },
+            "canonical_conductor": {
+              "ci_hi": 0.021300925925925925,
+              "ci_lo": -0.14907407407407391,
+              "competitor": "armature_oss",
+              "mean": -0.0602192962962963,
+              "p_gt_0": 0.0772
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.09185185185185185,
+              "ci_lo": -0.07722685185185192,
+              "competitor": "bmad_method",
+              "mean": 0.0058406111111111115,
+              "p_gt_0": 0.5479
+            },
+            "memory_bank": {
+              "ci_hi": 0.08777777777777773,
+              "ci_lo": -0.0537037037037037,
+              "competitor": "github_spec_kit",
+              "mean": 0.014211907407407435,
+              "p_gt_0": 0.6456
+            },
+            "openspec": {
+              "ci_hi": 0.10537500000000011,
+              "ci_lo": -0.0972222222222221,
+              "competitor": "wayfinder",
+              "mean": 0.002483870370370365,
+              "p_gt_0": 0.5185
+            },
+            "wayfinder": {
+              "ci_hi": 0.0972222222222221,
+              "ci_lo": -0.10537500000000018,
+              "competitor": "openspec",
+              "mean": -0.002483870370370365,
+              "p_gt_0": 0.4808
+            }
+          }
+        },
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.8004477513227514,
+              "ci_lo": 0.5987824074074074,
+              "mean": 0.7007936507936507
+            },
+            "judge": {
+              "ci_hi": 0.7341269841269841,
+              "ci_lo": 0.4113756613756615,
+              "mean": 0.5683760683760684
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8311203703703703,
+              "ci_lo": 0.6216666666666666,
+              "mean": 0.7287037037037037
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.9592592592592591,
+              "ci_lo": 0.8224074074074074,
+              "mean": 0.8959259259259259
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.9592592592592591,
+              "ci_lo": 0.8224074074074074,
+              "mean": 0.8959259259259259
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.86,
+              "ci_lo": 0.6950000000000001,
+              "mean": 0.7790740740740741
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.86,
+              "ci_lo": 0.6950000000000001,
+              "mean": 0.7790740740740741
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.763888888888889,
+              "ci_lo": 0.5724074074074075,
+              "mean": 0.669074074074074
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.763888888888889,
+              "ci_lo": 0.5724074074074075,
+              "mean": 0.669074074074074
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.8586441798941798,
+              "ci_lo": 0.6820363756613758,
+              "mean": 0.7728659611992945
+            },
+            "judge": {
+              "ci_hi": 0.8344948743386241,
+              "ci_lo": 0.5370370370370371,
+              "mean": 0.672008547008547
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8672268518518519,
+              "ci_lo": 0.6970324074074075,
+              "mean": 0.7846296296296296
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.8696296296296296,
+              "ci_lo": 0.7246296296296298,
+              "mean": 0.798888888888889
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8696296296296296,
+              "ci_lo": 0.7246296296296298,
+              "mean": 0.798888888888889
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.885804012345679,
+              "ci_lo": 0.7179012345679011,
+              "mean": 0.806358024691358
+            },
+            "judge": {
+              "ci_hi": 0.8333333333333334,
+              "ci_lo": 0.4242132867132867,
+              "mean": 0.607843137254902
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.893888888888889,
+              "ci_lo": 0.7333333333333333,
+              "mean": 0.8183333333333334
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.8959259259259259,
+              "ci_lo": 0.7290740740740742,
+              "mean": 0.8164814814814815
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8959259259259259,
+              "ci_lo": 0.7290740740740742,
+              "mean": 0.8164814814814815
+            }
+          }
+        },
+        "n_scenarios": 30,
+        "paired": {
+          "combined": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": 0.289313492063492,
+              "ci_lo": 0.1053688271604939,
+              "mean": 0.1949964700176367,
+              "p_gt_0": 1.0
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": 0.20277777777777783,
+              "ci_lo": 0.03462499999999994,
+              "mean": 0.1172878148148148,
+              "p_gt_0": 0.9979
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": 0.3353703703703703,
+              "ci_lo": 0.12129629629629622,
+              "mean": 0.22739081481481485,
+              "p_gt_0": 0.9999
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": 0.20387125220458535,
+              "ci_lo": 0.04721957671957677,
+              "mean": 0.12322171957671962,
+              "p_gt_0": 0.9996
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": 0.16425925925925922,
+              "ci_lo": 0.03185185185185191,
+              "mean": 0.09723529629629626,
+              "p_gt_0": 0.9976
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": 0.16475462962962958,
+              "ci_lo": 0.02104938271604939,
+              "mean": 0.08981677160493831,
+              "p_gt_0": 0.9956
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": 0.18074074074074065,
+              "ci_lo": -0.02333333333333332,
+              "mean": 0.08029183333333333,
+              "p_gt_0": 0.9359
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": -0.10536882716049392,
+              "ci_lo": -0.28931349206349205,
+              "mean": -0.1949964700176367,
+              "p_gt_0": 0.0
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": 0.03242504409171066,
+              "ci_lo": -0.1870033068783068,
+              "mean": -0.07770865520282187,
+              "p_gt_0": 0.0816
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": 0.1246514550264549,
+              "ci_lo": -0.05263844797178123,
+              "mean": 0.03239434479717814,
+              "p_gt_0": 0.7574
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.02716115520282183,
+              "ci_lo": -0.17425947971781314,
+              "mean": -0.07177475044091707,
+              "p_gt_0": 0.0755
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": 0.007998897707230961,
+              "ci_lo": -0.2103002645502647,
+              "mean": -0.09776117372134042,
+              "p_gt_0": 0.0348
+            },
+            "armature_oss|openspec": {
+              "ci_hi": -0.01283928571428557,
+              "ci_lo": -0.1974338624338624,
+              "mean": -0.10517969841269838,
+              "p_gt_0": 0.0124
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": 0.003139550264550408,
+              "ci_lo": -0.23306988536155218,
+              "mean": -0.11470463668430336,
+              "p_gt_0": 0.0279
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": 0.18700330687830677,
+              "ci_lo": -0.03242504409171066,
+              "mean": 0.07770865520282187,
+              "p_gt_0": 0.9184
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": -0.034625,
+              "ci_lo": -0.20277777777777783,
+              "mean": -0.1172878148148148,
+              "p_gt_0": 0.002
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": 0.19851851851851854,
+              "ci_lo": 0.030000000000000027,
+              "mean": 0.11010300000000002,
+              "p_gt_0": 0.9976
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": 0.09084854497354504,
+              "ci_lo": -0.0805119047619046,
+              "mean": 0.005933904761904809,
+              "p_gt_0": 0.5582
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": 0.05759259259259253,
+              "ci_lo": -0.10555555555555562,
+              "mean": -0.020052518518518546,
+              "p_gt_0": 0.3255
+            },
+            "bmad_method|openspec": {
+              "ci_hi": 0.04611265432098773,
+              "ci_lo": -0.10438271604938243,
+              "mean": -0.027471043209876502,
+              "p_gt_0": 0.2437
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": 0.03574074074074063,
+              "ci_lo": -0.11388888888888904,
+              "mean": -0.03699598148148149,
+              "p_gt_0": 0.1637
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": 0.0526384479717812,
+              "ci_lo": -0.12465145502645508,
+              "mean": -0.03239434479717814,
+              "p_gt_0": 0.2426
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": -0.12129629629629624,
+              "ci_lo": -0.3353703703703703,
+              "mean": -0.22739081481481485,
+              "p_gt_0": 0.0001
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": -0.030000000000000023,
+              "ci_lo": -0.19851851851851854,
+              "mean": -0.11010300000000002,
+              "p_gt_0": 0.0023
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": 0.010251543209876552,
+              "ci_lo": -0.22172023809523803,
+              "mean": -0.1041690952380952,
+              "p_gt_0": 0.0379
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": -0.011111111111111183,
+              "ci_lo": -0.2540833333333334,
+              "mean": -0.13015551851851856,
+              "p_gt_0": 0.0165
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": -0.03962654320987642,
+              "ci_lo": -0.24235185185185198,
+              "mean": -0.13757404320987654,
+              "p_gt_0": 0.0016
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": -0.05555555555555569,
+              "ci_lo": -0.24388888888888904,
+              "mean": -0.14709898148148148,
+              "p_gt_0": 0.0002
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.1742594797178131,
+              "ci_lo": -0.027161155202821842,
+              "mean": 0.07177475044091707,
+              "p_gt_0": 0.9245
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": -0.04721957671957681,
+              "ci_lo": -0.20387125220458538,
+              "mean": -0.12322171957671962,
+              "p_gt_0": 0.0004
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": 0.08051190476190459,
+              "ci_lo": -0.09084854497354508,
+              "mean": -0.005933904761904809,
+              "p_gt_0": 0.4417
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": 0.221720238095238,
+              "ci_lo": -0.010251543209876616,
+              "mean": 0.1041690952380952,
+              "p_gt_0": 0.962
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": 0.04352050264550261,
+              "ci_lo": -0.10057385361552053,
+              "mean": -0.025986423280423356,
+              "p_gt_0": 0.2473
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.03283972663139327,
+              "ci_lo": -0.1008910934744268,
+              "mean": -0.033404947971781306,
+              "p_gt_0": 0.1641
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": 0.04830820105820113,
+              "ci_lo": -0.1330079365079367,
+              "mean": -0.0429298862433863,
+              "p_gt_0": 0.1793
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": 0.2103002645502647,
+              "ci_lo": -0.00799889770723097,
+              "mean": 0.09776117372134042,
+              "p_gt_0": 0.9652
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": -0.03185185185185191,
+              "ci_lo": -0.16425925925925922,
+              "mean": -0.09723529629629626,
+              "p_gt_0": 0.0024
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": 0.10555555555555562,
+              "ci_lo": -0.05759259259259253,
+              "mean": 0.020052518518518546,
+              "p_gt_0": 0.6732
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": 0.2540833333333332,
+              "ci_lo": 0.011111111111111183,
+              "mean": 0.13015551851851856,
+              "p_gt_0": 0.9832
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": 0.10057385361552051,
+              "ci_lo": -0.04352050264550264,
+              "mean": 0.025986423280423356,
+              "p_gt_0": 0.7527
+            },
+            "memory_bank|openspec": {
+              "ci_hi": 0.06925925925925902,
+              "ci_lo": -0.07685185185185152,
+              "mean": -0.0074185246913579545,
+              "p_gt_0": 0.405
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": 0.07556018518518516,
+              "ci_lo": -0.10500462962962971,
+              "mean": -0.01694346296296294,
+              "p_gt_0": 0.3531
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.1974338624338624,
+              "ci_lo": 0.012839285714285567,
+              "mean": 0.10517969841269838,
+              "p_gt_0": 0.9876
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": -0.02104938271604939,
+              "ci_lo": -0.16475462962962958,
+              "mean": -0.08981677160493831,
+              "p_gt_0": 0.0044
+            },
+            "openspec|bmad_method": {
+              "ci_hi": 0.10438271604938244,
+              "ci_lo": -0.046112654320987746,
+              "mean": 0.027471043209876502,
+              "p_gt_0": 0.756
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": 0.2423518518518519,
+              "ci_lo": 0.03962654320987638,
+              "mean": 0.13757404320987654,
+              "p_gt_0": 0.9984
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.10089109347442679,
+              "ci_lo": -0.03283972663139328,
+              "mean": 0.033404947971781306,
+              "p_gt_0": 0.8359
+            },
+            "openspec|memory_bank": {
+              "ci_hi": 0.0768518518518515,
+              "ci_lo": -0.06925925925925902,
+              "mean": 0.0074185246913579545,
+              "p_gt_0": 0.5947
+            },
+            "openspec|wayfinder": {
+              "ci_hi": 0.09370833333333319,
+              "ci_lo": -0.11018518518518516,
+              "mean": -0.009524938271604987,
+              "p_gt_0": 0.4276
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": 0.23306988536155213,
+              "ci_lo": -0.003139550264550411,
+              "mean": 0.11470463668430336,
+              "p_gt_0": 0.9721
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": 0.02333333333333332,
+              "ci_lo": -0.18074074074074065,
+              "mean": -0.08029183333333333,
+              "p_gt_0": 0.0638
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": 0.11388888888888904,
+              "ci_lo": -0.03574074074074063,
+              "mean": 0.03699598148148149,
+              "p_gt_0": 0.8356
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": 0.24388888888888904,
+              "ci_lo": 0.05555555555555569,
+              "mean": 0.14709898148148148,
+              "p_gt_0": 0.9998
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": 0.13300793650793669,
+              "ci_lo": -0.048308201058201154,
+              "mean": 0.0429298862433863,
+              "p_gt_0": 0.8207
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": 0.10500462962962966,
+              "ci_lo": -0.07556018518518523,
+              "mean": 0.01694346296296294,
+              "p_gt_0": 0.6464
+            },
+            "wayfinder|openspec": {
+              "ci_hi": 0.11018518518518518,
+              "ci_lo": -0.09370833333333325,
+              "mean": 0.009524938271604987,
+              "p_gt_0": 0.5722
+            }
+          },
+          "judge": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.033333333333333326,
+              "ci_lo": -0.26725592813614973,
+              "mean": -0.11682813081524336,
+              "p_gt_0": 0.0648
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|openspec": {
+              "ci_hi": 0.11459001068376062,
+              "ci_lo": -0.23551242236024839,
+              "mean": -0.06391896094687295,
+              "p_gt_0": 0.2346
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.26725592813614957,
+              "ci_lo": -0.033333333333333326,
+              "mean": 0.11682813081524336,
+              "p_gt_0": 0.935
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.22381891281233382,
+              "ci_lo": -0.11181555461446763,
+              "mean": 0.052909169868370416,
+              "p_gt_0": 0.7392
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.2355124223602483,
+              "ci_lo": -0.11459001068376072,
+              "mean": 0.06391896094687295,
+              "p_gt_0": 0.7638
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.11181555461446743,
+              "ci_lo": -0.22381891281233382,
+              "mean": -0.052909169868370416,
+              "p_gt_0": 0.26
+            },
+            "openspec|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            }
+          },
+          "outcome": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": 0.26759722222222215,
+              "ci_lo": 0.07536574074074069,
+              "mean": 0.16717151851851855,
+              "p_gt_0": 0.9999
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": 0.20277777777777783,
+              "ci_lo": 0.03462499999999994,
+              "mean": 0.1172878148148148,
+              "p_gt_0": 0.9979
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": 0.3353703703703703,
+              "ci_lo": 0.12129629629629622,
+              "mean": 0.22739081481481485,
+              "p_gt_0": 0.9999
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": 0.19240740740740747,
+              "ci_lo": 0.03443981481481476,
+              "mean": 0.11144720370370371,
+              "p_gt_0": 0.9983
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": 0.16425925925925922,
+              "ci_lo": 0.03185185185185191,
+              "mean": 0.09723529629629626,
+              "p_gt_0": 0.9976
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": 0.15074074074074062,
+              "ci_lo": 0.010555555555555537,
+              "mean": 0.07780796296296297,
+              "p_gt_0": 0.9895
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": 0.18074074074074065,
+              "ci_lo": -0.02333333333333332,
+              "mean": 0.08029183333333333,
+              "p_gt_0": 0.9359
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": -0.07536574074074075,
+              "ci_lo": -0.2675972222222222,
+              "mean": -0.16717151851851855,
+              "p_gt_0": 0.0001
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": 0.06259259259259253,
+              "ci_lo": -0.16333333333333344,
+              "mean": -0.04988370370370372,
+              "p_gt_0": 0.1947
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": 0.14907407407407391,
+              "ci_lo": -0.021300925925925987,
+              "mean": 0.0602192962962963,
+              "p_gt_0": 0.9218
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.0527777777777777,
+              "ci_lo": -0.165740740740741,
+              "mean": -0.05572431481481484,
+              "p_gt_0": 0.1599
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": 0.04092592592592581,
+              "ci_lo": -0.18944444444444442,
+              "mean": -0.06993622222222227,
+              "p_gt_0": 0.1161
+            },
+            "armature_oss|openspec": {
+              "ci_hi": 0.006296296296296136,
+              "ci_lo": -0.18741203703703707,
+              "mean": -0.08936355555555558,
+              "p_gt_0": 0.0343
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": 0.03370833333333335,
+              "ci_lo": -0.20944444444444443,
+              "mean": -0.08687968518518521,
+              "p_gt_0": 0.0798
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": 0.16333333333333344,
+              "ci_lo": -0.06259259259259253,
+              "mean": 0.04988370370370372,
+              "p_gt_0": 0.804
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": -0.034625,
+              "ci_lo": -0.20277777777777783,
+              "mean": -0.1172878148148148,
+              "p_gt_0": 0.002
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": 0.19851851851851854,
+              "ci_lo": 0.030000000000000027,
+              "mean": 0.11010300000000002,
+              "p_gt_0": 0.9976
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": 0.07722685185185187,
+              "ci_lo": -0.09185185185185185,
+              "mean": -0.0058406111111111115,
+              "p_gt_0": 0.4507
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": 0.05759259259259253,
+              "ci_lo": -0.10555555555555562,
+              "mean": -0.020052518518518546,
+              "p_gt_0": 0.3255
+            },
+            "bmad_method|openspec": {
+              "ci_hi": 0.03333333333333344,
+              "ci_lo": -0.11444444444444446,
+              "mean": -0.03947985185185185,
+              "p_gt_0": 0.1493
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": 0.03574074074074063,
+              "ci_lo": -0.11388888888888904,
+              "mean": -0.03699598148148149,
+              "p_gt_0": 0.1637
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": 0.021300925925925925,
+              "ci_lo": -0.14907407407407391,
+              "mean": -0.0602192962962963,
+              "p_gt_0": 0.0772
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": -0.12129629629629624,
+              "ci_lo": -0.3353703703703703,
+              "mean": -0.22739081481481485,
+              "p_gt_0": 0.0001
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": -0.030000000000000023,
+              "ci_lo": -0.19851851851851854,
+              "mean": -0.11010300000000002,
+              "p_gt_0": 0.0023
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": -0.0038888888888888307,
+              "ci_lo": -0.2309259259259261,
+              "mean": -0.11594361111111114,
+              "p_gt_0": 0.0201
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": -0.011111111111111183,
+              "ci_lo": -0.2540833333333334,
+              "mean": -0.13015551851851856,
+              "p_gt_0": 0.0165
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": -0.052592592592592524,
+              "ci_lo": -0.25278240740740754,
+              "mean": -0.14958285185185186,
+              "p_gt_0": 0.0006
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": -0.05555555555555569,
+              "ci_lo": -0.24388888888888904,
+              "mean": -0.14709898148148148,
+              "p_gt_0": 0.0002
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.16574074074074097,
+              "ci_lo": -0.0527777777777777,
+              "mean": 0.05572431481481484,
+              "p_gt_0": 0.8395
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": -0.034439814814814826,
+              "ci_lo": -0.19240740740740747,
+              "mean": -0.11144720370370371,
+              "p_gt_0": 0.0017
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": 0.09185185185185185,
+              "ci_lo": -0.07722685185185192,
+              "mean": 0.0058406111111111115,
+              "p_gt_0": 0.5479
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": 0.2309259259259261,
+              "ci_lo": 0.0038888888888888307,
+              "mean": 0.11594361111111114,
+              "p_gt_0": 0.9795
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": 0.0537037037037037,
+              "ci_lo": -0.08777777777777773,
+              "mean": -0.014211907407407435,
+              "p_gt_0": 0.3527
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.032967592592592646,
+              "ci_lo": -0.10148611111111124,
+              "mean": -0.03363924074074074,
+              "p_gt_0": 0.1624
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": 0.059449074074074085,
+              "ci_lo": -0.11944444444444446,
+              "mean": -0.03115537037037038,
+              "p_gt_0": 0.2501
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": 0.18944444444444442,
+              "ci_lo": -0.04092592592592581,
+              "mean": 0.06993622222222227,
+              "p_gt_0": 0.8837
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": -0.03185185185185191,
+              "ci_lo": -0.16425925925925922,
+              "mean": -0.09723529629629626,
+              "p_gt_0": 0.0024
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": 0.10555555555555562,
+              "ci_lo": -0.05759259259259253,
+              "mean": 0.020052518518518546,
+              "p_gt_0": 0.6732
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": 0.2540833333333332,
+              "ci_lo": 0.011111111111111183,
+              "mean": 0.13015551851851856,
+              "p_gt_0": 0.9832
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": 0.08777777777777773,
+              "ci_lo": -0.0537037037037037,
+              "mean": 0.014211907407407435,
+              "p_gt_0": 0.6456
+            },
+            "memory_bank|openspec": {
+              "ci_hi": 0.05518981481481479,
+              "ci_lo": -0.0881481481481482,
+              "mean": -0.019427333333333307,
+              "p_gt_0": 0.293
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": 0.07556018518518516,
+              "ci_lo": -0.10500462962962971,
+              "mean": -0.01694346296296294,
+              "p_gt_0": 0.3531
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.18741203703703702,
+              "ci_lo": -0.006296296296296137,
+              "mean": 0.08936355555555558,
+              "p_gt_0": 0.9652
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": -0.010555555555555537,
+              "ci_lo": -0.15074074074074062,
+              "mean": -0.07780796296296297,
+              "p_gt_0": 0.0104
+            },
+            "openspec|bmad_method": {
+              "ci_hi": 0.11444444444444446,
+              "ci_lo": -0.033333333333333444,
+              "mean": 0.03947985185185185,
+              "p_gt_0": 0.8486
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": 0.25278240740740743,
+              "ci_lo": 0.052592592592592524,
+              "mean": 0.14958285185185186,
+              "p_gt_0": 0.9994
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.10148611111111118,
+              "ci_lo": -0.03296759259259271,
+              "mean": 0.03363924074074074,
+              "p_gt_0": 0.836
+            },
+            "openspec|memory_bank": {
+              "ci_hi": 0.0881481481481482,
+              "ci_lo": -0.05518981481481485,
+              "mean": 0.019427333333333307,
+              "p_gt_0": 0.7064
+            },
+            "openspec|wayfinder": {
+              "ci_hi": 0.10537500000000011,
+              "ci_lo": -0.0972222222222221,
+              "mean": 0.002483870370370365,
+              "p_gt_0": 0.5185
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": 0.20944444444444443,
+              "ci_lo": -0.033708333333333416,
+              "mean": 0.08687968518518521,
+              "p_gt_0": 0.9201
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": 0.02333333333333332,
+              "ci_lo": -0.18074074074074065,
+              "mean": -0.08029183333333333,
+              "p_gt_0": 0.0638
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": 0.11388888888888904,
+              "ci_lo": -0.03574074074074063,
+              "mean": 0.03699598148148149,
+              "p_gt_0": 0.8356
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": 0.24388888888888904,
+              "ci_lo": 0.05555555555555569,
+              "mean": 0.14709898148148148,
+              "p_gt_0": 0.9998
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": 0.11944444444444446,
+              "ci_lo": -0.05944907407407415,
+              "mean": 0.03115537037037038,
+              "p_gt_0": 0.7488
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": 0.10500462962962966,
+              "ci_lo": -0.07556018518518523,
+              "mean": 0.01694346296296294,
+              "p_gt_0": 0.6464
+            },
+            "wayfinder|openspec": {
+              "ci_hi": 0.0972222222222221,
+              "ci_lo": -0.10537500000000018,
+              "mean": -0.002483870370370365,
+              "p_gt_0": 0.4808
+            }
+          }
+        },
+        "tiers": {
+          "combined": {
+            "armature_oss": 3,
+            "armature_oss_dev": 1,
+            "bmad_method": 2,
+            "canonical_conductor": 3,
+            "github_spec_kit": 2,
+            "memory_bank": 2,
+            "openspec": 2,
+            "wayfinder": 1
+          },
+          "judge": {
+            "armature_oss": 1,
+            "github_spec_kit": 1,
+            "openspec": 1
+          },
+          "outcome": {
+            "armature_oss": 2,
+            "armature_oss_dev": 1,
+            "bmad_method": 2,
+            "canonical_conductor": 3,
+            "github_spec_kit": 2,
+            "memory_bank": 2,
+            "openspec": 2,
+            "wayfinder": 1
+          }
+        }
+      },
+      "heldout": {
+        "closest": {
+          "combined": {
+            "armature_oss": {
+              "ci_hi": 0.06439440035273349,
+              "ci_lo": -0.1517312610229278,
+              "competitor": "openspec",
+              "mean": -0.04418306613756616,
+              "p_gt_0": 0.212
+            },
+            "armature_oss_dev": {
+              "ci_hi": 0.11206018518518507,
+              "ci_lo": -0.10648148148148151,
+              "competitor": "bmad_method",
+              "mean": -0.00015851851851850728,
+              "p_gt_0": 0.4875
+            },
+            "bmad_method": {
+              "ci_hi": 0.10648148148148151,
+              "ci_lo": -0.11206018518518537,
+              "competitor": "armature_oss_dev",
+              "mean": 0.00015851851851850728,
+              "p_gt_0": 0.5106
+            },
+            "canonical_conductor": {
+              "ci_hi": 0.08333333333333326,
+              "ci_lo": -0.07037037037037042,
+              "competitor": "openspec",
+              "mean": 0.0041699074074074026,
+              "p_gt_0": 0.53
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.0868004850088184,
+              "ci_lo": -0.08154343033509696,
+              "competitor": "canonical_conductor",
+              "mean": 0.0037281525573192157,
+              "p_gt_0": 0.5415
+            },
+            "memory_bank": {
+              "ci_hi": 0.15370370370370368,
+              "ci_lo": -0.1351851851851853,
+              "competitor": "armature_oss_dev",
+              "mean": 0.007151018518518486,
+              "p_gt_0": 0.5327
+            },
+            "openspec": {
+              "ci_hi": 0.07037037037037042,
+              "ci_lo": -0.08333333333333326,
+              "competitor": "canonical_conductor",
+              "mean": -0.0041699074074074026,
+              "p_gt_0": 0.4618
+            },
+            "wayfinder": {
+              "ci_hi": 0.14166666666666683,
+              "ci_lo": -0.04999999999999983,
+              "competitor": "memory_bank",
+              "mean": 0.05046564814814816,
+              "p_gt_0": 0.8439
+            }
+          },
+          "judge": {
+            "armature_oss": {
+              "ci_hi": 0.06397665648384947,
+              "ci_lo": -0.30324349647266324,
+              "competitor": "github_spec_kit",
+              "mean": -0.11764804407470925,
+              "p_gt_0": 0.1059
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.30324349647266324,
+              "ci_lo": -0.06397665648384948,
+              "competitor": "armature_oss",
+              "mean": 0.11764804407470925,
+              "p_gt_0": 0.8939
+            }
+          },
+          "outcome": {
+            "armature_oss": {
+              "ci_hi": 0.06759259259259265,
+              "ci_lo": -0.13888888888888873,
+              "competitor": "openspec",
+              "mean": -0.03733231481481482,
+              "p_gt_0": 0.2334
+            },
+            "armature_oss_dev": {
+              "ci_hi": 0.11206018518518507,
+              "ci_lo": -0.10648148148148151,
+              "competitor": "bmad_method",
+              "mean": -0.00015851851851850728,
+              "p_gt_0": 0.4875
+            },
+            "bmad_method": {
+              "ci_hi": 0.10648148148148151,
+              "ci_lo": -0.11206018518518537,
+              "competitor": "armature_oss_dev",
+              "mean": 0.00015851851851850728,
+              "p_gt_0": 0.5106
+            },
+            "canonical_conductor": {
+              "ci_hi": 0.08333333333333326,
+              "ci_lo": -0.07037037037037042,
+              "competitor": "openspec",
+              "mean": 0.0041699074074074026,
+              "p_gt_0": 0.53
+            },
+            "github_spec_kit": {
+              "ci_hi": 0.08425925925925914,
+              "ci_lo": -0.07407407407407418,
+              "competitor": "canonical_conductor",
+              "mean": 0.0062324074074074105,
+              "p_gt_0": 0.566
+            },
+            "memory_bank": {
+              "ci_hi": 0.15370370370370368,
+              "ci_lo": -0.1351851851851853,
+              "competitor": "armature_oss_dev",
+              "mean": 0.007151018518518486,
+              "p_gt_0": 0.5327
+            },
+            "openspec": {
+              "ci_hi": 0.07037037037037042,
+              "ci_lo": -0.08333333333333326,
+              "competitor": "canonical_conductor",
+              "mean": -0.0041699074074074026,
+              "p_gt_0": 0.4618
+            },
+            "wayfinder": {
+              "ci_hi": 0.14166666666666683,
+              "ci_lo": -0.04999999999999983,
+              "competitor": "memory_bank",
+              "mean": 0.05046564814814816,
+              "p_gt_0": 0.8439
+            }
+          }
+        },
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.7372239858906525,
+              "ci_lo": 0.5025643738977073,
+              "mean": 0.6228130511463844
+            },
+            "judge": {
+              "ci_hi": 0.7151675485008818,
+              "ci_lo": 0.37389369889369883,
+              "mean": 0.562962962962963
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.7388888888888888,
+              "ci_lo": 0.512962962962963,
+              "mean": 0.6296296296296297
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.8472222222222222,
+              "ci_lo": 0.6546296296296298,
+              "mean": 0.7546296296296297
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8472222222222222,
+              "ci_lo": 0.6546296296296298,
+              "mean": 0.7546296296296297
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.8518518518518519,
+              "ci_lo": 0.6481481481481481,
+              "mean": 0.7546296296296297
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8518518518518519,
+              "ci_lo": 0.6481481481481481,
+              "mean": 0.7546296296296297
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.7916666666666667,
+              "ci_lo": 0.5435185185185186,
+              "mean": 0.6712962962962963
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.7916666666666667,
+              "ci_lo": 0.5435185185185186,
+              "mean": 0.6712962962962963
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.7849495149911817,
+              "ci_lo": 0.5571309523809524,
+              "mean": 0.675405643738977
+            },
+            "judge": {
+              "ci_hi": 0.8255416002126527,
+              "ci_lo": 0.49746843434343424,
+              "mean": 0.6729629629629629
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.788888888888889,
+              "ci_lo": 0.5564814814814815,
+              "mean": 0.6777777777777777
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.8537037037037037,
+              "ci_lo": 0.662037037037037,
+              "mean": 0.7620370370370371
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.8537037037037037,
+              "ci_lo": 0.662037037037037,
+              "mean": 0.7620370370370371
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.7796527777777776,
+              "ci_lo": 0.55,
+              "mean": 0.6675925925925926
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.7796527777777776,
+              "ci_lo": 0.55,
+              "mean": 0.6675925925925926
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.9009490740740737,
+              "ci_lo": 0.7120138888888888,
+              "mean": 0.812037037037037
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 90,
+            "n_scenarios_with_data": 30,
+            "outcome": {
+              "ci_hi": 0.9009490740740737,
+              "ci_lo": 0.7120138888888888,
+              "mean": 0.812037037037037
+            }
+          }
+        },
+        "n_scenarios": 30,
+        "paired": {
+          "combined": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": 0.2299151234567902,
+              "ci_lo": 0.043500440917107495,
+              "mean": 0.13134871428571432,
+              "p_gt_0": 0.9991
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": 0.11206018518518507,
+              "ci_lo": -0.10648148148148151,
+              "mean": -0.00015851851851850728,
+              "p_gt_0": 0.4875
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": 0.21018518518518525,
+              "ci_lo": -0.03240740740740733,
+              "mean": 0.08299574074074077,
+              "p_gt_0": 0.9117
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": 0.20415454144620804,
+              "ci_lo": -0.03291181657848323,
+              "mean": 0.07926758818342156,
+              "p_gt_0": 0.909
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": 0.1351851851851853,
+              "ci_lo": -0.15370370370370368,
+              "mean": -0.007151018518518486,
+              "p_gt_0": 0.4654
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": 0.20833333333333348,
+              "ci_lo": -0.020370370370370483,
+              "mean": 0.08716564814814817,
+              "p_gt_0": 0.941
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": 0.05277777777777792,
+              "ci_lo": -0.1537037037037038,
+              "mean": -0.05761666666666665,
+              "p_gt_0": 0.1292
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": -0.0435004409171075,
+              "ci_lo": -0.22991512345679024,
+              "mean": -0.13134871428571432,
+              "p_gt_0": 0.0009
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": -0.017106701940035537,
+              "ci_lo": -0.24255467372134049,
+              "mean": -0.13150723280423282,
+              "p_gt_0": 0.0141
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": 0.07424581128747791,
+              "ci_lo": -0.16247023809523822,
+              "mean": -0.04835297354497356,
+              "p_gt_0": 0.2079
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.05932319223985903,
+              "ci_lo": -0.1573990299823633,
+              "mean": -0.05208112610229278,
+              "p_gt_0": 0.172
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": 0.031881172839506096,
+              "ci_lo": -0.31288712522045853,
+              "mean": -0.13849973280423283,
+              "p_gt_0": 0.0574
+            },
+            "armature_oss|openspec": {
+              "ci_hi": 0.06439440035273349,
+              "ci_lo": -0.1517312610229278,
+              "mean": -0.04418306613756616,
+              "p_gt_0": 0.212
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": -0.052410273368606666,
+              "ci_lo": -0.3211560846560847,
+              "mean": -0.18896538095238097,
+              "p_gt_0": 0.0034
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": 0.24255467372134043,
+              "ci_lo": 0.017106701940035524,
+              "mean": 0.13150723280423282,
+              "p_gt_0": 0.9859
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": 0.10648148148148151,
+              "ci_lo": -0.11206018518518537,
+              "mean": 0.00015851851851850728,
+              "p_gt_0": 0.5106
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": 0.18425925925925923,
+              "ci_lo": -0.004629629629629761,
+              "mean": 0.08315425925925927,
+              "p_gt_0": 0.966
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": 0.170618827160494,
+              "ci_lo": -0.0021723985890650223,
+              "mean": 0.07942610670194006,
+              "p_gt_0": 0.9709
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": 0.11481481481481481,
+              "ci_lo": -0.13703703703703696,
+              "mean": -0.00699249999999998,
+              "p_gt_0": 0.4654
+            },
+            "bmad_method|openspec": {
+              "ci_hi": 0.18148148148148158,
+              "ci_lo": 0.0018518518518517713,
+              "mean": 0.08732416666666667,
+              "p_gt_0": 0.9765
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": 0.03703703703703731,
+              "ci_lo": -0.15555555555555556,
+              "mean": -0.05745814814814814,
+              "p_gt_0": 0.1164
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": 0.1624702380952382,
+              "ci_lo": -0.07424581128747798,
+              "mean": 0.04835297354497356,
+              "p_gt_0": 0.7921
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": 0.03240740740740733,
+              "ci_lo": -0.21018518518518525,
+              "mean": -0.08299574074074077,
+              "p_gt_0": 0.0873
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": 0.004629629629629761,
+              "ci_lo": -0.18425925925925923,
+              "mean": -0.08315425925925927,
+              "p_gt_0": 0.0334
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": 0.08154343033509696,
+              "ci_lo": -0.08680048500881841,
+              "mean": -0.0037281525573192157,
+              "p_gt_0": 0.4585
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": 0.05094907407407385,
+              "ci_lo": -0.2435416666666668,
+              "mean": -0.09014675925925925,
+              "p_gt_0": 0.1101
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": 0.08333333333333326,
+              "ci_lo": -0.07037037037037042,
+              "mean": 0.0041699074074074026,
+              "p_gt_0": 0.53
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": -0.045370370370370394,
+              "ci_lo": -0.2509259259259259,
+              "mean": -0.1406124074074074,
+              "p_gt_0": 0.001
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.15739902998236333,
+              "ci_lo": -0.05932319223985907,
+              "mean": 0.05208112610229278,
+              "p_gt_0": 0.828
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": 0.0329118165784832,
+              "ci_lo": -0.20415454144620807,
+              "mean": -0.07926758818342156,
+              "p_gt_0": 0.091
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": 0.00217239858906498,
+              "ci_lo": -0.170618827160494,
+              "mean": -0.07942610670194006,
+              "p_gt_0": 0.0291
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": 0.0868004850088184,
+              "ci_lo": -0.08154343033509696,
+              "mean": 0.0037281525573192157,
+              "p_gt_0": 0.5415
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": 0.04106018518518522,
+              "ci_lo": -0.2274620811287478,
+              "mean": -0.08641860670194004,
+              "p_gt_0": 0.0961
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.05962103174603177,
+              "ci_lo": -0.048450617283950614,
+              "mean": 0.007898059964726619,
+              "p_gt_0": 0.6273
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": -0.047529982363315675,
+              "ci_lo": -0.240282848324515,
+              "mean": -0.1368842548500882,
+              "p_gt_0": 0.0007
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": 0.3128871252204585,
+              "ci_lo": -0.03188117283950613,
+              "mean": 0.13849973280423283,
+              "p_gt_0": 0.9426
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": 0.15370370370370368,
+              "ci_lo": -0.1351851851851853,
+              "mean": 0.007151018518518486,
+              "p_gt_0": 0.5327
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": 0.13703703703703696,
+              "ci_lo": -0.11481481481481481,
+              "mean": 0.00699249999999998,
+              "p_gt_0": 0.5332
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": 0.24354166666666652,
+              "ci_lo": -0.05094907407407416,
+              "mean": 0.09014675925925925,
+              "p_gt_0": 0.8884
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": 0.22746208112874777,
+              "ci_lo": -0.04106018518518525,
+              "mean": 0.08641860670194004,
+              "p_gt_0": 0.9039
+            },
+            "memory_bank|openspec": {
+              "ci_hi": 0.24166666666666659,
+              "ci_lo": -0.03888888888888886,
+              "mean": 0.09431666666666665,
+              "p_gt_0": 0.9163
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": 0.04999999999999982,
+              "ci_lo": -0.14166666666666683,
+              "mean": -0.05046564814814816,
+              "p_gt_0": 0.1532
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.15173126102292778,
+              "ci_lo": -0.06439440035273353,
+              "mean": 0.04418306613756616,
+              "p_gt_0": 0.7879
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": 0.020370370370370483,
+              "ci_lo": -0.20833333333333348,
+              "mean": -0.08716564814814817,
+              "p_gt_0": 0.0582
+            },
+            "openspec|bmad_method": {
+              "ci_hi": -0.0018518518518517713,
+              "ci_lo": -0.18148148148148158,
+              "mean": -0.08732416666666667,
+              "p_gt_0": 0.0229
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": 0.07037037037037042,
+              "ci_lo": -0.08333333333333326,
+              "mean": -0.0041699074074074026,
+              "p_gt_0": 0.4618
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.04845061728395057,
+              "ci_lo": -0.05962103174603177,
+              "mean": -0.007898059964726619,
+              "p_gt_0": 0.3726
+            },
+            "openspec|memory_bank": {
+              "ci_hi": 0.03888888888888886,
+              "ci_lo": -0.24166666666666659,
+              "mean": -0.09431666666666665,
+              "p_gt_0": 0.0824
+            },
+            "openspec|wayfinder": {
+              "ci_hi": -0.05555555555555558,
+              "ci_lo": -0.24722222222222212,
+              "mean": -0.14478231481481482,
+              "p_gt_0": 0.0003
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": 0.32115608465608464,
+              "ci_lo": 0.05241027336860658,
+              "mean": 0.18896538095238097,
+              "p_gt_0": 0.9966
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": 0.15370370370370381,
+              "ci_lo": -0.05277777777777792,
+              "mean": 0.05761666666666665,
+              "p_gt_0": 0.8693
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": 0.15555555555555556,
+              "ci_lo": -0.03703703703703731,
+              "mean": 0.05745814814814814,
+              "p_gt_0": 0.8821
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": 0.2509259259259259,
+              "ci_lo": 0.045370370370370394,
+              "mean": 0.1406124074074074,
+              "p_gt_0": 0.999
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": 0.24028284832451496,
+              "ci_lo": 0.04752998236331567,
+              "mean": 0.1368842548500882,
+              "p_gt_0": 0.9993
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": 0.14166666666666683,
+              "ci_lo": -0.04999999999999983,
+              "mean": 0.05046564814814816,
+              "p_gt_0": 0.8439
+            },
+            "wayfinder|openspec": {
+              "ci_hi": 0.24722222222222212,
+              "ci_lo": 0.05555555555555558,
+              "mean": 0.14478231481481482,
+              "p_gt_0": 0.9997
+            }
+          },
+          "judge": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.06397665648384947,
+              "ci_lo": -0.30324349647266324,
+              "mean": -0.11764804407470925,
+              "p_gt_0": 0.1059
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.30324349647266324,
+              "ci_lo": -0.06397665648384948,
+              "mean": 0.11764804407470925,
+              "p_gt_0": 0.8939
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "openspec|wayfinder": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            },
+            "wayfinder|openspec": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null,
+              "p_gt_0": null
+            }
+          },
+          "outcome": {
+            "armature_oss_dev|armature_oss": {
+              "ci_hi": 0.21759259259259267,
+              "ci_lo": 0.043495370370370066,
+              "mean": 0.12449796296296299,
+              "p_gt_0": 0.9993
+            },
+            "armature_oss_dev|bmad_method": {
+              "ci_hi": 0.11206018518518507,
+              "ci_lo": -0.10648148148148151,
+              "mean": -0.00015851851851850728,
+              "p_gt_0": 0.4875
+            },
+            "armature_oss_dev|canonical_conductor": {
+              "ci_hi": 0.21018518518518525,
+              "ci_lo": -0.03240740740740733,
+              "mean": 0.08299574074074077,
+              "p_gt_0": 0.9117
+            },
+            "armature_oss_dev|github_spec_kit": {
+              "ci_hi": 0.20277777777777795,
+              "ci_lo": -0.0351851851851851,
+              "mean": 0.07676333333333335,
+              "p_gt_0": 0.9013
+            },
+            "armature_oss_dev|memory_bank": {
+              "ci_hi": 0.1351851851851853,
+              "ci_lo": -0.15370370370370368,
+              "mean": -0.007151018518518486,
+              "p_gt_0": 0.4654
+            },
+            "armature_oss_dev|openspec": {
+              "ci_hi": 0.20833333333333348,
+              "ci_lo": -0.020370370370370483,
+              "mean": 0.08716564814814817,
+              "p_gt_0": 0.941
+            },
+            "armature_oss_dev|wayfinder": {
+              "ci_hi": 0.05277777777777792,
+              "ci_lo": -0.1537037037037038,
+              "mean": -0.05761666666666665,
+              "p_gt_0": 0.1292
+            },
+            "armature_oss|armature_oss_dev": {
+              "ci_hi": -0.04349537037037038,
+              "ci_lo": -0.21759259259259267,
+              "mean": -0.12449796296296299,
+              "p_gt_0": 0.0007
+            },
+            "armature_oss|bmad_method": {
+              "ci_hi": -0.01574074074074061,
+              "ci_lo": -0.22962962962962974,
+              "mean": -0.12465648148148151,
+              "p_gt_0": 0.0141
+            },
+            "armature_oss|canonical_conductor": {
+              "ci_hi": 0.07499999999999984,
+              "ci_lo": -0.15000000000000002,
+              "mean": -0.041502222222222225,
+              "p_gt_0": 0.2263
+            },
+            "armature_oss|github_spec_kit": {
+              "ci_hi": 0.06296296296296311,
+              "ci_lo": -0.15000000000000013,
+              "mean": -0.047734629629629634,
+              "p_gt_0": 0.1873
+            },
+            "armature_oss|memory_bank": {
+              "ci_hi": 0.03425925925925932,
+              "ci_lo": -0.30092592592592604,
+              "mean": -0.13164898148148146,
+              "p_gt_0": 0.0605
+            },
+            "armature_oss|openspec": {
+              "ci_hi": 0.06759259259259265,
+              "ci_lo": -0.13888888888888873,
+              "mean": -0.03733231481481482,
+              "p_gt_0": 0.2334
+            },
+            "armature_oss|wayfinder": {
+              "ci_hi": -0.04999999999999982,
+              "ci_lo": -0.30925925925925934,
+              "mean": -0.18211462962962965,
+              "p_gt_0": 0.0033
+            },
+            "bmad_method|armature_oss": {
+              "ci_hi": 0.22962962962962974,
+              "ci_lo": 0.01574074074074061,
+              "mean": 0.12465648148148151,
+              "p_gt_0": 0.9855
+            },
+            "bmad_method|armature_oss_dev": {
+              "ci_hi": 0.10648148148148151,
+              "ci_lo": -0.11206018518518537,
+              "mean": 0.00015851851851850728,
+              "p_gt_0": 0.5106
+            },
+            "bmad_method|canonical_conductor": {
+              "ci_hi": 0.18425925925925923,
+              "ci_lo": -0.004629629629629761,
+              "mean": 0.08315425925925927,
+              "p_gt_0": 0.966
+            },
+            "bmad_method|github_spec_kit": {
+              "ci_hi": 0.1712962962962964,
+              "ci_lo": -0.007407407407407307,
+              "mean": 0.07692185185185187,
+              "p_gt_0": 0.9629
+            },
+            "bmad_method|memory_bank": {
+              "ci_hi": 0.11481481481481481,
+              "ci_lo": -0.13703703703703696,
+              "mean": -0.00699249999999998,
+              "p_gt_0": 0.4654
+            },
+            "bmad_method|openspec": {
+              "ci_hi": 0.18148148148148158,
+              "ci_lo": 0.0018518518518517713,
+              "mean": 0.08732416666666667,
+              "p_gt_0": 0.9765
+            },
+            "bmad_method|wayfinder": {
+              "ci_hi": 0.03703703703703731,
+              "ci_lo": -0.15555555555555556,
+              "mean": -0.05745814814814814,
+              "p_gt_0": 0.1164
+            },
+            "canonical_conductor|armature_oss": {
+              "ci_hi": 0.15000000000000002,
+              "ci_lo": -0.07499999999999984,
+              "mean": 0.041502222222222225,
+              "p_gt_0": 0.7719
+            },
+            "canonical_conductor|armature_oss_dev": {
+              "ci_hi": 0.03240740740740733,
+              "ci_lo": -0.21018518518518525,
+              "mean": -0.08299574074074077,
+              "p_gt_0": 0.0873
+            },
+            "canonical_conductor|bmad_method": {
+              "ci_hi": 0.004629629629629761,
+              "ci_lo": -0.18425925925925923,
+              "mean": -0.08315425925925927,
+              "p_gt_0": 0.0334
+            },
+            "canonical_conductor|github_spec_kit": {
+              "ci_hi": 0.07407407407407418,
+              "ci_lo": -0.08425925925925916,
+              "mean": -0.0062324074074074105,
+              "p_gt_0": 0.4291
+            },
+            "canonical_conductor|memory_bank": {
+              "ci_hi": 0.05094907407407385,
+              "ci_lo": -0.2435416666666668,
+              "mean": -0.09014675925925925,
+              "p_gt_0": 0.1101
+            },
+            "canonical_conductor|openspec": {
+              "ci_hi": 0.08333333333333326,
+              "ci_lo": -0.07037037037037042,
+              "mean": 0.0041699074074074026,
+              "p_gt_0": 0.53
+            },
+            "canonical_conductor|wayfinder": {
+              "ci_hi": -0.045370370370370394,
+              "ci_lo": -0.2509259259259259,
+              "mean": -0.1406124074074074,
+              "p_gt_0": 0.001
+            },
+            "github_spec_kit|armature_oss": {
+              "ci_hi": 0.15000000000000013,
+              "ci_lo": -0.06296296296296311,
+              "mean": 0.047734629629629634,
+              "p_gt_0": 0.8109
+            },
+            "github_spec_kit|armature_oss_dev": {
+              "ci_hi": 0.0351851851851851,
+              "ci_lo": -0.20277777777777795,
+              "mean": -0.07676333333333335,
+              "p_gt_0": 0.0971
+            },
+            "github_spec_kit|bmad_method": {
+              "ci_hi": 0.007407407407407307,
+              "ci_lo": -0.1712962962962964,
+              "mean": -0.07692185185185187,
+              "p_gt_0": 0.0362
+            },
+            "github_spec_kit|canonical_conductor": {
+              "ci_hi": 0.08425925925925914,
+              "ci_lo": -0.07407407407407418,
+              "mean": 0.0062324074074074105,
+              "p_gt_0": 0.566
+            },
+            "github_spec_kit|memory_bank": {
+              "ci_hi": 0.04351851851851862,
+              "ci_lo": -0.22777777777777775,
+              "mean": -0.08391435185185185,
+              "p_gt_0": 0.1082
+            },
+            "github_spec_kit|openspec": {
+              "ci_hi": 0.05833333333333324,
+              "ci_lo": -0.03981481481481475,
+              "mean": 0.010402314814814814,
+              "p_gt_0": 0.6789
+            },
+            "github_spec_kit|wayfinder": {
+              "ci_hi": -0.045370370370370394,
+              "ci_lo": -0.23703703703703705,
+              "mean": -0.13438,
+              "p_gt_0": 0.0008
+            },
+            "memory_bank|armature_oss": {
+              "ci_hi": 0.30092592592592604,
+              "ci_lo": -0.03425925925925932,
+              "mean": 0.13164898148148146,
+              "p_gt_0": 0.9388
+            },
+            "memory_bank|armature_oss_dev": {
+              "ci_hi": 0.15370370370370368,
+              "ci_lo": -0.1351851851851853,
+              "mean": 0.007151018518518486,
+              "p_gt_0": 0.5327
+            },
+            "memory_bank|bmad_method": {
+              "ci_hi": 0.13703703703703696,
+              "ci_lo": -0.11481481481481481,
+              "mean": 0.00699249999999998,
+              "p_gt_0": 0.5332
+            },
+            "memory_bank|canonical_conductor": {
+              "ci_hi": 0.24354166666666652,
+              "ci_lo": -0.05094907407407416,
+              "mean": 0.09014675925925925,
+              "p_gt_0": 0.8884
+            },
+            "memory_bank|github_spec_kit": {
+              "ci_hi": 0.22777777777777775,
+              "ci_lo": -0.04351851851851862,
+              "mean": 0.08391435185185185,
+              "p_gt_0": 0.8905
+            },
+            "memory_bank|openspec": {
+              "ci_hi": 0.24166666666666659,
+              "ci_lo": -0.03888888888888886,
+              "mean": 0.09431666666666665,
+              "p_gt_0": 0.9163
+            },
+            "memory_bank|wayfinder": {
+              "ci_hi": 0.04999999999999982,
+              "ci_lo": -0.14166666666666683,
+              "mean": -0.05046564814814816,
+              "p_gt_0": 0.1532
+            },
+            "openspec|armature_oss": {
+              "ci_hi": 0.13888888888888873,
+              "ci_lo": -0.06759259259259265,
+              "mean": 0.03733231481481482,
+              "p_gt_0": 0.7645
+            },
+            "openspec|armature_oss_dev": {
+              "ci_hi": 0.020370370370370483,
+              "ci_lo": -0.20833333333333348,
+              "mean": -0.08716564814814817,
+              "p_gt_0": 0.0582
+            },
+            "openspec|bmad_method": {
+              "ci_hi": -0.0018518518518517713,
+              "ci_lo": -0.18148148148148158,
+              "mean": -0.08732416666666667,
+              "p_gt_0": 0.0229
+            },
+            "openspec|canonical_conductor": {
+              "ci_hi": 0.07037037037037042,
+              "ci_lo": -0.08333333333333326,
+              "mean": -0.0041699074074074026,
+              "p_gt_0": 0.4618
+            },
+            "openspec|github_spec_kit": {
+              "ci_hi": 0.03981481481481475,
+              "ci_lo": -0.05833333333333324,
+              "mean": -0.010402314814814814,
+              "p_gt_0": 0.3114
+            },
+            "openspec|memory_bank": {
+              "ci_hi": 0.03888888888888886,
+              "ci_lo": -0.24166666666666659,
+              "mean": -0.09431666666666665,
+              "p_gt_0": 0.0824
+            },
+            "openspec|wayfinder": {
+              "ci_hi": -0.05555555555555558,
+              "ci_lo": -0.24722222222222212,
+              "mean": -0.14478231481481482,
+              "p_gt_0": 0.0003
+            },
+            "wayfinder|armature_oss": {
+              "ci_hi": 0.30925925925925934,
+              "ci_lo": 0.04999999999999982,
+              "mean": 0.18211462962962965,
+              "p_gt_0": 0.9966
+            },
+            "wayfinder|armature_oss_dev": {
+              "ci_hi": 0.15370370370370381,
+              "ci_lo": -0.05277777777777792,
+              "mean": 0.05761666666666665,
+              "p_gt_0": 0.8693
+            },
+            "wayfinder|bmad_method": {
+              "ci_hi": 0.15555555555555556,
+              "ci_lo": -0.03703703703703731,
+              "mean": 0.05745814814814814,
+              "p_gt_0": 0.8821
+            },
+            "wayfinder|canonical_conductor": {
+              "ci_hi": 0.2509259259259259,
+              "ci_lo": 0.045370370370370394,
+              "mean": 0.1406124074074074,
+              "p_gt_0": 0.999
+            },
+            "wayfinder|github_spec_kit": {
+              "ci_hi": 0.23703703703703705,
+              "ci_lo": 0.045370370370370394,
+              "mean": 0.13438,
+              "p_gt_0": 0.9991
+            },
+            "wayfinder|memory_bank": {
+              "ci_hi": 0.14166666666666683,
+              "ci_lo": -0.04999999999999983,
+              "mean": 0.05046564814814816,
+              "p_gt_0": 0.8439
+            },
+            "wayfinder|openspec": {
+              "ci_hi": 0.24722222222222212,
+              "ci_lo": 0.05555555555555558,
+              "mean": 0.14478231481481482,
+              "p_gt_0": 0.9997
+            }
+          }
+        },
+        "tiers": {
+          "combined": {
+            "armature_oss": 2,
+            "armature_oss_dev": 1,
+            "bmad_method": 1,
+            "canonical_conductor": 2,
+            "github_spec_kit": 2,
+            "memory_bank": 1,
+            "openspec": 2,
+            "wayfinder": 1
+          },
+          "judge": {
+            "armature_oss": 1,
+            "github_spec_kit": 1
+          },
+          "outcome": {
+            "armature_oss": 2,
+            "armature_oss_dev": 1,
+            "bmad_method": 1,
+            "canonical_conductor": 2,
+            "github_spec_kit": 2,
+            "memory_bank": 1,
+            "openspec": 2,
+            "wayfinder": 1
+          }
+        }
+      }
+    }
+  },
+  "commands": {
+    "armature_oss": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 406,
+          "mock": 289,
+          "refused": 76,
+          "wrap_up_refused": 1
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 0.4222222222222222
+      }
+    },
+    "armature_oss_dev": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 649,
+          "mock": 459,
+          "refused": 110,
+          "wrap_up_refused": 1
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 0.6111111111111112
+      }
+    },
+    "bmad_method": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 908,
+          "mock": 620,
+          "pack_tool": 119,
+          "refused": 596,
+          "wrap_up_refused": 6
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 3.311111111111111
+      }
+    },
+    "canonical_conductor": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 592,
+          "mock": 329,
+          "refused": 141,
+          "wrap_up_refused": 1
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 0.7833333333333333
+      }
+    },
+    "github_spec_kit": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 850,
+          "mock": 680,
+          "pack_tool": 150,
+          "refused": 325,
+          "wrap_up_refused": 1
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 1.8055555555555556
+      }
+    },
+    "memory_bank": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 852,
+          "mock": 976,
+          "refused": 296,
+          "wrap_up_refused": 4
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 1.6444444444444444
+      }
+    },
+    "openspec": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 763,
+          "mock": 570,
+          "pack_tool": 1679,
+          "refused": 197,
+          "wrap_up_refused": 4
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 1.0944444444444446
+      }
+    },
+    "wayfinder": {
+      "gemini-3.5-flash": {
+        "counts": {
+          "builtin": 1118,
+          "mock": 783,
+          "refused": 283,
+          "wrap_up_refused": 5
+        },
+        "n_rollouts": 180,
+        "refused_per_rollout": 1.5722222222222222
+      }
+    }
+  },
+  "cost": {
+    "armature_oss": {
+      "gemini-3.5-flash": {
+        "api_calls": 28.083333333333332,
+        "cached_tokens": 581415.7555555556,
+        "input_tokens": 712440.5944444444,
+        "latency_s": 51.467725375137526,
+        "n": 180,
+        "output_tokens": 1173.9722222222222,
+        "retry_input_tokens": 0.0,
+        "retry_output_tokens": 0.0,
+        "retry_thinking_tokens": 0.0,
+        "thinking_tokens": 4381.4944444444445
+      }
+    },
+    "armature_oss_dev": {
+      "gemini-3.5-flash": {
+        "api_calls": 35.705555555555556,
+        "cached_tokens": 525918.6555555556,
+        "input_tokens": 661345.0277777778,
+        "latency_s": 61.59379001924487,
+        "n": 180,
+        "output_tokens": 2349.1055555555554,
+        "retry_input_tokens": 0.0,
+        "retry_output_tokens": 0.0,
+        "retry_thinking_tokens": 0.0,
+        "thinking_tokens": 4809.433333333333
+      }
+    },
+    "bmad_method": {
+      "gemini-3.5-flash": {
+        "api_calls": 34.9,
+        "cached_tokens": 285541.25,
+        "input_tokens": 395476.5111111111,
+        "latency_s": 58.034273564236514,
+        "n": 180,
+        "output_tokens": 2266.0944444444444,
+        "retry_input_tokens": 59.772222222222226,
+        "retry_output_tokens": 13.727777777777778,
+        "retry_thinking_tokens": 77.27222222222223,
+        "thinking_tokens": 6213.366666666667
+      }
+    },
+    "canonical_conductor": {
+      "gemini-3.5-flash": {
+        "api_calls": 20.45,
+        "cached_tokens": 70156.36111111111,
+        "input_tokens": 137090.21666666667,
+        "latency_s": 36.96344457701295,
+        "n": 180,
+        "output_tokens": 1073.3833333333334,
+        "retry_input_tokens": 28.633333333333333,
+        "retry_output_tokens": 0.0,
+        "retry_thinking_tokens": 0.06111111111111111,
+        "thinking_tokens": 3337.6666666666665
+      }
+    },
+    "github_spec_kit": {
+      "gemini-3.5-flash": {
+        "api_calls": 31.705555555555556,
+        "cached_tokens": 179857.4611111111,
+        "input_tokens": 285673.25,
+        "latency_s": 66.49623174814495,
+        "n": 180,
+        "output_tokens": 2920.0222222222224,
+        "retry_input_tokens": 0.0,
+        "retry_output_tokens": 0.0,
+        "retry_thinking_tokens": 0.0,
+        "thinking_tokens": 5512.077777777778
+      }
+    },
+    "memory_bank": {
+      "gemini-3.5-flash": {
+        "api_calls": 40.16111111111111,
+        "cached_tokens": 123160.25,
+        "input_tokens": 245364.4388888889,
+        "latency_s": 68.53600242370109,
+        "n": 180,
+        "output_tokens": 2621.788888888889,
+        "retry_input_tokens": 128.2888888888889,
+        "retry_output_tokens": 30.427777777777777,
+        "retry_thinking_tokens": 60.81666666666667,
+        "thinking_tokens": 6935.122222222222
+      }
+    },
+    "openspec": {
+      "gemini-3.5-flash": {
+        "api_calls": 42.80555555555556,
+        "cached_tokens": 363411.2111111111,
+        "input_tokens": 498195.75,
+        "latency_s": 72.88441996840686,
+        "n": 180,
+        "output_tokens": 2999.7,
+        "retry_input_tokens": 0.0,
+        "retry_output_tokens": 0.0,
+        "retry_thinking_tokens": 0.0,
+        "thinking_tokens": 5104.322222222222
+      }
+    },
+    "wayfinder": {
+      "gemini-3.5-flash": {
+        "api_calls": 35.25555555555555,
+        "cached_tokens": 187720.90555555557,
+        "input_tokens": 315755.86666666664,
+        "latency_s": 60.311014870254276,
+        "n": 180,
+        "output_tokens": 2088.4555555555557,
+        "retry_input_tokens": 0.0,
+        "retry_output_tokens": 0.0,
+        "retry_thinking_tokens": 0.0,
+        "thinking_tokens": 6152.094444444445
+      }
+    }
+  },
+  "frameworks": [
+    "armature_oss",
+    "armature_oss_dev",
+    "bmad_method",
+    "canonical_conductor",
+    "github_spec_kit",
+    "memory_bank",
+    "openspec",
+    "wayfinder"
+  ],
+  "harness": {
+    "cells": {
+      "armature_oss": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "armature_oss_dev": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "bmad_method": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "canonical_conductor": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "github_spec_kit": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "memory_bank": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "openspec": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      },
+      "wayfinder": {
+        "gemini-3.5-flash": {
+          "errors": 0,
+          "kinds": {},
+          "over_threshold": false,
+          "rate": 0.0,
+          "total": 180
+        }
+      }
+    },
+    "invalid": false
+  },
+  "heldout_shift": {
+    "gemini-3.5-flash": {
+      "armature_oss": {
+        "competitor": "bmad_method",
+        "core": 0.7287037037037037,
+        "core_lead": -0.04988370370370372,
+        "core_tier": 2,
+        "delta": -0.09907407407407409,
+        "heldout": 0.6296296296296297,
+        "heldout_lead": -0.12465648148148151,
+        "heldout_tier": 2
+      },
+      "armature_oss_dev": {
+        "competitor": "openspec",
+        "core": 0.8959259259259259,
+        "core_lead": 0.07780796296296297,
+        "core_tier": 1,
+        "delta": -0.14129629629629625,
+        "heldout": 0.7546296296296297,
+        "heldout_lead": 0.08716564814814817,
+        "heldout_tier": 1
+      },
+      "bmad_method": {
+        "competitor": "github_spec_kit",
+        "core": 0.7790740740740741,
+        "core_lead": -0.0058406111111111115,
+        "core_tier": 2,
+        "delta": -0.02444444444444449,
+        "heldout": 0.7546296296296297,
+        "heldout_lead": 0.07692185185185187,
+        "heldout_tier": 1
+      },
+      "canonical_conductor": {
+        "competitor": "armature_oss",
+        "core": 0.669074074074074,
+        "core_lead": -0.0602192962962963,
+        "core_tier": 3,
+        "delta": 0.0022222222222222365,
+        "heldout": 0.6712962962962963,
+        "heldout_lead": 0.041502222222222225,
+        "heldout_tier": 2
+      },
+      "github_spec_kit": {
+        "competitor": "bmad_method",
+        "core": 0.7846296296296296,
+        "core_lead": 0.0058406111111111115,
+        "core_tier": 2,
+        "delta": -0.10685185185185186,
+        "heldout": 0.6777777777777777,
+        "heldout_lead": -0.07692185185185187,
+        "heldout_tier": 2
+      },
+      "memory_bank": {
+        "competitor": "github_spec_kit",
+        "core": 0.798888888888889,
+        "core_lead": 0.014211907407407435,
+        "core_tier": 2,
+        "delta": -0.03685185185185191,
+        "heldout": 0.7620370370370371,
+        "heldout_lead": 0.08391435185185185,
+        "heldout_tier": 1
+      },
+      "openspec": {
+        "competitor": "wayfinder",
+        "core": 0.8183333333333334,
+        "core_lead": 0.002483870370370365,
+        "core_tier": 2,
+        "delta": -0.15074074074074073,
+        "heldout": 0.6675925925925926,
+        "heldout_lead": -0.14478231481481482,
+        "heldout_tier": 2
+      },
+      "wayfinder": {
+        "competitor": "openspec",
+        "core": 0.8164814814814815,
+        "core_lead": -0.002483870370370365,
+        "core_tier": 1,
+        "delta": -0.004444444444444473,
+        "heldout": 0.812037037037037,
+        "heldout_lead": 0.14478231481481482,
+        "heldout_tier": 1
+      }
+    }
+  },
+  "judge": {
+    "criteria_excluded": 954,
+    "criteria_not_sampled": 1408,
+    "criteria_total": 2736,
+    "note": "Tiebreak-judge pairs are computed only on items where the primary judges disagreed, so their kappa is biased low and is not a measure of overall reliability.",
+    "pairwise_kappa": {
+      "gemini-3.1-pro-preview|gemma-4-31b-it": {
+        "ci_hi": 0.9304651162790601,
+        "ci_lo": -0.067796610169491,
+        "kappa": 0.4999999999999998,
+        "n_clusters": 13,
+        "n_items": 24,
+        "raw_agreement": 0.875
+      },
+      "gemini-3.1-pro-preview|opus-5.5-low": {
+        "ci_hi": 0.9295604733305496,
+        "ci_lo": 0.79921441555628,
+        "kappa": 0.8669709814150635,
+        "n_clusters": 51,
+        "n_items": 374,
+        "raw_agreement": 0.9358288770053476
+      },
+      "gemma-4-31b-it|opus-5.5-low": {
+        "ci_hi": 0.010471204188481634,
+        "ci_lo": -0.4400561056105611,
+        "kappa": -0.16666666666666666,
+        "n_clusters": 13,
+        "n_items": 24,
+        "raw_agreement": 0.125
+      }
+    },
+    "primary_kappa": {
+      "ci_hi": 0.9295604733305496,
+      "ci_lo": 0.79921441555628,
+      "kappa": 0.8669709814150635,
+      "n_clusters": 51,
+      "n_items": 374,
+      "raw_agreement": 0.9358288770053476
+    },
+    "subsampled_judge": "opus-5.5-low",
+    "tiebreaks": 24,
+    "votes_cast": {
+      "gemini-3.1-pro-preview": 1328,
+      "gemma-4-31b-it": 24,
+      "opus-5.5-low": 1328
+    },
+    "votes_invalid": {
+      "gemini-3.1-pro-preview": 1,
+      "opus-5.5-low": 954
+    }
+  },
+  "model_views": [
+    "gemini-3.5-flash"
+  ],
+  "models": [
+    "gemini-3.5-flash"
+  ],
+  "n_boot": 10000,
+  "pillars": {
+    "gemini-3.5-flash": {
+      "context_continuity": {
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.5740740740740741,
+              "ci_lo": 0.25958167989417985,
+              "mean": 0.41038359788359785
+            },
+            "judge": {
+              "ci_hi": 0.5625,
+              "ci_lo": 0.2222222222222222,
+              "mean": 0.4
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.5652777777777778,
+              "ci_lo": 0.24302083333333335,
+              "mean": 0.3986111111111111
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.8402777777777778,
+              "ci_lo": 0.638888888888889,
+              "mean": 0.75
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8402777777777778,
+              "ci_lo": 0.638888888888889,
+              "mean": 0.75
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.8611111111111112,
+              "ci_lo": 0.5162037037037037,
+              "mean": 0.6939814814814814
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8611111111111112,
+              "ci_lo": 0.5162037037037037,
+              "mean": 0.6939814814814814
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.5680555555555555,
+              "ci_lo": 0.2416666666666667,
+              "mean": 0.3986111111111111
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.5680555555555555,
+              "ci_lo": 0.2416666666666667,
+              "mean": 0.3986111111111111
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.822556216931217,
+              "ci_lo": 0.5868369708994708,
+              "mean": 0.7094576719576721
+            },
+            "judge": {
+              "ci_hi": 0.9722222222222222,
+              "ci_lo": 0.575,
+              "mean": 0.7916666666666667
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8069444444444445,
+              "ci_lo": 0.5569444444444444,
+              "mean": 0.688888888888889
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.861111111111111,
+              "mean": 0.9375
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.861111111111111,
+              "mean": 0.9375
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.7291666666666666,
+              "ci_lo": 0.5138888888888888,
+              "mean": 0.6319444444444444
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.7291666666666666,
+              "ci_lo": 0.5138888888888888,
+              "mean": 0.6319444444444444
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.8875000000000001,
+              "ci_lo": 0.6263888888888889,
+              "mean": 0.7625000000000001
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8875000000000001,
+              "ci_lo": 0.6263888888888889,
+              "mean": 0.7625000000000001
+            }
+          }
+        },
+        "n_scenarios": 12
+      },
+      "drift_governance": {
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.9003125,
+              "ci_lo": 0.6231365740740741,
+              "mean": 0.7657407407407407
+            },
+            "judge": {
+              "ci_hi": 0.85,
+              "ci_lo": 0.3333333333333333,
+              "mean": 0.5916666666666666
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9120370370370371,
+              "ci_lo": 0.6527777777777778,
+              "mean": 0.7870370370370371
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.9560185185185185,
+              "ci_lo": 0.7175925925925926,
+              "mean": 0.8449074074074074
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9560185185185185,
+              "ci_lo": 0.7175925925925926,
+              "mean": 0.8449074074074074
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.8958333333333334,
+              "ci_lo": 0.6527777777777778,
+              "mean": 0.7777777777777778
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8958333333333334,
+              "ci_lo": 0.6527777777777778,
+              "mean": 0.7777777777777778
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.8032986111111103,
+              "ci_lo": 0.4861111111111111,
+              "mean": 0.6435185185185185
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8032986111111103,
+              "ci_lo": 0.4861111111111111,
+              "mean": 0.6435185185185185
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.9194444444444444,
+              "ci_lo": 0.6416589506172841,
+              "mean": 0.7887345679012346
+            },
+            "judge": {
+              "ci_hi": 0.9333333333333333,
+              "ci_lo": 0.4375,
+              "mean": 0.6916666666666667
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9305555555555555,
+              "ci_lo": 0.6666666666666666,
+              "mean": 0.8055555555555555
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.9791666666666666,
+              "ci_lo": 0.8402777777777778,
+              "mean": 0.9166666666666666
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9791666666666666,
+              "ci_lo": 0.8402777777777778,
+              "mean": 0.9166666666666666
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.9192939814814814,
+              "ci_lo": 0.6456712962962963,
+              "mean": 0.7885802469135802
+            },
+            "judge": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.3333333333333333,
+              "mean": 0.6666666666666666
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9259259259259259,
+              "ci_lo": 0.6573495370370369,
+              "mean": 0.7962962962962963
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.9444444444444445,
+              "ci_lo": 0.6597222222222222,
+              "mean": 0.8125
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9444444444444445,
+              "ci_lo": 0.6597222222222222,
+              "mean": 0.8125
+            }
+          }
+        },
+        "n_scenarios": 12
+      },
+      "spec_gating": {
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.5180776014109347,
+              "ci_lo": 0.3344328703703704,
+              "mean": 0.4295634920634921
+            },
+            "judge": {
+              "ci_hi": 0.5,
+              "ci_lo": 0.07407407407407407,
+              "mean": 0.27129629629629626
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.5416666666666666,
+              "ci_lo": 0.36111111111111116,
+              "mean": 0.4513888888888889
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.7916666666666666,
+              "ci_lo": 0.548611111111111,
+              "mean": 0.6712962962962963
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.7916666666666666,
+              "ci_lo": 0.548611111111111,
+              "mean": 0.6712962962962963
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.6875,
+              "ci_lo": 0.5509259259259259,
+              "mean": 0.6226851851851852
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.6875,
+              "ci_lo": 0.5509259259259259,
+              "mean": 0.6226851851851852
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.7083333333333334,
+              "ci_lo": 0.5555555555555556,
+              "mean": 0.638888888888889
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.7083333333333334,
+              "ci_lo": 0.5555555555555556,
+              "mean": 0.638888888888889
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.6663442460317458,
+              "ci_lo": 0.39814814814814814,
+              "mean": 0.542989417989418
+            },
+            "judge": {
+              "ci_hi": 0.5694573045267488,
+              "ci_lo": 0.14285714285714285,
+              "mean": 0.34629629629629627
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.6944444444444445,
+              "ci_lo": 0.4305555555555556,
+              "mean": 0.576388888888889
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.6805555555555555,
+              "ci_lo": 0.4837962962962962,
+              "mean": 0.5740740740740741
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.6805555555555555,
+              "ci_lo": 0.4837962962962962,
+              "mean": 0.5740740740740741
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.6936728395061728,
+              "ci_lo": 0.4351851851851852,
+              "mean": 0.5787037037037036
+            },
+            "judge": {
+              "ci_hi": 0.5555555555555555,
+              "ci_lo": 0.0,
+              "mean": 0.3
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.7083333333333334,
+              "ci_lo": 0.4513888888888889,
+              "mean": 0.5972222222222222
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.8958333333333334,
+              "ci_lo": 0.6481481481481481,
+              "mean": 0.7754629629629629
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8958333333333334,
+              "ci_lo": 0.6481481481481481,
+              "mean": 0.7754629629629629
+            }
+          }
+        },
+        "n_scenarios": 12
+      },
+      "state_safety": {
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 0.8222227733686065,
+              "ci_lo": 0.5865057319223986,
+              "mean": 0.710273368606702
+            },
+            "judge": {
+              "ci_hi": 0.7716049382716049,
+              "ci_lo": 0.3282828282828283,
+              "mean": 0.5656565656565656
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8722222222222222,
+              "ci_lo": 0.6523148148148148,
+              "mean": 0.7657407407407407
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 0.9675925925925926,
+              "ci_lo": 0.7342592592592592,
+              "mean": 0.8601851851851853
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9675925925925926,
+              "ci_lo": 0.7342592592592592,
+              "mean": 0.8601851851851853
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 0.9111111111111111,
+              "ci_lo": 0.5758796296296298,
+              "mean": 0.7537037037037037
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9111111111111111,
+              "ci_lo": 0.5758796296296298,
+              "mean": 0.7537037037037037
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 0.8787268518518515,
+              "ci_lo": 0.49999999999999994,
+              "mean": 0.6935185185185185
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8787268518518515,
+              "ci_lo": 0.49999999999999994,
+              "mean": 0.6935185185185185
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 0.7820987654320988,
+              "ci_lo": 0.43118716931216927,
+              "mean": 0.6082010582010582
+            },
+            "judge": {
+              "ci_hi": 0.7777777777777777,
+              "ci_lo": 0.33333333333333337,
+              "mean": 0.5454545454545454
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.7953703703703704,
+              "ci_lo": 0.43333333333333335,
+              "mean": 0.6171296296296296
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.9037037037037038,
+              "ci_lo": 0.5231481481481481,
+              "mean": 0.725462962962963
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9037037037037038,
+              "ci_lo": 0.5231481481481481,
+              "mean": 0.725462962962963
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 0.875,
+              "ci_lo": 0.5185185185185185,
+              "mean": 0.7027777777777778
+            },
+            "judge": {
+              "ci_hi": 0.5,
+              "ci_lo": 0.0,
+              "mean": 0.25
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.8777777777777779,
+              "ci_lo": 0.5236111111111111,
+              "mean": 0.7074074074074074
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 0.9027777777777777,
+              "ci_lo": 0.5560185185185186,
+              "mean": 0.7374999999999999
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.9027777777777777,
+              "ci_lo": 0.5560185185185186,
+              "mean": 0.7374999999999999
+            }
+          }
+        },
+        "n_scenarios": 12
+      },
+      "surgical_velocity": {
+        "frameworks": {
+          "armature_oss": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9722222222222222,
+              "mean": 0.9930555555555555
+            },
+            "judge": {
+              "ci_hi": 1.0,
+              "ci_lo": 1.0,
+              "mean": 1.0
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9722222222222222,
+              "mean": 0.9930555555555555
+            }
+          },
+          "armature_oss_dev": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 1.0,
+              "mean": 1.0
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 1.0,
+              "mean": 1.0
+            }
+          },
+          "bmad_method": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9583333333333334,
+              "mean": 0.9861111111111112
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9583333333333334,
+              "mean": 0.9861111111111112
+            }
+          },
+          "canonical_conductor": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9430555555555555,
+              "mean": 0.9763888888888889
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9430555555555555,
+              "mean": 0.9763888888888889
+            }
+          },
+          "github_spec_kit": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9351851851851851,
+              "mean": 0.9712962962962962
+            },
+            "judge": {
+              "ci_hi": 1.0,
+              "ci_lo": 1.0,
+              "mean": 1.0
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9291666666666667,
+              "mean": 0.9680555555555556
+            }
+          },
+          "memory_bank": {
+            "combined": {
+              "ci_hi": 0.7819444444444444,
+              "ci_lo": 0.7055555555555556,
+              "mean": 0.7486111111111112
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 0.7819444444444444,
+              "ci_lo": 0.7055555555555556,
+              "mean": 0.7486111111111112
+            }
+          },
+          "openspec": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9518518518518518,
+              "mean": 0.9828703703703704
+            },
+            "judge": {
+              "ci_hi": 1.0,
+              "ci_lo": 1.0,
+              "mean": 1.0
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9500000000000001,
+              "mean": 0.9819444444444444
+            }
+          },
+          "wayfinder": {
+            "combined": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9555555555555556,
+              "mean": 0.9833333333333334
+            },
+            "judge": {
+              "ci_hi": null,
+              "ci_lo": null,
+              "mean": null
+            },
+            "n_rollouts": 36,
+            "n_scenarios_with_data": 12,
+            "outcome": {
+              "ci_hi": 1.0,
+              "ci_lo": 0.9555555555555556,
+              "mean": 0.9833333333333334
+            }
+          }
+        },
+        "n_scenarios": 12
+      }
+    }
+  },
+  "primary_metric": "outcome",
+  "rollout_counts": {
+    "harness_error": 0,
+    "ok": 1440,
+    "total": 1440
+  },
+  "scenario_counts": {
+    "core": 30,
+    "heldout": 30
+  },
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "swing": {
+    "all": {
+      "armature_oss": {
+        "by_model": {
+          "gemini-3.5-flash": 0.6791666666666667
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "armature_oss_dev": {
+        "by_model": {
+          "gemini-3.5-flash": 0.8252777777777778
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "bmad_method": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7668518518518519
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "canonical_conductor": {
+        "by_model": {
+          "gemini-3.5-flash": 0.6701851851851851
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 3
+        }
+      },
+      "github_spec_kit": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7312037037037037
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "memory_bank": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7804629629629629
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "openspec": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7429629629629629
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "wayfinder": {
+        "by_model": {
+          "gemini-3.5-flash": 0.8142592592592592
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      }
+    },
+    "core": {
+      "armature_oss": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7287037037037037
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "armature_oss_dev": {
+        "by_model": {
+          "gemini-3.5-flash": 0.8959259259259259
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "bmad_method": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7790740740740741
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "canonical_conductor": {
+        "by_model": {
+          "gemini-3.5-flash": 0.669074074074074
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 3
+        }
+      },
+      "github_spec_kit": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7846296296296296
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "memory_bank": {
+        "by_model": {
+          "gemini-3.5-flash": 0.798888888888889
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "openspec": {
+        "by_model": {
+          "gemini-3.5-flash": 0.8183333333333334
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "wayfinder": {
+        "by_model": {
+          "gemini-3.5-flash": 0.8164814814814815
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      }
+    },
+    "heldout": {
+      "armature_oss": {
+        "by_model": {
+          "gemini-3.5-flash": 0.6296296296296297
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "armature_oss_dev": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7546296296296297
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "bmad_method": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7546296296296297
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "canonical_conductor": {
+        "by_model": {
+          "gemini-3.5-flash": 0.6712962962962963
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "github_spec_kit": {
+        "by_model": {
+          "gemini-3.5-flash": 0.6777777777777777
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "memory_bank": {
+        "by_model": {
+          "gemini-3.5-flash": 0.7620370370370371
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      },
+      "openspec": {
+        "by_model": {
+          "gemini-3.5-flash": 0.6675925925925926
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 2
+        }
+      },
+      "wayfinder": {
+        "by_model": {
+          "gemini-3.5-flash": 0.812037037037037
+        },
+        "swing": null,
+        "tier_by_model": {
+          "gemini-3.5-flash": 1
+        }
+      }
+    }
+  },
+  "turn_endings": {
+    "armature_oss": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 89,
+          "max_steps": 3,
+          "text": 232
+        },
+        "max_steps_rate": 0.009259259259259259,
+        "n_turns": 324
+      }
+    },
+    "armature_oss_dev": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 91,
+          "max_steps": 11,
+          "text": 222
+        },
+        "max_steps_rate": 0.033950617283950615,
+        "n_turns": 324
+      }
+    },
+    "bmad_method": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 35,
+          "max_steps": 43,
+          "text": 246
+        },
+        "max_steps_rate": 0.13271604938271606,
+        "n_turns": 324
+      }
+    },
+    "canonical_conductor": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 198,
+          "max_steps": 7,
+          "text": 119
+        },
+        "max_steps_rate": 0.021604938271604937,
+        "n_turns": 324
+      }
+    },
+    "github_spec_kit": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 11,
+          "max_steps": 16,
+          "text": 297
+        },
+        "max_steps_rate": 0.04938271604938271,
+        "n_turns": 324
+      }
+    },
+    "memory_bank": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 14,
+          "max_steps": 46,
+          "text": 264
+        },
+        "max_steps_rate": 0.1419753086419753,
+        "n_turns": 324
+      }
+    },
+    "openspec": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 13,
+          "max_steps": 13,
+          "text": 298
+        },
+        "max_steps_rate": 0.040123456790123455,
+        "n_turns": 324
+      }
+    },
+    "wayfinder": {
+      "gemini-3.5-flash": {
+        "context_overflow_rate": 0.0,
+        "counts": {
+          "ask_user": 53,
+          "max_steps": 21,
+          "text": 250
+        },
+        "max_steps_rate": 0.06481481481481481,
+        "n_turns": 324
+      }
+    }
+  },
+  "variance": {
+    "gemini-3.5-flash": {
+      "all": {
+        "armature_oss": {
+          "mean_within_scenario_sd": 0.0724519052838329,
+          "per_seed_scores": [
+            0.6819444444444444,
+            0.6713888888888888,
+            0.6841666666666666
+          ],
+          "sd_across_seeds": 0.00682678095969139
+        },
+        "armature_oss_dev": {
+          "mean_within_scenario_sd": 0.06125710800904903,
+          "per_seed_scores": [
+            0.8350000000000001,
+            0.8516666666666667,
+            0.7891666666666667
+          ],
+          "sd_across_seeds": 0.032364389438141794
+        },
+        "bmad_method": {
+          "mean_within_scenario_sd": 0.08050520225951718,
+          "per_seed_scores": [
+            0.7738888888888888,
+            0.7611111111111111,
+            0.7655555555555555
+          ],
+          "sd_across_seeds": 0.006486770328939624
+        },
+        "canonical_conductor": {
+          "mean_within_scenario_sd": 0.046348396609944956,
+          "per_seed_scores": [
+            0.6780555555555555,
+            0.6675,
+            0.6649999999999999
+          ],
+          "sd_across_seeds": 0.006929613793358404
+        },
+        "github_spec_kit": {
+          "mean_within_scenario_sd": 0.07457440977032666,
+          "per_seed_scores": [
+            0.7113888888888888,
+            0.7424999999999999,
+            0.7397222222222222
+          ],
+          "sd_across_seeds": 0.017216247470187344
+        },
+        "memory_bank": {
+          "mean_within_scenario_sd": 0.06970250018803334,
+          "per_seed_scores": [
+            0.7805555555555556,
+            0.7719444444444445,
+            0.788888888888889
+          ],
+          "sd_across_seeds": 0.008472601691562526
+        },
+        "openspec": {
+          "mean_within_scenario_sd": 0.06167320405065494,
+          "per_seed_scores": [
+            0.7336111111111111,
+            0.7191666666666666,
+            0.7761111111111112
+          ],
+          "sd_across_seeds": 0.02960169400669238
+        },
+        "wayfinder": {
+          "mean_within_scenario_sd": 0.07248617513792265,
+          "per_seed_scores": [
+            0.8188888888888889,
+            0.8438888888888889,
+            0.7799999999999999
+          ],
+          "sd_across_seeds": 0.03219507157539581
+        }
+      },
+      "core": {
+        "armature_oss": {
+          "mean_within_scenario_sd": 0.04547126420723025,
+          "per_seed_scores": [
+            0.7305555555555556,
+            0.7261111111111112,
+            0.7294444444444445
+          ],
+          "sd_across_seeds": 0.0023129622216290424
+        },
+        "armature_oss_dev": {
+          "mean_within_scenario_sd": 0.05355293386489276,
+          "per_seed_scores": [
+            0.9005555555555556,
+            0.9172222222222222,
+            0.87
+          ],
+          "sd_across_seeds": 0.02394910584514361
+        },
+        "bmad_method": {
+          "mean_within_scenario_sd": 0.056452026320763404,
+          "per_seed_scores": [
+            0.7922222222222222,
+            0.7722222222222223,
+            0.7727777777777778
+          ],
+          "sd_across_seeds": 0.011390018010875346
+        },
+        "canonical_conductor": {
+          "mean_within_scenario_sd": 0.03816926779642526,
+          "per_seed_scores": [
+            0.6755555555555556,
+            0.6794444444444444,
+            0.6522222222222223
+          ],
+          "sd_across_seeds": 0.014723095711334013
+        },
+        "github_spec_kit": {
+          "mean_within_scenario_sd": 0.07537628514420112,
+          "per_seed_scores": [
+            0.7533333333333334,
+            0.7988888888888889,
+            0.8016666666666666
+          ],
+          "sd_across_seeds": 0.027138950490850834
+        },
+        "memory_bank": {
+          "mean_within_scenario_sd": 0.07525497046610827,
+          "per_seed_scores": [
+            0.8027777777777777,
+            0.7688888888888888,
+            0.825
+          ],
+          "sd_across_seeds": 0.02825697772451004
+        },
+        "openspec": {
+          "mean_within_scenario_sd": 0.06639528095680695,
+          "per_seed_scores": [
+            0.8338888888888889,
+            0.7855555555555556,
+            0.8355555555555555
+          ],
+          "sd_across_seeds": 0.028398617598071222
+        },
+        "wayfinder": {
+          "mean_within_scenario_sd": 0.0734517842469024,
+          "per_seed_scores": [
+            0.8155555555555555,
+            0.8405555555555555,
+            0.7933333333333333
+          ],
+          "sd_across_seeds": 0.023624723744764924
+        }
+      },
+      "heldout": {
+        "armature_oss": {
+          "mean_within_scenario_sd": 0.09943254636043554,
+          "per_seed_scores": [
+            0.6333333333333333,
+            0.6166666666666667,
+            0.638888888888889
+          ],
+          "sd_across_seeds": 0.011564811108145185
+        },
+        "armature_oss_dev": {
+          "mean_within_scenario_sd": 0.0689612821532053,
+          "per_seed_scores": [
+            0.7694444444444444,
+            0.7861111111111111,
+            0.7083333333333334
+          ],
+          "sd_across_seeds": 0.04095063775462215
+        },
+        "bmad_method": {
+          "mean_within_scenario_sd": 0.10455837819827095,
+          "per_seed_scores": [
+            0.7555555555555556,
+            0.75,
+            0.7583333333333333
+          ],
+          "sd_across_seeds": 0.004243125643477627
+        },
+        "canonical_conductor": {
+          "mean_within_scenario_sd": 0.05452752542346465,
+          "per_seed_scores": [
+            0.6805555555555556,
+            0.6555555555555556,
+            0.6777777777777777
+          ],
+          "sd_across_seeds": 0.013702452395322898
+        },
+        "github_spec_kit": {
+          "mean_within_scenario_sd": 0.07377253439645218,
+          "per_seed_scores": [
+            0.6694444444444444,
+            0.6861111111111111,
+            0.6777777777777777
+          ],
+          "sd_across_seeds": 0.00833333333333336
+        },
+        "memory_bank": {
+          "mean_within_scenario_sd": 0.06415002990995841,
+          "per_seed_scores": [
+            0.7583333333333333,
+            0.775,
+            0.7527777777777778
+          ],
+          "sd_across_seeds": 0.011564811108145202
+        },
+        "openspec": {
+          "mean_within_scenario_sd": 0.05695112714450292,
+          "per_seed_scores": [
+            0.6333333333333333,
+            0.6527777777777778,
+            0.7166666666666667
+          ],
+          "sd_across_seeds": 0.04359724950738354
+        },
+        "wayfinder": {
+          "mean_within_scenario_sd": 0.07152056602894291,
+          "per_seed_scores": [
+            0.8222222222222223,
+            0.8472222222222222,
+            0.7666666666666667
+          ],
+          "sd_across_seeds": 0.041232303848541305
+        }
+      }
+    }
+  },
+  "visibility": "public"
+}

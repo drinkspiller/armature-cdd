@@ -6,6 +6,76 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.35.0] - 2026-11-05
+
+### Added
+
+-   **Eager Turn-1 Draft Materialization (`status: draft`) & Incremental
+    Checkpointing (`skills/arm-new-track/SKILL.md`,
+    `skills/arm-implement/SKILL.md`, `rules/armature_protocol.md`)**:
+    -   Added Step 4b (`Initialize Working Draft`) in `/arm-new-track` to
+        materialize `armature/tracks/<track_id>/spec.md` with YAML frontmatter
+        `status: draft` on Turn 1 immediately after codebase reconnaissance,
+        persisting target file paths, signatures, candidate options, and edge
+        cases on disk before the first `ask_question` call.
+    -   Added in-place working-draft checkpointing during Step 5 interviews and
+        introduced `armature/active_context.md` (`<= 60` lines) for
+        session-to-session and detour continuity.
+    -   Added the **Approved Specification Gate** in `/arm-implement` Step 3.2
+        to reject unapproved `status: draft` specifications until the user
+        approves at the Unified Spec+Plan Gate.
+-   **Unified Spec+Plan Approval Gate & Complexity Fast-Forward
+    (`skills/arm-new-track/SKILL.md`, `skills/arm-implement/SKILL.md`)**:
+    -   Consolidated Step 6 (`spec.md` + `manual_testing.md`) and Step 7
+        (`plan.md`) for `Phase Count <= 2` tracks into a single **Unified
+        Spec+Plan Approval Gate** with
+        `(Recommended) Approve spec + plan and begin implementation`,
+        `Approve & Save Track`, and `Request revisions`.
+    -   Added Step 5d (`Complexity Classifier & Explicit-Sign-Off Fast-Forward`)
+        for bounded single-component features and explicit post-draft user
+        sign-offs.
+-   **Autonomous Calibration Pipeline & Smoke Release Script
+    (`evals/cdd_sdd_benchmark/`)**:
+    -   Added `calibration/auto_label.py` (`gemini-3.1-pro-preview` +
+        `gemma-4-31b-it` ensemble), `run_benchmark.py calibrate`,
+        `smoke_config.json`, and `release.sh` for 30-scenario smoke verification
+        before full 60-scenario `--publish` runs.
+
+### Changed
+
+-   **Focus + Succinct `/zoom-out` Interview Turn Layout (`ADR 0003`,
+    `ADR 0017`, `rules/armature_protocol.md`, `skills/arm-new-track/SKILL.md`,
+    `skills/arm-new-track/references/interview_formatting.md`)**:
+    -   Retired per-turn chat repetition of `Round X settled:` lines,
+        `**Settled**` / `**Now**` / `**Up next**` progress lists, and
+        `Round R, Question Q of N:` headline prefixes (keeping settled decisions
+        and open questions persisted silently on disk in `spec.md`
+        `status: draft` and `armature/active_context.md`).
+    -   Added a succinct `/zoom-out` orientation block directly beneath each
+        clean `## <Topic>` headline (`1–3` line `text` ASCII mental-model flow
+        diagram `[Before] ──► [★ This choice] ──► [After]` + 2–3 plain-English
+        orientation sentences situating why the decision arises in the
+        workflow).
+-   **Always-On Rule Modularization & Pre-Edit Context Check
+    (`rules/armature_protocol.md`, `rules/armature_antigravity.md`,
+    `skills/*/references/*.md`)**:
+    -   Added the 4-line **Pre-Edit Context Check** at the top of
+        `rules/armature_protocol.md` requiring agents to inspect `adr/`,
+        `terms.md`, active `spec.md`, and uncommitted `git status` / `git diff`
+        before any file mutation.
+    -   Extracted on-demand reference guides into
+        `skills/arm-new-track/references/{interview_formatting,ask_question_guide}.md`
+        and `skills/arm-implement/references/async_delegation.md`, reducing
+        combined always-on rule context below 15 KB (`223` lines total across
+        `armature_protocol.md` + `armature_antigravity.md`).
+-   **Rollout Persistence & Staging in `run_benchmark.py`
+    (`evals/cdd_sdd_benchmark/run_benchmark.py`, `bench/report.py`)**:
+    -   Added `--persist-rollouts` (default `True`), `--stage-to`, and
+        `--public-only` flags so `rollouts.jsonl`, `manifest.json`,
+        `stats.json`, `report.md`, and `public/` are atomically staged together.
+    -   Added the `### Armature Distribution Note` and per-run calibration
+        loader (`_load_calibration(run_id)`) in `bench/report.py`.
+
 ## [0.34.4] - 2026-11-04
 
 ### Fixed
@@ -49,15 +119,15 @@ and this project adheres to
         interview/gate turns.
 -   **Step 6 & Step 7 Streaming Flush Before Heavy `write_to_file` Calls
     (`rules/armature_antigravity.md`, `skills/arm-new-track/SKILL.md`)**:
-    -   Bounded visible chat `### Convergence Summary` (Step 6) and `### Step 7:
-        Implementation Plan Summary` (Step 7) to a concise 40–200 word executive
-        summary (avoiding duplicate multi-kilobyte spec/plan dumps in chat) and
-        required terminating the visible markdown block with a complete closing
-        status line plus a trailing blank line (`\n\n_Materializing ... and
-        opening the approval prompt..._\n\n`) before calling `write_to_file` and
-        `ask_question`, preventing the streaming UI renderer from holding back
-        the final words of the sentence while multi-kilobyte `write_to_file`
-        JSON payloads stream.
+    -   Bounded visible chat `### Convergence Summary` (Step 6) and
+        `### Step 7: Implementation Plan Summary` (Step 7) to a concise 40–200
+        word executive summary (avoiding duplicate multi-kilobyte spec/plan
+        dumps in chat) and required terminating the visible markdown block with
+        a complete closing status line plus a trailing blank line
+        (`\n\n_Materializing ... and opening the approval prompt..._\n\n`)
+        before calling `write_to_file` and `ask_question`, preventing the
+        streaming UI renderer from holding back the final words of the sentence
+        while multi-kilobyte `write_to_file` JSON payloads stream.
 -   **Canonical `questions: [...]` Array Wrapper in All `ask_question` Schema
     Examples & Schema-Error Retry Guard (`rules/armature_antigravity.md`,
     `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`)**:
@@ -73,10 +143,10 @@ and this project adheres to
 
 -   **Verified Tool References (`skills/arm-new-track/SKILL.md` Step 4 item
     5)**: Every checker, validator, linter, or CLI a plan names must be located
-    by exact repository path and its usage checked against the target files.
-    It is run during planning only when fast, read-only, and used outside its
-    home package or as a pass/fail gate; otherwise the plan's first task
-    captures a pre-edit baseline and pass means "no new findings vs. baseline".
+    by exact repository path and its usage checked against the target files. It
+    is run during planning only when fast, read-only, and used outside its home
+    package or as a pass/fail gate; otherwise the plan's first task captures a
+    pre-edit baseline and pass means "no new findings vs. baseline".
 
 ## [0.34.1] - 2026-10-25
 
@@ -118,8 +188,8 @@ and this project adheres to
 
 ### Changed
 
--   **Default Execution-Ready Specification & Plan Grounding Standard (`ADR
-    0016`)**:
+-   **Default Execution-Ready Specification & Plan Grounding Standard
+    (`ADR 0016`)**:
     -   Upgraded `/arm-new-track` (`skills/arm-new-track/SKILL.md`),
         `rules/armature_protocol.md` (`§0a Step 14` & `§5`), `/arm-implement`
         (`skills/arm-implement/SKILL.md` `Step 3.4`), and `/arm-review`
@@ -191,10 +261,10 @@ and this project adheres to
     -   Upgraded `/arm-status` (`skills/arm-status/SKILL.md`), `/arm-drift`
         (`skills/arm-drift/SKILL.md`), `/arm-implement`
         (`skills/arm-implement/SKILL.md`), `rules/armature_protocol.md` (§0a
-        Step 10 & §5), and `rules/armature_cdd_protocols.md` (§9) so **Tier
-        A — Mechanical & Deterministic Documentation Drift** automatically
-        updates in-place and notifies the user by default in the same turn
-        without requiring `--fix` or an `ask_question` permission prompt.
+        Step 10 & §5), and `rules/armature_cdd_protocols.md` (§9) so **Tier A —
+        Mechanical & Deterministic Documentation Drift** automatically updates
+        in-place and notifies the user by default in the same turn without
+        requiring `--fix` or an `ask_question` permission prompt.
     -   Tier A auto-updated drift categories include: (1) completed tracks left
         at `[~]` in `tracks.md` or `"in_progress"` in `metadata.json` when 100%
         of tasks in `plan.md` are `[x]` and the commit is on `HEAD`; (2)
@@ -211,13 +281,13 @@ and this project adheres to
         transitions track status in a session where
         `{ARTIFACT_DIR}/arm_status.md` exists, it refreshes `arm_status.md` in
         lockstep (`Fixpoint Health: ✅ Fixpoint Reached`) so status artifacts
-        never retain stale `⚠️ Drift Detected` banners. Enforced unambiguous `⬜
-        Pending (Specs Only — Not Started)` labels for unstarted spec-only
+        never retain stale `⚠️ Drift Detected` banners. Enforced unambiguous
+        `⬜ Pending (Specs Only — Not Started)` labels for unstarted spec-only
         tracks in `arm_status.md`.
     -   Preserved strict **Tier B — Semantic & Boundary Safeguards**: source
         code contradicting an approved `ADR` or `spec.md` (`CB2`), breaking
-        public API symbol removals (`[ERROR]` major semver bump), `[WARNING]
-        Diff-to-Tag Mismatch` (`ADR 0010`), unauthorized edits inside
+        public API symbol removals (`[ERROR]` major semver bump),
+        `[WARNING] Diff-to-Tag Mismatch` (`ADR 0010`), unauthorized edits inside
         `<deprecated_path>` (`[BLOCKING]`, `CB1`), deleted legacy fence
         directories (`[DRIFT] Stale Legacy Fence`, `VAL_LF_04`), and read-only
         CI gates (`/arm-drift --check`) never silently overwrite approved
@@ -229,12 +299,13 @@ and this project adheres to
 
 -   **Need-More-Context Modal Option, Pass-1 Everyday Plain Language, & Direct
     Modal-to-Chat Option Matching (`ADR 0003`, `ADR 0012`)**:
-    -   Replaced the trailing `"Compare technical trade-offs and failure modes
-        in detail"` choice in `ask_question` modals with **`"I need more
-        context, zoom out and give examples"`** across substantive decision
-        turns (`rules/armature_protocol.md`, `rules/armature_antigravity.md`,
-        `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`,
-        `skills/arm-review/SKILL.md`).
+    -   Replaced the trailing
+        `"Compare technical trade-offs and failure modes in detail"` choice in
+        `ask_question` modals with
+        **`"I need more context, zoom out and give examples"`** across
+        substantive decision turns (`rules/armature_protocol.md`,
+        `rules/armature_antigravity.md`, `skills/arm-new-track/SKILL.md`,
+        `skills/arm-setup/SKILL.md`, `skills/arm-review/SKILL.md`).
     -   When `"I need more context, zoom out and give examples"` is selected (or
         when `"zoom out"` / `"too vague"` / `"explain"` is written in), the
         agent executes zero file-read or code-search tool calls, **omits
@@ -244,8 +315,9 @@ and this project adheres to
         outputs `---`, and re-tees a rewritten Interview Turn v2 block plus
         native `ask_question`. Scoped the Zoom-In blockquote cards (`Pros` /
         `Cons` / `Implications`) strictly to explicit `"zoom in"` write-ins, and
-        changed the normal `Settled` overflow fold syntax from `- + N earlier
-        settled` to `- (+N earlier settled)` to avoid nested CommonMark bullets.
+        changed the normal `Settled` overflow fold syntax from
+        `- + N earlier settled` to `- (+N earlier settled)` to avoid nested
+        CommonMark bullets.
     -   Enforced **Pass-1 Everyday Plain Language & Familiar Domain-Noun
         Grounding** requiring headlines, openers, and option names to anchor
         directly in the concrete domain objects from the request or workflow
@@ -253,30 +325,42 @@ and this project adheres to
         samples safe from broken files"*) while banning both code identifiers
         and un-translated backend systems jargon (*"blob"*, *"copy-on-write"*,
         *"refcount"*, *"in-flight"*, *"monotonically"*, *"race condition"*).
-    -   Locked `ask_question` choices `1..K` to match the plain-English `<Option
-        name>` strings from the numbered chat list in exact 1-to-1 order with
-        Option 1 recommended (`"(Recommended) <Option 1 name>"`), and formatted
-        `- Pick N if …` recap lines as Markdown bullets so each line renders
-        separately in CommonMark.
+    -   Locked `ask_question` choices `1..K` to match the plain-English
+        `<Option name>` strings from the numbered chat list in exact 1-to-1
+        order with Option 1 recommended (`"(Recommended) <Option 1 name>"`), and
+        formatted `- Pick N if …` recap lines as Markdown bullets so each line
+        renders separately in CommonMark.
 
 ## [0.31.1] - 2026-10-20
 
 ### Changed
 
--   **Once-Per-Session Deprecated Code Boundary Callout (`rules/armature_protocol.md`, `skills/arm-chat/SKILL.md`, `skills/arm-implement/SKILL.md`, `skills/arm-drift/SKILL.md`, `skills/arm-review/SKILL.md`)**:
-    -   Scoped the `> [!NOTE] **Working in <active_replacement_basename>/:**` deprecated code boundary callout strictly to **Turn 1 once per conversation session** (when project context is first loaded, or once if legacy boundaries are newly added or modified mid-session).
-    -   Removed the recurring `Turn 2+` compact reminder (`> 🛡️ **Deprecated code boundary active:** ...`) and prohibited repeating any deprecated code boundary banner across subsequent turns (`Turn 2+`) or intermediate tool-calling steps (`Explored files`, `Edited files`) within a turn unless a specific boundary event fires (`[Legacy Dependency Read: <path>]` badge, Zero-Match Fallback, or Intent-Aware Read/Write Override Gate).
+-   **Once-Per-Session Deprecated Code Boundary Callout
+    (`rules/armature_protocol.md`, `skills/arm-chat/SKILL.md`,
+    `skills/arm-implement/SKILL.md`, `skills/arm-drift/SKILL.md`,
+    `skills/arm-review/SKILL.md`)**:
+    -   Scoped the `> [!NOTE] **Working in <active_replacement_basename>/:**`
+        deprecated code boundary callout strictly to **Turn 1 once per
+        conversation session** (when project context is first loaded, or once if
+        legacy boundaries are newly added or modified mid-session).
+    -   Removed the recurring `Turn 2+` compact reminder
+        (`> 🛡️ **Deprecated code boundary active:** ...`) and prohibited
+        repeating any deprecated code boundary banner across subsequent turns
+        (`Turn 2+`) or intermediate tool-calling steps (`Explored files`,
+        `Edited files`) within a turn unless a specific boundary event fires
+        (`[Legacy Dependency Read: <path>]` badge, Zero-Match Fallback, or
+        Intent-Aware Read/Write Override Gate).
 
 ## [0.31.0] - 2026-10-17
 
 ### Added
 
 -   **Multi-Expert Iterative Review-and-Repair Loop (`ADR 0015`)**: Upgraded
-    `/arm-review` (`Steps 2.3–2.4` and `3.1–3.2`) and `/arm-implement` (`Step
-    3.6` Pre-Closeout Gate) with a closed-loop **Review $\to$ Deduplicate $\to$
-    Repair $\to$ Re-Verify** engine (`MAX_ITERATIONS = 3` in `/arm-review`;
-    `MAX_ITERATIONS = 2` in `/arm-implement` Step 3.6; `MAX_ITERATIONS = 1`
-    read-only under `--report-only`).
+    `/arm-review` (`Steps 2.3–2.4` and `3.1–3.2`) and `/arm-implement`
+    (`Step 3.6` Pre-Closeout Gate) with a closed-loop **Review $\to$ Deduplicate
+    $\to$ Repair $\to$ Re-Verify** engine (`MAX_ITERATIONS = 3` in
+    `/arm-review`; `MAX_ITERATIONS = 2` in `/arm-implement` Step 3.6;
+    `MAX_ITERATIONS = 1` read-only under `--report-only`).
 -   **3-Tier Runtime-Polymorphic Review Dispatch & Selective Author-Intent
     Blinding**:
     -   *Tier 1 (Host Review-Loop Adapter)*: Invokes the active platform rule's
@@ -290,11 +374,11 @@ and this project adheres to
         rubrics and deterministic linters sequentially.
 -   **2D `P0–P3` $\times$ `S0–S3` Ordering & Spec/ADR Precedence Rule**: Orders
     deduplicated findings by Priority (`P0` Architectural/Contract $\to$ `P3`
-    Polish) and Severity (`S0` Blocker $\to$ `S3` Nit), counting `Total
-    Comments` strictly from top-level `len(comments)`. Approved `spec.md` and
-    `adr/*.md` invariants automatically override conflicting blinded `S2`/`S3`
-    style suggestions during deduplication (`status:
-    skipped_spec_adr_precedence`).
+    Polish) and Severity (`S0` Blocker $\to$ `S3` Nit), counting
+    `Total Comments` strictly from top-level `len(comments)`. Approved `spec.md`
+    and `adr/*.md` invariants automatically override conflicting blinded
+    `S2`/`S3` style suggestions during deduplication
+    (`status: skipped_spec_adr_precedence`).
 -   **Four Repair Safety Circuit Breakers & Anti-Oscillation Ledger**: Enforces
     CB1 (`blocked_by_legacy_fence`), CB2 (`deferred_spec_conflict`), CB3
     (`reverted_test_regression` — reverts repairs that break unit tests and
@@ -378,18 +462,18 @@ and this project adheres to
     blockquote cards in `/arm-new-track` Step 5a, Phase 5b, `/arm-setup`, and
     the Interaction Standards rule with a scannable body: an unlabeled
     plain-English opener that states what changes for the user depending on the
-    answer (never a `Problem:` label; no code identifiers), `The choice here is
-    … Here are some options:`, numbered one-line options (`<benefit>; <cost>`),
-    a `Safe to ignore for now:` line, `### Recommendation: Option N` with
-    exactly one sentence, and a `Pick 1 if … / Pick 2 if …` recap. The
-    `ask_question` options restate the Pick conditions in the user's voice and
-    end with `(Option N)`. Budget: 180 words from headline through the last Pick
-    line.
+    answer (never a `Problem:` label; no code identifiers),
+    `The choice here is … Here are some options:`, numbered one-line options
+    (`<benefit>; <cost>`), a `Safe to ignore for now:` line,
+    `### Recommendation: Option N` with exactly one sentence, and a
+    `Pick 1 if … / Pick 2 if …` recap. The `ask_question` options restate the
+    Pick conditions in the user's voice and end with `(Option N)`. Budget: 180
+    words from headline through the last Pick line.
 -   **Zoom-In View**: The full Pros / Cons / Implications cards are retained and
     render only when the user selects "Compare technical trade-offs and failure
     modes in detail" or replies "zoom in".
--   **Headline numbering**: The first question of a round is `Round R, Question
-    1 of N`, never `Question R.1 of N`.
+-   **Headline numbering**: The first question of a round is
+    `Round R, Question 1 of N`, never `Question R.1 of N`.
 -   **Settled list cap**: The progress list shows at most the five most recent
     settled items and folds older ones into `- + N earlier settled`.
 -   Updated `armature_protocol.md`, `armature_antigravity.md`, `arm-new-track`,
@@ -397,19 +481,18 @@ and this project adheres to
 
 ### Evaluation
 
--   Added `evals/skillopt/run_interview_format_opt.py` with 6 train / 4
-    held-out validation scenarios (70% adversarial) and 25 deterministic format
+-   Added `evals/skillopt/run_interview_format_opt.py` with 6 train / 4 held-out
+    validation scenarios (70% adversarial) and 25 deterministic format
     invariants; rewrote 15 legacy rubric strings in `train.jsonl` / `val.jsonl`
     and taught `run_trajectory_eval.py` to recognize both the legacy cards and
-    the v2 body. Across K=3 seeds, the pre-change files scored 0.20 train /
-    0.00 val (230 vetoes, by construction: the old rules never asked for Pick
-    lines); the v2 files scored 0.84 train (0 vetoes) / 0.84 val (LB90 0.72,
-    1 veto: a 201-word body against the 200-word cap). Two reflection epochs
-    were rejected by the zero-veto gate; the promoted wording came from manual
-    tightening (45-word opener, 20-word option lines, literal fold bullet).
-    Results: `evals/skillopt/skillopt_report_interview_format.md`. The
-    comparative CDD/SDD benchmark was not re-run for this presentation-format
-    change.
+    the v2 body. Across K=3 seeds, the pre-change files scored 0.20 train / 0.00
+    val (230 vetoes, by construction: the old rules never asked for Pick lines);
+    the v2 files scored 0.84 train (0 vetoes) / 0.84 val (LB90 0.72, 1 veto: a
+    201-word body against the 200-word cap). Two reflection epochs were rejected
+    by the zero-veto gate; the promoted wording came from manual tightening
+    (45-word opener, 20-word option lines, literal fold bullet). Results:
+    `evals/skillopt/skillopt_report_interview_format.md`. The comparative
+    CDD/SDD benchmark was not re-run for this presentation-format change.
 
 ## [0.28.3] - 2026-10-06
 
@@ -460,12 +543,12 @@ and this project adheres to
         source files, or setting `metadata.json` `"status": "in_progress"` or
         `tracks.md` `[~]` during `/arm-new-track`.
     -   **Strict Two-Part Step 8–10 Finalization Turn Contract**: Requires
-        emitting the visible markdown completion banner (`✅ Track <track_id>
-        created!`) and the copy-pastable handoff command (`Run /arm-implement
-        <track_id> to start working through the plan.`) as Part 1 before the
-        Part 2 tool calls (`write_to_file` for `metadata.json` with `"status":
-        "planned"`, `tracks.md` with `- [ ]`, `index.md`, and `run_command`
-        commit).
+        emitting the visible markdown completion banner
+        (`✅ Track <track_id> created!`) and the copy-pastable handoff command
+        (`Run /arm-implement <track_id> to start working through the plan.`) as
+        Part 1 before the Part 2 tool calls (`write_to_file` for `metadata.json`
+        with `"status": "planned"`, `tracks.md` with `- [ ]`, `index.md`, and
+        `run_command` commit).
     -   **Sequential Step 6 & Step 7 Approval Gates**: Prohibits collapsing
         `spec.md` and `plan.md` creation into a single turn or writing
         `metadata.json` in the same turn as `plan.md` before receiving explicit
@@ -502,8 +585,8 @@ and this project adheres to
     -   A one-line note confirming the previous answer and any follow-up it
         opened.
     -   A short progress list grouped as **Settled** (with each answer),
-        **Now**, and **Up next**, replacing the nested `### Decision Tree
-        Ledger` checkbox tree.
+        **Now**, and **Up next**, replacing the nested
+        `### Decision Tree Ledger` checkbox tree.
     -   A separator, then a `## Round R, Question Q of N: <Topic>` headline and
         a brief **Context** block.
     -   One plain blockquote card per option with **Pros**, **Cons**, and
@@ -562,12 +645,13 @@ and this project adheres to
 ### Added
 
 -   **Basic Workflow Guide (`README.md`)**:
-    -   Added a high-visibility `## Basic Workflow` section directly below `##
-        Quickstart` covering the core three-step development lifecycle (`1. Plan
-        the task (/arm-new-track)`, `2. Build the implementation
-        (/arm-implement)`, `3. Verify the result (/arm-review)`), plus the `###
-        Quick questions and trivial changes (/arm-chat)` fast path with concrete
-        examples.
+    -   Added a high-visibility `## Basic Workflow` section directly below
+        `## Quickstart` covering the core three-step development lifecycle
+        (`1. Plan the task (/arm-new-track)`,
+        `2. Build the implementation (/arm-implement)`,
+        `3. Verify the result (/arm-review)`), plus the
+        `### Quick questions and trivial changes (/arm-chat)` fast path with
+        concrete examples.
 
 ## [0.27.1] - 2026-09-18
 
@@ -576,15 +660,15 @@ and this project adheres to
 -   **Adaptive Verbosity Session Banner for Deprecated Code Boundaries
     (`rules/armature_protocol.md`, `skills/arm-chat/SKILL.md`,
     `skills/arm-implement/SKILL.md`, `skills/arm-drift/SKILL.md`)**:
-    -   Replaced the cryptic single-line HUD string (`🚧 Legacy Fence Active:
-        [...] excluded ──► Target: [...]`) with a two-stage **Adaptive
-        Verbosity** user-facing banner:
+    -   Replaced the cryptic single-line HUD string
+        (`🚧 Legacy Fence Active: [...] excluded ──► Target: [...]`) with a
+        two-stage **Adaptive Verbosity** user-facing banner:
         -   **Turn 1 (Full Callout):** Renders a structured `> [!NOTE]` callout
             leading with `**Working in <active_replacement_basename>/:**`,
             bulleted full paths, `**Skipping <N> deprecated folder(s):**`, and a
             footer citing the configuration file (`tech-stack.md` /
-            `metadata.json`) and session override instructions (`Want to
-            add/edit an ignored folder? Just ask!`).
+            `metadata.json`) and session override instructions
+            (`Want to add/edit an ignored folder? Just ask!`).
         -   **Turn 2+ (Compact 1-Line Reminder):** Condenses on subsequent turns
             in the same session to `> 🛡️ **Deprecated code boundary active:**
             Working in <active_basename>/ (ignoring <deprecated_basenames>).`
@@ -599,8 +683,9 @@ and this project adheres to
     -   **Brownfield Context Discovery Scope Gate (§2.0)**: When initializing a
         brownfield project (detected via `package.json`, `Cargo.toml`, `go.mod`,
         `BUILD`, `requirements.txt`, or source directories), Armature outputs a
-        structured Option Trade-Off Analysis (`Pros`/`Cons` + `Recommendation
-        Rationale`) and invokes `ask_question` with three calibrated choices:
+        structured Option Trade-Off Analysis (`Pros`/`Cons` +
+        `Recommendation Rationale`) and invokes `ask_question` with three
+        calibrated choices:
         1.  `(Recommended) Search past conversations, commit history, and
             current codebase (Deep Retroactive Archaeology)`
         2.  `Look only at current codebase contents (Current Snapshot Only)`
@@ -649,9 +734,9 @@ and this project adheres to
         their experimental tier inside the `/` slash-command menu before
         invocation.
     -   **Runtime Experimental Status Banner (`SKILL.md` Step 0)**: Added a
-        mandatory Step 0 protocol rule instructing agents to prepend a `>
-        [!NOTE]` **🧪 Experimental Feature (Beta)** callout banner at the top of
-        the first chat response whenever any Bug Bash skill is executed.
+        mandatory Step 0 protocol rule instructing agents to prepend a
+        `> [!NOTE]` **🧪 Experimental Feature (Beta)** callout banner at the top
+        of the first chat response whenever any Bug Bash skill is executed.
     -   **Installer Opt-In & Auto-Preservation (`install.sh`, `install.bat`)**:
         Partitioned `SUB_SKILL_NAMES` into `CORE_SKILL_NAMES` (8 stable skills
         installed by default) and `EXPERIMENTAL_SKILL_NAMES` (3 Beta Bug Bash
@@ -692,10 +777,11 @@ and this project adheres to
         without echoing deprecated remote hostnames or quoting disqualified
         ASCII headers in chat explanations.
     -   **Terminology Cutover (`Expected Observations`)**: Renamed verification
-        sections from `"Expected Observables"` / `"Expected Outcome & Barrier
-        Checks"` to `##### Expected Observations` (grouped by observational
-        domain such as `**UI Behavior:**` and `**DevTools Console Log:**`) to
-        prevent ambiguity with reactive stream observables (`Observable`).
+        sections from `"Expected Observables"` /
+        `"Expected Outcome & Barrier Checks"` to `##### Expected Observations`
+        (grouped by observational domain such as `**UI Behavior:**` and
+        `**DevTools Console Log:**`) to prevent ambiguity with reactive stream
+        observables (`Observable`).
     -   **SkillOpt Multi-Seed Benchmark Validation (`evals/skillopt/`)**:
         Evaluated across 10 Two-Tier Rubric tasks (`6` train, `4` held-out val,
         `K = 3` seeds, 30 rollouts per pass). Improved held-out validation pass
@@ -718,8 +804,8 @@ and this project adheres to
         (`*ngIf="user.hasPermission(...)"`) from visual-only status while
         exempting dead-code cleanup of removed UI elements.
     -   **Micro-Verification Card & Inline Escape Hatch**: Consolidates visual
-        checks across multiple affected routes into a single ASCII `┌─
-        [Micro-Verification Plan] ──┐` walkthrough card with copy-pastable
+        checks across multiple affected routes into a single ASCII
+        `┌─ [Micro-Verification Plan] ──┐` walkthrough card with copy-pastable
         `http://localhost:<PORT>/<path>` URLs and semantic visual assertions.
         Includes a mandatory `"Run full domain runbook instead"` option in the
         interactive review modal.
@@ -734,8 +820,8 @@ and this project adheres to
         Added 10 adversarial and held-out scenarios (`TRAIN_35`–`TRAIN_40`,
         `VAL_31`–`VAL_34`) and upgraded `run_optimizer.py` with `[INVARIANT]`
         veto zeroing (`0.0` score on safety/protocol violations), deterministic
-        protocol assertions, and multi-seed statistical evaluation (`--seeds
-        K`).
+        protocol assertions, and multi-seed statistical evaluation
+        (`--seeds K`).
 
 ## [0.24.0] - 2026-09-15
 
@@ -802,19 +888,20 @@ and this project adheres to
 -   **Upfront Execution Mode Selection Gate & Local Playwright CDP
     (`skills/arm-bash/SKILL.md`)**:
     -   **Execution Mode Selection Prompt**: Added Step 1.4 Upfront Mode Gate
-        prompting the participant to choose between `Manual Interactive Guided
-        Mode` (step-by-step co-pilot with exploratory HUD) and `Automated /
-        Assisted Browser Mode (Playwright CDP)` before scenario claiming.
+        prompting the participant to choose between
+        `Manual Interactive Guided Mode` (step-by-step co-pilot with exploratory
+        HUD) and `Automated / Assisted Browser Mode (Playwright CDP)` before
+        scenario claiming.
     -   **Playwright CDP (`localhost:9222`) Runner**: Standardized on Playwright
         (`playwright.chromium.connectOverCDP('http://localhost:9222')`) as the
         single opinionated open-source browser automation driver for
         authenticated web applications.
-    -   **Mandatory Port 9222 Connectivity Probe**: Added pre-flight `curl -s
-        --max-time 3 http://localhost:9222/json/version` probe with interactive
-        recovery prompt before connecting Playwright.
+    -   **Mandatory Port 9222 Connectivity Probe**: Added pre-flight
+        `curl -s --max-time 3 http://localhost:9222/json/version` probe with
+        interactive recovery prompt before connecting Playwright.
     -   **Failure-Handling Policy Gate (`--on-fail=log|prompt|fix`)**:
-        Configures batch failure handling across `Log & Continue Sweep`, `Pause
-        & Prompt on Failure`, and `Autonomous Self-Fix & Re-Verify`.
+        Configures batch failure handling across `Log & Continue Sweep`,
+        `Pause & Prompt on Failure`, and `Autonomous Self-Fix & Re-Verify`.
     -   **Workstation Neutrality**: Standardized all environment guidance on
         `Local Development Workstation (Linux/macOS)`, eliminating
         platform-specific tunnel boilerplate.
@@ -968,10 +1055,10 @@ and this project adheres to
         (`functionDeclarations` for `ask_question` and `write_to_file`) during
         task rollouts (`use_tools=True`), replacing simulated prose descriptions
         of tool invocations with actual API `functionCall` parts.
-    -   Added deterministic protocol-level checks (`[PROTOCOL_VIOLATION:
-        RAW_TOOL_TEXT_LEAK_DETECTED]` and `[PROTOCOL_VIOLATION:
-        TRAILING_NARRATION_DETECTED]`) to both `run_optimizer.py` and
-        `run_trajectory_eval.py`.
+    -   Added deterministic protocol-level checks
+        (`[PROTOCOL_VIOLATION: RAW_TOOL_TEXT_LEAK_DETECTED]` and
+        `[PROTOCOL_VIOLATION: TRAILING_NARRATION_DETECTED]`) to both
+        `run_optimizer.py` and `run_trajectory_eval.py`.
     -   Added regression tasks (`TRAIN_28_CLEAN_TERMINATION_NATIVE_ASK_QUESTION`
         and `VAL_24_CLEAN_TERMINATION_NATIVE_ASK_QUESTION`) and verified 100.0%
         pass rate (`4/4` train, `4/4` held-out val) with zero raw text leakage.
@@ -1011,9 +1098,10 @@ and this project adheres to
     -   Mandatory `Recommendation Rationale` (1–2 sentences) explicitly
         justifying why the recommended option was chosen based on codebase
         constraints, failure resilience, schema evolution, or latency bounds.
-    -   Appended trailing option `"Elaborate on trade-offs and failure modes
-        between these options"` triggering a deep-dive comparative matrix detour
-        before re-prompting concrete choices.
+    -   Appended trailing option
+        `"Elaborate on trade-offs and failure modes between these options"`
+        triggering a deep-dive comparative matrix detour before re-prompting
+        concrete choices.
     -   Preserved native write-in text field without injecting redundant manual
         "Other" options into `ask_question`.
 -   **Dual-Stage Architectural Decision Record (ADR) Lifecycle**:
@@ -1060,10 +1148,10 @@ and this project adheres to
 ### Added
 
 -   **Commit Message Standards (`armature_protocol.md`)**:
-    -   Added universal commit message guidelines to Section 4 (`VCS
-        Operations`), instructing agents to prioritize high-level architectural
-        intent and user-visible capabilities into 3–5 punchy bullets while
-        avoiding low-level diff accounting and file inventories.
+    -   Added universal commit message guidelines to Section 4
+        (`VCS Operations`), instructing agents to prioritize high-level
+        architectural intent and user-visible capabilities into 3–5 punchy
+        bullets while avoiding low-level diff accounting and file inventories.
 
 ### Changed
 
@@ -1108,8 +1196,8 @@ and this project adheres to
         blocks (`http://localhost:<PORT>/<path>` and remote host interfaces).
     -   **In-Flight Discrepancy Triage & Cascade Invalidation**: Allows
         developers to diagnose and apply targeted hotfixes in-flight;
-        automatically flags previously cleared scenarios with `[~] Requires
-        Quick Re-check`.
+        automatically flags previously cleared scenarios with
+        `[~] Requires Quick Re-check`.
     -   **Mandatory Post-Testing Reconciliation Gate**: Blocks track signoff and
         report generation until all logged issues are resolved, recorded as
         `[BLOCKING]` findings, or acknowledged as `[WARNING]` tech debt.
@@ -1291,9 +1379,9 @@ and this project adheres to
         extracting newly introduced entities, contracts, and interfaces directly
         from the git diff into `conductor/terms.md`.
     -   Reconciles active Architecture Decision Records in `conductor/adr/` and
-        outputs structured sync summaries (`### Extracted Domain Terms`, `###
-        ADR Updates`, `### Living Runbook Synchronization`, `### Verification
-        Audit`).
+        outputs structured sync summaries (`### Extracted Domain Terms`,
+        `### ADR Updates`, `### Living Runbook Synchronization`,
+        `### Verification Audit`).
 -   **3-Part Fixture Triad & Additive Testing Policy (`conductor_protocol.md`
     §5)**:
     -   Formally mandates the 3-part sequence (`migrate` → `seed` →
@@ -1394,8 +1482,9 @@ and this project adheres to
     *   `Run full code review (/conductor-review)`
     *   `Archive completed track and finish`
     *   `Keep track active and finish`
--   **Completion Turn Barrier Guardrail**: Added `Mandatory Completion
-    Next-Steps Barrier` to `conductor-implement` guardrails.
+-   **Completion Turn Barrier Guardrail**: Added
+    `Mandatory Completion Next-Steps Barrier` to `conductor-implement`
+    guardrails.
 -   **SkillOpt Benchmark Suite**: Added `TRAIN_08` and `VAL_14` evaluating track
     completion next-steps orchestration, achieving 100% pass rates across train
     and validation sets.
@@ -1436,8 +1525,8 @@ and this project adheres to
         schemas/sequences, domain runbook scenarios, and specification
         completeness.
     -   *Phase 2 (Code & Interfaces)*: Compares public exports against
-        `.api_surface_cache.json` and audits per-directory `## Conductor
-        Context` boundary integrity.
+        `.api_surface_cache.json` and audits per-directory
+        `## Conductor Context` boundary integrity.
     -   *Phase 3 (Meta & Packaging)*: Audits `install.sh`, `install.bat`,
         `plugin.json`, `marketplace.json`, and `README.md` for installer array
         completeness and version stamp fixpoints.
@@ -1604,12 +1693,12 @@ and this project adheres to
     cross-referenced against ADR scopes and invariant scopes; contradictions are
     flagged with resolution options before the command proceeds.
 
--   **Per-Directory GEMINI.md Context**: Conductor manages a `## Conductor
-    Context` section inside existing `GEMINI.md` files for large directories.
-    Sections include Purpose, Invariants, Key Types, and Term Overrides,
-    delimited by boundary comments to prevent merge conflicts. Created during
-    `/conductor_setup` (brownfield) and `/conductor_implement` (on first
-    directory access).
+-   **Per-Directory GEMINI.md Context**: Conductor manages a
+    `## Conductor Context` section inside existing `GEMINI.md` files for large
+    directories. Sections include Purpose, Invariants, Key Types, and Term
+    Overrides, delimited by boundary comments to prevent merge conflicts.
+    Created during `/conductor_setup` (brownfield) and `/conductor_implement`
+    (on first directory access).
 
 ### Changed
 
@@ -1700,8 +1789,8 @@ and this project adheres to
     detects grill/discovery/default mode from the user's prompt and delegates to
     the appropriate sub-skill
 -   **Opportunities Selection** in Step 9 no longer references
-    `[experimental-discovery]` inline — triggers on the presence of the `##
-    Opportunities for Consideration` section regardless of mode
+    `[experimental-discovery]` inline — triggers on the presence of the
+    `## Opportunities for Consideration` section regardless of mode
 -   **Version bump** 0.4.0 to 0.5.0
 
 ## [0.4.0] - 2026-05-20

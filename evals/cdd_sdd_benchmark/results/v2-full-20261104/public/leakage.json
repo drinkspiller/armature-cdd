@@ -1,0 +1,168 @@
+{
+  "units": 455,
+  "units_by_kind": {
+    "turn": 108,
+    "criterion": 114,
+    "check": 233
+  },
+  "scenarios": 60,
+  "frameworks": {
+    "armature_oss": {
+      "display_name": "Armature (OSS)",
+      "visibility": "public",
+      "pack_chars": 361276,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    },
+    "github_spec_kit": {
+      "display_name": "GitHub Spec Kit",
+      "visibility": "public",
+      "pack_chars": 225545,
+      "shared_3grams": 2,
+      "exclusive_3grams": 1,
+      "units_with_3gram": 2,
+      "units_with_3gram_by_kind": {
+        "turn": 1,
+        "criterion": 1
+      },
+      "top_matches": [
+        {
+          "ngram": "middleware src middleware",
+          "units": 1,
+          "exclusive": true,
+          "example": "CORE_05_API_KEY_CUTOVER:s0t0"
+        },
+        {
+          "ngram": "ask user repeat",
+          "units": 1,
+          "exclusive": false,
+          "example": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:c1"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    },
+    "openspec": {
+      "display_name": "OpenSpec",
+      "visibility": "public",
+      "pack_chars": 94758,
+      "shared_3grams": 1,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 1,
+      "units_with_3gram_by_kind": {
+        "criterion": 1
+      },
+      "top_matches": [
+        {
+          "ngram": "ask user repeat",
+          "units": 1,
+          "exclusive": false,
+          "example": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:c1"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    },
+    "bmad_method": {
+      "display_name": "BMAD Method",
+      "visibility": "public",
+      "pack_chars": 1432422,
+      "shared_3grams": 2,
+      "exclusive_3grams": 2,
+      "units_with_3gram": 2,
+      "units_with_3gram_by_kind": {
+        "turn": 2
+      },
+      "top_matches": [
+        {
+          "ngram": "dates iso 8601",
+          "units": 1,
+          "exclusive": true,
+          "example": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:s0t0"
+        },
+        {
+          "ngram": "wcag 2.1 aa",
+          "units": 1,
+          "exclusive": true,
+          "example": "HELDOUT_06_CHECKOUT_A11Y_SCOPE:s0t1"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    },
+    "memory_bank": {
+      "display_name": "Cline Memory Bank",
+      "visibility": "public",
+      "pack_chars": 3871,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    },
+    "canonical_conductor": {
+      "display_name": "Conductor (Gemini CLI extension)",
+      "visibility": "public",
+      "pack_chars": 152546,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    },
+    "wayfinder": {
+      "display_name": "Wayfinder (mattpocock/skills)",
+      "visibility": "public",
+      "pack_chars": 215243,
+      "shared_3grams": 2,
+      "exclusive_3grams": 2,
+      "units_with_3gram": 2,
+      "units_with_3gram_by_kind": {
+        "check": 1,
+        "turn": 1
+      },
+      "top_matches": [
+        {
+          "ngram": "migrate call sites",
+          "units": 1,
+          "exclusive": true,
+          "example": "CORE_06_OPENAPI_CLIENT_SWAP:no_frontend_edit_before_decision"
+        },
+        {
+          "ngram": "script src https",
+          "units": 1,
+          "exclusive": true,
+          "example": "HELDOUT_29_A11Y_OVERLAY_DECISION_THREE_SESSIONS:s2t0"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {}
+    }
+  },
+  "inputs": {
+    "legacy": false
+  }
+}

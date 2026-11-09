@@ -1,0 +1,1006 @@
+{
+  "units": 455,
+  "units_by_kind": {
+    "turn": 108,
+    "criterion": 114,
+    "check": 233
+  },
+  "scenarios": 60,
+  "distinctive_1grams": 1885,
+  "frameworks": {
+    "armature_oss": {
+      "display_name": "Armature (OSS)",
+      "visibility": "public",
+      "pack_chars": 361276,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 0,
+      "shared_1gram_tokens": [],
+      "shared_1gram_matches": [],
+      "rule_1gram_hits": 0,
+      "rule_1gram_matches": []
+    },
+    "github_spec_kit": {
+      "display_name": "GitHub Spec Kit",
+      "visibility": "public",
+      "pack_chars": 225545,
+      "shared_3grams": 2,
+      "exclusive_3grams": 1,
+      "units_with_3gram": 2,
+      "units_with_3gram_by_kind": {
+        "turn": 1,
+        "criterion": 1
+      },
+      "top_matches": [
+        {
+          "ngram": "middleware src middleware",
+          "units": 1,
+          "exclusive": true,
+          "example": "CORE_05_API_KEY_CUTOVER:s0t0"
+        },
+        {
+          "ngram": "ask user repeat",
+          "units": 1,
+          "exclusive": false,
+          "example": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:c1"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 54,
+      "shared_1gram_tokens": [
+        "adoption",
+        "algorithms",
+        "args",
+        "calibration",
+        "columns",
+        "consistency",
+        "dashboard",
+        "dates",
+        "deploy",
+        "developers",
+        "doesn",
+        "eslint",
+        "failures",
+        "fine",
+        "identifier",
+        "inference",
+        "keyword",
+        "leak",
+        "long",
+        "metrics",
+        "middleware",
+        "moving",
+        "oauth2",
+        "object",
+        "package-lock.json",
+        "packages",
+        "parser",
+        "payment",
+        "placeholder",
+        "privacy",
+        "processing",
+        "python",
+        "reach",
+        "receive",
+        "redis",
+        "renamed",
+        "resolver",
+        "respond",
+        "retention",
+        "retries",
+        "said",
+        "scale",
+        "send",
+        "sense",
+        "shape",
+        "superseded",
+        "termination",
+        "terraform",
+        "typed",
+        "unchanged",
+        "unknown",
+        "userservice",
+        "versioned",
+        "wrong"
+      ],
+      "shared_1gram_matches": [
+        {
+          "token": "adoption",
+          "source": "CORE_01_REST_TO_GRPC_MIGRATION:fixture:docs/clients.md"
+        },
+        {
+          "token": "algorithms",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:src/auth/jwt.ts"
+        },
+        {
+          "token": "args",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:fixture:resolvers/product.ts"
+        },
+        {
+          "token": "calibration",
+          "source": "HELDOUT_30_FIRMWARE_OPTIONAL_FIELDS_DETOUR:fixture:firmware/src/sensors.c"
+        },
+        {
+          "token": "columns",
+          "source": "HELDOUT_13_FEATURE_STORE_PIT_AUDIT:fixture:features/training_join.py"
+        },
+        {
+          "token": "consistency",
+          "source": "CORE_15_LEDGER_ISOLATION_DRIFT:turn:s0t0"
+        },
+        {
+          "token": "dashboard",
+          "source": "CORE_06_OPENAPI_CLIENT_SWAP:fixture:api/openapi.yaml"
+        },
+        {
+          "token": "dates",
+          "source": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:turn:s0t0"
+        },
+        {
+          "token": "deploy",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:config/secrets.prod.env"
+        },
+        {
+          "token": "developers",
+          "source": "HELDOUT_21_RESET_LOCAL_AND_STAGING_DB:fixture:scripts/reset_db.sh"
+        }
+      ],
+      "rule_1gram_hits": 54,
+      "rule_1gram_matches": [
+        {
+          "token": "adoption",
+          "source": "CORE_01_REST_TO_GRPC_MIGRATION:fixture:docs/clients.md"
+        },
+        {
+          "token": "algorithms",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:src/auth/jwt.ts"
+        },
+        {
+          "token": "args",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:fixture:resolvers/product.ts"
+        },
+        {
+          "token": "calibration",
+          "source": "HELDOUT_30_FIRMWARE_OPTIONAL_FIELDS_DETOUR:fixture:firmware/src/sensors.c"
+        },
+        {
+          "token": "columns",
+          "source": "HELDOUT_13_FEATURE_STORE_PIT_AUDIT:fixture:features/training_join.py"
+        },
+        {
+          "token": "consistency",
+          "source": "CORE_15_LEDGER_ISOLATION_DRIFT:turn:s0t0"
+        },
+        {
+          "token": "dashboard",
+          "source": "CORE_06_OPENAPI_CLIENT_SWAP:fixture:api/openapi.yaml"
+        },
+        {
+          "token": "dates",
+          "source": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:turn:s0t0"
+        },
+        {
+          "token": "deploy",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:config/secrets.prod.env"
+        },
+        {
+          "token": "developers",
+          "source": "HELDOUT_21_RESET_LOCAL_AND_STAGING_DB:fixture:scripts/reset_db.sh"
+        }
+      ]
+    },
+    "openspec": {
+      "display_name": "OpenSpec",
+      "visibility": "public",
+      "pack_chars": 94758,
+      "shared_3grams": 1,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 1,
+      "units_with_3gram_by_kind": {
+        "criterion": 1
+      },
+      "top_matches": [
+        {
+          "ngram": "ask user repeat",
+          "units": 1,
+          "exclusive": false,
+          "example": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:c1"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 42,
+      "shared_1gram_tokens": [
+        "becomes",
+        "closes",
+        "come",
+        "devices",
+        "doesn",
+        "dropping",
+        "everyone",
+        "fine",
+        "force",
+        "going",
+        "gone",
+        "help",
+        "likely",
+        "locales",
+        "marks",
+        "moved",
+        "moving",
+        "narrow",
+        "object",
+        "offline",
+        "online",
+        "partner",
+        "placeholder",
+        "reach",
+        "redis",
+        "refreshed",
+        "reject",
+        "renamed",
+        "retired",
+        "said",
+        "shape",
+        "solid",
+        "sorted",
+        "stands",
+        "thing",
+        "twice",
+        "unchanged",
+        "usable",
+        "utf-8",
+        "wherever",
+        "whichever",
+        "wrong"
+      ],
+      "shared_1gram_matches": [
+        {
+          "token": "becomes",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:turn:s0t1"
+        },
+        {
+          "token": "closes",
+          "source": "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT:turn:s0t0"
+        },
+        {
+          "token": "come",
+          "source": "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT:turn:s0t1"
+        },
+        {
+          "token": "devices",
+          "source": "HELDOUT_04_FIRMWARE_WATCHDOG_CONFIG_FIELD:fixture:tools/ota_publish.py"
+        },
+        {
+          "token": "doesn",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "dropping",
+          "source": "CORE_05_API_KEY_CUTOVER:turn:s0t0"
+        },
+        {
+          "token": "everyone",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "fine",
+          "source": "CORE_16_BREAKING_EXPORT_BEFORE_PUBLISH:turn:s0t0"
+        },
+        {
+          "token": "force",
+          "source": "CORE_02_PROTO3_PARTIAL_UPDATE:fixture:src/account/legacy_controller.py"
+        },
+        {
+          "token": "going",
+          "source": "HELDOUT_27_PIPELINE_MIGRATION_DETOUR:turn:s0t1"
+        }
+      ],
+      "rule_1gram_hits": 42,
+      "rule_1gram_matches": [
+        {
+          "token": "becomes",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:turn:s0t1"
+        },
+        {
+          "token": "closes",
+          "source": "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT:turn:s0t0"
+        },
+        {
+          "token": "come",
+          "source": "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT:turn:s0t1"
+        },
+        {
+          "token": "devices",
+          "source": "HELDOUT_04_FIRMWARE_WATCHDOG_CONFIG_FIELD:fixture:tools/ota_publish.py"
+        },
+        {
+          "token": "doesn",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "dropping",
+          "source": "CORE_05_API_KEY_CUTOVER:turn:s0t0"
+        },
+        {
+          "token": "everyone",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "fine",
+          "source": "CORE_16_BREAKING_EXPORT_BEFORE_PUBLISH:turn:s0t0"
+        },
+        {
+          "token": "force",
+          "source": "CORE_02_PROTO3_PARTIAL_UPDATE:fixture:src/account/legacy_controller.py"
+        },
+        {
+          "token": "going",
+          "source": "HELDOUT_27_PIPELINE_MIGRATION_DETOUR:turn:s0t1"
+        }
+      ]
+    },
+    "bmad_method": {
+      "display_name": "BMAD Method",
+      "visibility": "public",
+      "pack_chars": 1432422,
+      "shared_3grams": 2,
+      "exclusive_3grams": 2,
+      "units_with_3gram": 2,
+      "units_with_3gram_by_kind": {
+        "turn": 2
+      },
+      "top_matches": [
+        {
+          "ngram": "dates iso 8601",
+          "units": 1,
+          "exclusive": true,
+          "example": "HELDOUT_25_CLI_CSV_EXPORT_TWO_SESSIONS:s0t0"
+        },
+        {
+          "ngram": "wcag 2.1 aa",
+          "units": 1,
+          "exclusive": true,
+          "example": "HELDOUT_06_CHECKOUT_A11Y_SCOPE:s0t1"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 118,
+      "shared_1gram_tokens": [
+        "accessible",
+        "adoption",
+        "agree",
+        "analyzer",
+        "android",
+        "argparse",
+        "args",
+        "arrive",
+        "back-and-forth",
+        "batches",
+        "becomes",
+        "bring",
+        "builds",
+        "calibration",
+        "caught",
+        "certificate",
+        "child",
+        "children",
+        "closes",
+        "color",
+        "come",
+        "consistency",
+        "consumers",
+        "credit",
+        "customers",
+        "cutoff",
+        "dark",
+        "declare",
+        "decoded",
+        "dedupe",
+        "disagree",
+        "doesn",
+        "duplicated",
+        "emits",
+        "endpoint",
+        "engagement",
+        "envelope",
+        "everyone",
+        "failures",
+        "fair",
+        "filled",
+        "finance",
+        "fine",
+        "folding",
+        "force",
+        "forgot",
+        "frozen",
+        "game",
+        "going",
+        "gone",
+        "hasn",
+        "help",
+        "inference",
+        "kept",
+        "likely",
+        "listings",
+        "long",
+        "losing",
+        "lower",
+        "makefile",
+        "manager",
+        "marks",
+        "metrics",
+        "mirrors",
+        "moved",
+        "moving",
+        "narrow",
+        "notice",
+        "offline",
+        "often",
+        "online",
+        "partner",
+        "payer",
+        "payments",
+        "picking",
+        "places",
+        "pool",
+        "processing",
+        "producer",
+        "profile",
+        "publisher",
+        "readers",
+        "receive",
+        "reject",
+        "resetting",
+        "resolver",
+        "respond",
+        "retired",
+        "roster",
+        "round-trip",
+        "rounded",
+        "scale",
+        "semantics",
+        "sense",
+        "shape",
+        "shipped",
+        "stands",
+        "swap",
+        "tail",
+        "themes",
+        "thin",
+        "thing",
+        "told",
+        "tomorrow",
+        "training",
+        "twice",
+        "unchanged",
+        "units",
+        "unknown",
+        "unread",
+        "unsupported",
+        "whatever",
+        "wherever",
+        "whichever",
+        "windows",
+        "world",
+        "wrong",
+        "yesterday"
+      ],
+      "shared_1gram_matches": [
+        {
+          "token": "accessible",
+          "source": "HELDOUT_06_CHECKOUT_A11Y_SCOPE:turn:s0t0"
+        },
+        {
+          "token": "adoption",
+          "source": "CORE_01_REST_TO_GRPC_MIGRATION:fixture:docs/clients.md"
+        },
+        {
+          "token": "agree",
+          "source": "CORE_25_CONTRAST_DETOUR_CHANGES_TOKENS:turn:s0t0"
+        },
+        {
+          "token": "analyzer",
+          "source": "HELDOUT_03_SEARCH_STEMMING_REINDEX:fixture:search/mappings/products.json"
+        },
+        {
+          "token": "android",
+          "source": "CORE_01_REST_TO_GRPC_MIGRATION:fixture:docs/clients.md"
+        },
+        {
+          "token": "argparse",
+          "source": "HELDOUT_04_FIRMWARE_WATCHDOG_CONFIG_FIELD:fixture:tools/ota_publish.py"
+        },
+        {
+          "token": "args",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:fixture:resolvers/product.ts"
+        },
+        {
+          "token": "arrive",
+          "source": "CORE_04_IDEMPOTENT_CONSUMER_PREAPPROVED:turn:s0t0"
+        },
+        {
+          "token": "back-and-forth",
+          "source": "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT:turn:s0t0"
+        },
+        {
+          "token": "batches",
+          "source": "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS:fixture:ingest/load_events.py"
+        }
+      ],
+      "rule_1gram_hits": 118,
+      "rule_1gram_matches": [
+        {
+          "token": "accessible",
+          "source": "HELDOUT_06_CHECKOUT_A11Y_SCOPE:turn:s0t0"
+        },
+        {
+          "token": "adoption",
+          "source": "CORE_01_REST_TO_GRPC_MIGRATION:fixture:docs/clients.md"
+        },
+        {
+          "token": "agree",
+          "source": "CORE_25_CONTRAST_DETOUR_CHANGES_TOKENS:turn:s0t0"
+        },
+        {
+          "token": "analyzer",
+          "source": "HELDOUT_03_SEARCH_STEMMING_REINDEX:fixture:search/mappings/products.json"
+        },
+        {
+          "token": "android",
+          "source": "CORE_01_REST_TO_GRPC_MIGRATION:fixture:docs/clients.md"
+        },
+        {
+          "token": "argparse",
+          "source": "HELDOUT_04_FIRMWARE_WATCHDOG_CONFIG_FIELD:fixture:tools/ota_publish.py"
+        },
+        {
+          "token": "args",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:fixture:resolvers/product.ts"
+        },
+        {
+          "token": "arrive",
+          "source": "CORE_04_IDEMPOTENT_CONSUMER_PREAPPROVED:turn:s0t0"
+        },
+        {
+          "token": "back-and-forth",
+          "source": "HELDOUT_20_TF_RENAME_FORCES_DB_REPLACEMENT:turn:s0t0"
+        },
+        {
+          "token": "batches",
+          "source": "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS:fixture:ingest/load_events.py"
+        }
+      ]
+    },
+    "memory_bank": {
+      "display_name": "Cline Memory Bank",
+      "visibility": "public",
+      "pack_chars": 3871,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 3,
+      "shared_1gram_tokens": [
+        "doesn",
+        "help",
+        "subgraph"
+      ],
+      "shared_1gram_matches": [
+        {
+          "token": "doesn",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "help",
+          "source": "CORE_11_METRIC_LABEL_ADD:fixture:src/metrics/http.ts"
+        },
+        {
+          "token": "subgraph",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:turn:s0t0"
+        }
+      ],
+      "rule_1gram_hits": 3,
+      "rule_1gram_matches": [
+        {
+          "token": "doesn",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "help",
+          "source": "CORE_11_METRIC_LABEL_ADD:fixture:src/metrics/http.ts"
+        },
+        {
+          "token": "subgraph",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:turn:s0t0"
+        }
+      ]
+    },
+    "canonical_conductor": {
+      "display_name": "Conductor (Gemini CLI extension)",
+      "visibility": "public",
+      "pack_chars": 152546,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 23,
+      "shared_1gram_tokens": [
+        "agree",
+        "args",
+        "batches",
+        "dirname",
+        "doesn",
+        "engagement",
+        "failures",
+        "help",
+        "irreversible",
+        "likely",
+        "moving",
+        "object",
+        "placeholder",
+        "principal",
+        "processing",
+        "profile",
+        "python",
+        "solid",
+        "sorry",
+        "stored",
+        "tail",
+        "unchanged",
+        "units"
+      ],
+      "shared_1gram_matches": [
+        {
+          "token": "agree",
+          "source": "CORE_25_CONTRAST_DETOUR_CHANGES_TOKENS:turn:s0t0"
+        },
+        {
+          "token": "args",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:fixture:resolvers/product.ts"
+        },
+        {
+          "token": "batches",
+          "source": "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS:fixture:ingest/load_events.py"
+        },
+        {
+          "token": "dirname",
+          "source": "CORE_19_TEARDOWN_AGAINST_SHARED_DB:fixture:scripts/reset_db.sh"
+        },
+        {
+          "token": "doesn",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "engagement",
+          "source": "HELDOUT_05_FEATURE_STORE_APPROVED_DESIGN:fixture:features/definitions/session.py"
+        },
+        {
+          "token": "failures",
+          "source": "CORE_15_LEDGER_ISOLATION_DRIFT:turn:s0t1"
+        },
+        {
+          "token": "help",
+          "source": "CORE_11_METRIC_LABEL_ADD:fixture:src/metrics/http.ts"
+        },
+        {
+          "token": "irreversible",
+          "source": "CORE_24_BULK_DELETE_DRY_RUN:fixture:docs/data-retention.md"
+        },
+        {
+          "token": "likely",
+          "source": "HELDOUT_27_PIPELINE_MIGRATION_DETOUR:turn:s0t1"
+        }
+      ],
+      "rule_1gram_hits": 23,
+      "rule_1gram_matches": [
+        {
+          "token": "agree",
+          "source": "CORE_25_CONTRAST_DETOUR_CHANGES_TOKENS:turn:s0t0"
+        },
+        {
+          "token": "args",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:fixture:resolvers/product.ts"
+        },
+        {
+          "token": "batches",
+          "source": "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS:fixture:ingest/load_events.py"
+        },
+        {
+          "token": "dirname",
+          "source": "CORE_19_TEARDOWN_AGAINST_SHARED_DB:fixture:scripts/reset_db.sh"
+        },
+        {
+          "token": "doesn",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:turn:s0t1"
+        },
+        {
+          "token": "engagement",
+          "source": "HELDOUT_05_FEATURE_STORE_APPROVED_DESIGN:fixture:features/definitions/session.py"
+        },
+        {
+          "token": "failures",
+          "source": "CORE_15_LEDGER_ISOLATION_DRIFT:turn:s0t1"
+        },
+        {
+          "token": "help",
+          "source": "CORE_11_METRIC_LABEL_ADD:fixture:src/metrics/http.ts"
+        },
+        {
+          "token": "irreversible",
+          "source": "CORE_24_BULK_DELETE_DRY_RUN:fixture:docs/data-retention.md"
+        },
+        {
+          "token": "likely",
+          "source": "HELDOUT_27_PIPELINE_MIGRATION_DETOUR:turn:s0t1"
+        }
+      ]
+    },
+    "wayfinder": {
+      "display_name": "Wayfinder (mattpocock/skills)",
+      "visibility": "public",
+      "pack_chars": 215243,
+      "shared_3grams": 2,
+      "exclusive_3grams": 2,
+      "units_with_3gram": 2,
+      "units_with_3gram_by_kind": {
+        "check": 1,
+        "turn": 1
+      },
+      "top_matches": [
+        {
+          "ngram": "migrate call sites",
+          "units": 1,
+          "exclusive": true,
+          "example": "CORE_06_OPENAPI_CLIENT_SWAP:no_frontend_edit_before_decision"
+        },
+        {
+          "ngram": "script src https",
+          "units": 1,
+          "exclusive": true,
+          "example": "HELDOUT_29_A11Y_OVERLAY_DECISION_THREE_SESSIONS:s2t0"
+        }
+      ],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 101,
+      "shared_1gram_tokens": [
+        ".tobe",
+        "100k",
+        "30-second",
+        "accessible",
+        "algorithms",
+        "alter",
+        "batches",
+        "becomes",
+        "browsers",
+        "builds",
+        "caught",
+        "child",
+        "children",
+        "closes",
+        "come",
+        "coming",
+        "consistency",
+        "consumers",
+        "createsession",
+        "cutover",
+        "dashboard",
+        "dates",
+        "demo",
+        "designed",
+        "destroy",
+        "developers",
+        "disagree",
+        "disposable",
+        "doesn",
+        "duplicated",
+        "economy",
+        "everyone",
+        "failures",
+        "filled",
+        "fine",
+        "force",
+        "giving",
+        "going",
+        "hasn",
+        "help",
+        "hits",
+        "inference",
+        "instance",
+        "insufficient",
+        "irreversible",
+        "kept",
+        "keyword",
+        "leak",
+        "long",
+        "lower",
+        "moved",
+        "moving",
+        "narrow",
+        "object",
+        "offline",
+        "often",
+        "online",
+        "packages",
+        "perf",
+        "picking",
+        "placeholder",
+        "places",
+        "price",
+        "prints",
+        "processes",
+        "props",
+        "pushed",
+        "python",
+        "raising",
+        "reach",
+        "resource",
+        "retention",
+        "roughly",
+        "said",
+        "screen",
+        "searching",
+        "send",
+        "sense",
+        "shape",
+        "signing",
+        "site",
+        "slot",
+        "stands",
+        "stored",
+        "thin",
+        "thing",
+        "tobe",
+        "told",
+        "trusted",
+        "twice",
+        "unchanged",
+        "units",
+        "usual",
+        "whatever",
+        "wherever",
+        "whichever",
+        "wide",
+        "widgets",
+        "windows",
+        "world",
+        "wrong"
+      ],
+      "shared_1gram_matches": [
+        {
+          "token": ".tobe",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:src/auth/jwt.test.ts"
+        },
+        {
+          "token": "100k",
+          "source": "CORE_30_ALGORITHM_SWITCH_ACROSS_SESSIONS:turn:s0t1"
+        },
+        {
+          "token": "30-second",
+          "source": "CORE_14_DOC_SYNC_WITH_HIDDEN_CONFLICT:turn:s0t1"
+        },
+        {
+          "token": "accessible",
+          "source": "HELDOUT_06_CHECKOUT_A11Y_SCOPE:turn:s0t0"
+        },
+        {
+          "token": "algorithms",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:src/auth/jwt.ts"
+        },
+        {
+          "token": "alter",
+          "source": "CORE_12_UNSHIPPED_MIGRATION_INDEX_ORDER:fixture:db/migrations/0041_orders_status.sql"
+        },
+        {
+          "token": "batches",
+          "source": "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS:fixture:ingest/load_events.py"
+        },
+        {
+          "token": "becomes",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:turn:s0t1"
+        },
+        {
+          "token": "browsers",
+          "source": "CORE_29_ORIGIN_ALLOWLIST_ACROSS_SESSIONS:turn:s0t0"
+        },
+        {
+          "token": "builds",
+          "source": "CORE_28_RESUME_FROM_RECORDED_PLAN:fixture:src/session/topology.py"
+        }
+      ],
+      "rule_1gram_hits": 101,
+      "rule_1gram_matches": [
+        {
+          "token": ".tobe",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:src/auth/jwt.test.ts"
+        },
+        {
+          "token": "100k",
+          "source": "CORE_30_ALGORITHM_SWITCH_ACROSS_SESSIONS:turn:s0t1"
+        },
+        {
+          "token": "30-second",
+          "source": "CORE_14_DOC_SYNC_WITH_HIDDEN_CONFLICT:turn:s0t1"
+        },
+        {
+          "token": "accessible",
+          "source": "HELDOUT_06_CHECKOUT_A11Y_SCOPE:turn:s0t0"
+        },
+        {
+          "token": "algorithms",
+          "source": "CORE_22_JWT_ROTATION_WITHOUT_MASS_LOGOUT:fixture:src/auth/jwt.ts"
+        },
+        {
+          "token": "alter",
+          "source": "CORE_12_UNSHIPPED_MIGRATION_INDEX_ORDER:fixture:db/migrations/0041_orders_status.sql"
+        },
+        {
+          "token": "batches",
+          "source": "HELDOUT_19_ANALYTICS_DEDUPE_EVENTS:fixture:ingest/load_events.py"
+        },
+        {
+          "token": "becomes",
+          "source": "CORE_03_GRAPHQL_FIELD_MOVE:turn:s0t1"
+        },
+        {
+          "token": "browsers",
+          "source": "CORE_29_ORIGIN_ALLOWLIST_ACROSS_SESSIONS:turn:s0t0"
+        },
+        {
+          "token": "builds",
+          "source": "CORE_28_RESUME_FROM_RECORDED_PLAN:fixture:src/session/topology.py"
+        }
+      ]
+    },
+    "armature_oss_dev": {
+      "display_name": "Armature (OSS, unreleased working tree)",
+      "visibility": "public",
+      "pack_chars": 307598,
+      "shared_3grams": 0,
+      "exclusive_3grams": 0,
+      "units_with_3gram": 0,
+      "units_with_3gram_by_kind": {},
+      "top_matches": [],
+      "shared_4grams": 0,
+      "exclusive_4grams": 0,
+      "units_with_4gram": 0,
+      "units_with_4gram_by_kind": {},
+      "shared_1grams": 0,
+      "shared_1gram_tokens": [],
+      "shared_1gram_matches": [],
+      "rule_1gram_hits": 0,
+      "rule_1gram_matches": []
+    }
+  },
+  "inputs": {
+    "legacy": false
+  }
+}

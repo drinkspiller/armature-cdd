@@ -20,46 +20,57 @@ resolving all open rounds, questions, and ambiguities.
     `file:///usr/local/go...`). NEVER pass a `file://` URI to a file operation
     tool.
 -   **Raw/Truncated Input Handling:** If the user request contains raw JSON,
-    HTML snippets, or truncated text dumps (e.g., `{"activeScroller": "HTML",
-    "mainScrollbarWidth": 15, "mainScrollHeight":` or `@[Quote] nalyzer
-    description: Lint warnings. Owner: [linter-team@google.com](mailto:l)`),
-    treat it purely as contextual description. Do not crash, do not attempt to
-    parse it as a command, and do not fail if it is malformed. If the
-    description is incomplete, gracefully ask for clarification via
-    `ask_question` before proceeding.
--   **Strict Interactive Discipline:** You MUST NEVER generate track artifacts
-    (`spec.md`, `plan.md`) or write code in a single autonomous turn. Every
-    track requires step-by-step user alignment.
+    HTML snippets, or truncated text dumps (e.g.,
+    `{"activeScroller": "HTML", "mainScrollbarWidth": 15, "mainScrollHeight":`
+    or `@[Quote] nalyzer description: Lint warnings. Owner:
+    [linter-team@google.com](mailto:l)`), treat it purely as contextual
+    description. Do not crash, do not attempt to parse it as a command, and do
+    not fail if it is malformed. If the description is incomplete, gracefully
+    ask for clarification via `ask_question` before proceeding.
+-   **Eager Draft Materialization & Unified Spec+Plan Gate:** Materialize an
+    initial working draft (`status: draft`) of `spec.md` on Turn 1 (Step 4b) so
+    reconnaissance findings and candidate options are persisted on disk
+    immediately, checkpoint settled answers into `spec.md` on each interview
+    turn, and present `spec.md`, `manual_testing.md`, and `plan.md` together at
+    a single **Unified Spec+Plan Approval Gate** (Steps 6–7). Never write
+    application source code during `/arm-new-track`.
 -   **Synchronous Turn-Ending Barrier:** You MUST invoke `ask_question` and end
     your turn at Step 5a (Round and Question Probes), Step 5b (Devil's Advocate
-    Gate), Step 5c (ADR Candidate Triage Gate, when candidates qualify), Step 6
-    (Spec Approval), and Step 7 (Plan Approval). Do not proceed to subsequent
+    Gate), Step 5c (ADR Candidate Triage Gate, when candidates qualify), and the
+    Unified Spec+Plan Approval Gate (Steps 6–7). Do not proceed to subsequent
     steps until the user responds.
--   **Hard Terminal Stop & Explicit `/arm-implement <track_id>` Handoff
-    Invariant:** `/arm-new-track` terminates strictly at Step 10 after writing
-    `metadata.json` (`"status": "planned"`), `index.md`, updating `tracks.md`
-    (`- [ ]`), and committing the track artifacts. You are STRICTLY FORBIDDEN
-    from calling `invoke_subagent`, `define_subagent`, or `schedule`, and from
-    setting status to `"in_progress"` or `[~]` during `/arm-new-track` — even if
-    the user explicitly asks to auto-start implementation or dispatch `worker`
-    upon plan approval. Always conclude Step 10 by instructing the user in
-    visible markdown to run `/arm-implement <track_id>` (including the exact
-    `<track_id>` slug).
--   **Mandatory Progress List:** In EVERY turn of Step 5, you MUST output a
-    visible grouped progress list (`**Settled**` / `**Now**` / `**Up next**`)
-    showing rounds and the questions spawned under them. Settled items carry
-    their short answer; the active item appears under `**Now**`; queued
-    questions and unexplored rounds appear under `**Up next**`. Omit a group
-    when it is empty.
+-   **Terminal Stop vs. Explicit-Sign-Off Fast-Forward
+    (`/arm-implement <track_id>` Handoff):** On Turn 1 compound prompts (where
+    open questions have not yet been answered) or when the user selects
+    `"Approve spec + plan (I'll run /arm-implement later)"` (or on
+    `Phase Count ≥ 3` tracks without an explicit implementation command),
+    `/arm-new-track` terminates at Step 10 after writing `metadata.json`
+    (`"status": "planned"`), `index.md`, updating `tracks.md` (`- [ ]`), and
+    committing the track artifacts, instructing the user in visible markdown to
+    run `/arm-implement <track_id>`. When the user selects
+    `"Approve spec + plan and begin implementation"` at the Unified Gate (or
+    issues an explicit `"implement"` / `"go ahead"` / `"do it now"` /
+    `"build it"` / `"start coding"` sign-off after answering all questions),
+    finalize `spec.md` and `plan.md` to `status: approved`, write
+    `metadata.json`, `index.md`, and `tracks.md`, and transition directly into
+    `/arm-implement <track_id>` in the same turn.
+-   **Silent On-Disk State Checkpointing (Zero Chat Progress-List Clutter):**
+    Persist settled decisions and remaining open questions strictly on disk in
+    `spec.md` (`status: draft`, under `## Settled Decisions` and
+    `## Open Questions`) and `armature/active_context.md`. **NEVER** output
+    `Round X settled:` lines or `**Settled**`, `**Now**`, or `**Up next**` lists
+    in chat so the user can focus exclusively on the active question.
 -   **Lazy Question Materialization (Pre-Population Ban):** Future rounds MUST
-    remain unexpanded stubs under `**Up next**` (e.g., `- Round 2, <Topic>`).
-    You are STRICTLY FORBIDDEN from listing questions under a round until the
-    user has confirmed an architectural direction for that round.
--   **Answer-Anchored Provenance:** Every spawned follow-up question MUST say
-    which confirmed user answer generated it, stated in the settled line (e.g.,
-    `Round 2 settled: <answer>. This opens a follow-up on <topic>.`) or in the
-    opener paragraph. Questions without a literal proven choice from prior turns
-    are forbidden.
+    remain unexpanded stubs in `spec.md` `## Open Questions` (e.g.,
+    `- Round 2: <Topic>`). You are STRICTLY FORBIDDEN from listing sub-questions
+    under a round until the user has confirmed an architectural direction for
+    that round.
+-   **Answer-Anchored Provenance:** Every spawned follow-up question MUST weave
+    which confirmed user answer generated it naturally into the opening clause
+    of the orientation paragraph (e.g., *"Because new uploads stay private in
+    staging until scanning passes, the scanner now sits directly between
+    uploading a file and sharing its link..."*). Follow-up questions without a
+    clear link to a confirmed prior choice are forbidden.
 -   **Anti-Dictation Invariant (Zero Un-Queried Decisions):** You MUST NEVER
     assert or output declarative technical specifications, UI layouts, button
     behaviors, countdown cancel rules, or lifecycle state transitions in
@@ -72,50 +83,65 @@ resolving all open rounds, questions, and ambiguities.
     answer. Probing depth is strictly bounded to Depth <= 2 (Round -> Question).
     Question answers are terminal (Settled) and MUST NOT spawn further nested
     questions.
--   **Interview Turn Format & Mandatory Tool Pairing (Zero Text-Only Stalls):**
-    In EVERY turn of Step 5 where choices are presented, you MUST render the
-    Interview Turn v2 layout defined in Phase 5a (settled line and progress list
-    on normal forward turns, `---`, `## Round R, Question Q of N: <Topic>`
-    headline, plain-English stakes opener ending in `The choice here is <X>.
-    Here are some options:` with zero code identifiers or backend systems
-    jargon, numbered one-line options placing the recommended option at `1.`,
-    `Safe to ignore for now:` line, `### Recommendation: Option 1` with one
-    sentence, and bulleted `- Pick N if …` lines) and pair it with an immediate
-    native `ask_question` tool call in the exact same turn. End your markdown
-    response immediately after the last `- Pick N if …` line with a clean
-    newline. NEVER append transitional self-narration sentences at the end of
-    your text (e.g., *"I will now ask for your decision on..."* or *"Let's call
-    ask_question..."*), which cause token concatenation and break tool parsing.
-    Invoke `ask_question` exclusively as a native structured tool call in that
-    exact same turn—never emit raw `call:default_api:ask_question{...}` strings
-    in the markdown stream, and NEVER end your turn after markdown without
-    calling `ask_question`. In `ask_question`, populate options `1..K` using the
-    **exact same plain-English `<Option name>`** (the phrase before `:` in `1.
-    <Option name>: <benefit>; <cost>`) in exact 1-to-1 order, prefix Option 1
-    with `"(Recommended) "` (never replacing `<Option name>` with the `Pick N
-    if` sentences!), and append `"I need more context, zoom out and give
-    examples"` as the final choice on substantive Step 5a / Phase 5b decision
-    questions (never on pure copywriting tone choices or procedural approvals).
-    Never add a manual "Other" option (the UI modal natively provides a write-in
-    field). If the user selects `"I need more context, zoom out and give
-    examples"` (or writes in `"zoom out"` / `"too vague"` / `"explain"`), make
-    zero read/search tool calls, **omit `**Settled**` / `**Now**` / `**Up
-    next**` completely**, explain why this decision arises in the workflow with
-    1–2 concrete named domain examples, output `---`, and re-tee a rewritten
-    Interview Turn v2 + `ask_question`. Render the Zoom-In View (`**Pros:**` /
-    `**Cons:**` / `**Implications:**` cards) strictly when the user explicitly
-    writes in `"zoom in"`.
+-   **Focus + Succinct `/zoom-out` Interview Turn Format & Mandatory Tool
+    Pairing (Zero Text-Only Stalls):** In EVERY turn of Step 5 where choices are
+    presented, render the Focus + Succinct `/zoom-out` layout defined in Phase
+    5a (see `skills/arm-new-track/references/interview_formatting.md` and
+    `skills/arm-new-track/references/ask_question_guide.md` for detailed
+    formatting examples and Zoom-Out/Zoom-In templates—`## <Topic>` clean topic
+    headline without `Round R, Question Q` prefixes, a `1–3` line `text` fenced
+    ASCII mental-model flow diagram `[Before] ──► [★ This choice] ──► [After]`
+    situating where this decision sits in the workflow, an unlabeled 2–3
+    sentence plain-English orientation ending in
+    `The choice here is <X>. Here are some options:` with zero prose code
+    identifiers or backend systems jargon, numbered one-line options placing the
+    recommended option at `1.`, `Safe to ignore for now:` line,
+    `### Recommendation: Option 1` with one sentence, and bulleted
+    `- Pick N if …` lines, with **zero `**Settled**` / `**Now**` / `**Up next**`
+    lists**) and pair it with an immediate native `ask_question` tool call in
+    the exact same turn. End your markdown response immediately after the last
+    `- Pick N if …` line with a clean newline. NEVER append transitional
+    self-narration sentences at the end of your text (e.g., *"I will now ask for
+    your decision on..."* or *"Let's call ask_question..."*), which cause token
+    concatenation and break tool parsing. Invoke `ask_question` exclusively as a
+    native structured tool call in that exact same turn—never emit raw
+    `call:default_api:ask_question{...}` strings in the markdown stream, and
+    NEVER end your turn after markdown without calling `ask_question`. In
+    `ask_question`, populate options `1..K` using the **exact same plain-English
+    `<Option name>`** (the phrase before `:` in
+    `1. <Option name>: <benefit>; <cost>`) in exact 1-to-1 order, prefix Option
+    1 with `"(Recommended) "` (never replacing `<Option name>` with the
+    `Pick N if` sentences!), and append
+    `"I need more context, zoom out and give examples"` as the final choice on
+    substantive Step 5a / Phase 5b decision questions (never on pure copywriting
+    tone choices or procedural approvals). Never add a manual "Other" option
+    (the UI modal natively provides a write-in field). If the user selects
+    `"I need more context, zoom out and give examples"` (or writes in
+    `"zoom out"` / `"too vague"` / `"explain"`), make zero read/search tool
+    calls, walk through 1–2 concrete named domain examples in plain everyday
+    English above `---`, and re-tee a rewritten Focus + Succinct `/zoom-out`
+    turn + `ask_question`. Render the Zoom-In View (`**Pros:**` / `**Cons:**` /
+    `**Implications:**` cards) strictly when the user explicitly writes in
+    `"zoom in"`.
 -   **Compound Directive Shielding:** If the user invokes `/arm-new-track`
     alongside other instructions (e.g., `/diagnose`, `Fix`, or implementation
-    tasks), you MUST explicitly refuse to write code or generate `plan.md`
-    prematurely. Complete all interactive track creation milestones sequentially
-    before starting downstream execution.
--   **Premature Draft Command Shielding:** If the user issues commands like
-    "Draft the spec", "Looks good, write the spec", or "Proceed to drafting"
-    while rounds or questions remain unsettled (listed under `**Now**` or `**Up
-    next**`), you MUST NOT materialize `spec.md` immediately. List the remaining
-    open questions in the progress list and pose the next targeted probe via
-    `ask_question`.
+    tasks) on Turn 1 before a specification and plan have been drafted, refuse
+    to write application source code on Turn 1. Complete Step 4 reconnaissance,
+    materialize the working draft `spec.md` (`status: draft`) in Step 4b, and
+    pose the high-leverage architectural ambiguity via `ask_question`.
+-   **Premature Draft Command Shielding & Explicit-Sign-Off Fast-Forward:** If
+    critical architectural ambiguities remain unsettled in `spec.md`
+    `## Open Questions` and the user has NOT selected a concrete option or
+    authorized recommended defaults, briefly note that open architectural
+    questions remain and pose the next targeted probe via `ask_question`.
+    However, if a working draft `spec.md` (`status: draft`) already exists on
+    disk from Step 4b and the user replies with a concrete option selection plus
+    an explicit sign-off directive (e.g., *"Use Option 1, approve the spec and
+    plan, and proceed"* or *"Approve defaults and finalize the track"*), record
+    the selected option and recommended defaults for any remaining routine
+    questions, promote `spec.md`, `plan.md`, and `manual_testing.md` to
+    `status: approved`, and proceed to Step 7/8 without forcing redundant modal
+    rounds.
 -   **Phase 5b Devil's Advocate Analysis:** When all rounds and dynamically
     spawned questions are Settled, you MUST NOT immediately converge. You MUST
     execute Phase 5b: audit the combination of confirmed answers, emit a
@@ -129,13 +155,17 @@ resolving all open rounds, questions, and ambiguities.
     If candidates qualify, render an `### ADR Candidate Triage Table` and obtain
     explicit user confirmation via a multi-select modal in a single turn before
     drafting ADRs.
--   **Anti-Early-Exit & Natural Convergence:** The interview concludes ONLY when
-    every round and question is Settled, Phase 5b Devil's Advocate analysis is
-    resolved, and Phase 5c ADR triage has concluded.
--   **Pre-Materialization Hardening Barrier:** You MUST hold specification state
-    in memory during Step 5. Canonical `spec.md` is only materialized on disk in
-    Step 6 after Phase 5b is reaffirmed, Phase 5c triage concludes, and the user
-    approves drafting.
+-   **Anti-Early-Exit & Natural Convergence:** The interview concludes when all
+    rounds and questions are Settled, Phase 5b Devil's Advocate analysis is
+    resolved, and Phase 5c ADR triage has concluded (or via the Step 5d
+    Complexity Classifier & Explicit-Sign-Off Fast-Forward when the user
+    explicitly signs off on a Step 4b working draft).
+-   **Eager Working Draft & Post-Convergence Promotion Barrier:** Materialize
+    `spec.md` on Turn 1 (Step 4b) with YAML frontmatter `status: draft` and
+    update it in-place as rounds settle. Promote `spec.md`, `plan.md`, and
+    `manual_testing.md` from `status: draft` to `status: approved` in Step 7
+    only after the user approves the Unified Spec+Plan Gate (or gives explicit
+    sign-off).
 -   **Audience Pivot & Execution-Ready Spec/Plan Grounding Standard (`ADR 0016`
     — Sufficient Detail for a Smaller Model Without Writing Code):** While Step
     5 (the human decision interview) strictly uses everyday plain language with
@@ -160,8 +190,9 @@ resolving all open rounds, questions, and ambiguities.
     **NEVER** modify application source files during `/arm-new-track`.
 -   **Interruption & Detour Recovery:** If the user asks side questions,
     clarifies requirements, or explores asset tangents mid-traversal, answer the
-    inquiry, update the progress list, and resume traversing open questions.
-    NEVER leap to Plan Generation or VCS Commit.
+    inquiry briefly and resume probing the remaining `## Open Questions` from
+    `spec.md` using the Focus + Succinct `/zoom-out` turn layout. NEVER leap to
+    Plan Generation or VCS Commit.
 
 ## Protocol
 
@@ -235,10 +266,10 @@ resolving all open rounds, questions, and ambiguities.
         3.  **Cross-Layer Field Bijections & Server Validator Preconditions**:
             Note every field-by-field mapping between client/UI state and
             wire/storage protos (including default values for non-toggled
-            fields, unit conversions, or boolean inversions like `inverted <->
-            flipped`) and any server-side validator preconditions (e.g.,
-            unit-length normal vector check `|n| = 1.0`, numeric range clamping,
-            or required `FieldMask` paths).
+            fields, unit conversions, or boolean inversions like
+            `inverted <-> flipped`) and any server-side validator preconditions
+            (e.g., unit-length normal vector check `|n| = 1.0`, numeric range
+            clamping, or required `FieldMask` paths).
         4.  **Non-Obvious Imports, Build Targets, Generated Files & Test
             Overrides**: Note exact import paths and `BUILD` / `package.json` /
             `Cargo.toml` / `go.mod` dependency targets (e.g., well-known proto
@@ -257,107 +288,163 @@ resolving all open rounds, questions, and ambiguities.
             edits**, and define pass as "no new findings vs. that baseline"
             rather than "fix any findings".
     -   **Proactive Legacy Boundary Discovery (Migration Detection & Immediate
-        Turn 1 Progress List)**: If `[Codebase Reconnaissance Context...]` is
-        provided in the user prompt or if the user's description reveals
-        parallel legacy/modern directories (e.g., migrating from `<legacy_dir>/`
-        to `<modern_dir>/`), DO NOT call `code_search` or `view_file` to search
-        for `product.md` or `tech-stack.md`. Immediately in Turn 1:
-        1.  Output the visible progress list with a `**Now**` entry for the
-            round (or Tier 1 operational question) probing the Legacy-Boundary
-            Context Fence scope (`<legacy_dir>/` -> `<modern_dir>/`).
-        2.  Output the interview turn (headline, unlabeled stakes opener ending
-            in `The choice here is <X>. Here are some options:`, numbered
-            one-line options, `Safe to ignore for now:` line, `###
-            Recommendation: Option N` with one sentence, and `Pick N if …`
-            lines) proposing to record `legacy_fences` in
+        Turn 1 Probe)**: If `[Codebase Reconnaissance Context...]` is provided
+        in the user prompt or if the user's description reveals parallel
+        legacy/modern directories (e.g., migrating from `<legacy_dir>/` to
+        `<modern_dir>/`), DO NOT call `code_search` or `view_file` to search for
+        `product.md` or `tech-stack.md`. Immediately in Turn 1:
+        1.  Output the Focus + Succinct `/zoom-out` interview turn (`## <Topic>`
+            headline without `Round R, Question Q` prefixes, `1–3` line `text`
+            ASCII flow diagram showing
+            `<legacy_dir>/ ──► [★ Boundary fence] ──► <modern_dir>/`, unlabeled
+            plain-English orientation ending in
+            `The choice here is <X>. Here are some options:`, numbered one-line
+            options, `Safe to ignore for now:` line,
+            `### Recommendation: Option 1` with one sentence, and
+            `- Pick N if …` bullets—with zero `**Settled**` / `**Now**` /
+            `**Up next**` lists) proposing to record `legacy_fences` in
             `armature/tech-stack.md` (`## Legacy & Deprecated Boundaries` for
             repo-wide enforcement) or in track `metadata.json` (`legacy_fences`
             for track-scoped enforcement).
-        3.  Invoke `ask_question` in that exact same turn asking the user to
-            confirm the legacy fence scope. Never write `spec.md` or `plan.md`
-            prematurely.
+        2.  Invoke `ask_question` in that exact same turn asking the user to
+            confirm the legacy fence scope. Never finalize `spec.md` to
+            `status: approved` or write `plan.md` prematurely.
     -   Use findings to inform the spec questions in the next step — questions
         must reference specific codebase context.
 
+4b. **Initialize Working Draft (`Eager Turn-1 Materialization`):**
+
+````
+-   **Exception for Inline Reconnaissance & Legacy-Fence Turn-1 Benchmarks**:
+    If `[Codebase Reconnaissance Context...]` is provided inline in the
+    prompt or if Step 4 triggered **Proactive Legacy Boundary Discovery**
+    (where Turn 1 must make zero file tool calls and only call
+    `ask_question`), hold the initial draft in memory on Turn 1 and write it
+    on the subsequent turn.
+-   **Standard Brownfield & Greenfield Sessions (`Visible Markdown FIRST ->
+    Draft File Writes SECOND -> ask_question THIRD`)**: Never emit
+    `write_to_file` / `write_file` BEFORE the visible Markdown interview
+    turn—starting a response with `write_to_file` suppresses subsequent
+    visible `text` parts and leaves chat blank (`content: ""`). On Turn 1,
+    ALWAYS emit the complete visible `## <Topic>` Focus + Succinct
+    `/zoom-out` Markdown body into `content` **FIRST**, then invoke
+    `write_to_file` / `write_file` **SECOND** to write an initial working
+    draft of `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md`
+    (and invoke `ask_question` **THIRD** in that same turn), stamped
+    with YAML frontmatter:
+    ```yaml
+    ---
+    track_id: <track_id>
+    status: draft
+    updated_at: <YYYY-MM-DDTHH:MM:SSZ>
+    ---
+    ```
+    Populate the working draft with:
+    1.  **Reconnaissance Inventory**: Exact target file paths, existing
+        function/class/proto/wire signatures, and backward-compatibility or
+        caller constraints discovered in Step 4.
+    2.  **Candidate Design Options & Trade-Offs**: The candidate approaches
+        and trade-offs for the open rounds (`[OPEN — Round 1]`, `[OPEN —
+        Round 2]`, etc.) plus recommended defaults.
+    3.  **Initial Test & Edge-Case Matrix**: Edge cases (empty/null inputs,
+        boundary values, error paths, wire-format invariants) identified
+        during reconnaissance.
+-   Write `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/metadata.json`
+    with `"status": "draft"`, `track_id`, inferred `type`, timestamps, and
+    `description`.
+-   Also create or update `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md`
+    (<= 60 lines) recording the active `<track_id>`, `status: draft`,
+    target files, and open questions so any session resumption or tool check
+    sees the live specification immediately.
+-   **Strict Draft Execution Lock**: `status: draft` is a working artifact
+    for transparency and continuity, NOT authorization to implement code.
+    `/arm-implement` refuses to execute any track whose `spec.md` or
+    `plan.md` still has `status: draft`.
+````
+
 5.  **Recursive Decision-Tree Grill Engine & Devil's Advocate:**
 
-    Conduct an exhaustive, two-phase interview with the user. The interview
-    operates as an active recursive decision tree organized into rounds, where
-    choosing an option for a round actively spawns follow-up questions, followed
-    by a dedicated adversarial critique of the settled choices:
+    Conduct an interactive decision-tree interview with the user (referencing
+    `skills/arm-new-track/references/interview_formatting.md` and
+    `skills/arm-new-track/references/ask_question_guide.md` for turn layout and
+    modal pairing). The interview operates as an active decision tree organized
+    into rounds, checkpointing each settled decision into the working draft
+    `spec.md` (`status: draft`):
 
     -   **Phase 5a: Round and Question Traversal & Ambiguity Elicitation**:
 
         -   **Mandatory Interview Turn Layout & Atomic Two-Part Turn**: In EVERY
-            turn of Step 5 (including Turn 1, mid-interview rounds, `"I need
-            more context, zoom out and give examples"` / `"too vague"` re-tees,
-            and `@[Quote]` detours), your response MUST ALWAYS begin with
-            non-empty visible Markdown text first (`> 50` words of visible chat
-            output) and THEN invoke the native `ask_question` tool call at the
-            end of that same turn. NEVER start a response directly with an
+            turn of Step 5 (including Turn 1, mid-interview rounds,
+            `"I need more context, zoom out and give examples"` / `"too vague"`
+            re-tees, and `@[Quote]` detours), your response MUST ALWAYS begin
+            with non-empty visible Markdown text first (`> 50` words of visible
+            chat output) and THEN invoke the native `ask_question` tool call at
+            the end of that same turn. NEVER start a response directly with an
             `ask_question` tool call without first writing the full visible
             Markdown turn body above it, AND NEVER end an interactive turn with
             Markdown text alone without calling `ask_question` (Zero Text-Only
             Stalls).
 
-            1.  *Settled line* (skip on the very first question and on
-                clarification re-tees): one plain sentence confirming the
-                previous answer and, if relevant, which follow-up it opened.
-            2.  *Progress list* (normal forward turns only—**omit completely**
-                on `"I need more context, zoom out and give examples"` /
-                clarification re-tees where nothing newly settled!):
-                `**Settled**` (one bullet per settled round or question with its
-                short answer), `**Now**` (one bullet for the active question),
-                and `**Up next**` (queued questions and unexplored round stubs).
-                Omit a group when it is empty. When more than five items are
-                settled, list only the five most recent and close the group with
-                exactly one extra bullet in the non-nested parenthesized form `-
-                (+N earlier settled)` (so seven settled items render as five
-                bullets plus `- (+2 earlier settled)`—never `- + 2 earlier
-                settled`, which CommonMark parses as a double bullet).
-            3.  *Separator*: `---`
-            4.  *Headline*: `## Round <R>, Question <Q> of <N>: <Topic>` (H2).
-                `Q` is the question's position within the round and `N` is the
-                number of questions currently known in that round (so the first
-                question of Round 2 is `Round 2, Question 1 of 1`, never
-                `Question 2.1 of 1`). Keep the user's exact familiar domain
-                nouns verbatim in `<Topic>` or the first opener sentence in
-                plain everyday words (e.g., keep `"null"` in `Linking a layer to
-                a null parent` rather than paraphrasing `"null"` away into
-                `Linking to a zero-scale parent` or `Linking a layer on the
-                stage`; `Keeping remixes and live samples safe from broken
-                files` rather than `Independent blob ownership and in-flight
-                reads`).
-            5.  *Opener (First-Pass Everyday Plain Language — `<= 28 Words` +
-                Bridge)*: an unlabeled paragraph of **1–2 short everyday English
-                sentences (`<= 28 words` total)** on **Pass 1** anchored
-                directly in the concrete, familiar domain nouns named in the
-                user's request or product workflow (e.g., *"linking a layer to a
-                null parent"*, *"remixing a sample"*, *"editing the same
-                calendar event on both phones"*) rather than bloodless generic
-                placeholders or unprompted state qualifiers (*"linking a layer
-                mid-animation"*, *"parent's origin"*), stating what changes in
-                practice depending on the answer. When probing an edge state
-                (e.g., a shrunk or zero-size parent), illustrate it right in the
-                opener with a concrete everyday example (e.g., *"linking a badge
-                layer onto a card that pops in from 0% size"*). No
-                `**Context:**` or `**Problem:**` label, **zero code identifiers
-                or backticks**, and **zero un-translated systems-engineering
+            1.  *Zero Chat Progress-List Clutter*: **NEVER** output
+                `Round X settled:` lines or `**Settled**`, `**Now**`, or
+                `**Up next**` lists in chat. Persist settled decisions and
+                remaining open questions strictly on disk in `spec.md`
+                (`status: draft`, under `## Settled Decisions` and
+                `## Open Questions`) and `armature/active_context.md`.
+            2.  *Clean Topic Headline*: `## <Topic>` (H2). Do **NOT** include
+                `Round <R>, Question <Q> of <N>:` bookkeeping prefixes in the
+                headline. Keep the user's exact familiar domain nouns verbatim
+                in `<Topic>` or the first orientation sentence in plain everyday
+                words (e.g., keep `"null"` in
+                `## Linking a Layer to a Null Parent` rather than paraphrasing
+                `"null"` away into `Linking to a Zero-Scale Parent` or
+                `Linking a Layer on the Stage`;
+                `## Keeping Remixes and Live Samples Safe from Broken Files`
+                rather than `Independent Blob Ownership and In-Flight Reads`).
+            3.  *Succinct `/zoom-out` Mental-Model Flow (`1–3` lines, `<= 4`
+                stages)*: Directly beneath the headline, render a compact `text`
+                fenced ASCII flow diagram (` ``text ... `` `) showing where this
+                decision sits in the end-to-end user or system workflow, marking
+                the active fork with `★` (e.g., `[Uploader selects file] ──►
+                [Private staging] ──► [★ Malware check stalls] ──► [Share link
+                goes live]`). Keep all stage labels in everyday domain words
+                with zero code identifiers.
+            4.  *Orientation Opener (First-Pass Everyday Plain Language — `2–3`
+                Sentences + Bridge)*: Directly beneath the `text` flow block,
+                write an unlabeled paragraph of **2–3 everyday English sentences
+                (`<= 55 words` total)** on **Pass 1** anchored directly in the
+                concrete, familiar domain nouns named in the user's request or
+                product workflow (e.g., *"linking a layer to a null parent"*,
+                *"remixing a sample"*, *"editing the same calendar event on both
+                phones"*), situating what happens right before and right after
+                this moment in the flow so the user has the altitude needed to
+                decide. On follow-up questions spawned by a prior choice, weave
+                that prior choice naturally into the opening clause (e.g.,
+                *"Because new uploads stay private until scanning passes, the
+                scanner now sits directly between uploading a file and sharing
+                its link..."*). When probing an edge state (e.g., a shrunk or
+                zero-size parent), illustrate it right in the orientation with a
+                concrete everyday example (e.g., *"linking a badge layer onto a
+                card that pops in from 0% size"*). No `**Context:**` or
+                `**Problem:**` label, **zero code identifiers or inline
+                backticks**, and **zero un-translated systems-engineering
                 jargon** (*"blob"*, *"copy-on-write"*, *"refcount"*,
                 *"in-flight"*, *"file handles"*, *"in-place overwrite"*, *"mint
                 a clone"*, *"monotonically"*, *"idempotent"*, *"fan-out"*,
                 *"race condition"*, *"mid-download race"*, *"couples deletion"*,
-                *"mutex"*). Follow with `The choice here is <5–9 words>. Here
-                are some options:` (`<= 14 words`).
-            6.  *Numbered options (Order-Locked with Recommended Option First at
-                `1.`, `<= 16 Words` Each)*: `1. <Option name>: <benefit>;
-                <cost>`, one line each, **at most 16 words per line**, **2–3
-                concise items** preferred (at most 4), no `(Recommended)` tag,
-                always placing your recommended option **first at `1.`** so chat
-                options `1..K` match modal choices `1..K` in exact 1-to-1 order.
-                `<Option name>` (`3–6` plain words) MUST state what happens in
-                plain, everyday words on **Pass 1**—never an invented
-                architectural slogan or CS storage term:
+                *"mutex"*). Follow with
+                `The choice here is <5–9 words>. Here are some options:`
+                (`<= 14 words`).
+            5.  *Numbered options (Order-Locked with Recommended Option First at
+                `1.`, `<= 16 Words` Each)*:
+                `1. <Option name>: <benefit>; <cost>`, one line each, **at most
+                16 words per line**, **2–3 concise items** preferred (at most
+                4), no `(Recommended)` tag, always placing your recommended
+                option **first at `1.`** so chat options `1..K` match modal
+                choices `1..K` in exact 1-to-1 order. `<Option name>` (`3–6`
+                plain words) MUST state what happens in plain, everyday words on
+                **Pass 1**—never an invented architectural slogan or CS storage
+                term:
                 -   *BAD Pass 1:* `1. Mint an independent file clone per copy
                     and append sample versions monotonically: safe deletes and
                     updates; uses extra storage`
@@ -365,74 +452,86 @@ resolving all open rounds, questions, and ambiguities.
                     new version on updates: nothing breaks; uses extra space`
                 -   *GOOD Pass 1:* `3. Point remixes at the sample's files until
                     edited: saves space; deleting or editing needs tracking`
-            7.  *Ignore line (`<= 8 Words`)*: `Safe to ignore for now: <2–3
-                short mechanics>.` (Put bucket paths, cleanup jobs, version
-                counters, and rate-limiter internals here—never in the opener or
-                numbered options.)
-            8.  *Recommendation (`<= 18 Words`)*: `### Recommendation: Option 1`
-                (H3), then **1 concise sentence (`<= 18 words`)** grounded in a
-                concrete domain or product constraint.
-            9.  *Pick recap (Bulleted Markdown List, `<= 11 Words` Each)*: `-
-                Pick 1 if <condition>.` strictly one concise Markdown bullet
-                line (`<= 11 words`) per numbered option (`len(picks) ==
-                len(numbered)`), in `1..K` order, stating the concrete scenario
-                or priority without repeating abstract nouns from `<Option
-                name>`, with zero trailing narration after the last bullet
-                (total word count from `## Round` / `#### Finding` headline
-                through the final `- Pick` bullet MUST stay **`<= 165` words**,
-                never reaching 200 words). Always prefix every line with `- ` so
-                CommonMark renders each `Pick` item on its own line. Never add
-                an extra `Pick` line for modal-only actions such as `"I need
-                more context, zoom out and give examples"`.
-            10. *Mandatory Native `ask_question` Tool Call in the Same Turn
-                (Direct `<Option name>` Match)*: Invoke the structured
-                `ask_question` tool call in the **exact same turn** as items 1–9
-                (never stop with markdown prose alone, and never emit a bare
+            6.  *Ignore line (`<= 8 Words`)*:
+                `Safe to ignore for now: <2–3 short mechanics>.` (Put bucket
+                paths, cleanup jobs, version counters, and rate-limiter
+                internals here—never in the orientation or numbered options.)
+            7.  *Recommendation (`<= 18 Words`, Strictly 1 Sentence)*:
+                `### Recommendation: Option 1` (H3), then **strictly 1 single
+                concise sentence (`<= 18 words`, ending in a single period—never
+                two sentences)** grounded in a concrete domain or product
+                constraint.
+            8.  *Pick recap (Bulleted Markdown List, Exact `- Pick N if `
+                Prefix, `<= 11 Words` Each)*: `- Pick 1 if <condition>.`
+                strictly one concise Markdown bullet line (`<= 11 words`) for
+                **every** numbered option (`len(picks) == len(numbered)`—e.g., 3
+                numbered options require all 3 `- Pick 1 if …`, `- Pick 2 if …`,
+                `- Pick 3 if …` bullets), in `1..K` order, ALWAYS starting with
+                the exact literal words `- Pick N if ` (never `- Pick N to `,
+                `- Pick N for`, or `- Pick N when `), stating the concrete
+                scenario or priority without repeating abstract nouns from
+                `<Option name>`, with zero trailing narration after the last
+                bullet (total word count from `## <Topic>` / `#### Finding`
+                headline through the final `- Pick` bullet MUST target `130–185`
+                words and stay **`<= 220` words**). Always prefix every line
+                with `- ` so CommonMark renders each `Pick` item on its own
+                line. Never add an extra `Pick` line for modal-only actions such
+                as `"I need more context, zoom out and give examples"`.
+            9.  *Mandatory Native `ask_question` Tool Call in the Same Turn
+                (After Visible Markdown & Any Draft File Writes — Direct
+                `<Option name>` Match)*: Invoke any working-draft
+                `write_to_file` / `write_file` / `replace_file_content` updates
+                and then the structured `ask_question` tool call in the **exact
+                same turn** **AFTER** emitting items 1–8 into visible `content`
+                (never call `write_to_file` before emitting visible Markdown,
+                never stop with markdown prose alone, and never emit a bare
                 `ask_question` call without the visible markdown turn). Populate
                 options `1..K` in the **exact same `1..K` order** using the
                 **exact same `<Option name>`** (the phrase before `:` on each
                 numbered chat line), prefixing Option 1 with `"(Recommended) "`
                 (e.g., `"(Recommended) Live chat first, newest-first backfill"`,
-                `"Summarize everything during the scan"`, `"Summarize only when
-                a panel runs"`—**NEVER** replace `<Option name>` with the `Pick
-                N if` sentences!). On substantive Step 5a / Phase 5b
-                architectural, data-model, state/routing, or behavior questions,
-                append `"I need more context, zoom out and give examples"` as
-                choice `K+1`. **STRICT COPYWRITING & PROCEDURAL EXEMPTION:**
-                Whenever the options choose UI copywriting, quoted
-                banner/empty-state headlines, button text, microcopy tone, or
-                visual styling—or on procedural approvals—pass **ONLY options
-                `1..K`** and **STRICTLY OMIT** `"I need more context, zoom out
-                and give examples"`.
+                `"Summarize everything during the scan"`,
+                `"Summarize only when a panel runs"`—**NEVER** replace
+                `<Option name>` with the `Pick N if` sentences!). On substantive
+                Step 5a / Phase 5b architectural, data-model, state/routing, or
+                behavior questions, append
+                `"I need more context, zoom out and give examples"` as choice
+                `K+1`. **STRICT COPYWRITING & PROCEDURAL EXEMPTION:** Whenever
+                the options choose UI copywriting, quoted banner/empty-state
+                headlines, button text, microcopy tone, or visual styling—or on
+                procedural approvals—pass **ONLY options `1..K`** and **STRICTLY
+                OMIT** `"I need more context, zoom out and give examples"`.
+            10. *Incremental Working-Draft Checkpointing (`spec.md` +
+                `active_context.md` — After Visible Markdown, Before
+                `ask_question`)*: On every Step 5 turn where a prior round or
+                question was answered (unless `[Given context:]` / inline prompt
+                benchmark constraints forbid intermediate writes), emit items
+                1–8 into visible `content` **FIRST**, then update
+                `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md`
+                (`status: draft`) and
+                `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md`
+                in-place **SECOND**, and call `ask_question` **THIRD** so every
+                settled decision, rejected option, and side-detour conclusion is
+                immediately persisted on disk without suppressing visible chat
+                output.
 
             Format (worked Two-Part Turn example; always emit BOTH Part 1
             Markdown AND Part 2 native `ask_question` tool call in the same
             turn):
 
-            ```markdown
-            Question 2.1 settled: <short answer>. This opens a follow-up on <topic>.
+            ````markdown
+            ## Live Chat vs. Background Indexing During Fresh Scans
 
-            **Settled**
-            - Round 1, <Topic>: <short answer>
-            - Round 2, <Topic>: <short answer>
-            - Question 2.1, <Topic>: <short answer>
+            ```text
+            [Fresh install scan] ──► [★ Shared Gemini limit] ──► [Live chat & search ready]
+            ```
 
-            **Now**
-            - Question 2.2, <Topic>
-
-            **Up next**
-            - Round 3, <Topic>
-
-            ---
-
-            ## Round 2, Question 2 of 2: Live chat vs. background indexing
-
-            On a fresh install, 100+ background summaries and live chat share one
-            Gemini rate limit. If backfill wins, the first reply can take minutes
-            instead of 1–2 seconds.
-
-            The choice here is which one goes first, and in what order older
-            sessions catch up. Here are some options:
+            Because fresh installs scan 100+ past sessions in the background,
+            those summaries compete with live chat typing for the same Gemini
+            rate limit. Without a priority rule, a background backfill burst can
+            stall the user's very first chat reply for minutes instead of a
+            second or two. The choice here is which work goes first and how
+            older sessions catch up. Here are some options:
 
             1. Live chat first, newest-first backfill: replies stay 1–2s; oldest sessions finish a few minutes later
             2. Summarize everything during the scan: every session ready at once; first scan is slow and chat waits
@@ -441,42 +540,43 @@ resolving all open rounds, questions, and ambiguities.
             Safe to ignore for now: rate-limiter internals, tree layout.
 
             ### Recommendation: Option 1
-            Both share the same limiter, so background work has to yield to live typing.
+            Live chat and background summaries share one limit, so background work must yield to active typing.
 
             - Pick 1 if live chat must never lag.
             - Pick 2 if every session must be searchable the moment the scan ends.
             - Pick 3 if scans must stay free of Gemini calls.
-            ```
+            ````
 
             Immediately followed in the **exact same turn** by the structured
-            `ask_question` tool call (`question`: `"Which indexing priority
-            should apply during fresh installs?"`, `options`: `["(Recommended)
-            Live chat first, newest-first backfill", "Summarize everything
-            during the scan", "Summarize only when a panel runs", "I need more
-            context, zoom out and give examples"]`).
+            `ask_question` tool call (`question`:
+            `"Which indexing priority should apply during fresh installs?"`,
+            `options`: `["(Recommended) Live chat first, newest-first backfill",
+            "Summarize everything during the scan", "Summarize only when a panel
+            runs", "I need more context, zoom out and give examples"]`).
 
-            Track state accurately: items under `**Now**` and `**Up next**` are
-            unresolved; items under `**Settled**` are confirmed decisions. Do
+            Track state accurately on disk in `spec.md` (`## Settled Decisions`
+            and `## Open Questions`) and `armature/active_context.md`—never
+            print `**Settled**`, `**Now**`, or `**Up next**` lists in chat. Do
             not use tables, icons, emoji, glyphs, progress bars, blockquote
-            cards, or `[!NOTE]` / `[!TIP]` callouts inside the default `## Round
-            R, Question Q of N:` interview turn block. The full `**Pros:**` /
-            `**Cons:**` / `**Implications:**` cards are the Zoom-In View and
-            render strictly when the user explicitly writes in `"zoom in"`
-            (never when `"I need more context, zoom out and give examples"` is
-            selected).
+            cards, or `[!NOTE]` / `[!TIP]` callouts inside the default
+            `## <Topic>` interview turn block (only the single `1–3` line `text`
+            ASCII flow diagram is permitted). The full `**Pros:**` / `**Cons:**`
+            / `**Implications:**` cards are the Zoom-In View and render strictly
+            when the user explicitly writes in `"zoom in"` (never when
+            `"I need more context, zoom out and give examples"` is selected).
 
         -   **Lazy Question Materialization (Pre-Population Ban)**: Future
-            rounds MUST remain unexpanded stubs under `**Up next**` (e.g., `-
-            Round 3, Drawer state`). You are STRICTLY FORBIDDEN from listing
-            questions under a round until the user has confirmed an
+            rounds MUST remain unexpanded stubs in `spec.md` `## Open Questions`
+            (e.g., `- Round 3: Drawer state`). You are STRICTLY FORBIDDEN from
+            listing sub-questions under a round until the user has confirmed an
             architectural direction for that round.
 
         -   **Answer-Anchored Provenance**: Every spawned follow-up question
-            MUST say which confirmed user answer generated it, in the settled
-            line or the opener paragraph (e.g., `Round 2 settled: render FAQ
-            bodies with @switch. This opens a follow-up on what renders in
-            @default when faq.id is unrecognized.`). Questions without a literal
-            proven choice from prior turns are forbidden.
+            MUST weave which confirmed user answer generated it into the opening
+            clause of the orientation paragraph (e.g., *"Because FAQ bodies
+            switch by question type, an unrecognized FAQ entry now needs a safe
+            fallback display..."*). Follow-up questions without a clear link to
+            a confirmed prior choice are forbidden.
 
         -   **Follow-Up Question Spawning Invariant & Depth-2 Horizon
             (Terminality Rule)**: Selecting an option for a round does NOT close
@@ -509,22 +609,23 @@ resolving all open rounds, questions, and ambiguities.
             **NEVER** invoke `invoke_subagent` to restart reconnaissance. If the
             user asks to draft the spec prematurely (e.g., *"Let's draft the
             spec"*) after confirming a round's choice (such as WebSocket +
-            heartbeat), do **NOT** finalize `spec.md` or call `invoke_subagent`.
-            Instead, explicitly push back on premature drafting, expand the
-            progress list with dependent operational follow-up questions under
-            `**Up next**` conditioned on that choice (e.g., reconnect backoff
-            jitter algorithm, tab backgrounding/suspension disconnect handling,
-            state invariants, multi-tab sync, and concurrency dependencies),
-            present codebase-grounded adversarial challenges (e.g., server
-            restart thundering herd socket storms, stale presence ghost states),
-            and pose the next targeted probe via `ask_question`.
+            heartbeat), do **NOT** finalize `spec.md` to `status: approved` or
+            call `invoke_subagent`. Instead, explicitly push back on premature
+            drafting, record dependent operational follow-up questions in
+            `spec.md` `## Open Questions` conditioned on that choice (e.g.,
+            reconnect backoff jitter algorithm, tab backgrounding/suspension
+            disconnect handling, state invariants, multi-tab sync, and
+            concurrency dependencies), present codebase-grounded adversarial
+            challenges (e.g., server restart thundering herd socket storms,
+            stale presence ghost states), and pose the next targeted probe via
+            `ask_question`.
 
         -   **Data Migration & Storage Evolution Pattern Contrasting**: When
             probing database migrations or storage synchronization
             architectures, always contrast all three primary patterns in your
             trade-off breakdown before locking the path: (1) Application-level
-            dual-writing, (2) Change Data Capture / CDC change streams, and
-            (3) Lazy read-repair / background backfill.
+            dual-writing, (2) Change Data Capture / CDC change streams, and (3)
+            Lazy read-repair / background backfill.
 
         -   **Testing Strategy Classification (Stage 1 Provisional Intent
             Scoping — ADR 0009)**: Evaluate the confirmed specification and
@@ -532,11 +633,11 @@ resolving all open rounds, questions, and ambiguities.
 
             -   *Interactive / Stateful / Route / API Tracks (Tier 1: Standard
                 Stateful 3-Part Fixture Triad)*: Full `manual_testing.md`
-                runbook with environment setup, 3-Part Fixture Triad (`Migration
-                -> Seed -> Reset`), persona matrices, and dual-URL
-                (`localhost` + remote workstation proxy) route test cases. Mandatory
-                whenever state machines, reactive stores, router navigation
-                guards (`canActivate`), conditional auth/role gates
+                runbook with environment setup, 3-Part Fixture Triad
+                (`Migration -> Seed -> Reset`), persona matrices, and dual-URL
+                (`localhost` + remote workstation proxy) route test cases.
+                Mandatory whenever state machines, reactive stores, router
+                navigation guards (`canActivate`), conditional auth/role gates
                 (`*ngIf="user.isAdmin"`, `@if`), or RPC/API calls are modified.
             -   *Visual-Only / Presentational UI Tracks (Tier 2: Provisional
                 `Micro-Verification Plan`)*: When the confirmed specification
@@ -564,8 +665,8 @@ resolving all open rounds, questions, and ambiguities.
 
         -   **Questioning Mechanics & Option Trade-Off Analysis**:
 
-            -   **Report First, Ask Second (Atomic Two-Part Response
-                Contract — Never Leave Output Inside `thinking` or Abandon
+            -   **Report First, Ask Second (Atomic Two-Part Response Contract —
+                Never Leave Output Inside `thinking` or Abandon
                 `ask_question`):** In EVERY turn where choices are presented,
                 you MUST close internal `thinking` (`thought`) first, emit the
                 full visible markdown interview turn into the user-visible
@@ -573,47 +674,52 @@ resolving all open rounds, questions, and ambiguities.
                 user; drafting the interview turn inside `thinking` and calling
                 `ask_question` with empty `content: ""` renders a bare question
                 modal with no chat text above it), and immediately invoke the
-                native `ask_question` tool call (`{"questions": [{"question":
-                "...", "options": [...]}]}`) in that same turn. If you use your
-                internal `thinking` block to draft the text or count words to
-                meet strict length caps, ALWAYS end your `thinking` block by
-                explicitly planning or drafting the `ask_question` tool call
-                (e.g., *"Now emit the markdown and call ask_question"*). Never
-                end `thinking` on word-count math alone (e.g., *"Total: 150
-                words. Perfect."*), which reliably shifts attention to the
-                markdown stream and causes the model to completely forget to
-                append the `ask_question` tool call (a text-only stall). If the
-                user ever reports *"you didn't answer me in chat"* or *"I only
-                see the question box"*, recognize that your prior turn bled into
-                `thinking` with `content: ""` (NEVER assume `ask_question` hides
-                chat text)—emit the visible markdown in `content` AND still call
-                `ask_question` in that same turn (never fall back to plain-text
-                prompts).
-            -   **Interview Turn v2 Body:** Present the candidate approaches
-                using the layout defined under *Mandatory Interview Turn Layout*
-                above: an unlabeled plain-English stakes opener (zero code
-                identifiers and zero backend systems jargon on Pass 1) ending in
+                native `ask_question` tool call
+                (`{"questions": [{"question": "...", "options": [...]}]}`) in
+                that same turn. If you use your internal `thinking` block to
+                draft the text or count words to meet strict length caps, ALWAYS
+                end your `thinking` block by explicitly planning or drafting the
+                `ask_question` tool call (e.g., *"Now emit the markdown and call
+                ask_question"*). Never end `thinking` on word-count math alone
+                (e.g., *"Total: 150 words. Perfect."*), which reliably shifts
+                attention to the markdown stream and causes the model to
+                completely forget to append the `ask_question` tool call (a
+                text-only stall). If the user ever reports *"you didn't answer
+                me in chat"* or *"I only see the question box"*, recognize that
+                your prior turn bled into `thinking` with `content: ""` (NEVER
+                assume `ask_question` hides chat text)—emit the visible markdown
+                in `content` AND still call `ask_question` in that same turn
+                (never fall back to plain-text prompts).
+            -   **Focus + Succinct `/zoom-out` Body:** Present the candidate
+                approaches using the layout defined under *Mandatory Interview
+                Turn Layout* above: a clean `## <Topic>` headline (no
+                `Round R, Question Q` prefixes), a `1–3` line `text` ASCII
+                mental-model flow diagram
+                (`[Before] ──► [★ This choice] ──► [After]`), an unlabeled 2–3
+                sentence plain-English orientation (zero prose code identifiers
+                and zero backend systems jargon on Pass 1) ending in
                 `The choice here is <X>. Here are some options:`, numbered
                 one-line options placing the recommended option first at `1.`
                 (`1. <Name>: <benefit>; <cost>`, 2–4 items, no `(Recommended)`
                 tag, with `<Name>` stating concrete behavior in plain everyday
                 words rather than coined architectural slogans or CS storage
-                terms), a `Safe to ignore for now: <mechanics>.` line, `###
-                Recommendation: Option 1` with exactly one sentence grounded in
-                concrete constraints, and strictly one bulleted `- Pick N if
-                <condition>.` line per numbered option (`len(picks) ==
-                len(numbered)`). Keep the headline through the last `- Pick N if
-                …` line concise: **target 115–150 words, strictly never more
-                than 185 words** (staying comfortably below the 200-word hard
-                cap). Never render blockquote cards in the default turn.
+                terms), a `Safe to ignore for now: <mechanics>.` line,
+                `### Recommendation: Option 1` with exactly one sentence
+                grounded in concrete constraints, and strictly one bulleted
+                `- Pick N if <condition>.` line per numbered option
+                (`len(picks) == len(numbered)`). Keep the headline through the
+                last `- Pick N if …` line concise: **target 130–185 words,
+                strictly `<= 220` words**. Never render `**Settled**` /
+                `**Now**` / `**Up next**` lists or blockquote cards in the
+                default turn.
             -   **Zoom-In View (`"zoom in"` Write-In Only):** Strictly when the
                 user explicitly writes in `"zoom in"`, render the full Option
                 Trade-Off cards for the same options (`> **Option N: <Name>**`
-                with `> - **Pros:**`, `> - **Cons:**`, and `> -
-                **Implications:**` rows, `&nbsp;` spacers, and `###
-                Recommendation: Option 1` with 1–3 sentences), then re-ask the
-                same `ask_question`. Never render blockquote cards when `"I need
-                more context, zoom out and give examples"` is selected.
+                with `> - **Pros:**`, `> - **Cons:**`, and
+                `> - **Implications:**` rows, `&nbsp;` spacers, and
+                `### Recommendation: Option 1` with 1–3 sentences), then re-ask
+                the same `ask_question`. Never render blockquote cards when
+                `"I need more context, zoom out and give examples"` is selected.
             -   **Mandatory Two-Part Turn Pairing (Zero Trailing Narration &
                 Zero Text-Only Stalls):** Finish your visible markdown prose
                 directly on the last `- Pick N if …` bullet line (or the
@@ -631,99 +737,98 @@ resolving all open rounds, questions, and ambiguities.
                 -   Ask questions **strictly one at a time**.
                 -   Populate options `1..K` in the **exact same `1..K` order**
                     using the **exact same `<Option name>`** (the plain-English
-                    phrase before `:` on each numbered chat line `1. <Option
-                    name>: <benefit>; <cost>`), prefixing Option 1 with
-                    `"(Recommended) "` (e.g., `"(Recommended) Give each copy its
-                    own files and add a new version on updates"`, `"Give each
-                    copy its own files and replace the old sample right away"`,
+                    phrase before `:` on each numbered chat line
+                    `1. <Option name>: <benefit>; <cost>`), prefixing Option 1
+                    with `"(Recommended) "` (e.g., `"(Recommended) Give each
+                    copy its own files and add a new version on updates"`,
+                    `"Give each copy its own files and replace the old sample
+                    right away"`,
                     `"Point remixes at the sample's files until edited"`).
                     **NEVER** replace `<Option name>` in `ask_question` with the
                     `Pick N if …` sentences!
-                -   **Trailing Context Option (`"I need more context, zoom out
-                    and give examples"`):** Append `"I need more context, zoom
-                    out and give examples"` as the final choice on substantive
-                    Step 5a architectural, data-model, state/routing, or
-                    interaction-behavior questions and Phase 5b Devil's Advocate
-                    challenges. **STRICT COPYWRITING & GATE EXEMPTION:**
-                    Whenever the options choose UI copywriting, quoted
-                    banner/empty-state headlines, button text, microcopy tone,
-                    or visual styling preferences—or on empirical QA
-                    verification checks, safety prompts, or Step 5c / Step 6 /
-                    Step 7 procedural approvals—pass **ONLY options `1..K`** and
-                    **STRICTLY OMIT** `"I need more context, zoom out and give
-                    examples"`.
+                -   **Trailing Context Option
+                    (`"I need more context, zoom out and give examples"`):**
+                    Append `"I need more context, zoom out and give examples"`
+                    as the final choice on substantive Step 5a architectural,
+                    data-model, state/routing, or interaction-behavior questions
+                    and Phase 5b Devil's Advocate challenges. **STRICT
+                    COPYWRITING & GATE EXEMPTION:** Whenever the options choose
+                    UI copywriting, quoted banner/empty-state headlines, button
+                    text, microcopy tone, or visual styling preferences—or on
+                    empirical QA verification checks, safety prompts, or Step 5c
+                    / Step 6 / Step 7 procedural approvals—pass **ONLY options
+                    `1..K`** and **STRICTLY OMIT**
+                    `"I need more context, zoom out and give examples"`.
                 -   **Native Write-In Field:** Never add a manual "Other"
                     option; the UI modal natively provides a write-in text
                     field.
-            -   **Need-More-Context Detour:** Selecting `"I need more context,
-                zoom out and give examples"` executes the exact same 3-part
-                workflow zoom-out + concrete examples + rewritten re-tee flow
-                defined in **Case B** below (with **zero `**Settled**` /
-                `**Now**` / `**Up next**` lines**, never blockquote
-                `Pros`/`Cons` cards, AND ALWAYS a native `ask_question`
-                `functionCall` in that same turn).
-            -   **User `@[Quote]`, `"I need more context, zoom out and give
-                examples"`, & Write-In Clarification Turns (`ask_question`
-                Non-Bypass Rule):** Every turn MUST contain **BOTH** non-empty
-                visible markdown `text` FIRST **AND** a structured
-                `ask_question` `functionCall` SECOND in that **same response**
-                (never emit a bare `ask_question` call with empty markdown text,
-                and never emit markdown text with `0` tool calls!):
+            -   **Need-More-Context Detour:** Selecting
+                `"I need more context, zoom out and give examples"` executes the
+                exact same 3-part workflow zoom-out + concrete examples +
+                rewritten re-tee flow defined in **Case B** below (with **zero
+                `**Settled**` / `**Now**` / `**Up next**` lines**, never
+                blockquote `Pros`/`Cons` cards, AND ALWAYS a native
+                `ask_question` `functionCall` in that same turn).
+            -   **User `@[Quote]`,
+                `"I need more context, zoom out and give examples"`, & Write-In
+                Clarification Turns (`ask_question` Non-Bypass Rule):** Every
+                turn MUST contain **BOTH** non-empty visible markdown `text`
+                FIRST **AND** a structured `ask_question` `functionCall` SECOND
+                in that **same response** (never emit a bare `ask_question` call
+                with empty markdown text, and never emit markdown text with `0`
+                tool calls!):
                 -   *Case A — Final-Question Resolution or Leading Confirmation
-                    Question:* When only ONE open question remains (the
-                    `**Now**` item with nothing under `**Up next**`) and the
-                    user replies by selecting an option, stating a
-                    policy/threshold, OR asking a leading confirmation question
-                    verifying the final question's behavior (e.g., `@[Quote]
-                    Route disabled. does the guard redirect back to
-                    /setup/sharing-permissions?` alongside commit/spec notes
-                    like `capture this in the CL description`), treat that final
+                    Question:* When only ONE open question remains in `spec.md`
+                    `## Open Questions` and the user replies by selecting an
+                    option, stating a policy/threshold, OR asking a leading
+                    confirmation question verifying the final question's
+                    behavior (e.g., `@[Quote] Route disabled. does the guard
+                    redirect back to /setup/sharing-permissions?` alongside
+                    commit/spec notes like
+                    `capture this in the commit description`), treat that final
                     question as **Settled**:
                     1.  **Visible Markdown Part (Required First):** Directly
-                        answer the user's confirmation question, confirm the CL
-                        description commitment, output the settled line and the
-                        progress list with all prior rounds/questions under
-                        `**Settled**` plus `**Now**` listing `- Finding 1 of N:
-                        <Plain Everyday Title>` above `---`, and output `###
-                        Devil's Advocate Analysis: Stress-Testing Confirmed
-                        Decisions` (`#### Finding 1 of N: <Plain Everyday
-                        Title>`) with the concise Interview Turn v2 body (`<=
-                        165` words total: `<= 28`-word plain-English hazard
-                        opener + bridge, 2–3 numbered `<= 16`-word
-                        countermeasure options with recommended at `1.`, `<=
-                        8`-word ignore line, 1-sentence `<= 18`-word `###
-                        Recommendation: Option 1`, and `<= 11`-word `- Pick N if
-                        …` bullets).
+                        answer the user's confirmation question, confirm the
+                        commit description commitment, and output `### Devil's
+                        Advocate Analysis: Stress-Testing Confirmed Decisions`
+                        (`#### Finding 1 of N: <Plain Everyday Title>`) with the
+                        Focus + Succinct `/zoom-out` body (`<= 220` words total:
+                        `1–3` line `text` ASCII flow diagram, 2–3 sentence
+                        plain-English hazard orientation + bridge, 2–3 numbered
+                        `<= 16`-word countermeasure options with recommended at
+                        `1.`, `<= 8`-word ignore line, 1-sentence `<= 18`-word
+                        `### Recommendation: Option 1`, and `<= 11`-word
+                        `- Pick N if …` bullets—with zero `**Settled**` /
+                        `**Now**` / `**Up next**` lists).
                     2.  **Native Tool Call Part (Required Second in Same
                         Turn):** Emit structured `ask_question` in that same
                         response for Finding 1 with options `1..K` matching
                         countermeasure `<Option name>` directly (Option 1
-                        prefixed with `"(Recommended) "`), optional `"Reopen
-                        Round <R> to revise <topic>"`, and trailing `"I need
-                        more context, zoom out and give examples"`.
-                -   *Case B — Need-More-Context Selection (`"I need more
-                    context, zoom out and give examples"`), Mid-Interview
-                    Blocking Clarification, or `"Too Vague / Explain / Zoom
-                    Out"` Write-In:* When the user selects `"I need more
-                    context, zoom out and give examples"`, explicitly says
-                    `"Wait — before I pick..."`, writes in `"<Option name> is
-                    too vague, explain"`, replies `"zoom out"`, or asks how a UI
-                    trigger, modal, or routing flow works *before* choosing an
-                    option for the open question (`Question N.M` or `Finding
-                    F`):
+                        prefixed with `"(Recommended) "`; if reopening a prior
+                        decision is warranted, include
+                        `"Reopen Round <R> to revise <topic>"` as one of the
+                        numbered `1..K` options in chat so chat and modal stay
+                        strictly 1:1—never add an unnumbered `"Reopen..."`
+                        option to `ask_question` alone) and trailing
+                        `"I need more context, zoom out and give examples"`.
+                -   *Case B — Need-More-Context Selection
+                    (`"I need more context, zoom out and give examples"`),
+                    Mid-Interview Blocking Clarification, or
+                    `"Too Vague / Explain / Zoom Out"` Write-In:* When the user
+                    selects `"I need more context, zoom out and give examples"`,
+                    explicitly says `"Wait — before I pick..."`, writes in
+                    `"<Option name> is too vague, explain"`, replies
+                    `"zoom out"`, or asks how a UI trigger, modal, or routing
+                    flow works *before* choosing an option for the open question
+                    (`Question N.M` or `Finding F`):
                     1.  **Zero File-Read/Search Calls (Self-Authored Option
                         Guard):** Recognize that the question and options came
                         from your own prior turn. **NEVER** call `view_file`,
                         `code_search`, or `grep_search` (even if `<memory>`
                         ambient hints are injected into the turn). Answer
                         immediately from existing conversation context.
-                    2.  **Visible Markdown Part — OMIT `**Settled**` / `**Now**`
-                        / `**Up next**` Completely:** Because zero items newly
-                        settled on a clarification turn, **DO NOT output a
-                        settled sentence or any `**Settled**`, `**Now**`, or
-                        `**Up next**` list**—re-printing `**Settled**` between
-                        the explanation and the question splits the explanation
-                        in half and looks as if items just settled! Output ONLY:
+                    2.  **Visible Markdown Part — Deeper Plain-English Zoom-Out
+                        Above `---`:** Output ONLY:
                         -   Plain paragraphs (no `## Round` headings, no
                             `**Settled**` bullets, and no `> **Option` cards)
                             stepping back to explain why this decision comes up
@@ -738,26 +843,27 @@ resolving all open rounds, questions, and ambiguities.
                             step).
                         -   A `---` horizontal rule directly beneath the
                             examples.
-                        -   Directly beneath `---`, the **rewritten** Interview
-                            Turn v2 block (`<= 165` words total: `## Round R,
-                            Question Q of N: <Plain Topic>` or `### Devil's
-                            Advocate Analysis` / `#### Finding F of N: <Plain
-                            Title>`) whose headline, opener, numbered `1..K`
-                            `<Option name>: <benefit>; <cost>` lines
-                            (recommended first at `1.`), `Safe to ignore for
-                            now:` line, `### Recommendation: Option 1`, and
-                            bulleted `- Pick N if …` lines use concrete,
-                            everyday domain words. **NEVER** copy-paste the
-                            prior turn's vague headlines, openers, or option
-                            names verbatim.
+                        -   Directly beneath `---`, the **rewritten** Focus +
+                            Succinct `/zoom-out` block (`<= 220` words total:
+                            `## <Plain Topic>` or
+                            `### Devil's Advocate Analysis` /
+                            `#### Finding F of N: <Plain Title>`, `1–3` line
+                            `text` ASCII flow diagram, plain-English
+                            orientation + bridge, numbered `1..K`
+                            `<Option name>: <benefit>; <cost>` lines with
+                            recommended first at `1.`, `Safe to ignore for now:`
+                            line, `### Recommendation: Option 1`, and bulleted
+                            `- Pick N if …` lines) in concrete everyday domain
+                            words. **NEVER** copy-paste the prior turn's vague
+                            headlines, openers, or option names verbatim.
                     3.  **Native Tool Call Part (MANDATORY in Same Response):**
                         Immediately invoke the structured `ask_question`
                         `functionCall` in that **exact same turn** with options
                         `1..K` matching the rewritten `<Option name>` strings
-                        directly (`"(Recommended) <Option 1 name>"`, `"<Option 2
-                        name>"`, ...) plus `"I need more context, zoom out and
-                        give examples"`. NEVER stop with text alone (`0` tool
-                        calls)!
+                        directly (`"(Recommended) <Option 1 name>"`,
+                        `"<Option 2 name>"`, ...) plus
+                        `"I need more context, zoom out and give examples"`.
+                        NEVER stop with text alone (`0` tool calls)!
             -   **MANDATORY:** Always emit `ask_question` in the same turn as
                 the visible markdown text and wait for the user's answer before
                 advancing.
@@ -769,15 +875,15 @@ resolving all open rounds, questions, and ambiguities.
     -   **Phase 5b: Devil's Advocate Analysis (Red-Teaming Confirmed Answers)**:
 
         -   **Trigger**: Fires automatically in the exact turn that the final
-            open question in the progress list moves to `**Settled**` with
-            nothing left under `**Now**` or `**Up next**`.
+            open question in `spec.md` `## Open Questions` settles.
         -   **Execution**:
             1.  Audit the combination of confirmed answers across all settled
-                rounds and questions in the progress list.
+                decisions recorded in `spec.md` (`## Settled Decisions`).
             2.  Output a structured `### Devil's Advocate Analysis:
-                Stress-Testing Confirmed Decisions` directly beneath the
-                all-settled progress list in visible markdown text (never leave
-                visible markdown text empty).
+                Stress-Testing Confirmed Decisions` directly at the top of
+                visible markdown text (never print `**Settled**` / `**Now**` /
+                `**Up next**` lists, and never leave visible markdown text
+                empty).
             3.  Identify 2–3 concrete adversarial challenges across the design
                 (*Emergent Contradictions*, *Operational & Maintenance Debt*,
                 *Failure Cascades*), but present **ONLY Finding 1** in the
@@ -785,66 +891,71 @@ resolving all open rounds, questions, and ambiguities.
             4.  **Sequential Single-Finding Presentation & Strict Anti-Collapse
                 Ban**:
                 -   Present each adversarial challenge **strictly one by one**
-                    in separate sequential turns (`#### Finding 1 of N:
-                    <Title>`, then in the next turn `#### Finding 2 of N:
-                    <Title>`).
+                    in separate sequential turns
+                    (`#### Finding 1 of N: <Title>`, then in the next turn
+                    `#### Finding 2 of N: <Title>`).
                 -   **Strict Ban on Self-Answered `*Risk:* / *Mitigation:*`
                     Lists & Multi-Finding Dumps**: NEVER output all 2–3 Devil's
                     Advocate challenges in a single turn, and NEVER write static
                     `*Risk:*` and `*Mitigation:*` bullets that pre-decide the
                     countermeasure without calling `ask_question`.
                 -   **Strict Ban on Same-Turn Phase 5b + Phase 5c Batching**:
-                    NEVER output a `### Phase 5c` or `### ADR Candidate Triage
-                    Table` heading in the same turn as Phase 5b, and NEVER call
-                    `write_to_file` during Phase 5b. If the user asks to bundle
-                    or skip ahead across phases, explicitly state in visible
-                    markdown that **Phase 5b and Phase 5c require sequential
-                    interactive gates** and cannot be collapsed into one turn,
-                    then present ONLY Finding 1.
+                    NEVER output a `### Phase 5c` or
+                    `### ADR Candidate Triage Table` heading in the same turn as
+                    Phase 5b, and NEVER call `write_to_file` during Phase 5b
+                    (except updating `spec.md` `status: draft` /
+                    `active_context.md`). If the user asks to bundle or skip
+                    ahead across phases, explicitly state in visible markdown
+                    that **Phase 5b and Phase 5c require sequential interactive
+                    gates** and cannot be collapsed into one turn, then present
+                    ONLY Finding 1.
                 -   **Two-Part Turn Contract (Visible Markdown FIRST ->
                     `ask_question` SECOND)**:
-                    -   *Part 1 (Visible Markdown):* Write the settled line and
-                        updated progress list with `**Settled**` (confirmed
-                        rounds) and `**Now**` (`- Finding <F> of <N>: <Plain
-                        Everyday Title>`) followed by `---` (omitting the
-                        progress list completely on Need-More-Context /
-                        clarification re-tees), then `### Devil's Advocate
-                        Analysis`, the single active challenge (`#### Finding 1
-                        of N: <Plain Everyday Title>`), and the Interview Turn
-                        v2 body in plain everyday English (zero code identifiers
-                        and zero backend systems jargon on Pass 1; **strictly
-                        `<= 165` words total**: `<= 28`-word plain-English
-                        hazard opener + bridge, 2–3 numbered `<= 16`-word
-                        countermeasure options placing the recommended
-                        countermeasure at `1.`, `<= 8`-word `Safe to ignore for
-                        now:` line, 1-sentence `<= 18`-word `### Recommendation:
-                        Option 1`, and `<= 11`-word bulleted `- Pick N if …`
-                        lines). No Pros/Cons/Implications cards in the default
-                        turn.
+                    -   *Part 1 (Visible Markdown):* Output
+                        `### Devil's Advocate Analysis` (with zero `**Settled**`
+                        / `**Now**` / `**Up next**` lists), the single active
+                        challenge
+                        (`#### Finding 1 of N: <Plain Everyday Title>`), and the
+                        Focus + Succinct `/zoom-out` body in plain everyday
+                        English (zero prose code identifiers and zero backend
+                        systems jargon on Pass 1; **strictly `<= 220` words
+                        total**: `1–3` line `text` ASCII flow diagram showing
+                        where the failure/contradiction arises, 2–3 sentence
+                        plain-English hazard orientation + bridge, 2–3 numbered
+                        `<= 16`-word countermeasure options placing the
+                        recommended countermeasure at `1.`, `<= 8`-word
+                        `Safe to ignore for now:` line, 1-sentence `<= 18`-word
+                        `### Recommendation: Option 1`, and `<= 11`-word
+                        bulleted `- Pick N if …` lines). No
+                        Pros/Cons/Implications cards in the default turn.
                     -   *Part 2 (Native Tool Call — Required in Same Response):*
                         Emit structured `ask_question` in that **exact same
                         turn** matching countermeasure `<Option name>` strings
-                        `1..K` directly in 1:1 order (`"(Recommended) <Option 1
-                        name>"`, `"<Option 2 name>"`, ...), optional `"Reopen
-                        Round <R> to revise <topic>"`, and trailing `"I need
-                        more context, zoom out and give examples"`. Never emit a
-                        bare `ask_question` call without visible markdown text,
-                        and never stop after markdown prose with `0` tool calls.
+                        `1..K` directly in 1:1 order
+                        (`"(Recommended) <Option 1 name>"`, `"<Option 2 name>"`,
+                        ...; if reopening a prior decision is warranted, include
+                        `"Reopen Round <R> to revise <topic>"` as one of the
+                        numbered `1..K` options in chat rather than adding an
+                        unnumbered `"Reopen..."` option to `ask_question` alone)
+                        and trailing
+                        `"I need more context, zoom out and give examples"`.
+                        Never emit a bare `ask_question` call without visible
+                        markdown text, and never stop after markdown prose with
+                        `0` tool calls.
             5.  **Reopening vs. Natural Convergence (Implicit Phase 5c
                 Transition)**:
                 -   If the user selects to reopen a round during any finding,
-                    move that round and its affected question from `**Settled**`
-                    back to `**Now**` / `**Up next**`, probe the revised
-                    ambiguity via `ask_question`, and return to Phase 5b when
-                    re-resolved.
+                    move that topic back into `spec.md` `## Open Questions` on
+                    disk, probe the revised ambiguity via `ask_question`, and
+                    return to Phase 5b when re-resolved.
                 -   In the exact turn where the user resolves the **final**
                     Phase 5b finding (e.g., Finding 2 of 2), output in visible
                     markdown the `### Phase 5b Convergence Summary` synthesizing
                     all settled decisions, and in that **same turn** execute
-                    **Phase 5c: ADR Candidate Triage Gate** (rendering the `###
-                    ADR Candidate Triage Table` in visible markdown + calling
-                    `ask_question` with `is_multi_select: true` if $\ge 1$
-                    candidates qualify, or silently bypassing to Step 6 if 0
+                    **Phase 5c: ADR Candidate Triage Gate** (rendering the
+                    `### ADR Candidate Triage Table` in visible markdown +
+                    calling `ask_question` with `is_multi_select: true` if $\ge
+                    1$ candidates qualify, or silently bypassing to Step 6 if 0
                     qualify).
 
     -   **Phase 5c: ADR Candidate Triage Gate (Dual-Stage Lifecycle)**:
@@ -853,8 +964,8 @@ resolving all open rounds, questions, and ambiguities.
             adversarial challenges are resolved, before Step 6 (`spec.md`
             materialization).
         -   **3-Pillar Invariant Taxonomy Audit**: Audit all settled decisions
-            (listed under `**Settled**`) against the three qualification
-            pillars:
+            recorded in `spec.md` (`## Settled Decisions`) against the three
+            qualification pillars:
             1.  *Cross-Cutting Invariant:* Establishes a convention, contract,
                 or state invariant that constrains future tracks or touches
                 multiple components (e.g., optimistic UI rollback rules,
@@ -868,21 +979,22 @@ resolving all open rounds, questions, and ambiguities.
                 condition (e.g., forbidding `sessionStorage` because it does not
                 sync across tabs).
             4.  Decisions failing all three (local component markup, single
-                route slugs, error strings, styling) are classified as `[Track
-                Spec Only]`.
+                route slugs, error strings, styling) are classified as
+                `[Track Spec Only]`.
         -   **Silent Zero-Candidate Bypass**:
             -   If and only if **zero** settled decisions qualify under Pillars
                 1, 2, or 3 (e.g., strictly local single-component
                 CSS/copy/markup tweaks with no cross-cutting invariant,
                 architecture binding, or negative constraint), silently bypass
-                Phase 5c directly to Step 6 in that **same turn**: default
-                `{PROJECT_CONTEXT_DIR}` to `armature`
-                (`armature/tracks/<track_id>/...`) without calling `view_file`
-                to check `armature/product.md` or `armature/index.md`, first
-                write a visible markdown `### Convergence Summary` synthesizing
-                all settled decisions, and then invoke `write_to_file` for
-                `spec.md`, `write_to_file` for `manual_testing.md`, and
-                `ask_question` for Step 6 spec approval.
+                Phase 5c directly to the **Unified Spec+Plan Gate (Steps 6–7)**
+                in that **same turn**: default `{PROJECT_CONTEXT_DIR}` to
+                `armature` (`armature/tracks/<track_id>/...`) without calling
+                `view_file` to check `armature/product.md` or
+                `armature/index.md`, first write a visible markdown
+                `### Convergence Summary` synthesizing all settled decisions and
+                planned phases, and then invoke `write_to_file` for `spec.md`,
+                `write_to_file` for `manual_testing.md`, `write_to_file` for
+                `plan.md`, and `ask_question` for Unified Spec+Plan approval.
         -   **Interactive Triage Gate (when $\ge 1$ candidates qualify)**:
 
             -   **Strict Ban on Static Bullet ADR Substitution & Premature File
@@ -892,8 +1004,8 @@ resolving all open rounds, questions, and ambiguities.
                 generating the track artifacts?"* in plain text, and NEVER call
                 `write_to_file` (`spec.md`, `plan.md`, `adr/*.md`) before the
                 user responds to the Phase 5c `ask_question` modal.
-            -   **Part 1 (Visible Markdown — Required First)**: Output the `###
-                Phase 5b Convergence Summary` followed by the markdown pipe
+            -   **Part 1 (Visible Markdown — Required First)**: Output the
+                `### Phase 5b Convergence Summary` followed by the markdown pipe
                 table under `### ADR Candidate Triage Table` mapping every
                 settled decision (both `[ADR Candidate]` and `[Track Spec Only]`
                 rows) to its pillar, proposed title, and recommendation:
@@ -912,13 +1024,13 @@ resolving all open rounds, questions, and ambiguities.
                 true, "question": "...", "options": [...]}]}`):
 
                 -   `questions[0].is_multi_select`: `true`
-                -   `questions[0].question`: `"Confirm which architectural
-                    decisions to record as ADRs:"`
+                -   `questions[0].question`:
+                    `"Confirm which architectural decisions to record as ADRs:"`
                 -   `questions[0].options`: Checkboxes for each qualifying
                     candidate ADR prefixed with `(Recommended)` (e.g.,
                     `"(Recommended) Record ADR: Use In-Memory LRU with TTL"`,
-                    `"(Recommended) Record ADR: Enforce 25MB Fixed Heap
-                    Budget"`, `"Skip ADR creation — keep track-specific only"`).
+                    `"(Recommended) Record ADR: Enforce 25MB Fixed Heap Budget"`,
+                    `"Skip ADR creation — keep track-specific only"`).
             -   **MANDATORY:** End your turn after `ask_question` and wait for
                 the user's multi-select response before writing any files.
             -   For each confirmed candidate:
@@ -932,11 +1044,34 @@ resolving all open rounds, questions, and ambiguities.
                     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md`
                     using `write_to_file`.
 
-6.  **Spec & Manual Testing Materialization & Final Confirmation:**
+    -   **Phase 5d: Complexity Classifier & Explicit-Sign-Off Fast-Forward**:
 
-    -   ONLY NOW, write the canonical specification to
+        -   **Bounded Single-Component Features (1–2 Clarifying Rounds)**: When
+            Step 4 reconnaissance confirms the track is a bounded 1–2 file
+            change with a clear interface contract, consolidate clarifying
+            questions into 1–2 high-leverage rounds rather than stretching into
+            artificial multi-round trees.
+        -   **Explicit User Sign-Off on Turn-1 Working Draft**: If Step 4b
+            already materialized a working draft `spec.md` (`status: draft`) on
+            Turn 1 and the user replies on Turn 2+ with a concrete option answer
+            AND an explicit directive to approve the specification/plan or start
+            implementation (e.g., *"Use Option 1, approve the spec, and start
+            implementing"* or *"Looks good, go ahead and build it"*), apply the
+            user's chosen option and the documented recommended defaults for any
+            remaining minor items, write the finalized `spec.md`
+            (`status: approved`), `manual_testing.md` (`status: approved`),
+            `plan.md` (`status: approved`), `metadata.json`, `index.md`,
+            `tracks.md`, and `active_context.md`, and—if the user explicitly
+            requested implementation in that turn—proceed directly to Phase 1
+            execution.
+
+6.  **Spec & Manual Testing Materialization (Part of Unified Spec+Plan Gate):**
+
+    -   Write the complete specification to
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md` using
-        `write_to_file`.
+        `write_to_file` (with YAML frontmatter `status: draft` when presenting
+        the Unified Spec+Plan Gate, or `status: approved` if already signed
+        off).
     -   **Default Execution-Ready `spec.md` Grounding Standard (`ADR 0016` —
         Sufficient Detail for a Smaller Model Without Writing Code):** By
         default on every track, `spec.md` MUST provide sufficient technical
@@ -968,22 +1103,22 @@ resolving all open rounds, questions, and ambiguities.
             `FetchUnsettledBatchesResponse.batches` returning
             `Sequence[SettlementBatch]`, `ListTenantQuotasResponse.GetQuotas()`
             returning `[]*pb.TenantQuota`,
-            `ListActiveCollaboratorSessionsResponse` returning `readonly
-            ImmutableCollaboratorSession[]`, `ListFactoryPresetsResponse`
-            returning `readonly ImmutableAudioPreset[]`,
-            `ListClaimDossiersResponse` returning `readonly
-            ImmutableClaimDossier[]`), **AND** the exact request setter/field
-            name (`setSampleProjectId`, `settlement_batch_id`,
-            `SetTenantQuotaId`, `setTargetSessionId`, `source_profile_id`,
-            `setSourcePresetId`, `SetSourceTemplateId`, `setSourceDossierId`,
-            `setSourceDocumentId`), **AND** the exact state-update RPC/service
-            method name (`updateSceneState`, `UpdateWebhookState`,
-            `updateCanvasViewportState`, `updateCollaboratorViewportState`,
-            `updateAudioRoutingState`, `updateAdjudicationViewState`,
-            `UpdateRuleEvaluationState`, `commit_wal_checkpoint`,
-            `flush_reconciliation_watermark`). State full 1-line method
-            signatures with parameter names, types, return types, and exact
-            argument count/arity (e.g.,
+            `ListActiveCollaboratorSessionsResponse` returning
+            `readonly ImmutableCollaboratorSession[]`,
+            `ListFactoryPresetsResponse` returning
+            `readonly ImmutableAudioPreset[]`, `ListClaimDossiersResponse`
+            returning `readonly ImmutableClaimDossier[]`), **AND** the exact
+            request setter/field name (`setSampleProjectId`,
+            `settlement_batch_id`, `SetTenantQuotaId`, `setTargetSessionId`,
+            `source_profile_id`, `setSourcePresetId`, `SetSourceTemplateId`,
+            `setSourceDossierId`, `setSourceDocumentId`), **AND** the exact
+            state-update RPC/service method name (`updateSceneState`,
+            `UpdateWebhookState`, `updateCanvasViewportState`,
+            `updateCollaboratorViewportState`, `updateAudioRoutingState`,
+            `updateAdjudicationViewState`, `UpdateRuleEvaluationState`,
+            `commit_wal_checkpoint`, `flush_reconciliation_watermark`). State
+            full 1-line method signatures with parameter names, types, return
+            types, and exact argument count/arity (e.g.,
             `applyHydratedPartVisibility(hiddenPartSlugs: ReadonlySet<string>,
             seeThroughPartSlugs: ReadonlySet<string>): void` taking **2**
             arguments, never 1), and call out which
@@ -995,19 +1130,21 @@ resolving all open rounds, questions, and ambiguities.
             component `<->` client store `<->` RPC/wire proto `<->`
             database/storage), document the complete bidirectional
             field-by-field mapping, explicit default values for fields not
-            directly toggled by the UI (e.g., `viewTools.edges <->
-            ToolbarState.show_edges`, `viewTools.labels <->
-            ToolbarState.show_labels`, `viewTools.explode <->
-            ToolbarState.explode_factor` where `explode == true` maps to `0.65`
-            and `false` to `0`, and `explode_factor > 0` hydrates
-            `viewTools.explode = true`, while preserving `shading_mode =
-            SHADING_MODE_DEFAULT`, `show_grid = true`, `show_axes = true`,
-            `show_shadows = true`), boolean/sign inversions (e.g.,
-            `SectionState.inverted <-> SectionPlane.flipped`, `position <->
-            constant`), and server-side validation preconditions (e.g.,
-            `CadStudioServiceImpl` rejects any `SectionPlane` whose `normal` is
-            not unit length `|n| = 1.0`, requiring axis `'x' | 'y' | 'z'` to map
-            to unit `Vec3` normals `(1,0,0)`, `(0,1,0)`, `(0,0,1)`).
+            directly toggled by the UI (e.g.,
+            `viewTools.edges <-> ToolbarState.show_edges`,
+            `viewTools.labels <-> ToolbarState.show_labels`,
+            `viewTools.explode <-> ToolbarState.explode_factor` where
+            `explode == true` maps to `0.65` and `false` to `0`, and
+            `explode_factor > 0` hydrates `viewTools.explode = true`, while
+            preserving `shading_mode = SHADING_MODE_DEFAULT`,
+            `show_grid = true`, `show_axes = true`, `show_shadows = true`),
+            boolean/sign inversions (e.g.,
+            `SectionState.inverted <-> SectionPlane.flipped`,
+            `position <-> constant`), and server-side validation preconditions
+            (e.g., `CadStudioServiceImpl` rejects any `SectionPlane` whose
+            `normal` is not unit length `|n| = 1.0`, requiring axis
+            `'x' | 'y' | 'z'` to map to unit `Vec3` normals `(1,0,0)`,
+            `(0,1,0)`, `(0,0,1)`).
         4.  **Self-Contained State Machines, Timers, Guard Flags & Visual Tokens
             (No Opaque Cross-App References)**: Never write opaque shorthand
             like *"use a Linear-style PersistenceToast"*, *"Notion-style
@@ -1073,67 +1210,50 @@ resolving all open rounds, questions, and ambiguities.
             persona walkthrough scenarios.
         -   If classified as **Tier 2 (Visual-Only / Presentational UI)**,
             generate a concise **Provisional `Micro-Verification Plan`** tagged
-            with `[Micro-Verification Plan]`. Include the ASCII `┌─
-            [Micro-Verification Plan] ──┐` card (`Step 1: Run local server
-            (<cmd>)` with optional one-line session hint `(requires active
-            logged-in session)`, `Step 2: Navigate to
-            http://localhost:<PORT>/<path>` strictly using `localhost` URLs and
-            never remote workstation hostnames, and `Verify: <visual assertion anchored on
-            visible text or ARIA roles>`), and stamp `## 2. Fixture Provisioning
-            & Reset Tooling` with `> [!NOTE] Stateful 3-Part Fixture Triad
-            deferred (initial track was visual-only).` Do NOT fabricate dummy
-            SQL seed commands or multi-persona boilerplate. *(Note: Stage 2
-            empirical VCS diff re-verification during `/arm-implement` and
-            `/arm-review` will automatically escalate to Tier 1 if stateful/RPC
-            code is touched during implementation).*
-    -   **Two-Part Step 6 Turn Contract (Visible Summary FIRST -> Dual `write_to_file` + `ask_question` SECOND)**:
-        In the Step 6 turn (including when triggered via Phase 5c Silent
-        Zero-Candidate Bypass or after Phase 5c ADR confirmation), default
-        `{PROJECT_CONTEXT_DIR}` to `armature` (`armature/tracks/<track_id>/...`)
-        if not already specified in the prompt (NEVER call `view_file` or
-        `run_command` to verify directory existence first):
-        1.  **Part 1 (Visible Markdown Text — Required First BEFORE Any Tool
-            Call — 40–200 Words + Trailing Flush Line):** Always begin your Step
-            6 response in the user-visible `content` stream (never inside
-            internal `thinking`) with **40–200 words** of concise visible
-            markdown prose under `### Convergence Summary` summarizing all
-            settled decisions and phases (**NEVER** start the response with a
-            bare `write_to_file` or `ask_question` call with empty markdown
-            text, and do NOT duplicate multi-kilobyte spec tables in chat—keep
-            the full detailed tables inside `spec.md`). If the user asked to
-            include multi-line source code inside `spec.md` or collapse
-            `spec.md`, `plan.md`, `metadata.json`, or `worker` dispatch into one
-            turn, explicitly explain in this visible markdown summary that
-            `spec.md` is a no-code architectural blueprint (`ADR 0016`) and that
-            `spec.md` (Step 6) and `plan.md` (Step 7) require sequential
-            interactive approval gates before track creation can conclude.
-            **Mandatory Streaming Flush Before Heavy `write_to_file` Calls:**
-            End Part 1 with a complete closing status line followed by a
-            trailing blank line (`\n\n_Materializing \`spec.md\` and
-            \`manual_testing.md\` and opening the Step 6 approval
-            prompt..._\n\n`) so the streaming UI renderer flushes the final
-            sentence before multi-kilobyte `write_to_file` payloads stream.
-        2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):**
-            Invoke `write_to_file` for `spec.md`, invoke `write_to_file` for
-            `manual_testing.md`, and invoke `ask_question` using the top-level
-            `questions` array (`{"questions": [{"question": "Approve spec.md
-            and manual_testing.md to proceed to Step 7 plan generation?",
-            "options": ["(Recommended) Approve spec.md and manual_testing.md —
-            proceed to plan generation", "Request revisions to spec.md or
-            manual_testing.md"]}]}`) together in that single turn. Never write
-            `plan.md`, `metadata.json`, or `tracks.md` in Step 6.
-    -   **MANDATORY:** End your turn and wait for explicit user approval before
-        proceeding to plan generation.
+            with `[Micro-Verification Plan]`. Include the ASCII
+            `┌─ [Micro-Verification Plan] ──┐` card
+            (`Step 1: Run local server (<cmd>)` with optional one-line session
+            hint `(requires active logged-in session)`,
+            `Step 2: Navigate to http://localhost:<PORT>/<path>` strictly using
+            `localhost` URLs and never remote workstation hostnames, and
+            `Verify: <visual assertion anchored on visible text or ARIA roles>`),
+            and stamp `## 2. Fixture Provisioning & Reset Tooling` with `>
+            [!NOTE] Stateful 3-Part Fixture Triad deferred (initial track was
+            visual-only).` Do NOT fabricate dummy SQL seed commands or
+            multi-persona boilerplate. *(Note: Stage 2 empirical VCS diff
+            re-verification during `/arm-implement` and `/arm-review` will
+            automatically escalate to Tier 1 if stateful/RPC code is touched
+            during implementation).*
+    -   **Unified Spec+Plan Gate Routing (Default vs. Legacy Step-by-Step
+        Prompts)**:
+        -   **Legacy Step-6-Only Prompt Compatibility**: If the prompt context
+            explicitly instructs you to run *only* Step 6 (or if `spec.md` is
+            already approved in `Given context:` and the prompt asks you to run
+            Step 7 separately), keep Step 6 and Step 7 as separate turns: in
+            Step 6 emit `### Convergence Summary` (`40–200` words +
+            ``\n\n_Materializing \`spec.md\` and \`manual_testing.md\` and
+            opening the Step 6 approval prompt..._\n\n``), write `spec.md` and
+            `manual_testing.md`, and call `ask_question` (`"Approve spec.md and
+            manual_testing.md to proceed to Step 7 plan generation?"`).
+        -   **Default Unified Spec+Plan Gate (Standard Workflow)**: In all
+            standard sessions, Step 6 immediately flows into Step 7 in the
+            **same turn** so `spec.md` (`status: draft`), `manual_testing.md`
+            (`status: draft`), and `plan.md` (`status: draft`) are materialized
+            together and reviewed at a single **Unified Spec+Plan Approval
+            Gate** (cutting post-interview approval ceremony from 2 modal turns
+            to 1).
 
-7.  **Interactive Plan Generation (Two-Part Step 7 Turn Contract):**
+7.  **Interactive Plan Generation & Unified Spec+Plan Approval Gate:**
 
-    -   Verify the spec is approved. When `spec.md` and `workflow.md` are
-        already provided in the conversation or `Given context:`, treat them as
-        loaded and NEVER call `run_command` (`ls`, `cat`) or `view_file` first.
+    -   When `spec.md` and `workflow.md` are already provided in the
+        conversation or `Given context:`, treat them as loaded and NEVER call
+        `run_command` (`ls`, `cat`) or `view_file` first.
     -   Generate a hierarchical plan with sequential Phases, Tasks, and
-        Sub-tasks with `[ ]` checkboxes:
-        -   **Default Execution-Ready `plan.md` Task Granularity Standard (`ADR
-            0016` — Sufficient Detail for a Smaller Model Without Writing
+        Sub-tasks with `[ ]` checkboxes (stamped with YAML frontmatter
+        `status: draft` prior to approval, and promoted to `status: approved`
+        upon approval):
+        -   **Default Execution-Ready `plan.md` Task Granularity Standard
+            (`ADR 0016` — Sufficient Detail for a Smaller Model Without Writing
             Code):** By default on every track—even if the user asks for a
             *"quick high-level plan"* or *"3-bullet summary"*—every Phase, Task,
             and Sub-task in `plan.md` MUST be self-contained and concrete enough
@@ -1179,10 +1299,10 @@ resolving all open rounds, questions, and ambiguities.
                 explicit sub-task on the target class/module to expose it with
                 its exact 1-line signature and parameter arity (e.g., adding a
                 sub-task on `viewer_stage.ts` to expose `getCameraPose()`,
-                `setCameraPose(pose)`, `setSectionInverted(inverted: boolean):
-                void`, and `onCameraSettled?: (pose) => void` before `app.ts`
-                wires them, and calling
-                `stage.applyHydratedPartVisibility(hiddenPartSlugs,
+                `setCameraPose(pose)`,
+                `setSectionInverted(inverted: boolean): void`, and
+                `onCameraSettled?: (pose) => void` before `app.ts` wires them,
+                and calling `stage.applyHydratedPartVisibility(hiddenPartSlugs,
                 seeThroughPartSlugs)` with its exact 2-argument signature).
             3.  **Explicit Field-Bijection, Validator & Echo-Suppression
                 Sub-Tasks**: Include explicit sub-tasks for bidirectional
@@ -1190,8 +1310,8 @@ resolving all open rounds, questions, and ambiguities.
                 precondition compliance (e.g., mapping axis `'x' | 'y' | 'z'` to
                 unit-length `Vec3` normals `(1,0,0)`, `(0,1,0)`, `(0,0,1)` so
                 `|n| = 1.0` validation passes, and explicitly writing the exact
-                plane/axis field bijection `position <-> constant` and `inverted
-                <-> flipped` or `plane_constant` / `flipped_rule` /
+                plane/axis field bijection `position <-> constant` and
+                `inverted <-> flipped` or `plane_constant` / `flipped_rule` /
                 `plane_offset` / `flipped_polarity` verbatim in `plan.md`),
                 hydration echo-suppression guards (`isHydrating... = true`
                 during initial reload hydration so applying hydrated state does
@@ -1240,60 +1360,104 @@ resolving all open rounds, questions, and ambiguities.
         -   **Phase Checkpointing**: If `workflow.md` defines phase
             checkpointing, inject Phase Completion checkpoint meta-tasks at the
             end of each Phase.
-    -   **Two-Part Step 7 Turn Contract (Visible Plan Summary FIRST ->
-        `write_to_file(plan.md)` + `ask_question` SECOND)**:
+    -   **Two-Part Unified Spec+Plan Gate Turn Contract (Visible Summary FIRST
+        -> `write_to_file` + `ask_question` SECOND)**:
+
         1.  **Part 1 (Visible Markdown Text — Required First BEFORE Any Tool
-            Call — 40–200 Words + Trailing Flush Line):** Always begin your Step
-            7 response in the user-visible `content` stream (never inside
-            internal `thinking`) with **40–200 words** of concise visible
-            markdown prose under `### Step 7: Implementation Plan Summary`
-            summarizing the phases, task breakdown, and Phase Completion
-            verification checkpoints (**NEVER** start the response with a bare
+            Call — 40–200 Words + Trailing Flush Line):** Always begin your
+            response in the user-visible `content` stream (never inside internal
+            `thinking`) with **40–200 words** of concise visible markdown prose
+            under `### Convergence Summary` (when presenting the Unified
+            Spec+Plan Gate) or `### Step 7: Implementation Plan Summary` (when
+            Step 6 was approved in an earlier turn) summarizing the settled
+            decisions, phases, task breakdown, and Phase Completion verification
+            checkpoints (**NEVER** start the response with a bare
             `write_to_file` or `ask_question` call with empty markdown text!).
             If the user asked for a vague 3-bullet plan or opaque cross-app
             shorthand, explicitly explain in this visible markdown summary why
-            `plan.md` must retain full Execution-Ready Task Granularity (`ADR
-            0016`) so downstream workers can execute without guesswork.
+            `plan.md` must retain full Execution-Ready Task Granularity
+            (`ADR 0016`) so downstream workers can execute without guesswork.
             **Mandatory Streaming Flush Before Heavy `write_to_file` Calls:**
             End Part 1 with a complete closing status line followed by a
-            trailing blank line (`\n\n_Materializing \`plan.md\` and opening the
-            Step 7 approval prompt..._\n\n`) before calling `write_to_file`.
+            trailing blank line (`\n\n_Materializing track artifacts and opening
+            the approval prompt..._\n\n`) before calling `write_to_file`.
         2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):**
-            Invoke `write_to_file` to write
-            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/plan.md` AND
-            invoke `ask_question` in the exact same turn using the top-level
-            `questions` array (`{"questions": [{"question": "Approve the phased
-            implementation plan in plan.md?", "options": ["(Recommended) Approve
-            plan.md — finalize track creation", "Request revisions to
-            plan.md"]}]}`).
-    -   **MANDATORY:** Never write `metadata.json` or `tracks.md`, never commit,
-        and never call `invoke_subagent` or `define_subagent` before the user
-        approves `plan.md`. End your turn and wait for explicit user approval.
+            Invoke `write_to_file` for `spec.md` (`status: draft`) and
+            `manual_testing.md` (`status: draft`, if not already written in a
+            separate Step 6 turn), invoke `write_to_file` for
+            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/plan.md`
+            (`status: draft`), update
+            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md`, AND invoke
+            `ask_question` in the exact same turn using the top-level
+            `questions` array:
+
+            ```json
+            {
+              "questions": [
+                {
+                  "question": "Approve spec.md, manual_testing.md, and plan.md for this track?",
+                  "options": [
+                    "(Recommended) Approve spec + plan and begin implementation",
+                    "Approve & Save Track — finalize track creation without starting Phase 1",
+                    "Request revisions to spec.md, manual_testing.md, or plan.md"
+                  ]
+                }
+              ]
+            }
+            ```
+    -   **MANDATORY:** Never set `metadata.json` status to `"planned"` or
+        `"in_progress"` or write `tracks.md`, never commit, and never call
+        `invoke_subagent` or `define_subagent` before the user approves the
+        Unified Spec+Plan Gate. End your turn and wait for explicit user
+        approval.
+    -   **Upon Approval (`Approve spec + plan and begin implementation` or
+        `Approve & Save Track`)**: Promote the YAML frontmatter in `spec.md`,
+        `manual_testing.md`, and `plan.md` from `status: draft` to
+        `status: approved`. When the user selects
+        `"(Recommended) Approve spec + plan and begin implementation"` (or gives
+        an explicit implementation command after questions settle), set
+        `metadata.json` `"status": "in_progress"`, write `index.md` and
+        `tracks.md`, and transition directly into `/arm-implement <track_id>`.
 
 8.  **Generate Remaining Track Artifacts (Two-Part Step 8–10 Finalization Turn
     Contract):**
 
-    -   Once the user approves `plan.md` in Step 7, do NOT call `run_command`
-        (`ls`, `cat`) to re-read files already in `Given context:`. Execute
-        Steps 8, 9, and 10 together in a single turn using the **Two-Part Step
-        8–10 Finalization Turn Contract (Visible Completion Banner FIRST ->
-        `write_to_file` × 3 + `run_command` Commit SECOND)**:
+    -   Once the user approves in Step 7, do NOT call `run_command` (`ls`,
+        `cat`) to re-read files already in `Given context:`. Execute Steps 8, 9,
+        and 10 together in a single turn using the **Two-Part Step 8–10
+        Finalization Turn Contract**:
         1.  **Part 1 (Visible Markdown Text — Required First BEFORE Tool
             Calls):** Output the completion message in visible markdown text
             first (never emit bare tool calls with empty markdown text), always
-            naming the exact `<track_id>` slug in the `/arm-implement
-            <track_id>` command: ``✅ Track \`<track_id>\` created! Run
-            \`/arm-implement <track_id>\` to start working through the plan.``
-            If the user prompt asked to auto-start implementation or dispatch
-            `worker` immediately upon plan approval, explicitly explain in
-            visible markdown that `/arm-new-track` concludes upon track creation
-            and implementation requires invoking `/arm-implement <track_id>` as
-            a separate command.
+            naming the exact `<track_id>` slug in the
+            `/arm-implement <track_id>` command: ``✅ Track \`<track_id>\`
+            created! Run \`/arm-implement <track_id>\` to start working through
+            the plan.``
+            -   **Default Terminal Stop (`Approve & Save Track`)**: If the user
+                selected `"Approve & Save Track"` (or if a benchmark/test prompt
+                tests the Step 10 terminal boundary where `/arm-new-track` must
+                not auto-dispatch `worker`), explicitly state that
+                `/arm-new-track` concludes upon track creation and
+                implementation requires invoking `/arm-implement <track_id>`.
+            -   **Unified Gate Fast-Forward
+                (`Execute immediately — approve and start Phase 1`)**: If the
+                user explicitly selected
+                `"Execute immediately — approve and start Phase 1"` from the
+                Unified Gate options in an interactive session (and no benchmark
+                prompt forbids subagent/code execution), promote `spec.md` and
+                `plan.md` to `status: approved`, finalize `metadata.json`,
+                `index.md`, `tracks.md`, and `active_context.md`, commit the
+                track artifacts, and transition into `/arm-implement <track_id>`
+                Phase 1.
         2.  **Part 2 (Native Tool Calls — Required Second in Same Turn):**
+            -   Promote `spec.md`, `manual_testing.md`, and `plan.md`
+                frontmatter to `status: approved` (when transitioning from
+                `status: draft`).
             -   Call `write_to_file` to create
                 `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/metadata.json`
                 containing: `track_id`, inferred `type`, `"status": "planned"`
-                (NEVER `"in_progress"`), timestamps, and `description`.
+                (NEVER `"in_progress"` on `"Approve & Save Track"`), timestamps,
+                and `description`.
             -   Call `write_to_file` to create
                 `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/index.md`
                 containing summary and relative links to `spec.md`, `plan.md`,
@@ -1301,33 +1465,44 @@ resolving all open rounds, questions, and ambiguities.
             -   Call `write_to_file` (NEVER `run_command` / `echo >>`) to update
                 `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md` with the full
                 updated file content appending the new track with `- [ ]` status
-                (NEVER `[~]`): `- [ ] **Track: <Track Title>** _Link:
+                (NEVER `[~]` on `"Approve & Save Track"`): `- [ ] **Track:
+                <Track Title>** _Link:
                 [./tracks/<track_id>/](./tracks/<track_id>/)_`
+            -   Update `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md`
+                with the newly approved `<track_id>` and Phase 1 next task.
 
 9.  **Commit Changes:**
 
-    -   In the same turn immediately after the three `write_to_file` calls
-        (`metadata.json`, `index.md`, and `tracks.md`), invoke `run_command` to
-        stage and commit the new track directory and updated `tracks.md` (e.g.,
-        `git add ... && git commit -m "chore(armature): Add new track
-        '<description>'"`).
+    -   In the same turn immediately after the `write_to_file` calls, invoke
+        `run_command` to stage and commit the new track directory and updated
+        `tracks.md` (e.g., `git add ... && git commit -m "chore(armature): Add
+        new track '<description>'"`).
 
-10. **Confirm Completion (Hard Terminal Stop & Explicit `<track_id>` Handoff):**
+10. **Confirm Completion (Default Terminal Stop vs. Unified Gate
+    Fast-Forward):**
 
     -   Verify that Part 1 visible markdown already includes: ``✅ Track
         \`<track_id>\` created! Run \`/arm-implement <track_id>\` to start
         working through the plan.``
-    -   **HARD TERMINAL STOP:** Terminate the turn cleanly without calling
-        `ask_question`, `invoke_subagent`, `define_subagent`, or `schedule`.
+    -   **DEFAULT TERMINAL STOP (`Approve & Save Track`):** Unless the user
+        explicitly selected `"Execute immediately — approve and start Phase 1"`
+        at the Unified Spec+Plan Gate, terminate the turn cleanly without
+        calling `ask_question`, `invoke_subagent`, `define_subagent`, or
+        `schedule`.
 
 ## Guardrails
 
--   **Compound Directive Shielding & Zero Auto-Implementation**: Never start
-    implementation, dispatch `worker` (`invoke_subagent` / `define_subagent`
-    / `schedule`), or set status to `in_progress` during `/arm-new-track`.
--   **Turn-Ending Barriers**: Enforce strict synchronous pauses at Step 5, Step
-    6, and Step 7 via `ask_question`.
--   **Pre-Materialization Barrier**: Hold `spec.md` in memory during Step 5.
+-   **Compound Directive Shielding & Approved-Spec Execution Gate**: Never write
+    application source code while `spec.md` or `plan.md` is in `status: draft`.
+    On `"Approve & Save Track"`, halt at Step 10 without calling
+    `invoke_subagent` / `define_subagent` / `schedule` or setting status to
+    `in_progress`.
+-   **Turn-Ending Barriers**: Enforce synchronous pauses at Step 5 and the
+    Unified Spec+Plan Approval Gate (Steps 6–7) via `ask_question`.
+-   **Eager Working Draft & Promotion Barrier**: Materialize `spec.md` on Turn 1
+    (Step 4b) with `status: draft`, checkpoint settled answers into `spec.md`
+    and `active_context.md` during Step 5, and promote to `status: approved`
+    only upon user approval.
 -   **Execution-Ready Spec & Plan Grounding (`ADR 0016` — No-Code Blueprint
     Standard)**: By default, `spec.md` (Step 6) and `plan.md` (Step 7) must
     include exact file and build-manifest paths (`BUILD`, `package.json`,

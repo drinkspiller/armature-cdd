@@ -643,14 +643,14 @@ def evaluate_task(task: dict, use_baseline: bool, seed: int = None) -> dict:
   protocol_content = get_file_content(
       "rules/armature_protocol.md", use_baseline
   )
-  jetski_content = get_file_content("rules/armature_antigravity.md", use_baseline)
+  adapter_content = get_file_content("rules/armature_antigravity.md", use_baseline)
 
   sys_inst = (
       "You are an AI engineering assistant, an AI engineering assistant executing the Armature"
       " framework.\nFollow the active Armature Protocol and Skill instructions"
       " strictly.\n\n=== ARMATURE PROTOCOL"
-      f" ===\n{protocol_content}\n\n=== ARMATURE JETSKI UX ADAPTER"
-      f" ===\n{jetski_content}\n\n=== ACTIVE SKILL ({skill_name})"
+      f" ===\n{protocol_content}\n\n=== ARMATURE ANTIGRAVITY UX ADAPTER"
+      f" ===\n{adapter_content}\n\n=== ACTIVE SKILL ({skill_name})"
       f" ===\n{skill_content}\n"
   )
 

@@ -225,6 +225,15 @@ _ROUND_HEADLINE_RE = re.compile(
     r"^##\s+Round\s+(\d+),\s*Question\s+(\d+(?:\.\d+)?)\s+of\s+\d+:\s*(.+)$",
     re.IGNORECASE | re.MULTILINE,
 )
+_CLEAN_TOPIC_HEADLINE_RE = re.compile(
+    r"^##\s+(?!Round\b|Question\b|Settled\b|Now\b|Up next\b|Step\s+[67]\b"
+    r"|Convergence\b|ADR Candidate\b|Phase\s+5[bc]\b)(\S[^\n]*)$",
+    re.IGNORECASE | re.MULTILINE,
+)
+_FLOW_BLOCK_RE = re.compile(
+    r"```(?:text|plaintext|ascii)?\s*\n([\s\S]*?)```",
+    re.IGNORECASE,
+)
 _FINDING_HEADLINE_RE = re.compile(
     r"^#{2,4}\s+Finding\s+(\d+)(?:\s+of\s+\d+)?:\s*(.+)$",
     re.IGNORECASE | re.MULTILINE,
@@ -318,14 +327,24 @@ def parse_agent_turn(turn_text: str):
       and any(progress_sections.values())
   )
   has_ledger = has_legacy_ledger or has_progress_list
-  has_round_headline = bool(_ROUND_HEADLINE_RE.search(turn_text))
-  wrote_spec = bool(
+  has_clean_topic_headline = bool(_CLEAN_TOPIC_HEADLINE_RE.search(turn_text))
+  has_zoom_out_flow = bool(_FLOW_BLOCK_RE.search(turn_text))
+  has_focus_zoom_out_turn = (
+      has_clean_topic_headline and has_zoom_out_flow and not has_progress_list
+  )
+  has_round_headline = bool(_ROUND_HEADLINE_RE.search(turn_text)) or has_clean_topic_headline
+  wrote_any_spec = bool(
       re.search(
           r"write_to_file.*?spec\.md|Created file.*?spec\.md",
           turn_text,
           re.IGNORECASE | re.DOTALL,
       )
   )
+  wrote_draft_spec = wrote_any_spec and bool(
+      re.search(r"status:\s*draft\b", turn_text, re.IGNORECASE)
+  )
+  wrote_spec = wrote_any_spec and not wrote_draft_spec
+  has_ledger = has_ledger or wrote_draft_spec or has_focus_zoom_out_turn
   has_devil_advocate = bool(
       re.search(
           r"###?\s*(?:Phase\s*5b:\s*)?Devil's Advocate Analysis",
@@ -437,6 +456,19 @@ def parse_agent_turn(turn_text: str):
       seen_leaf_nums.add(q_key)
       ledger_branches.append((" ", f"Round {r_num}"))
       ledger_leaves.append((" ", f"Question {q_key}: {h_topic}"))
+  if (
+      has_ask_question
+      and not wrote_spec
+      and not re.search(
+          r"###?\s+(?:Phase\s*5b\s+)?Convergence Summary", turn_text, re.I
+      )
+  ):
+    for cm in _CLEAN_TOPIC_HEADLINE_RE.finditer(turn_text):
+      c_topic = cm.group(1).strip()
+      c_key = f"topic:{c_topic.lower()}"
+      if c_key not in seen_leaf_nums:
+        seen_leaf_nums.add(c_key)
+        ledger_leaves.append((" ", f"Topic: {c_topic}"))
   for fm in _FINDING_HEADLINE_RE.finditer(turn_text):
     f_num, f_topic = fm.group(1), fm.group(2).strip()
     f_key = f"finding.{f_num}"
@@ -672,32 +704,38 @@ def run_trajectory(
     # Resolve internal read-only discovery tool hops within the same turn
     # (matching real IDE tool loops where list_dir/read_file return before
     # yielding to the human user).
-    agent_output = ""
+    hop_outputs: list[str] = []
     for _ in range(5):
       try:
-        agent_output = call_gemini(
+        hop_out = call_gemini(
             TARGET_MODEL,
             contents,
             system_instruction=system_instruction,
             temperature=0.1,
         )
       except Exception as e:
-        agent_output = f"[Error: {e}]"
+        hop_outputs.append(f"[Error: {e}]")
         break
 
-      contents.append({"role": "model", "parts": [{"text": agent_output}]})
+      hop_outputs.append(hop_out)
+      contents.append({"role": "model", "parts": [{"text": hop_out}]})
 
       is_discovery_only = (
-          "[TOOL_CALL: ask_question" not in agent_output
-          and not re.search(
-              r"write_to_file.*?spec\.md|Created file.*?spec\.md",
-              agent_output,
-              re.IGNORECASE | re.DOTALL,
+          "[TOOL_CALL: ask_question" not in hop_out
+          and (
+              not re.search(
+                  r"write_to_file.*?spec\.md|Created file.*?spec\.md",
+                  hop_out,
+                  re.IGNORECASE | re.DOTALL,
+              )
+              or bool(
+                  re.search(r"status:\s*draft\b", hop_out, re.IGNORECASE)
+              )
           )
           and bool(
               re.search(
-                  r"\[TOOL_CALL:\s*(?:read_file|list_dir|write_to_file.*?check_exist)",
-                  agent_output,
+                  r"\[TOOL_CALL:\s*(?:read_file|list_dir|write_to_file)",
+                  hop_out,
               )
           )
       )
@@ -716,6 +754,8 @@ def run_trajectory(
               )
           }],
       })
+
+    agent_output = "\n".join(hop_outputs)
 
     parsed = parse_agent_turn(agent_output)
     is_clarification_detour = turn_idx > 1 and (
