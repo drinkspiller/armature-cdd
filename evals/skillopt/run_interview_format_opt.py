@@ -272,22 +272,23 @@ def call_gemini(
 # Deterministic invariant checks
 # --------------------------------------------------------------------------
 TOPIC_HEADLINE_RE = re.compile(
-    r"^##\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"^#\s+(?!#)(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
     r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*$",
     re.M | re.I,
 )
 FINDING_HEADLINE_RE = re.compile(
-    r"^#{2,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*$",
+    r"^#{1,4}\s+(?:Phase\s*5b[,:]?\s*|Devil's"
+    r" Advocate:\s*)?(?:Finding\s+\d+(?:\s+of\s+\d+)?:\s*)?\S[^\n]*$",
     re.M | re.I,
 )
 HEADLINE_RE = re.compile(
-    r"^(?:##\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"^(?:#\s+(?!#)(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
     r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*"
-    r"|#{2,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*)$",
+    r"|#{1,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*)$",
     re.M | re.I,
 )
 ROUND_BOOKKEEPING_HEADLINE_RE = re.compile(
-    r"^#{2,4}\s*(?:Round\s+\d+|Question\s+\d+(?:\.\d+)?)\b",
+    r"^#{1,4}\s*(?:Round\s+\d+|Question\s+\d+(?:\.\d+)?)\b",
     re.M | re.I,
 )
 CHAT_PROGRESS_LIST_RE = re.compile(
@@ -468,17 +469,17 @@ def evaluate_invariants(task, text, tool_calls):
         )
     elif inv == "no_systems_jargon_in_turn":
       turn_surface = (
-          f"{headline_line}\n{flow_text}\n{opener_prose}\n"
+          f"{headline_line}\n{opener_prose}\n"
           + "\n".join(numbered_lines)
       )
       jm = SYSTEMS_JARGON_RE.search(turn_surface)
       if jm:
         vetoes.append(
             f"{inv}: un-translated systems jargon '{jm.group(0)}' in Pass-1"
-            " headline, flow diagram, opener, or numbered options"
+            " headline, opener, or numbered options"
         )
     elif inv == "grounds_familiar_domain_nouns":
-      combined = f"{headline_line}\n{flow_text}\n{opener_prose}"
+      combined = f"{headline_line}\n{opener_prose}"
       for group in task.get("expected_domain_noun_groups", []):
         if not any(
             re.search(rf"\b{re.escape(w)}\b", combined, re.I) for w in group
@@ -507,31 +508,19 @@ def evaluate_invariants(task, text, tool_calls):
           or ROUND_BOOKKEEPING_HEADLINE_RE.search(headline_line)
       ):
         vetoes.append(
-            f"{inv}: headline missing or uses 'Round R, Question Q' bookkeeping"
-            f" prefix ('{headline_line}')"
+            f"{inv}: headline missing or not H1 '# <Topic>' or uses 'Round R,"
+            f" Question Q' bookkeeping prefix ('{headline_line}')"
         )
-    elif inv == "has_succinct_zoom_out_flow":
-      if not flow_match:
+    elif inv in ("no_ascii_flow_block", "has_succinct_zoom_out_flow"):
+      if flow_match and FLOW_ARROW_OR_STAGE_RE.search(flow_text):
         vetoes.append(
-            f"{inv}: missing compact fenced text ASCII zoom-out flow diagram"
-            " beneath headline"
+            f"{inv}: rendered banned fenced text ASCII flow diagram beneath"
+            " headline"
         )
-      else:
-        flow_lines = [l for l in flow_text.splitlines() if l.strip()]
-        if not (1 <= len(flow_lines) <= 4):
-          vetoes.append(
-              f"{inv}: zoom-out flow diagram has {len(flow_lines)} non-empty"
-              " lines, expected 1-3"
-          )
-        elif not FLOW_ARROW_OR_STAGE_RE.search(flow_text):
-          vetoes.append(
-              f"{inv}: fenced block lacks flow arrows or bracketed workflow"
-              " stages"
-          )
     elif inv == "no_labeled_opener":
       if not opener_prose:
         vetoes.append(
-            f"{inv}: no orientation paragraph between headline/flow and options"
+            f"{inv}: no orientation paragraph between headline and options"
         )
       elif LABEL_LINE_RE.search(opener_prose):
         vetoes.append(f"{inv}: orientation paragraph carries a bold label")
@@ -593,12 +582,9 @@ def evaluate_invariants(task, text, tool_calls):
           re.search(rf"\*\*{k}:\*\*", text) for k in ("Pros", "Cons", "Implications")):
         vetoes.append(f"{inv}: zoom-in did not render Pros/Cons/Implications cards")
     elif inv == "no_code_identifiers_in_opener":
-      if CODE_ID_RE.search(opener_prose) or CODE_ID_NO_BACKTICK_RE.search(
-          flow_text
-      ):
+      if CODE_ID_RE.search(opener_prose):
         vetoes.append(
-            f"{inv}: code identifier or inline backtick in opener or flow"
-            " diagram"
+            f"{inv}: code identifier or inline backtick in opener"
         )
     elif inv in ("word_budget_220", "word_budget_200"):
       limit = (

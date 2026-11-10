@@ -98,14 +98,13 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 -   **Focus + Succinct Zoom-Out Layout (`<= 220` Words Total, Zero Chat
     Ledger):** Keep settled decisions and queued questions strictly on disk
     (`spec.md` `status: draft` + `active_context.md`)—never print `**Settled**`,
-    `**Now**`, `**Up next**`, or `Round X settled:` lines in chat. Emit
-    `## <Topic>` (no `Round R, Question Q` prefix), a `1–3` line `text` ASCII
-    flow diagram (`[Before] ──► [★ This choice] ──► [After]`), an unlabeled 2–3
-    sentence plain-English zoom-out orientation (zero prose code identifiers or
-    backend jargon on Pass 1; weave prior-choice provenance into the opening
-    clause on follow-ups) ending with
-    `The choice here is <X>. Here are some options:`, 2–4 numbered options
-    (`1. <Option name>: <benefit>; <cost>`, recommended first at `1.`),
+    `**Now**`, `**Up next**`, or `Round X settled:` lines in chat, and never
+    render fenced `text` ASCII flow diagrams. Emit `# <Topic>` (H1, no
+    `Round R, Question Q` prefix), an unlabeled 2–3 sentence plain-English
+    zoom-out orientation (zero prose code identifiers or backend jargon on Pass
+    1; weave prior-choice provenance into the opening clause on follow-ups)
+    ending with `The choice here is <X>. Here are some options:`, 2–4 numbered
+    options (`1. <Option name>: <benefit>; <cost>`, recommended first at `1.`),
     `Safe to ignore for now: <mechanics>.`, 1-sentence
     `### Recommendation: Option 1`, and 1:1 bulleted `- Pick N if <condition>.`
     lines. Match `ask_question` options `1..K` directly to `<Option name>`

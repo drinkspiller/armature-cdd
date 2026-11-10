@@ -618,10 +618,10 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             -   `"Skip to next scenario"`
         -   *Guardrail (Empirical Verification Only):* Verification gates test
             empirical application state, not architectural trade-offs. Do
-            **NOT** output the interview option-comparison body (ASCII flow
-            diagram, orientation opener, numbered options, `### Recommendation:
-            Option N`, `Pick N if …` lines), the Zoom-In View cards (`**Pros:**`
-            / `**Cons:**` / `**Implications:**`), or the
+            **NOT** output the interview option-comparison body (orientation
+            opener, numbered options, `### Recommendation: Option N`, `Pick N if
+            …` lines), the Zoom-In View cards (`**Pros:**` / `**Cons:**` /
+            `**Implications:**`), or the
             `"I need more context, zoom out and give examples"` option on
             scenario verification prompts.
     -   **In-Flight Discrepancy Triage:**

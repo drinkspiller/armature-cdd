@@ -51,11 +51,10 @@ deliverables, synchronizing documentation, and managing track cleanup.
             track creation so the user can run `/arm-implement <track_id>`).
         2.  Render the canonical `/arm-new-track` Turn 1 Focus + Succinct
             `/zoom-out` layout in visible markdown (with zero `**Settled**`,
-            `**Now**`, or `**Up next**` lists):
-            -   Clean topic headline (`## <Topic>`, no `Round 1, Question 1`
+            `**Now**`, or `**Up next**` lists and zero fenced `text` ASCII flow
+            diagrams):
+            -   Clean topic headline (`# <Topic>`, no `Round 1, Question 1`
                 prefix)
-            -   Succinct `1–3` line `text` ASCII mental-model flow diagram
-                (`[Trigger / Before] ──► [★ This choice] ──► [Outcome]`)
             -   Unlabeled 2–3 sentence plain-English orientation (no
                 `**Context:**` label, no prose code identifiers) ending in
                 `The choice here is <X>. Here are some options:`

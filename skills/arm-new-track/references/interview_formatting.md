@@ -30,32 +30,27 @@ the user's request:
 Every Step 5 decision turn must render the following visible Markdown structure
 in `content` before invoking `ask_question`:
 
-1. **Clean topic headline:** `## <Topic>` (or `### Devil's Advocate Analysis`
-   followed by `#### Finding <F> of <N>: <Topic>` in Phase 5b). Omit `Round <R>,
-   Question <Q> of <N>:` bookkeeping prefixes from the headline.
-2. **Succinct `/zoom-out` mental-model flow (`1–3` lines, `<= 4` stages):** a
-   compact `text` fenced ASCII diagram situating where this decision sits in the
-   end-to-end user or system workflow, marking the active fork with `★`:
-   ```text
-   [Trigger / Before] ──► [★ This decision] ──► [Downstream effect]
-   ```
-3. **Unlabeled succinct orientation (`2–3` plain-English sentences + bridge):**
+1. **Clean topic headline:** `# <Topic>` (H1 — or `# Devil's Advocate: <Topic>`
+   followed by `### Finding <F> of <N>: <Subtitle>` in Phase 5b). Omit `Round <R>,
+   Question <Q> of <N>:` bookkeeping prefixes from the headline, and never
+   render fenced `text` ASCII flow diagram blocks beneath the headline.
+2. **Unlabeled succinct orientation (`2-3` plain-English sentences + bridge):**
    adult plain-English sentences anchored in familiar domain nouns stating what
    happens right before and right after this moment in the workflow (when a
    follow-up question was opened by the user's prior choice, weave that prior
    choice naturally into the opening clause rather than printing a separate
    settled line), followed by `The choice here is <5-9 words>. Here are some
    options:`.
-4. **Numbered one-line options (`1..K`, recommended first at `1.`):**
+3. **Numbered one-line options (`1..K`, recommended first at `1.`):**
    `1. <Option name>: <plain-English benefit>; <plain-English cost>`
-5. **Deferred mechanics line:** `Safe to ignore for now: <2-3 low-level details>.`
-6. **Recommendation (strictly 1 sentence):**
+4. **Deferred mechanics line:** `Safe to ignore for now: <2-3 low-level details>.`
+5. **Recommendation (strictly 1 sentence):**
    `### Recommendation: Option 1` followed by strictly a single plain-English
    sentence (never 2 sentences).
-7. **Decision recap bullets (exact `- Pick N if ` prefix):**
+6. **Decision recap bullets (exact `- Pick N if ` prefix):**
    `- Pick N if <short condition>.` (strictly one bullet per numbered option
    `1..K` using the exact words `- Pick N if `, never `- Pick N to `; target
-   `130–185` words total from headline through the final `- Pick` bullet, hard
+   `120-175` words total from headline through the final `- Pick` bullet, hard
    cap `<= 220` words). Never insert unnumbered options (such as `"Reopen Round
    <R>..."`) into `ask_question` alone—if reopening a prior decision is warranted
    in Phase 5b, include it as one of the numbered `1..K` options in chat so chat

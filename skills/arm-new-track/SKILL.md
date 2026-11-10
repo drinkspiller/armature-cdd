@@ -88,15 +88,13 @@ resolving all open rounds, questions, and ambiguities.
     presented, render the Focus + Succinct `/zoom-out` layout defined in Phase
     5a (see `skills/arm-new-track/references/interview_formatting.md` and
     `skills/arm-new-track/references/ask_question_guide.md` for detailed
-    formatting examples and Zoom-Out/Zoom-In templates—`## <Topic>` clean topic
-    headline without `Round R, Question Q` prefixes, a `1–3` line `text` fenced
-    ASCII mental-model flow diagram `[Before] ──► [★ This choice] ──► [After]`
-    situating where this decision sits in the workflow, an unlabeled 2–3
-    sentence plain-English orientation ending in
-    `The choice here is <X>. Here are some options:` with zero prose code
-    identifiers or backend systems jargon, numbered one-line options placing the
-    recommended option at `1.`, `Safe to ignore for now:` line,
-    `### Recommendation: Option 1` with one sentence, and bulleted
+    formatting examples and Zoom-Out/Zoom-In templates—`# <Topic>` clean H1
+    topic headline without `Round R, Question Q` prefixes and with zero fenced
+    `text` ASCII flow diagrams, an unlabeled 2–3 sentence plain-English
+    orientation ending in `The choice here is <X>. Here are some options:` with
+    zero prose code identifiers or backend systems jargon, numbered one-line
+    options placing the recommended option at `1.`, `Safe to ignore for now:`
+    line, `### Recommendation: Option 1` with one sentence, and bulleted
     `- Pick N if …` lines, with **zero `**Settled**` / `**Now**` / `**Up next**`
     lists**) and pair it with an immediate native `ask_question` tool call in
     the exact same turn. End your markdown response immediately after the last
@@ -145,9 +143,10 @@ resolving all open rounds, questions, and ambiguities.
 -   **Phase 5b Devil's Advocate Analysis:** When all rounds and dynamically
     spawned questions are Settled, you MUST NOT immediately converge. You MUST
     execute Phase 5b: audit the combination of confirmed answers, emit a
-    structured `### Devil's Advocate Analysis` confronting the user with
-    emergent contradictions, operational hazards, and maintainability debt, and
-    halt with `ask_question` to reaffirm or reopen rounds.
+    structured `# Devil's Advocate: <Topic>` (and `### Finding 1 of N: <Title>`)
+    confronting the user with emergent contradictions, operational hazards, and
+    maintainability debt, and halt with `ask_question` to reaffirm or reopen
+    rounds.
 -   **Phase 5c ADR Candidate Triage Gate (Dual-Stage Lifecycle):** Immediately
     following Phase 5b, audit all settled decisions against the 3-Pillar
     Invariant Taxonomy (Cross-Cutting Invariant, Architecture Binding, Negative
@@ -293,13 +292,11 @@ resolving all open rounds, questions, and ambiguities.
         legacy/modern directories (e.g., migrating from `<legacy_dir>/` to
         `<modern_dir>/`), DO NOT call `code_search` or `view_file` to search for
         `product.md` or `tech-stack.md`. Immediately in Turn 1:
-        1.  Output the Focus + Succinct `/zoom-out` interview turn (`## <Topic>`
-            headline without `Round R, Question Q` prefixes, `1–3` line `text`
-            ASCII flow diagram showing
-            `<legacy_dir>/ ──► [★ Boundary fence] ──► <modern_dir>/`, unlabeled
-            plain-English orientation ending in
-            `The choice here is <X>. Here are some options:`, numbered one-line
-            options, `Safe to ignore for now:` line,
+        1.  Output the Focus + Succinct `/zoom-out` interview turn (`# <Topic>`
+            headline without `Round R, Question Q` prefixes, unlabeled
+            plain-English orientation with zero fenced `text` ASCII flow
+            diagrams ending in `The choice here is <X>. Here are some options:`,
+            numbered one-line options, `Safe to ignore for now:` line,
             `### Recommendation: Option 1` with one sentence, and
             `- Pick N if …` bullets—with zero `**Settled**` / `**Now**` /
             `**Up next**` lists) proposing to record `legacy_fences` in
@@ -326,7 +323,7 @@ resolving all open rounds, questions, and ambiguities.
     `write_to_file` / `write_file` BEFORE the visible Markdown interview
     turn—starting a response with `write_to_file` suppresses subsequent
     visible `text` parts and leaves chat blank (`content: ""`). On Turn 1,
-    ALWAYS emit the complete visible `## <Topic>` Focus + Succinct
+    ALWAYS emit the complete visible `# <Topic>` Focus + Succinct
     `/zoom-out` Markdown body into `content` **FIRST**, then invoke
     `write_to_file` / `write_file` **SECOND** to write an initial working
     draft of `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md`
@@ -391,26 +388,19 @@ resolving all open rounds, questions, and ambiguities.
                 remaining open questions strictly on disk in `spec.md`
                 (`status: draft`, under `## Settled Decisions` and
                 `## Open Questions`) and `armature/active_context.md`.
-            2.  *Clean Topic Headline*: `## <Topic>` (H2). Do **NOT** include
+            2.  *Clean Topic Headline*: `# <Topic>` (H1). Do **NOT** include
                 `Round <R>, Question <Q> of <N>:` bookkeeping prefixes in the
-                headline. Keep the user's exact familiar domain nouns verbatim
-                in `<Topic>` or the first orientation sentence in plain everyday
-                words (e.g., keep `"null"` in
-                `## Linking a Layer to a Null Parent` rather than paraphrasing
+                headline, and NEVER render fenced `text` ASCII flow diagram
+                blocks beneath the headline. Keep the user's exact familiar
+                domain nouns verbatim in `<Topic>` or the first orientation
+                sentence in plain everyday words (e.g., keep `"null"` in
+                `# Linking a Layer to a Null Parent` rather than paraphrasing
                 `"null"` away into `Linking to a Zero-Scale Parent` or
                 `Linking a Layer on the Stage`;
-                `## Keeping Remixes and Live Samples Safe from Broken Files`
+                `# Keeping Remixes and Live Samples Safe from Broken Files`
                 rather than `Independent Blob Ownership and In-Flight Reads`).
-            3.  *Succinct `/zoom-out` Mental-Model Flow (`1–3` lines, `<= 4`
-                stages)*: Directly beneath the headline, render a compact `text`
-                fenced ASCII flow diagram (` ``text ... `` `) showing where this
-                decision sits in the end-to-end user or system workflow, marking
-                the active fork with `★` (e.g., `[Uploader selects file] ──►
-                [Private staging] ──► [★ Malware check stalls] ──► [Share link
-                goes live]`). Keep all stage labels in everyday domain words
-                with zero code identifiers.
-            4.  *Orientation Opener (First-Pass Everyday Plain Language — `2–3`
-                Sentences + Bridge)*: Directly beneath the `text` flow block,
+            3.  *Orientation Opener (First-Pass Everyday Plain Language — `2–3`
+                Sentences + Bridge)*: Directly beneath the `# <Topic>` headline,
                 write an unlabeled paragraph of **2–3 everyday English sentences
                 (`<= 55 words` total)** on **Pass 1** anchored directly in the
                 concrete, familiar domain nouns named in the user's request or
@@ -435,7 +425,7 @@ resolving all open rounds, questions, and ambiguities.
                 *"mutex"*). Follow with
                 `The choice here is <5–9 words>. Here are some options:`
                 (`<= 14 words`).
-            5.  *Numbered options (Order-Locked with Recommended Option First at
+            4.  *Numbered options (Order-Locked with Recommended Option First at
                 `1.`, `<= 16 Words` Each)*:
                 `1. <Option name>: <benefit>; <cost>`, one line each, **at most
                 16 words per line**, **2–3 concise items** preferred (at most
@@ -520,11 +510,7 @@ resolving all open rounds, questions, and ambiguities.
             turn):
 
             ````markdown
-            ## Live Chat vs. Background Indexing During Fresh Scans
-
-            ```text
-            [Fresh install scan] ──► [★ Shared Gemini limit] ──► [Live chat & search ready]
-            ```
+            # Live Chat vs. Background Indexing During Fresh Scans
 
             Because fresh installs scan 100+ past sessions in the background,
             those summaries compete with live chat typing for the same Gemini
@@ -557,12 +543,12 @@ resolving all open rounds, questions, and ambiguities.
             Track state accurately on disk in `spec.md` (`## Settled Decisions`
             and `## Open Questions`) and `armature/active_context.md`—never
             print `**Settled**`, `**Now**`, or `**Up next**` lists in chat. Do
-            not use tables, icons, emoji, glyphs, progress bars, blockquote
-            cards, or `[!NOTE]` / `[!TIP]` callouts inside the default
-            `## <Topic>` interview turn block (only the single `1–3` line `text`
-            ASCII flow diagram is permitted). The full `**Pros:**` / `**Cons:**`
-            / `**Implications:**` cards are the Zoom-In View and render strictly
-            when the user explicitly writes in `"zoom in"` (never when
+            not use tables, icons, emoji, glyphs, progress bars, fenced `text`
+            ASCII flow diagrams, blockquote cards, or `[!NOTE]` / `[!TIP]`
+            callouts inside the default `# <Topic>` interview turn block. The
+            full `**Pros:**` / `**Cons:**` / `**Implications:**` cards are the
+            Zoom-In View and render strictly when the user explicitly writes in
+            `"zoom in"` (never when
             `"I need more context, zoom out and give examples"` is selected).
 
         -   **Lazy Question Materialization (Pre-Population Ban)**: Future
@@ -692,12 +678,11 @@ resolving all open rounds, questions, and ambiguities.
                 (never fall back to plain-text prompts).
             -   **Focus + Succinct `/zoom-out` Body:** Present the candidate
                 approaches using the layout defined under *Mandatory Interview
-                Turn Layout* above: a clean `## <Topic>` headline (no
-                `Round R, Question Q` prefixes), a `1–3` line `text` ASCII
-                mental-model flow diagram
-                (`[Before] ──► [★ This choice] ──► [After]`), an unlabeled 2–3
-                sentence plain-English orientation (zero prose code identifiers
-                and zero backend systems jargon on Pass 1) ending in
+                Turn Layout* above: a clean `# <Topic>` (H1) headline (no
+                `Round R, Question Q` prefixes and zero fenced `text` ASCII
+                flow diagrams), an unlabeled 2–3 sentence plain-English
+                orientation (zero prose code identifiers and zero backend
+                systems jargon on Pass 1) ending in
                 `The choice here is <X>. Here are some options:`, numbered
                 one-line options placing the recommended option first at `1.`
                 (`1. <Name>: <benefit>; <cost>`, 2–4 items, no `(Recommended)`
@@ -708,10 +693,10 @@ resolving all open rounds, questions, and ambiguities.
                 grounded in concrete constraints, and strictly one bulleted
                 `- Pick N if <condition>.` line per numbered option
                 (`len(picks) == len(numbered)`). Keep the headline through the
-                last `- Pick N if …` line concise: **target 130–185 words,
+                last `- Pick N if …` line concise: **target 120–175 words,
                 strictly `<= 220` words**. Never render `**Settled**` /
-                `**Now**` / `**Up next**` lists or blockquote cards in the
-                default turn.
+                `**Now**` / `**Up next**` lists, fenced `text` ASCII flow
+                diagrams, or blockquote cards in the default turn.
             -   **Zoom-In View (`"zoom in"` Write-In Only):** Strictly when the
                 user explicitly writes in `"zoom in"`, render the full Option
                 Trade-Off cards for the same options (`> **Option N: <Name>**`
@@ -789,14 +774,14 @@ resolving all open rounds, questions, and ambiguities.
                     question as **Settled**:
                     1.  **Visible Markdown Part (Required First):** Directly
                         answer the user's confirmation question, confirm the
-                        commit description commitment, and output `### Devil's
-                        Advocate Analysis: Stress-Testing Confirmed Decisions`
-                        (`#### Finding 1 of N: <Plain Everyday Title>`) with the
-                        Focus + Succinct `/zoom-out` body (`<= 220` words total:
-                        `1–3` line `text` ASCII flow diagram, 2–3 sentence
-                        plain-English hazard orientation + bridge, 2–3 numbered
-                        `<= 16`-word countermeasure options with recommended at
-                        `1.`, `<= 8`-word ignore line, 1-sentence `<= 18`-word
+                        commit description commitment, and output `# Devil's
+                        Advocate: <Topic>` (`### Finding 1 of N: <Plain Everyday
+                        Title>`) with the Focus + Succinct `/zoom-out` body
+                        (`<= 220` words total: 2–3 sentence plain-English hazard
+                        orientation + bridge with zero fenced `text` ASCII flow
+                        diagrams, 2–3 numbered `<= 16`-word countermeasure
+                        options with recommended at `1.`, `<= 8`-word ignore
+                        line, 1-sentence `<= 18`-word
                         `### Recommendation: Option 1`, and `<= 11`-word
                         `- Pick N if …` bullets—with zero `**Settled**` /
                         `**Now**` / `**Up next**` lists).
@@ -845,10 +830,9 @@ resolving all open rounds, questions, and ambiguities.
                             examples.
                         -   Directly beneath `---`, the **rewritten** Focus +
                             Succinct `/zoom-out` block (`<= 220` words total:
-                            `## <Plain Topic>` or
-                            `### Devil's Advocate Analysis` /
-                            `#### Finding F of N: <Plain Title>`, `1–3` line
-                            `text` ASCII flow diagram, plain-English
+                            `# <Plain Topic>` or `# Devil's Advocate: <Topic>` /
+                            `### Finding F of N: <Plain Title>` with zero fenced
+                            `text` ASCII flow diagrams, plain-English
                             orientation + bridge, numbered `1..K`
                             `<Option name>: <benefit>; <cost>` lines with
                             recommended first at `1.`, `Safe to ignore for now:`
@@ -879,9 +863,9 @@ resolving all open rounds, questions, and ambiguities.
         -   **Execution**:
             1.  Audit the combination of confirmed answers across all settled
                 decisions recorded in `spec.md` (`## Settled Decisions`).
-            2.  Output a structured `### Devil's Advocate Analysis:
-                Stress-Testing Confirmed Decisions` directly at the top of
-                visible markdown text (never print `**Settled**` / `**Now**` /
+            2.  Output `# Devil's Advocate: <Topic>` followed by
+                `### Finding 1 of N: <Subtitle>` directly at the top of visible
+                markdown text (never print `**Settled**` / `**Now**` /
                 `**Up next**` lists, and never leave visible markdown text
                 empty).
             3.  Identify 2–3 concrete adversarial challenges across the design
@@ -892,8 +876,8 @@ resolving all open rounds, questions, and ambiguities.
                 Ban**:
                 -   Present each adversarial challenge **strictly one by one**
                     in separate sequential turns
-                    (`#### Finding 1 of N: <Title>`, then in the next turn
-                    `#### Finding 2 of N: <Title>`).
+                    (`### Finding 1 of N: <Title>`, then in the next turn
+                    `### Finding 2 of N: <Title>`).
                 -   **Strict Ban on Self-Answered `*Risk:* / *Mitigation:*`
                     Lists & Multi-Finding Dumps**: NEVER output all 2–3 Devil's
                     Advocate challenges in a single turn, and NEVER write static
@@ -912,21 +896,19 @@ resolving all open rounds, questions, and ambiguities.
                 -   **Two-Part Turn Contract (Visible Markdown FIRST ->
                     `ask_question` SECOND)**:
                     -   *Part 1 (Visible Markdown):* Output
-                        `### Devil's Advocate Analysis` (with zero `**Settled**`
-                        / `**Now**` / `**Up next**` lists), the single active
-                        challenge
-                        (`#### Finding 1 of N: <Plain Everyday Title>`), and the
+                        `# Devil's Advocate: <Topic>` (with zero `**Settled**` /
+                        `**Now**` / `**Up next**` lists and zero fenced `text`
+                        ASCII flow diagrams), the single active challenge
+                        (`### Finding 1 of N: <Plain Everyday Title>`), and the
                         Focus + Succinct `/zoom-out` body in plain everyday
                         English (zero prose code identifiers and zero backend
                         systems jargon on Pass 1; **strictly `<= 220` words
-                        total**: `1–3` line `text` ASCII flow diagram showing
-                        where the failure/contradiction arises, 2–3 sentence
-                        plain-English hazard orientation + bridge, 2–3 numbered
-                        `<= 16`-word countermeasure options placing the
-                        recommended countermeasure at `1.`, `<= 8`-word
-                        `Safe to ignore for now:` line, 1-sentence `<= 18`-word
-                        `### Recommendation: Option 1`, and `<= 11`-word
-                        bulleted `- Pick N if …` lines). No
+                        total**: 2–3 sentence plain-English hazard orientation +
+                        bridge, 2–3 numbered `<= 16`-word countermeasure options
+                        placing the recommended countermeasure at `1.`,
+                        `<= 8`-word `Safe to ignore for now:` line, 1-sentence
+                        `<= 18`-word `### Recommendation: Option 1`, and
+                        `<= 11`-word bulleted `- Pick N if …` lines). No
                         Pros/Cons/Implications cards in the default turn.
                     -   *Part 2 (Native Tool Call — Required in Same Response):*
                         Emit structured `ask_question` in that **exact same

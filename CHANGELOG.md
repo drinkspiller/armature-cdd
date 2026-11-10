@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.35.1] - 2026-11-10
+
+### Changed
+
+-   **Promoted Interview Headlines (`# <Topic>`) & Direct Plain-English
+    Orientation (`rules/armature_protocol.md`,
+    `skills/arm-new-track/references/interview_formatting.md`,
+    `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`,
+    `skills/arm-implement/SKILL.md`, `skills/arm-review/SKILL.md`)**:
+    -   Promoted Step 5a, Phase 5b Devil's Advocate (`# Devil's Advocate:
+        <Topic>` followed by `### Finding 1 of N: <Subtitle>`), Brownfield
+        context discovery, and Turn 1 mismatch headings from `## <Topic>` (H2)
+        to `# <Topic>` (H1) for clearer visual hierarchy in chat.
+    -   Removed the `1–3` line fenced `text` ASCII mental-model flow diagram
+        blocks (`[Before] ──► [★ This choice] ──► [After]`) beneath interview
+        headlines and added an explicit prohibition against fenced `text` ASCII
+        flow diagrams so turns open directly with the plain-English orientation
+        paragraph.
+    -   Updated SkillOpt evaluators (`run_interview_format_opt.py`,
+        `run_trajectory_eval.py`) and task suites to require `# <Topic>` (H1)
+        headlines and enforce `no_ascii_flow_block`.
+
 ## [0.35.0] - 2026-11-05
 
 ### Added
