@@ -37,6 +37,11 @@ the developer through automated interactive manual testing across scenarios.
     -   `--report-only`: Run a single-pass read-only Code Audit
         (`MAX_ITERATIONS = 1`) with zero automatic code mutations, writing all
         findings directly to `review.md`.
+    -   `--record`: Explicitly enable automated live-application screencast or
+        screenshot capture during Step 2.5 (`ADR 0019`, detailed in
+        `references/screencast_adapter.md`).
+    -   `--no-record`: Explicitly skip automated screencast or screenshot
+        capture prompts during Step 2.5.
 2.  **Auto-detect Track:** Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md`
     and look for an in-progress track (`[~]`).
 3.  If no track is specified or found, prompt the user for the track name.
@@ -472,17 +477,28 @@ When the empirical VCS diff qualifies as **Visual-Only** (including the
         `ask_question` turn**.
     -   Step through sequential walkthrough turns **only** if distinct setup
         states are required across routes.
-4.  **Inline Override Escape Hatch (`ask_question` Modal Gate)**:
+4.  **Inline Override Escape Hatch & Screenshot Capture (`ask_question` Modal
+    Gate — `ADR 0010`, `ADR 0019`)**:
 
     -   Immediately following the card, call `ask_question` with the mandatory
-        inline escape hatch:
+        inline escape hatch and optional static screenshot (or single-clip
+        motion spot-check) capture per `references/screencast_adapter.md`:
         -   *Question:*
             `"Did the visual verification match the expected outcome?"`
         -   *Options:*
             1.  `"(Recommended) Verified: <concise expected visual outcome>"`
-            2.  `"Run full domain runbook instead (execute database seed &
+            2.  `"Capture static screenshot (or motion spot-check clip) from
+                live localhost server"`
+            3.  `"Run full domain runbook instead (execute database seed &
                 multi-role scenarios)"`
-            3.  `"Didn't match expectation (I will describe what occurred)"`
+            4.  `"Didn't match expectation (I will describe what occurred)"`
+    -   If the user selects `"Capture static screenshot..."` (or passed
+        `--record`), run the pre-flight prerequisite check, mask sensitive DOM
+        fields, capture the screenshot (or single-clip spot check) from the live
+        `localhost` server, confirm preview inspection before remote publishing
+        via the active Host Screencast Adapter
+        (`references/screencast_adapter.md`), and embed the link in
+        `manual_testing.md` and `review.md`.
     -   If the user selects `"Run full domain runbook instead..."`, immediately
         transition to **Path B** below to execute full database seeding and
         multi-persona scenarios.
@@ -668,13 +684,63 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             -   `"Acknowledge as [WARNING] tech debt in review.md and proceed"`
     -   If the user chooses to resolve now, step through the logged items, apply
         fixes, re-test, and mark them `[x] Verified`.
-4.  **Living Runbook Synchronization:**
+4.  **Living Runbook Synchronization & Risk-Scoped Live Screencast Capture
+    (`ADR 0019` — see `references/screencast_adapter.md`):**
 
     -   If setup commands, URLs, or barrier checks were corrected or refined
         during testing:
-    -   Automatically update
-        `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/manual_testing.md`
-        with the verified working commands so future runs stay synchronized.
+        -   Automatically update
+            `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/manual_testing.md`
+            with the verified working commands so future runs stay synchronized.
+    -   **Risk-Scoped Live Screencast Reel Capture (`--record` or Auto-Suggested
+        on Stateful UI/E2E Tracks):**
+        -   Skip recording prompts automatically on pure documentation,
+            configuration, CLI, or backend-only refactor tracks unless
+            `--record` was explicitly passed (and skip when `--no-record` is
+            passed).
+        -   On stateful UI or end-to-end tracks (when `--record` is passed or
+            the user confirms recording via `references/screencast_adapter.md`):
+            1.  **Prerequisite Pre-Flight & Confirmation-Gated Setup:** Run
+                `check_recording_prerequisites` to verify `localhost` server
+                reachability and required browser/encoding binaries
+                (`google-chrome`/`chromium`/`playwright`, `ffmpeg`, `gifsicle`).
+                If any prerequisite is missing or the local server is not
+                running, display the exact install/startup commands and ask for
+                confirmation via `ask_question` before auto-installing missing
+                binaries or starting the server (recording `spawned_server_pid`
+                for cleanup).
+            2.  **TrustedTypes-Safe DOM Overlays, Dual-Pacing Timelapse &
+                Pre-Capture Secret Masking:** Attach to the live `localhost`
+                server over CDP (`AttachedCDPRecorder`; never record synthetic
+                `file://` or `data:` HTML mocks). Construct
+                `#cdp-demo-overlay-root`, `#cdp-demo-caption-hud`,
+                `#cdp-demo-target-box`, and `#cdp-demo-cursor` exclusively via
+                `document.createElement` and `document.createElementNS` (never
+                `.innerHTML`). Call `mask_sensitive_dom()` before frame capture
+                to mask password/token inputs and scrub sensitive URL query
+                parameters. Hold interactive inspection beats at `1x`
+                (`explain_and_hold(seconds >= 2.8-3.5)`) and compress extended
+                async waits (`4x-10x`) via
+                `wait_for_js(..., capture_interval_s=0.6)` with live HUD
+                elapsed-time and phase updates.
+            3.  **Stalled-Wait Recovery & Per-Scenario Staging:** Stage each
+                scenario clip (`scenario_<id>.mp4`) in scratch storage. If
+                server startup or `wait_for_js` times out or matches a blocking
+                error banner locator, capture a diagnostic frame
+                (`save_diagnostic_frame`), terminate `spawned_server_pid` if
+                started by the review session, and prompt via `ask_question` to
+                fix and retry or continue manually. When an in-flight bug fix
+                flags earlier scenarios as `[~] Requires Quick Re-check`,
+                re-record only the invalidated scenario clip(s) and stitch all
+                passing clips (`stitch_scenario_clips`) into H.264 `.mp4`, VP9
+                `.webm`, and `1080px` Lanczos 2-pass `.gif` at the end of Step
+                2.5.
+            4.  **Pre-Upload Manual Inspection Gate & Host-Adapter Publishing:**
+                Surface the local preview paths and confirm via `ask_question`
+                that the recording contains no sensitive data before publishing
+                via the active Host Screencast Adapter
+                (`references/screencast_adapter.md`) and embedding the verified
+                media links in `manual_testing.md` and `review.md`.
 
 ### 3. Review & Resolution
 
@@ -758,6 +824,11 @@ Use the following strict output format for `review.md`:
 | :--- | :--- | :--- | :--- | :--- |
 | Test Auth.01 | Guest / Landing View | Verified | Cleared local user records | Saw 'Join Waitlist' CTA |
 | Test Auth.02 | Waitlisted User | Fixed & Verified | Seeded waitlist=true | Fixed button routing; confirmed /waitlist |
+
+## Recorded Verification Media
+*(Included when Live Screencast or Screenshot Capture is executed per `ADR 0019`)*
+- **Animated Preview / Screenshot:** `<link or relative path to 1080px .gif or .png>`
+- **Full Walkthrough Video (MP4 / WebM):** `<link or relative path to .mp4 / .webm>`
 
 ## Detailed Findings
 {Numbered remaining open findings categorized by severity: [BLOCKING] (`S0`/`S1`), [WARNING] (`S2`), [NOTE] (`S3`), or "No open blocking findings remain."}

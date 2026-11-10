@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.36.0] - 2026-11-10
+
+### Added
+
+-   **Automated Live-App Screencast Recording, Dual-Pacing Timelapse & Host
+    Adapter Boundary (`ADR 0019`, `skills/arm-review/SKILL.md`,
+    `skills/arm-review/references/screencast_adapter.md`,
+    `skills/arm-review/scripts/cdp_screencast_recorder.py`)**:
+    -   Integrated risk-scoped live visual verification (`--record` and
+        `--no-record` CLI flags) into `/arm-review` Steps 2.1, 2.5, and 3.1:
+        skips pure docs/configs/backend refactors by default, auto-suggests a
+        static screenshot (or single-clip spot check when motion is modified) on
+        visual-only `[Micro-Verification Plan]` tracks, and auto-suggests a
+        multi-scenario screencast reel (`.mp4`, `.webm`, and `1080px` `.gif`) on
+        stateful UI and end-to-end tracks.
+    -   Added pre-flight prerequisite checking (`check_recording_prerequisites`)
+        for live `localhost` reachability (`file://` and `data:` HTML mocks
+        rejected outside `/prototype`) and browser/encoding binaries
+        (`google-chrome`/`chromium`/`playwright`, `ffmpeg`, `gifsicle`), showing
+        exact startup/install commands and requiring confirmation via
+        `ask_question` before auto-starting servers or installing tools.
+    -   Upgraded `OVERLAY_INIT_JS` in `cdp_screencast_recorder.py` to construct
+        `#cdp-demo-overlay-root`, `#cdp-demo-target-box`, `#cdp-demo-cursor`,
+        `.cdp-demo-ripple`, and `#cdp-demo-caption-hud` exclusively via
+        `document.createElement` and
+        `document.createElementNS('http://www.w3.org/2000/svg', ...)` with zero
+        `.innerHTML` sinks for full `TrustedTypes` CSP compatibility.
+    -   Added the Dual-Pacing Timelapse Engine (`explain_and_hold` `1x` holds +
+        `wait_for_js` `4x-10x` async polling with live HUD elapsed-time/phase
+        updates and fatal error banner fast-fail), pre-capture DOM secret
+        masking (`mask_sensitive_dom`), diagnostic frame capture + spawned
+        server cleanup (`save_diagnostic_frame`), per-scenario clip staging +
+        cascade re-recording (`stitch_scenario_clips`), and Git-host-agnostic
+        media publishing (`publish_oss_media` across GitHub `gh`, Gitea
+        `tea`/REST, GitLab `glab`, Bitbucket `Downloads` REST API, and Git LFS /
+        `armature-media` orphan branch).
+
 ## [0.35.0] - 2026-11-05
 
 ### Added
