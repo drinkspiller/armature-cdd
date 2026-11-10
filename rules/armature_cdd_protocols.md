@@ -213,3 +213,32 @@ directory wins.
 At phase checkpoints, if the agent added new exports or discovered new local
 rules in a directory, propose appending them to the directory's context file
 section. Only modify content between the START and END boundary comments.
+
+--------------------------------------------------------------------------------
+
+## 4. Automated Live-Application Screencast & Screenshot Capture (`ADR 0019`)
+
+When running `/arm-review` Step 2.5 (detailed in
+`skills/arm-review/references/screencast_adapter.md`):
+
+-   **Risk-Scoped Triggering:** Automatically skip recording prompts on pure
+    documentation, configuration, or backend refactor tracks (unless `--record`
+    is passed). On visual-only `[Micro-Verification Plan]` tracks, offer static
+    screenshot capture (or a single-clip spot check when motion is modified); on
+    stateful UI and end-to-end tracks, offer a multi-scenario timelapse
+    screencast reel (`.mp4`, `.webm`, and `1080px` `.gif`).
+-   **Live-Server & Prerequisite Pre-Flight:** Require a live `localhost` HTTP/S
+    server (`file://` and `data:` HTML mocks rejected outside `/prototype`).
+    Verify port reachability and required binaries (`google-chrome`/`chromium`/
+    `playwright`, `ffmpeg`, `gifsicle`) before recording, and prompt via
+    `ask_question` before auto-starting servers or installing tools.
+-   **TrustedTypes-Safe Overlays, Timelapse & Secret Scrubbing:** Construct
+    `#cdp-demo-overlay-root`, `#cdp-demo-caption-hud`, `#cdp-demo-target-box`,
+    and `#cdp-demo-cursor` exclusively via `document.createElement` and
+    `document.createElementNS` (zero `.innerHTML`), mask password/token/secret
+    DOM inputs and URL query/hash parameters prior to frame capture, compress
+    extended async waits (`4x-10x`) via `wait_for_js(...,
+    capture_interval_s=0.6)` with diagnostic frame capture + spawned server
+    cleanup on timeout/error, stage clips per scenario (`scenario_<id>.mp4`) for
+    selective re-recording, and require manual preview confirmation before
+    remote publishing.

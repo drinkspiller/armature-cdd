@@ -332,6 +332,7 @@ def verify_jsonl_schema(
       "TRAIN_62",
       "RL_TRAIN_",
       "DAU_TRAIN_",
+      "SCR_TRAIN_",
       "VAL_31",
       "VAL_32",
       "VAL_33",
@@ -346,6 +347,7 @@ def verify_jsonl_schema(
       "VAL_50",
       "RL_VAL_",
       "DAU_VAL_",
+      "SCR_VAL_",
   )
 
   with open(filepath, "r", encoding="utf-8") as f:
@@ -1450,8 +1452,8 @@ def main():
   )
   args = parser.parse_args()
 
-  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=93)
-  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=71)
+  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=96)
+  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=73)
 
   if not train_ok or not val_ok:
     print("❌ [Schema Verification FAILED]", file=sys.stderr)
@@ -1461,7 +1463,7 @@ def main():
 
   if args.verify_schema:
     print(
-        "✅ [Schema Verification PASSED] All 93 train tasks and 71 val tasks"
+        "✅ [Schema Verification PASSED] All 96 train tasks and 73 val tasks"
         " valid."
     )
     sys.exit(0)

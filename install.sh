@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.35.0"
+VERSION="0.36.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -321,6 +321,11 @@ build_target_list() {
     if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/references" ]]; then
       for skill_ref in "${SCRIPT_DIR}/skills/${sub_skill}/references"/*.md; do
         [[ -f "$skill_ref" ]] && ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/references/$(basename "$skill_ref")")
+      done
+    fi
+    if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/scripts" ]]; then
+      for skill_script in "${SCRIPT_DIR}/skills/${sub_skill}/scripts"/*.py; do
+        [[ -f "$skill_script" ]] && ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/scripts/$(basename "$skill_script")")
       done
     fi
   done
@@ -834,6 +839,11 @@ for sub_skill in "${CORE_SKILL_NAMES[@]}"; do
   if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/references" ]]; then
     for skill_ref in "${SCRIPT_DIR}/skills/${sub_skill}/references"/*.md; do
       [[ -f "$skill_ref" ]] && install_file "$skill_ref" "${TARGET_SKILLS_ROOT}/${sub_skill}/references/$(basename "$skill_ref")"
+    done
+  fi
+  if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/scripts" ]]; then
+    for skill_script in "${SCRIPT_DIR}/skills/${sub_skill}/scripts"/*.py; do
+      [[ -f "$skill_script" ]] && install_file "$skill_script" "${TARGET_SKILLS_ROOT}/${sub_skill}/scripts/$(basename "$skill_script")"
     done
   fi
 done

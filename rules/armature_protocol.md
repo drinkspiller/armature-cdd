@@ -162,17 +162,26 @@ commits.
     (`ms`), and hydration echo-suppression flags (`isHydrating... = true`), (5)
     test-suite blast radius overrides and copy-pastable test commands, and (6)
     **zero multi-line fenced code blocks** (` ``` `) in `spec.md` or `plan.md`.
--   **Manual Testing & Hybrid Smart Gate (`ADR 0009`):** Stateful/route/auth/RPC
-    tracks require the **3-Part Fixture Triad** (`Migration -> Seed -> Reset`).
-    When running operational commands, scripts, or QA checklists, run read-only
-    inspection and health-check steps directly, including against shared hosts.
-    Never run a state-mutating, destructive, or data-wiping step against a
-    shared or non-local environment autonomously: stop at that step, report the
-    results of the steps already run, and ask via `ask_question`, or use an
-    explicit local target override. Presentational template/style changes
-    (including orphaned dead-code handler cleanup) use
-    `┌─ [Micro-Verification Plan] ──┐` with `http://localhost:<PORT>/<path>`
-    URLs (never remote workstation hostnames).
+-   **Manual Testing, Hybrid Smart Gate & Live Screencast Capture (`ADR 0009`,
+    `ADR 0019`):** Stateful/route/auth/RPC tracks require the **3-Part Fixture
+    Triad** (`Migration -> Seed -> Reset`). When running operational commands,
+    scripts, or QA checklists, run read-only inspection and health-check steps
+    directly, including against shared hosts. Never run a state-mutating,
+    destructive, or data-wiping step against a shared or non-local environment
+    autonomously: stop at that step, report the results of the steps already
+    run, and ask via `ask_question`, or use an explicit local target override.
+    Presentational template/style changes (including orphaned dead-code handler
+    cleanup) use `┌─ [Micro-Verification Plan] ──┐` with
+    `http://localhost:<PORT>/<path>` URLs (never remote workstation hostnames).
+    In `/arm-review` Step 2.5, auto-suggest risk-scoped visual capture on UI
+    tracks (`--record` / `--no-record` override; skipped on pure doc/refactor
+    tracks): static screenshots for visual-only Micro-Verification tracks and
+    multi-scenario variable-speed timelapse screencast reels (`1x` holds +
+    `4x-10x` `wait_for_js` async compression over a live `localhost` server via
+    CDP, TrustedTypes-safe `document.createElement` overlays, pre-capture secret
+    masking, confirmation-gated prerequisite setup, per-scenario clip staging,
+    and pre-upload preview confirmation) for stateful UI tracks
+    (`skills/arm-review/references/screencast_adapter.md`).
 -   **Legacy-Boundary Context Fencing:** When `tech-stack.md` or `metadata.json`
     (`legacy_fences`) defines active fences: (1) render the `> [!NOTE]` boundary
     callout once on Turn 1 only; (2) append negative search filters
