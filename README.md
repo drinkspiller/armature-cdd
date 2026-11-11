@@ -183,11 +183,9 @@ implementation plan is drafted:
     upcoming open questions are checkpointed silently on disk (`spec.md`
     `status: draft` and `armature/active_context.md`) rather than reprinted at
     the top of every chat message. Each turn opens directly with a clean
-    `## <Topic>` headline grounded in familiar domain nouns from the request, a
-    `1–3` line `text` ASCII mental-model flow diagram
-    (`[Before] ──► [★ This choice] ──► [After]`) situating where the decision
-    sits in the workflow, and a 2–3 sentence plain-English orientation free of
-    code symbols and backend jargon, followed by
+    `# <Topic>` headline grounded in familiar domain nouns from the request and
+    a 2–3 sentence plain-English orientation free of code symbols, backend
+    jargon, and fenced `text` ASCII flow diagram blocks, followed by
     `The choice here is … Here are some options:`, numbered one-line options
     placing the recommended option first
     (`1. <Option name>: <benefit>; <cost>`), a `Safe to ignore for now` line, a
@@ -703,4 +701,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.37.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.37.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.

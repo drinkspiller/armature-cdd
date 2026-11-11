@@ -35,7 +35,16 @@ import urllib.request
 
 socket.setdefaulttimeout(120)
 
-TARGET_MODELS = ["gemini-flash-latest", "gemini-3.7-flash", "gemini-3.5-flash"]
+# Comma-separated override so the models users actually select can be measured
+# (ADR 0021); defaults to the Flash cascade.
+TARGET_MODELS = [
+    m.strip()
+    for m in os.environ.get(
+        "ARMATURE_EVAL_TARGET_MODELS",
+        "gemini-flash-latest,gemini-3.7-flash,gemini-3.5-flash",
+    ).split(",")
+    if m.strip()
+]
 JUDGE_MODELS = ["gemini-3.1-pro-preview", "gemini-pro-latest", "gemini-flash-latest"]
 OPTIMIZER_MODELS = [
     "gemini-3.1-pro-preview",
@@ -209,13 +218,20 @@ def call_gemini(
             break
           model_content = candidates[0]["content"]
           step_calls = []
+          step_text = []
           for p in model_content.get("parts", []):
             if p.get("text") and not p.get("thought"):
               all_text_out.append(p["text"])
+              step_text.append(p["text"])
             if "functionCall" in p:
               fc = p["functionCall"]
               step_calls.append(fc)
               all_tool_calls.append(fc)
+          # Record the visible text of the step that asks (ADR 0021): text
+          # from earlier steps doesn't reach the user next to the box.
+          for fc in step_calls:
+            if fc.get("name") == "ask_question":
+              fc["_step_text"] = "\n".join(step_text)
           if (
               not use_tools
               or not step_calls
@@ -272,22 +288,23 @@ def call_gemini(
 # Deterministic invariant checks
 # --------------------------------------------------------------------------
 TOPIC_HEADLINE_RE = re.compile(
-    r"^##\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"^#\s+(?!#)(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
     r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*$",
     re.M | re.I,
 )
 FINDING_HEADLINE_RE = re.compile(
-    r"^#{2,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*$",
+    r"^#{1,4}\s+(?:Phase\s*5b[,:]?\s*|Devil's"
+    r" Advocate:\s*)?(?:Finding\s+\d+(?:\s+of\s+\d+)?:\s*)?\S[^\n]*$",
     re.M | re.I,
 )
 HEADLINE_RE = re.compile(
-    r"^(?:##\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"^(?:#\s+(?!#)(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
     r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*"
-    r"|#{2,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*)$",
+    r"|#{1,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*)$",
     re.M | re.I,
 )
 ROUND_BOOKKEEPING_HEADLINE_RE = re.compile(
-    r"^#{2,4}\s*(?:Round\s+\d+|Question\s+\d+(?:\.\d+)?)\b",
+    r"^#{1,4}\s*(?:Round\s+\d+|Question\s+\d+(?:\.\d+)?)\b",
     re.M | re.I,
 )
 CHAT_PROGRESS_LIST_RE = re.compile(
@@ -414,6 +431,15 @@ def _body_region(text):
 
 def evaluate_invariants(task, text, tool_calls):
   vetoes = []
+  # Score the layout on what the user sees next to the box: the asking step's
+  # own visible text, when it has a full turn body (ADR 0021).
+  ask_texts = [
+      tc.get("_step_text", "")
+      for tc in tool_calls
+      if tc.get("name") == "ask_question"
+  ]
+  if ask_texts and len(ask_texts[-1].split()) >= 25:
+    text = ask_texts[-1]
   headline_line, opener, body = _headline_and_body_region(text)
   opener_prose = FLOW_BLOCK_RE.sub("", opener).strip()
   flow_match = FLOW_BLOCK_RE.search(opener)
@@ -425,6 +451,16 @@ def evaluate_invariants(task, text, tool_calls):
   asq_opts = _asq_options(tool_calls)
   nonempty = [l for l in text.splitlines() if l.strip()]
   last_line = nonempty[-1] if nonempty else ""
+
+  for tc in tool_calls:
+    if (
+        tc.get("name") == "ask_question"
+        and len(tc.get("_step_text", "").split()) < 25
+    ):
+      vetoes.append(
+          "ask_step_has_visible_text: the step that called ask_question had"
+          f" {len(tc.get('_step_text', '').split())} words of visible text"
+      )
 
   for inv in task.get("invariants", []):
     if inv == "has_ask_question_tool":
@@ -468,17 +504,17 @@ def evaluate_invariants(task, text, tool_calls):
         )
     elif inv == "no_systems_jargon_in_turn":
       turn_surface = (
-          f"{headline_line}\n{flow_text}\n{opener_prose}\n"
+          f"{headline_line}\n{opener_prose}\n"
           + "\n".join(numbered_lines)
       )
       jm = SYSTEMS_JARGON_RE.search(turn_surface)
       if jm:
         vetoes.append(
             f"{inv}: un-translated systems jargon '{jm.group(0)}' in Pass-1"
-            " headline, flow diagram, opener, or numbered options"
+            " headline, opener, or numbered options"
         )
     elif inv == "grounds_familiar_domain_nouns":
-      combined = f"{headline_line}\n{flow_text}\n{opener_prose}"
+      combined = f"{headline_line}\n{opener_prose}"
       for group in task.get("expected_domain_noun_groups", []):
         if not any(
             re.search(rf"\b{re.escape(w)}\b", combined, re.I) for w in group
@@ -507,31 +543,19 @@ def evaluate_invariants(task, text, tool_calls):
           or ROUND_BOOKKEEPING_HEADLINE_RE.search(headline_line)
       ):
         vetoes.append(
-            f"{inv}: headline missing or uses 'Round R, Question Q' bookkeeping"
-            f" prefix ('{headline_line}')"
+            f"{inv}: headline missing or not H1 '# <Topic>' or uses 'Round R,"
+            f" Question Q' bookkeeping prefix ('{headline_line}')"
         )
-    elif inv == "has_succinct_zoom_out_flow":
-      if not flow_match:
+    elif inv in ("no_ascii_flow_block", "has_succinct_zoom_out_flow"):
+      if flow_match and FLOW_ARROW_OR_STAGE_RE.search(flow_text):
         vetoes.append(
-            f"{inv}: missing compact fenced text ASCII zoom-out flow diagram"
-            " beneath headline"
+            f"{inv}: rendered banned fenced text ASCII flow diagram beneath"
+            " headline"
         )
-      else:
-        flow_lines = [l for l in flow_text.splitlines() if l.strip()]
-        if not (1 <= len(flow_lines) <= 4):
-          vetoes.append(
-              f"{inv}: zoom-out flow diagram has {len(flow_lines)} non-empty"
-              " lines, expected 1-3"
-          )
-        elif not FLOW_ARROW_OR_STAGE_RE.search(flow_text):
-          vetoes.append(
-              f"{inv}: fenced block lacks flow arrows or bracketed workflow"
-              " stages"
-          )
     elif inv == "no_labeled_opener":
       if not opener_prose:
         vetoes.append(
-            f"{inv}: no orientation paragraph between headline/flow and options"
+            f"{inv}: no orientation paragraph between headline and options"
         )
       elif LABEL_LINE_RE.search(opener_prose):
         vetoes.append(f"{inv}: orientation paragraph carries a bold label")
@@ -593,19 +617,14 @@ def evaluate_invariants(task, text, tool_calls):
           re.search(rf"\*\*{k}:\*\*", text) for k in ("Pros", "Cons", "Implications")):
         vetoes.append(f"{inv}: zoom-in did not render Pros/Cons/Implications cards")
     elif inv == "no_code_identifiers_in_opener":
-      if CODE_ID_RE.search(opener_prose) or CODE_ID_NO_BACKTICK_RE.search(
-          flow_text
-      ):
+      if CODE_ID_RE.search(opener_prose):
         vetoes.append(
-            f"{inv}: code identifier or inline backtick in opener or flow"
-            " diagram"
+            f"{inv}: code identifier or inline backtick in opener"
         )
     elif inv in ("word_budget_220", "word_budget_200"):
-      limit = (
-          280
-          if "rewrites_vague_option_names" in task.get("invariants", [])
-          else 220
-      )
+      # About 220 words is the default target (ADR 0021); veto only clear
+      # overruns.
+      limit = 300
       n = len(target_body.split())
       if n > limit:
         vetoes.append(f"{inv}: {n} words from headline to last Pick line")
@@ -649,7 +668,13 @@ def evaluate_invariants(task, text, tool_calls):
           sim = difflib.SequenceMatcher(
               None, _norm_opt(m_opt), _norm_opt(c_name)
           ).ratio()
-          if sim < 0.80:
+          # A self-contained box option may spell out the chat option name in
+          # fuller words (ADR 0021): accept it when it keeps most of the name.
+          name_words = set(_norm_opt(c_name).split())
+          kept = len(name_words & set(_norm_opt(m_opt).split())) / max(
+              1, len(name_words)
+          )
+          if sim < 0.80 and kept < 0.75:
             vetoes.append(
                 f"{inv}: modal option {idx} ('{m_opt}') did not match chat"
                 f" Option {idx} name ('{c_name}')"
@@ -704,6 +729,14 @@ def evaluate_invariants(task, text, tool_calls):
 # --------------------------------------------------------------------------
 # LLM judge for [QUALITY] criteria
 # --------------------------------------------------------------------------
+def _public_tool_calls(tool_calls):
+  """Drops harness-internal keys (prefixed with '_') before judging."""
+  return [
+      {k: v for k, v in tc.items() if not k.startswith("_")}
+      for tc in tool_calls
+  ]
+
+
 def judge_qualities(task, text, tool_calls):
   qualities = task.get("qualities", [])
   if not qualities:
@@ -717,7 +750,7 @@ Agent Markdown Response:
 {text}
 
 Agent Tool Calls:
-{json.dumps(tool_calls, indent=2)}
+{json.dumps(_public_tool_calls(tool_calls), indent=2)}
 
 Quality Criteria (1.0 fully met, 0.5 partially met, 0.0 not met):
 """
@@ -905,6 +938,9 @@ def collect_feedback(split_result):
 
 
 PLAIN_LANGUAGE = {
+    "ask_step_has_visible_text": (
+        "showed the question box without the explanation next to it"
+    ),
     "has_ask_question_tool": (
         "ended the turn without asking the user via the question modal"
     ),

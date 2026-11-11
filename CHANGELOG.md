@@ -6,6 +6,62 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.1] - 2026-11-11
+
+### Fixed
+
+-   **Blank Question Boxes & Restored Fallback (`ADR 0021`,
+    `rules/armature_antigravity.md`, `rules/armature_protocol.md`,
+    `skills/arm-new-track/SKILL.md`,
+    `skills/arm-new-track/references/ask_question_guide.md`,
+    `skills/arm-new-track/references/interview_formatting.md`)**:
+    -   The response step that calls `ask_question` must now carry the visible
+        explanation itself; earlier empty steps in the turn don't count.
+    -   The `question` field may carry one or two plain sentences (up to about
+        40 words) so the box stands on its own.
+    -   Added Blank-Box Recovery: after a skipped or empty box, or when the user
+        says they can't see the explanation, the agent explains in visible text
+        and asks again with the box. Added Plain-Text Question Mode as the
+        fallback when the user asks for chat questions, `ask_question` is
+        unavailable, or the recovery box also fails. Restores the fallback
+        removed in `v0.35.0`, and keeps the end-of-`thinking` tool-call cue so
+        models don't stop after `- Pick N if` bullets without calling
+        `ask_question`.
+
+### Changed
+
+-   **End Waiting Turns With a Question (`ADR 0021`,
+    `rules/armature_antigravity.md`)**: Any turn that ends waiting on the user
+    (a decision, a confirmation, or an action only the user can take, such as
+    restarting a tunnel) now ends with `ask_question`, or a plain-text question
+    in Plain-Text Question Mode, in any conversation.
+-   **Judgment Over Literal Compliance (`ADR 0021`,
+    `rules/armature_protocol.md`)**: Separates hard rules (shared-environment
+    mutations, secrets, bulk deletes, legacy-fence writes, the implementation
+    approval gate, and invoking `ask_question` on waiting turns) from defaults.
+    When a default would make the result worse, the agent says so and uses
+    judgment; explicit user preferences win. Word caps and layout rules are now
+    targets instead of hard limits.
+-   **Settled Decisions Are Agreed Intent (`ADR 0021`, `ADR 0016` amendment,
+    `skills/arm-new-track/SKILL.md`)**: Settled decisions are verified
+    semantically against existing skill/controller descriptions, prompts, docs,
+    and sibling contracts before being encoded, treat approved concepts/drafts
+    as binding as a whole, and trigger an Interpretation Check question when
+    universal words (`only`, `never`, `every`, `remove all`) would delete
+    existing behaviors. `ADR 0016` precision applies to verified facts.
+-   **Large Fan-Out Pilot Gate & Source-Fidelity Review (`ADR 0021`, `ADR 0013`
+    amendment, `skills/arm-implement/SKILL.md`,
+    `skills/arm-implement/references/async_delegation.md`)**: Fan-outs over 5
+    targets pilot 2–3 targets with user sign-off first and default to surgical
+    `edit_file` edits on existing docs/skills/configs. Rewrites are checked by a
+    rule-blinded neutral reviewer against the original files ("facts preserved"
+    is a pass criterion) before the next phase, and that review is never skipped
+    as visual-only.
+-   **Interview Eval Measures the Asking Step
+    (`evals/skillopt/run_interview_format_opt.py`)**: Vetoes `ask_question`
+    calls whose own step has no visible text (`ask_step_has_visible_text`), and
+    accepts `ARMATURE_EVAL_TARGET_MODELS` to evaluate user-selected models.
+
 ## [0.37.0] - 2026-11-11
 
 ### Added
@@ -70,6 +126,28 @@ and this project adheres to
         media publishing (`publish_oss_media` across GitHub `gh`, Gitea
         `tea`/REST, GitLab `glab`, Bitbucket `Downloads` REST API, and Git LFS /
         `armature-media` orphan branch).
+
+## [0.35.1] - 2026-11-10
+
+### Changed
+
+-   **Promoted Interview Headlines (`# <Topic>`) & Direct Plain-English
+    Orientation (`rules/armature_protocol.md`,
+    `skills/arm-new-track/references/interview_formatting.md`,
+    `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`,
+    `skills/arm-implement/SKILL.md`, `skills/arm-review/SKILL.md`)**:
+    -   Promoted Step 5a, Phase 5b Devil's Advocate (`# Devil's Advocate:
+        <Topic>` followed by `### Finding 1 of N: <Subtitle>`), Brownfield
+        context discovery, and Turn 1 mismatch headings from `## <Topic>` (H2)
+        to `# <Topic>` (H1) for clearer visual hierarchy in chat.
+    -   Removed the `1–3` line fenced `text` ASCII mental-model flow diagram
+        blocks (`[Before] ──► [★ This choice] ──► [After]`) beneath interview
+        headlines and added an explicit prohibition against fenced `text` ASCII
+        flow diagrams so turns open directly with the plain-English orientation
+        paragraph.
+    -   Updated SkillOpt evaluators (`run_interview_format_opt.py`,
+        `run_trajectory_eval.py`) and task suites to require `# <Topic>` (H1)
+        headlines and enforce `no_ascii_flow_block`.
 
 ## [0.35.0] - 2026-11-05
 
