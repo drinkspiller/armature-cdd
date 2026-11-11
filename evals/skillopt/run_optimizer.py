@@ -1452,8 +1452,8 @@ def main():
   )
   args = parser.parse_args()
 
-  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=96)
-  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=73)
+  train_ok, train_errs = verify_jsonl_schema(TRAIN_PATH, expected_count=98)
+  val_ok, val_errs = verify_jsonl_schema(VAL_PATH, expected_count=74)
 
   if not train_ok or not val_ok:
     print("❌ [Schema Verification FAILED]", file=sys.stderr)
@@ -1463,7 +1463,7 @@ def main():
 
   if args.verify_schema:
     print(
-        "✅ [Schema Verification PASSED] All 96 train tasks and 73 val tasks"
+        "✅ [Schema Verification PASSED] All 98 train tasks and 74 val tasks"
         " valid."
     )
     sys.exit(0)

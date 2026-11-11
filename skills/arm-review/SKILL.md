@@ -709,33 +709,48 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 confirmation via `ask_question` before auto-installing missing
                 binaries or starting the server (recording `spawned_server_pid`
                 for cleanup).
-            2.  **TrustedTypes-Safe DOM Overlays, Dual-Pacing Timelapse &
-                Pre-Capture Secret Masking:** Attach to the live `localhost`
-                server over CDP (`AttachedCDPRecorder`; never record synthetic
-                `file://` or `data:` HTML mocks). Construct
-                `#cdp-demo-overlay-root`, `#cdp-demo-caption-hud`,
-                `#cdp-demo-target-box`, and `#cdp-demo-cursor` exclusively via
-                `document.createElement` and `document.createElementNS` (never
-                `.innerHTML`). Call `mask_sensitive_dom()` before frame capture
-                to mask password/token inputs and scrub sensitive URL query
-                parameters. Hold interactive inspection beats at `1x`
-                (`explain_and_hold(seconds >= 2.8-3.5)`) and compress extended
-                async waits (`4x-10x`) via
-                `wait_for_js(..., capture_interval_s=0.6)` with live HUD
-                elapsed-time and phase updates.
-            3.  **Stalled-Wait Recovery & Per-Scenario Staging:** Stage each
-                scenario clip (`scenario_<id>.mp4`) in scratch storage. If
-                server startup or `wait_for_js` times out or matches a blocking
-                error banner locator, capture a diagnostic frame
-                (`save_diagnostic_frame`), terminate `spawned_server_pid` if
-                started by the review session, and prompt via `ask_question` to
-                fix and retry or continue manually. When an in-flight bug fix
-                flags earlier scenarios as `[~] Requires Quick Re-check`,
-                re-record only the invalidated scenario clip(s) and stitch all
-                passing clips (`stitch_scenario_clips`) into H.264 `.mp4`, VP9
-                `.webm`, and `1080px` Lanczos 2-pass `.gif` at the end of Step
-                2.5.
-            4.  **Pre-Upload Manual Inspection Gate & Host-Adapter Publishing:**
+            2.  **Storyboard Approval (`ADR 0020`):** Draft a v2 `reel` recipe
+                from the verified `manual_testing.md` scenarios: intro title and
+                summary, one entry per scenario (`title`, `goal`, `watch_for`,
+                narrated `steps`), and outro checklist items. Draft every
+                scenario as **current-only** (the current implementation,
+                narrated step by step). Propose `compare` (before/after against
+                a baseline server) only for a scenario that fixes or replaces a
+                user-visible behavior where the old behavior is needed to
+                understand the new one. Run
+                `instructional_reel.py --spec <recipe> --validate_only`, then
+                show the storyboard in chat (cards, each coach line, each
+                scenario's mode, estimated duration) and confirm via
+                `ask_question` before recording. Compare scenarios add the
+                baseline-server prerequisite from
+                `references/screencast_adapter.md`.
+            3.  **Instructional Reel Recording (`ADR 0019` capture + `ADR 0020`
+                structure):** Attach to the live `localhost` server over CDP
+                (never record synthetic `file://` or `data:` HTML mocks) and
+                record with `instructional_reel.run_reel` (or
+                `cdp_screencast_recorder.py --spec` with a `reel` recipe). The
+                engine renders Direction C title cards in a dedicated tab,
+                Direction B spotlight + coach-mark overlays built only with
+                `document.createElement` (never `.innerHTML`), reading-time
+                holds, labeled fast-forward segments for extended async waits,
+                fades through black at every seam, and 30 fps output. It masks
+                password/token inputs and sensitive URL parameters before
+                capture. Every visual value and timing comes from the track's
+                design tokens; never hand-tune holds below the reading-time
+                value.
+            4.  **Stalled-Wait Recovery & Per-Scenario Staging:** Each card and
+                footage variant is staged as its own segment clip. If server
+                startup or a `wait_for_js` step times out or matches a blocking
+                error banner locator, the engine saves a diagnostic frame;
+                terminate `spawned_server_pid` if started by the review session,
+                and prompt via `ask_question` to fix and retry or continue
+                manually. When an in-flight bug fix flags earlier scenarios as
+                `[~] Requires Quick Re-check`, re-record only the invalidated
+                scenario(s) and stitch all segments into H.264 `.mp4`, VP9
+                `.webm`, and a `1080px` Lanczos 2-pass `.gif` at the end of Step
+                2.5. Check `<name>_frame_log.json` with
+                `readability_violations()` (must be empty) before preview.
+            5.  **Pre-Upload Manual Inspection Gate & Host-Adapter Publishing:**
                 Surface the local preview paths and confirm via `ask_question`
                 that the recording contains no sensitive data before publishing
                 via the active Host Screencast Adapter

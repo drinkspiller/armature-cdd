@@ -1,4 +1,4 @@
-# Automated Live-App Screencast Recording & Host Adapter (`ADR 0019`)
+# Automated Live-App Screencast Recording & Host Adapter (`ADR 0019`, `ADR 0020`)
 
 This reference defines the risk-scoped live-application screencast and
 screenshot capture protocol, variable-speed timelapse engine, TrustedTypes-safe
@@ -51,52 +51,77 @@ Before launching a recording or screenshot capture:
         the local dev server in the background, recording `spawned_server_pid`
         so the session can clean it up on exit or timeout.
 
-## 3. Core Recording Mechanics (`AttachedCDPRecorder` Standard)
+## 3. Core Recording Mechanics (Instructional Reels, `ADR 0020`)
 
-### 3.1 TrustedTypes / CSP-Safe DOM & SVG Overlays (Zero `.innerHTML`)
+v2 recordings use `scripts/instructional_reel.py` (`run_reel`, or
+`cdp_screencast_recorder.py --spec` with a top-level `reel` object). The
+authoritative tokens, pacing, and content limits are `DESIGN_TOKENS`,
+`PACING`, and `CONTENT_LIMITS` in `scripts/instructional_reel.py`. v1 recipes (top-level `steps`) still
+run through the legacy `CDPRecorder` path unchanged.
 
-To prevent `TypeError: This document requires 'TrustedHTML' assignment` in
-Angular, React, and strict-CSP applications:
+### 3.1 Reel Structure & Scenario Modes
 
--   Construct `#cdp-demo-overlay-root`, `#cdp-demo-caption-hud`,
-    `.cdp-demo-pill`, `.cdp-demo-title`, `.cdp-demo-subtitle`,
-    `#cdp-demo-target-box`, `#cdp-demo-cursor`, `#cdp-demo-cursor-halo`, and
-    `.cdp-demo-ripple` exclusively via `document.createElement(...)`,
-    `document.createElementNS('http://www.w3.org/2000/svg', 'svg' | 'path' |
-    'circle')`, `.setAttribute(...)`, `.textContent = ...`, and
-    `.style.cssText = ...`.
+-   Intro card → for each scenario: numbered scenario card (Direction C) →
+    narrated footage → fade to black → outro checklist card.
+-   **Current-only (default):** one footage segment of the current
+    implementation. No BEFORE/AFTER labels, interstitial, recap, or second
+    server.
+-   **Compare (opt-in per scenario via `compare`):** BEFORE footage (baseline
+    server) → "Now the new version" interstitial → AFTER footage → side-by-side
+    recap card with the takeaway line. Propose it only when the old behavior is
+    needed to understand the change.
+-   Each footage variant starts in a fresh tab, and cards render in a dedicated
+    card tab, so the recording tab never shares app state across scenarios.
+
+### 3.2 TrustedTypes / CSP-Safe Overlays (Direction B, Zero `.innerHTML`)
+
+-   In-app overlays (`#armature-rec-root`, `#armature-rec-spot`,
+    `#armature-rec-coach` and its eyebrow/badge/primary/secondary/steps
+    children, `#armature-rec-cursor`, `#armature-rec-chip`,
+    `#armature-rec-ff-chip`) are built only with `document.createElement`,
+    `document.createElementNS`, `.textContent`, and `.style.cssText`.
 -   **Strict Ban:** Never use `.innerHTML`, `.outerHTML`, or
-    `insertAdjacentHTML` anywhere in overlay injection scripts.
--   **Elements & Pointer Choreography:**
-    -   **Two-Line HUD (`#cdp-demo-caption-hud`):** Fixed bottom (or `pos-top`
-        when interacting near the bottom edge) card with monospace phase pill
-        (`.cdp-demo-pill`), bold step headline (`.cdp-demo-title`), and
-        plain-English secondary subtitle (`.cdp-demo-subtitle`).
-    -   **Target Spotlight (`#cdp-demo-target-box`):** Aligned to
-        `getBoundingClientRect()` with `4px` padding before and during clicks.
-    -   **Cursor & Click Ripple (`#cdp-demo-cursor`, `.cdp-demo-ripple`):**
-        Interpolates pointer movement along an `easeInOutCubic` curve and emits
-        an expanding radial click ripple on mouse press.
+    `insertAdjacentHTML` in overlay or card scripts.
+-   Spotlight ring around the live target rect (positions always come from
+    `getBoundingClientRect()` at render time), a white coach-mark bubble beside
+    it (flips above/below, then to the side, never covering the ring), a
+    top-center scenario chip, and a fast-forward chip during extended waits.
 
-### 3.2 Dual-Pacing Variable-Speed Timelapse Engine (`fps = 10`)
+### 3.3 Reading-Time Pacing & Timelapse
 
-Emit all frames onto a fixed `10 fps` (`fps=10`) playback timeline:
+-   Coach marks hold for `max(3.0, 1.0 + words / 160 × 60)` s and cards for
+    `max(4.0, 1.5 + words / 180 × 60)` s (kicker excluded). Explicit
+    `hold_seconds` may only raise these values.
+-   Clicks: distance-scaled cursor travel (0.6–1.1 s), 0.8 s dwell on the
+    spotlighted target, click ripple, then the result coach after 0.5 s.
+-   Extended async waits (`wait_for_js`) capture one frame per `0.5-1.0s`
+    interval behind a `Fast-forward ×N` chip with elapsed seconds, with 1.0 s
+    real-time holds before and after.
+-   Capture at 10 fps, encode segments at 30 fps with fades (0.5 s in, 0.6 s
+    out, 0.4 s per side through black), then stitch.
+-   After recording, `readability_violations(frame_log)` must return no entries.
 
--   **Interactive / Inspection Beats (`1x` Readability):**
-    -   Call `explain_and_hold(badge, title, subtitle, seconds >= 2.8,
-        highlight_selector=...)` before and after key UI interactions, repeating
-        the settled PNG frame (`snap_frame(repeat=round(seconds * fps))`,
-        `28-35` frames at `10 fps`).
--   **Extended Asynchronous Waits (`4x-10x` Timelapse Compression):**
-    -   Call `wait_for_js(predicate_js, timeout_s=300.0, capture_interval_s=0.6,
-        badge="TIMELAPSE", title=..., phase_expr_js=...,
-        fatal_error_selector=...)`.
-    -   Polls every `0.5s-1.0s` (default `0.6s`, yielding `~6x` compression at
-        `10 fps`), capturing `1` live PNG frame per interval while updating
-        `#cdp-demo-caption-hud` in real time with elapsed seconds and observed
-        UI/network phase transitions (`IDLE -> GENERATING -> COMPLETED`).
+### 3.4 Before/After Baseline Sourcing (Compare Scenarios Only)
 
-### 3.3 Stalled-Wait Recovery, Secret Scrubbing & Per-Scenario Staging
+-   Start the baseline ("before") server from the change's base revision on
+    `PORT+1`, alongside the current dev server on `PORT`. Host recipes are in
+    Section 4.
+-   Fallbacks: a feature-flag or query-param toggle on one server, then
+    after-only with a still "before" screenshot.
+-   Starting the baseline server is confirmation-gated like any other
+    review-spawned server.
+
+### 3.5 Browser Environment Notes
+
+-   Every `ffmpeg` call passes `-nostdin` (and `stdin=DEVNULL`); without it a
+    backgrounded run blocks forever waiting on terminal input.
+-   Headless Chrome does not paint background tabs, so the card tab is brought
+    to the front before each card capture.
+-   Some managed Chrome builds reject a later cross-origin `Page.navigate` in a
+    tab that already handled input (`net::ERR_BLOCKED_BY_ADMINISTRATOR`).
+    Starting every variant in a fresh tab keeps each load a first navigation.
+
+### 3.6 Stalled-Wait Recovery, Secret Scrubbing & Per-Scenario Staging
 
 -   **Pre-Capture Secret & Token Masking (`mask_sensitive_dom`):**
     -   Automatically mask `input[type="password"]`, `[data-secret]`,
@@ -121,11 +146,12 @@ Emit all frames onto a fixed `10 fps` (`fps=10`) playback timeline:
         Tracking), re-record **only** `scenario_<K>.mp4` and stitch all passing
         scenario clips (`ffmpeg -f concat`) at the end of Step 2.5.
 -   **Deterministic Post-Processing (`ffmpeg`):**
-    -   **H.264 MP4:** `ffmpeg -y -framerate 10 -i frame_%04d.png -c:v libx264
-        -pix_fmt yuv420p -preset fast -crf 20 -movflags +faststart <out>.mp4`
-    -   **VP9 WebM:** `ffmpeg -y -framerate 10 -i frame_%04d.png -c:v libvpx-vp9
-        -deadline realtime -cpu-used 6 -row-mt 1 -b:v 2M -pix_fmt yuv420p
-        <out>.webm`
+    -   **H.264 MP4:** `ffmpeg -nostdin -y -framerate 10 -i frame_%04d.png -c:v
+        libx264 -pix_fmt yuv420p -preset fast -crf 20 -movflags +faststart
+        <out>.mp4`
+    -   **VP9 WebM:** `ffmpeg -nostdin -y -framerate 10 -i frame_%04d.png -c:v
+        libvpx-vp9 -deadline realtime -cpu-used 6 -row-mt 1 -b:v 2M -pix_fmt
+        yuv420p <out>.webm`
     -   **1080px 2-Pass Lanczos GIF:**
         `scale=1080:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=128:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`
 -   **Pre-Upload Manual Inspection Gate (`ask_question`):**
@@ -180,3 +206,9 @@ Emit all frames onto a fixed `10 fps` (`fps=10`) playback timeline:
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
         and `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/review.md`
         (`## Recorded Verification Media`).
+
+#### Baseline Server (Compare Scenarios Only)
+
+-   `git worktree add ../<repo>-baseline origin/main`, start its dev server on
+    `PORT+1`, and point `compare.before.url` at it. Remove the worktree after
+    recording (`git worktree remove ../<repo>-baseline`).
