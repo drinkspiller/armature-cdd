@@ -73,24 +73,34 @@ run through the legacy `CDPRecorder` path unchanged.
 -   Each footage variant starts in a fresh tab, and cards render in a dedicated
     card tab, so the recording tab never shares app state across scenarios.
 
-### 3.2 TrustedTypes / CSP-Safe Overlays (Direction B, Zero `.innerHTML`)
+### 3.2 TrustedTypes / CSP-Safe Overlays (Warm Amber System, Zero `.innerHTML`)
 
 -   In-app overlays (`#armature-rec-root`, `#armature-rec-spot`,
     `#armature-rec-coach` and its eyebrow/badge/primary/secondary/steps
-    children, `#armature-rec-cursor`, `#armature-rec-chip`,
-    `#armature-rec-ff-chip`) are built only with `document.createElement`,
-    `document.createElementNS`, `.textContent`, and `.style.cssText`.
+    children, `#armature-rec-beat`, `#armature-rec-cursor`,
+    `#armature-rec-chip`, `#armature-rec-ff-chip`) are built only with
+    `document.createElement`, `document.createElementNS`, `.textContent`, and
+    `.style.cssText`.
 -   **Strict Ban:** Never use `.innerHTML`, `.outerHTML`, or
     `insertAdjacentHTML` in overlay or card scripts.
--   Spotlight ring around the live target rect (positions are always read from
-    `getBoundingClientRect()` at render time), a white coach-mark bubble beside
-    it (flips above/below, then to the side, never covering the ring), a
-    top-center scenario chip, and a fast-forward chip during extended waits.
+-   **Warm Amber Visual System & Referent Rule:** Direction C black cards use
+    `#FDD663` accents (`15.0:1`). In-app Step Cards (`#armature-rec-coach`) and
+    compact Beat Hints (`#armature-rec-beat`) share the Warm Amber Note palette
+    (`#FDD663` bg, `#181200` ink, `13.3:1`) paired with a matching `#FDD663`
+    spotlight ring (`getBoundingClientRect()` at render time). Setting
+    `selector` shows the spotlight ring and attaches a directional pointer tail;
+    omitting `selector` drops both ring and tail so stage-narrative Step Cards
+    float in the bottom-center margin.
+-   **Copy Hygiene:** Keep intro/scenario cards oriented on user goals and avoid
+    code identifiers (`snake_case`, `ALL_CAPS`, internal paths) or AI filler
+    (`cleanly`, `seamlessly`, `effortlessly`); `validate_reel_spec` warns when
+    these appear.
 
 ### 3.3 Reading-Time Pacing & Timelapse
 
--   Coach-mark bubbles hold for `max(3.0, 1.0 + words / 160 × 60)` s and cards
-    for `max(4.0, 1.5 + words / 180 × 60)` s (kicker excluded). Explicit
+-   Coach marks hold for `max(3.0, 1.0 + words / 160 × 60)` s, compact Beat
+    Hints (`beat` / `click.beat` / `type.beat`) hold for
+    `max(2.0, 0.8 + words / 160 × 60)` s, and cards hold for
     `hold_seconds` may only raise these values.
 -   Clicks: distance-scaled cursor travel (0.6–1.1 s), 0.8 s dwell on the
     spotlighted target, click ripple, then the result coach after 0.5 s.

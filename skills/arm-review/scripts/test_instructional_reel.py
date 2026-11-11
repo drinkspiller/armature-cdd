@@ -97,6 +97,8 @@ class PacingAndTokensTest(unittest.TestCase):
   def test_coach_hold_matches_spec_examples(self):
     self.assertAlmostEqual(reel.coach_hold_seconds(_words(19)), 8.125)
     self.assertEqual(reel.coach_hold_seconds("Short."), 3.0)
+    self.assertEqual(reel.beat_hold_seconds("Selecting Standard Preset..."), 2.0)
+    self.assertAlmostEqual(reel.beat_hold_seconds(_words(8)), 3.8)
 
   def test_card_hold_ignores_kicker_and_has_floor(self):
     self.assertAlmostEqual(reel.card_hold_seconds(_words(23)), 1.5 + 23 / 3)
@@ -116,18 +118,22 @@ class PacingAndTokensTest(unittest.TestCase):
   def test_every_token_pair_meets_its_contrast_minimum(self):
     """Every text pair in CONTRAST_PAIRS meets its minimum ratio."""
     expected = {
-        "coach primary": 18.6,
+        "coach primary": 13.3,
         "coach secondary": 10.5,
+        "coach eyebrow": 9.1,
+        "beat hint text": 13.3,
+        "coach BEFORE badge": 13.3,
+        "coach AFTER badge": 9.5,
         "BEFORE badge": 13.1,
         "AFTER badge": 9.4,
         "card headline": 21.0,
         "card body": 13.0,
-        "card number and kicker": 10.0,
-        "chip over light app": 8.5,
+        "card number and kicker": 15.0,
+        "chip over light app": 10.0,
         "outro check": 8.2,
         "recap BEFORE swatch": 13.1,
         "recap AFTER swatch": 9.4,
-        "active step dot (non-text)": 4.5,
+        "active step dot (non-text)": 13.3,
     }
     report = {e["label"]: e for e in reel.token_contrast_report()}
     self.assertEqual(set(report), set(expected))
@@ -143,6 +149,7 @@ class PacingAndTokensTest(unittest.TestCase):
       self.assertNotIn("__TOKENS__", js)
     self.assertNotIn("cdp-demo-overlay-root", reel.REEL_OVERLAY_JS)
     self.assertIn("armature-rec-coach", reel.REEL_OVERLAY_JS)
+    self.assertIn("armature-rec-beat", reel.REEL_OVERLAY_JS)
 
 
 class ValidationTest(unittest.TestCase):
@@ -206,9 +213,54 @@ class ValidationTest(unittest.TestCase):
     spec["reel"]["scenarios"][0]["steps"] = [
         {"action": "dance"},
         {"action": "click"},
+        {"action": "beat"},
+        {"action": "beat", "selector": "#a"},
+        {"action": "click", "selector": "#a", "beat": ""},
     ]
     errors, _ = reel.validate_reel_spec(spec)
-    self.assertEqual(len(errors), 2)
+    self.assertEqual(len(errors), 6, errors)
+
+  def test_copy_hygiene_warns_on_code_jargon_and_ai_filler(self):
+    """Warns when user-facing screencast text leaks jargon or AI filler."""
+    spec = self._base()
+    sc = spec["reel"]["scenarios"][0]
+    sc["title"] = "Run _internal_helper with __EXPORT_FLAG"
+    sc["goal"] = "Call load_or_synthesize_raw_spec() and pass UNVERIFIED_CLEAN."
+    sc["steps"] = [
+        {
+            "action": "beat",
+            "selector": "#btn",
+            "text": "Seamlessly hitting /v1/alerts/dryrun",
+        },
+        {
+            "action": "narrate",
+            "text": 'Reading "/api/v2/reconcile" status.',
+        },
+        {
+            "action": "click",
+            "selector": "#btn",
+            "beat": "Selecting Standard Preset...",
+        },
+    ]
+    errors, warnings = reel.validate_reel_spec(spec)
+    self.assertEqual(errors, [])
+    joined = "\n".join(warnings)
+    self.assertIn("load_or_synthesize_raw_spec", joined)
+    self.assertIn("_internal_helper", joined)
+    self.assertIn("__EXPORT_FLAG", joined)
+    self.assertIn("UNVERIFIED_CLEAN", joined)
+    self.assertIn("/v1/alerts/dryrun", joined)
+    self.assertIn("/api/v2/reconcile", joined)
+    self.assertIn("AI-filler", joined)
+    self.assertNotIn("Selecting Standard Preset", joined)
+
+  def test_beat_does_not_increment_coach_step_total(self):
+    steps = [
+        {"action": "beat", "selector": "#a", "text": "Selecting Standard Preset..."},
+        {"action": "click", "selector": "#b", "beat": "Opening draft..."},
+        {"action": "narrate", "text": "New parts start in a safe local draft."},
+    ]
+    self.assertEqual(reel.coach_step_total(steps), 1)
 
 
 @unittest.skipUnless(
@@ -289,8 +341,14 @@ class ReelIntegrationTest(unittest.TestCase):
                             "text": "Here's the Orders list with all orders.",
                         },
                         {
+                            "action": "beat",
+                            "selector": "#filter",
+                            "text": "Narrowing to pending orders...",
+                        },
+                        {
                             "action": "click",
                             "selector": "#filter",
+                            "beat": "Filtering list...",
                             "narrate": {
                                 "selector": "#count",
                                 "text": "See how it now shows 42 orders?",
@@ -300,6 +358,9 @@ class ReelIntegrationTest(unittest.TestCase):
                             "action": "type",
                             "selector": "#name",
                             "value": "rush",
+                            "narrate": {
+                                "text": "All updates stay local to this draft.",
+                            },
                         },
                     ],
                 },
@@ -364,6 +425,16 @@ class ReelIntegrationTest(unittest.TestCase):
     self.assertTrue(all(e["badge"] == "after" for e in after))
     self.assertTrue(any(e["kind"] == "interstitial" for e in log))
     self.assertTrue(any(e["kind"] == "recap" for e in log))
+    beat_entries = [e for e in log if e.get("kind") == "beat"]
+    self.assertGreaterEqual(len(beat_entries), 2)
+    self.assertEqual({e.get("tailed") for e in beat_entries}, {True})
+    stage_entries = [
+        e
+        for e in current
+        if e.get("kind") == "coach" and e.get("placement") == "center"
+    ]
+    self.assertTrue(stage_entries)
+    self.assertEqual({e.get("tailed") for e in stage_entries}, {False})
     probe = subprocess.run(
         [
             "ffprobe",
@@ -449,6 +520,23 @@ class ReelIntegrationTest(unittest.TestCase):
         self.assertGreaterEqual(c[1], 0, sel)
         self.assertLessEqual(c[2], 1280, sel)
         self.assertLessEqual(c[3], 720, sel)
+        self.assertTrue(placed["tailed"], sel)
+        beat_placed = rec.show_beat("#" + sel, "Selecting Standard Preset...")
+        self.assertTrue(beat_placed["tailed"], sel)
+        if beat_placed["side"] in ("left", "right"):
+          tail_geom = rec.eval_js(
+              "(() => { const b = document.getElementById('armature-rec-beat');"
+              " const t = b.firstElementChild;"
+              " return {top: parseFloat(t.style.top), bh: b.offsetHeight,"
+              " ts: t.offsetHeight}; })()"
+          )
+          expected_top = (tail_geom["bh"] - tail_geom["ts"]) / 2
+          self.assertAlmostEqual(
+              tail_geom["top"], expected_top, delta=1.5, msg=sel
+          )
+      unanchored = rec.show_coach(None, "All checks passed.", None, 1, 1, None)
+      self.assertEqual(unanchored["side"], "center")
+      self.assertFalse(unanchored["tailed"])
     finally:
       rec.close()
 

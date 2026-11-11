@@ -21,8 +21,8 @@
         "skills/arm-new-track/SKILL.md": "b1cd04b3418e51f9c8b42567f7bd66a903ae58d36d959fe095a14d23e8c67dab",
         "skills/arm-new-track/references/ask_question_guide.md": "33f0e3ff89b298798eaead66254eb3328c66739522c57f6d727e230fdc6dc969",
         "skills/arm-new-track/references/interview_formatting.md": "19d4b42be41523c66de16f76f6578d17cf29ce4dd6b0e2d489b23015b6ed9f14",
-        "skills/arm-review/SKILL.md": "3792f315f61fc185e05f9ac966afdffd746a4eecf8acfbb236b777caa7172e06",
-        "skills/arm-review/references/screencast_adapter.md": "7ae8435cfde4715fda5675c6aebe3d2966e70b3ff1f95a197be913c3a8216c16",
+        "skills/arm-review/SKILL.md": "128ef98281d57f2316fbf0870272b235d5b735a555b1b778040586b4c029ea7f",
+        "skills/arm-review/references/screencast_adapter.md": "57c194847d88388e4529cc00a97493d71bce5cf15b128676ea8d6efe904c4e4c",
         "skills/arm-setup/SKILL.md": "d771b8e7f566c4ae2fa3d47b6493479fe1e2cbd1d662b036c055c9af7e5389de",
         "skills/arm-setup/assets/adr_template.md": "7b33352d0b3f6af4b730fab44b6453b166decced8fa127fe708dfaa4c85d295a",
         "skills/arm-setup/assets/manual_testing_template.md": "3c29d1a3488a57fe6aa59865a2c6c3b8713121cdc505ee1fa06d09cd7e518aca",
@@ -36,13 +36,13 @@
         "system_prompt_addition_chars": 24463,
         "always_on_tokens_est": 5413,
         "system_prompt_addition_tokens_est": 6115,
-        "total_pack_chars": 344950,
-        "total_pack_tokens_est": 86237,
+        "total_pack_chars": 346716,
+        "total_pack_tokens_est": 86679,
         "files": 19,
         "skills": 8
       },
-      "git_head": "87bf1f64fcabaa24afccda89c8d3467916e913e8",
-      "dirty_files": 22
+      "git_head": "219657bdea4b7c391315a78058c78a51a817f3ef",
+      "dirty_files": 14
     }
   },
   "excluded": {}

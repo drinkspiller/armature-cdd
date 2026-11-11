@@ -710,34 +710,48 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 binaries or starting the server (recording `spawned_server_pid`
                 for cleanup).
             2.  **Storyboard Approval (`ADR 0020`):** Draft a v2 `reel` recipe
-                from the verified `manual_testing.md` scenarios: intro title and
-                summary, one entry per scenario (`title`, `goal`, `watch_for`,
-                narrated `steps`), and outro checklist items. Draft every
-                scenario as **current-only** (the current implementation,
+                from the verified `manual_testing.md` scenarios: user-goal intro
+                title and summary (never a comma-separated feature list), one
+                entry per scenario (`title`, `goal`, `watch_for`, narrated
+                `steps`), and outro checklist items. Write all on-screen copy in
+                active second-person UX copy (zero `snake_case`, `ALL_CAPS`, API
+                paths, function names, or AI filler such as `cleanly`,
+                `seamlessly`, `effortlessly`, `leverage`, or `robust`). Attach compact `beat`
+                hints (`"Selecting Standard Preset..."`, `click.beat` /
+                `type.beat` or standalone `beat`) on intermediate control
+                actions that would otherwise happen silently, and apply the
+                **referent rule** on `narrate`: set `selector` only when the
+                Step Card points directly to that visible element (showing the
+                `#FDD663` ring + pointer tail); omit `selector` when narrating
+                an overall stage so the Warm Amber card floats taillessly. Draft
+                every scenario as **current-only** (the current implementation,
                 narrated step by step). Propose `compare` (before/after against
                 a baseline server) only for a scenario that fixes or replaces a
                 user-visible behavior where the old behavior is needed to
                 understand the new one. Run
-                `instructional_reel.py --spec <recipe> --validate_only`, then
-                show the storyboard in chat (cards, each coach line, each
-                scenario's mode, estimated duration) and confirm via
-                `ask_question` before recording. Compare scenarios add the
-                baseline-server prerequisite from
-                `references/screencast_adapter.md`.
+                `instructional_reel.py --spec <recipe> --validate_only` (and
+                resolve any copy-hygiene warnings), then show the storyboard in
+                chat (cards, each beat/coach line, each scenario's mode,
+                estimated duration) and confirm via `ask_question` before
+                recording. Compare scenarios add the baseline-server
+                prerequisite from `references/screencast_adapter.md`.
             3.  **Instructional Reel Recording (`ADR 0019` capture + `ADR 0020`
                 structure):** Attach to the live `localhost` server over CDP
                 (never record synthetic `file://` or `data:` HTML mocks) and
                 record with `instructional_reel.run_reel` (or
                 `cdp_screencast_recorder.py --spec` with a `reel` recipe). The
-                engine renders Direction C title cards in a dedicated tab,
-                Direction B spotlight + coach-mark overlays built only with
-                `document.createElement` (never `.innerHTML`), reading-time
-                holds, labeled fast-forward segments for extended async waits,
-                fades through black at every seam, and 30 fps output. It masks
-                password/token inputs and sensitive URL parameters before
-                capture. Every visual value and timing comes from the track's
-                design tokens; never hand-tune holds below the reading-time
-                value.
+                engine renders Direction C title cards with Warm Amber
+                (`#FDD663`) accents in a dedicated tab, Warm Amber Note
+                (`#FDD663` surface, `#181200` ink) Step Cards and compact Beat
+                Hints with matching `#FDD663` spotlight rings built only with
+                `document.createElement` (never `.innerHTML`), referent-based
+                tails (`selector` set → tailed; `selector` omitted → tailless),
+                reading-time holds, labeled fast-forward segments for extended
+                async waits, fades through black at every seam, and 30 fps
+                output. It masks password/token inputs and sensitive URL
+                parameters before capture. Every visual value and timing comes
+                from the script's design tokens; never hand-tune holds below the
+                reading-time value.
             4.  **Stalled-Wait Recovery & Per-Scenario Staging:** Each card and
                 footage variant is staged as its own segment clip. If server
                 startup or a `wait_for_js` step times out or matches a blocking

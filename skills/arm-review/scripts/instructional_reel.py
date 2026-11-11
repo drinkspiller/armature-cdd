@@ -7,12 +7,15 @@ Builds self-explaining demo reels on top of the ADR 0019 CDP recorder:
      scenario, narrated footage, and an outro card, with fades to and from black
      at every seam. Scenarios show the current implementation by default; a
      scenario may opt into a before/after comparison (`compare`).
-  2. Reading-time pacing (`PACING`): every coach mark and card stays on screen
-     for a duration computed from its word count. Explicit holds only raise the
-     computed value.
-  3. One design system (`DESIGN_TOKENS`): Direction C title cards and Direction
-     B in-app layers (spotlight ring + coach-mark bubble), all text >= 7:1
-     contrast.
+  2. Reading-time pacing (`PACING`): every coach mark, beat hint, and card stays
+     on screen for a duration computed from its word count. Explicit holds only
+     raise the computed value.
+  3. Unified Warm Amber design system (`DESIGN_TOKENS`): Direction C title cards
+     with Warm Amber (`#FDD663`) accents, matching `#FDD663` spotlight rings,
+     and `#FDD663` Warm Amber Note in-app callouts (`#181200` ink, >= 7:1
+     contrast), using one referent rule across Beat Hints (`beat`) and Step
+     Cards (`narrate`): `selector` present -> spotlight border + pointer tail;
+     `selector` omitted -> tailless stage-narrative card.
 
 In-app overlays are built only with `document.createElement`,
 `document.createElementNS`, `.textContent`, and `.style` (TrustedTypes-safe).
@@ -24,6 +27,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -39,21 +43,30 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
         "card.bg": "#000000",
         "card.text": "#FFFFFF",
         "card.text-secondary": "#C8CCD4",
-        "accent": "#8AB4F8",
-        "coach.bg": "#FFFFFF",
-        "coach.text": "#111318",
-        "coach.text-secondary": "#3C4043",
-        "coach.step-on": "#1A73E8",
-        "coach.step-off": "#DADCE0",
+        "accent": "#FDD663",
+        "coach.bg": "#FDD663",
+        "coach.text": "#181200",
+        "coach.text-secondary": "#332700",
+        "coach.eyebrow": "#403000",
+        "coach.border": "rgba(24,18,0,0.28)",
+        "coach.step-on": "#181200",
+        "coach.step-off": "rgba(24,18,0,0.22)",
+        "coach.badge.before.bg": "#181200",
+        "coach.badge.before.text": "#FDD663",
+        "coach.badge.after.bg": "#181200",
+        "coach.badge.after.text": "#81C995",
+        "beat.bg": "#FDD663",
+        "beat.text": "#181200",
+        "beat.border": "rgba(24,18,0,0.28)",
         "state.before": "#FDD663",
         "state.after": "#81C995",
         "on-state": "#1B1300",
         "on-state.swatch": "#141414",
         "on-check": "#0D2614",
-        "chip.bg": "rgba(0,0,0,0.70)",
+        "chip.bg": "rgba(0,0,0,0.74)",
         "chip.text": "#FFFFFF",
-        "spot.ring": "#FFFFFF",
-        "spot.glow": "rgba(138,180,248,0.55)",
+        "spot.ring": "#FDD663",
+        "spot.glow": "rgba(253,214,99,0.45)",
         "spot.scrim": "rgba(0,0,0,0.57)",
         "cursor.fill": "#FFFFFF",
         "cursor.stroke": "#111111",
@@ -80,10 +93,12 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
         "coach.badge": [16, 1.0, 700, 0.06],
         "coach.primary": [30, 1.3, 500, 0.0],
         "coach.secondary": [22, 1.45, 400, 0.0],
+        "beat.text": [22, 1.35, 500, 0.0],
         "chip": [18, 1.0, 500, 0.0],
     },
     "radius": {
         "coach": 18,
+        "beat": 12,
         "spot": 14,
         "recap.thumb": 14,
         "recap.swatch": 8,
@@ -91,7 +106,8 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
         "step": 3,
     },
     "shadow": {
-        "coach": "0 16px 48px rgba(0,0,0,0.45)",
+        "coach": "0 16px 48px rgba(0,0,0,0.46)",
+        "beat": "0 12px 32px rgba(0,0,0,0.42)",
         "cursor": "drop-shadow(0 2px 4px rgba(0,0,0,0.40))",
     },
     "motion": {
@@ -110,6 +126,10 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
         "coach.gap": 36,
         "coach.margin": 40,
         "coach.below_threshold": 500,
+        "beat.max_width": 460,
+        "beat.pad": [13, 18, 13, 18],
+        "beat.gap": 24,
+        "tail.size": 16,
         "spot.pad": 8,
         "spot.stroke": 4,
         "spot.glow_blur": 32,
@@ -132,6 +152,20 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
 CONTRAST_PAIRS: list[tuple[str, str, float, str]] = [
     ("coach.text", "coach.bg", 7.0, "coach primary"),
     ("coach.text-secondary", "coach.bg", 7.0, "coach secondary"),
+    ("coach.eyebrow", "coach.bg", 7.0, "coach eyebrow"),
+    ("beat.text", "beat.bg", 7.0, "beat hint text"),
+    (
+        "coach.badge.before.text",
+        "coach.badge.before.bg",
+        7.0,
+        "coach BEFORE badge",
+    ),
+    (
+        "coach.badge.after.text",
+        "coach.badge.after.bg",
+        7.0,
+        "coach AFTER badge",
+    ),
     ("on-state", "state.before", 7.0, "BEFORE badge"),
     ("on-state", "state.after", 7.0, "AFTER badge"),
     ("card.text", "card.bg", 7.0, "card headline"),
@@ -148,6 +182,8 @@ PACING: dict[str, float] = {
     "coach.min": 3.0,
     "coach.settle": 1.0,
     "coach.wpm": 160.0,
+    "beat.min": 2.0,
+    "beat.settle": 0.8,
     "card.min": 4.0,
     "card.settle": 1.5,
     "card.wpm": 180.0,
@@ -179,12 +215,14 @@ CONTENT_LIMITS: dict[str, int] = {
     "card.watch": 80,
     "coach.primary": 90,
     "coach.secondary": 120,
+    "beat.text": 48,
     "recap.takeaway": 110,
     "outro.item": 60,
 }
 
 STEP_ACTIONS = (
     "narrate",
+    "beat",
     "click",
     "type",
     "wait_for_js",
@@ -211,6 +249,15 @@ def coach_hold_seconds(primary: str, secondary: str | None = None) -> float:
   return max(
       PACING["coach.min"],
       PACING["coach.settle"] + words / PACING["coach.wpm"] * 60.0,
+  )
+
+
+def beat_hold_seconds(text: str) -> float:
+  """Returns the reading hold for a compact beat callout."""
+  words = word_count(text)
+  return max(
+      PACING["beat.min"],
+      PACING["beat.settle"] + words / PACING["coach.wpm"] * 60.0,
   )
 
 
@@ -323,6 +370,37 @@ def token_contrast_report() -> list[dict[str, object]]:
 # --------------------------------------------------------------------------
 
 
+_COPY_HYGIENE_CHECKS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(r"\b_*[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b"),
+        "contains snake_case code identifier",
+    ),
+    (
+        re.compile(r"\b_*[A-Z]{2,}(?:_[A-Z0-9]+)+\b"),
+        "contains ALL_CAPS constant/enum",
+    ),
+    (
+        re.compile(
+            r"(?<![A-Za-z0-9_:])/(?:api|v[0-9]+|rpc|graphql|internal|"
+            r"google|cns|tmp|usr|etc|var|opt|home|src)/[^\s\"'`)]*"
+        ),
+        "contains internal API route or filesystem path",
+    ),
+    (
+        re.compile(r"\b[a-zA-Z_][a-zA-Z0-9_]*\(\)"),
+        "contains function call syntax",
+    ),
+    (
+        re.compile(
+            r"\b(?:cleanly|seamlessly|effortlessly|leverage|robust|delve|"
+            r"tapestry|testament|groundbreaking)\b",
+            re.IGNORECASE,
+        ),
+        "contains AI-filler phrasing; use plain UX copy",
+    ),
+)
+
+
 def _check_len(
     warnings: list[str], where: str, limit_key: str, text: str | None
 ) -> None:
@@ -334,10 +412,44 @@ def _check_len(
     )
 
 
+def _check_copy_hygiene(
+    warnings: list[str], where: str, text: str | None
+) -> None:
+  """Adds a warning when on-screen text includes code jargon or AI filler."""
+  if not text:
+    return
+  for pattern, reason in _COPY_HYGIENE_CHECKS:
+    match = pattern.search(text)
+    if match:
+      warnings.append(f"{where}: {reason} ({match.group(0)!r})")
+
+
+def _validate_beat_value(
+    beat_val: object, loc: str, errors: list[str], warnings: list[str]
+) -> None:
+  """Validates an optional `beat` field attached to a `click` or `type`."""
+  if isinstance(beat_val, str):
+    if not beat_val.strip():
+      errors.append(f"{loc}: beat string must be non-empty")
+      return
+    _check_len(warnings, f"{loc}.beat", "beat.text", beat_val)
+    _check_copy_hygiene(warnings, f"{loc}.beat", beat_val)
+    return
+  if isinstance(beat_val, dict):
+    text = beat_val.get("text")
+    if not isinstance(text, str) or not text.strip():
+      errors.append(f"{loc}: beat must be a string or an object with text")
+      return
+    _check_len(warnings, f"{loc}.beat", "beat.text", text)
+    _check_copy_hygiene(warnings, f"{loc}.beat", text)
+    return
+  errors.append(f"{loc}: beat must be a string or an object with text")
+
+
 def _validate_steps(
     steps: object, where: str, errors: list[str], warnings: list[str]
 ) -> None:
-  """Validates a step list and its narration lengths."""
+  """Validates a step list, beat hints, and narration copy hygiene."""
   if not isinstance(steps, list) or not steps:
     errors.append(f"{where}.steps must be a non-empty list")
     return
@@ -347,11 +459,18 @@ def _validate_steps(
       errors.append(f"{loc}: unknown or missing action")
       continue
     action = step["action"]
-    if action in ("click", "type"):
+    if action in ("click", "type", "beat"):
       if not step.get("selector"):
         errors.append(f"{loc}: {action} requires selector")
     if action == "narrate" and not step.get("text"):
       errors.append(f"{loc}: narrate requires text")
+    if action == "beat":
+      text = step.get("text")
+      if not isinstance(text, str) or not text.strip():
+        errors.append(f"{loc}: beat requires text")
+      else:
+        _check_len(warnings, loc, "beat.text", text)
+        _check_copy_hygiene(warnings, loc, text)
     if action == "type" and "value" not in step:
       errors.append(f"{loc}: type requires value")
     if action == "wait_for_js" and not step.get("predicate_js"):
@@ -362,6 +481,8 @@ def _validate_steps(
       errors.append(f"{loc}: eval requires expression")
     if action == "screenshot" and not step.get("path"):
       errors.append(f"{loc}: screenshot requires path")
+    if action in ("click", "type") and step.get("beat") is not None:
+      _validate_beat_value(step["beat"], loc, errors, warnings)
     if action in ("click", "type") and step.get("narrate") is not None:
       nar = step["narrate"]
       if not isinstance(nar, dict) or not nar.get("text"):
@@ -370,6 +491,10 @@ def _validate_steps(
     if isinstance(narration, dict):
       _check_len(warnings, loc, "coach.primary", narration.get("text"))
       _check_len(warnings, loc, "coach.secondary", narration.get("secondary"))
+      _check_copy_hygiene(warnings, f"{loc}.text", narration.get("text"))
+      _check_copy_hygiene(
+          warnings, f"{loc}.secondary", narration.get("secondary")
+      )
 
 
 def validate_reel_spec(spec: dict[str, object]) -> tuple[list[str], list[str]]:
@@ -384,6 +509,8 @@ def validate_reel_spec(spec: dict[str, object]) -> tuple[list[str], list[str]]:
       errors.append(f"reel.{key} is required")
   _check_len(warnings, "reel.title", "card.headline", reel.get("title"))
   _check_len(warnings, "reel.summary", "card.body", reel.get("summary"))
+  _check_copy_hygiene(warnings, "reel.title", reel.get("title"))
+  _check_copy_hygiene(warnings, "reel.summary", reel.get("summary"))
   scenarios = reel.get("scenarios")
   if not isinstance(scenarios, list) or not scenarios:
     errors.append("reel.scenarios must be a non-empty list")
@@ -405,6 +532,9 @@ def validate_reel_spec(spec: dict[str, object]) -> tuple[list[str], list[str]]:
     _check_len(
         warnings, f"{where}.watch_for", "card.watch", sc.get("watch_for")
     )
+    _check_copy_hygiene(warnings, f"{where}.title", sc.get("title"))
+    _check_copy_hygiene(warnings, f"{where}.goal", sc.get("goal"))
+    _check_copy_hygiene(warnings, f"{where}.watch_for", sc.get("watch_for"))
     compare = sc.get("compare")
     if compare is not None:
       if not isinstance(compare, dict):
@@ -426,6 +556,9 @@ def validate_reel_spec(spec: dict[str, object]) -> tuple[list[str], list[str]]:
           "recap.takeaway",
           compare.get("takeaway"),
       )
+      _check_copy_hygiene(
+          warnings, f"{where}.compare.takeaway", compare.get("takeaway")
+      )
     else:
       if not sc.get("url"):
         errors.append(f"{where}.url is required unless compare is set")
@@ -439,6 +572,7 @@ def validate_reel_spec(spec: dict[str, object]) -> tuple[list[str], list[str]]:
       warnings.append("reel.outro.items: more than 6 items")
     for i, item in enumerate(items):
       _check_len(warnings, f"reel.outro.items[{i}]", "outro.item", item)
+      _check_copy_hygiene(warnings, f"reel.outro.items[{i}]", item)
   return (errors, warnings)
 
 
@@ -531,15 +665,43 @@ _OVERLAY_JS_TEMPLATE = r"""
   const ffChip = mkChip('armature-rec-ff-chip');
   root.appendChild(chips);
 
+  const mkTail = (bg) => {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:absolute;display:none;background:' + bg +
+        ';transform:rotate(45deg);pointer-events:none;';
+    return t;
+  };
+
   const coach = document.createElement('div');
   coach.id = 'armature-rec-coach';
   const pad = L['coach.pad'];
   coach.style.cssText = 'position:fixed;display:none;box-sizing:border-box;' +
       'width:' + px(L['coach.width']) + ';padding:' + px(pad[0]) + ' ' +
       px(pad[1]) + ' ' + px(pad[2]) + ' ' + px(pad[3]) + ';background:' +
-      C['coach.bg'] + ';color:' + C['coach.text'] + ';border-radius:' +
-      px(R.coach) + ';box-shadow:' + T.shadow.coach + ';';
+      C['coach.bg'] + ';color:' + C['coach.text'] + ';border:1.5px solid ' +
+      C['coach.border'] + ';border-radius:' + px(R.coach) + ';box-shadow:' +
+      T.shadow.coach + ';';
+  const coachBody = document.createElement('div');
+  const coachTail = mkTail(C['coach.bg']);
+  coach.appendChild(coachTail);
+  coach.appendChild(coachBody);
   root.appendChild(coach);
+
+  const beat = document.createElement('div');
+  beat.id = 'armature-rec-beat';
+  const bpad = L['beat.pad'];
+  beat.style.cssText = 'position:fixed;display:none;box-sizing:border-box;' +
+      'width:max-content;max-width:' + px(L['beat.max_width']) + ';padding:' +
+      px(bpad[0]) + ' ' + px(bpad[1]) + ' ' + px(bpad[2]) + ' ' +
+      px(bpad[3]) + ';background:' + C['beat.bg'] + ';color:' +
+      C['beat.text'] + ';border:1.5px solid ' + C['beat.border'] +
+      ';border-radius:' + px(R.beat) + ';box-shadow:' + T.shadow.beat +
+      ';' + font('beat.text');
+  const beatBody = document.createElement('span');
+  const beatTail = mkTail(C['beat.bg']);
+  beat.appendChild(beatTail);
+  beat.appendChild(beatBody);
+  root.appendChild(beat);
 
   const NS = 'http://www.w3.org/2000/svg';
   const cursor = document.createElementNS(NS, 'svg');
@@ -567,6 +729,105 @@ _OVERLAY_JS_TEMPLATE = r"""
     if (r.width === 0 && r.height === 0) return null;
     return {left: r.left, top: r.top, right: r.right, bottom: r.bottom,
             width: r.width, height: r.height};
+  };
+
+  const positionTail = (tail, borderColor, side, r, bx, by, bw, bh, corner) => {
+    if (!r || side === 'center' || side === 'overlap') {
+      tail.style.display = 'none';
+      return false;
+    }
+    const k = s();
+    const ts = L['tail.size'] * k;
+    const off = -(ts / 2 + 1) + 'px';
+    const edgeB = '1.5px solid ' + borderColor;
+    const padMin = (corner + 10) * k;
+    const padX = Math.min(padMin, Math.max(0, (bw - ts) / 2));
+    const padY = Math.min(padMin, Math.max(0, (bh - ts) / 2));
+    tail.style.display = 'block';
+    tail.style.width = ts + 'px';
+    tail.style.height = ts + 'px';
+    tail.style.left = '';
+    tail.style.right = '';
+    tail.style.top = '';
+    tail.style.bottom = '';
+    tail.style.borderLeft = 'none';
+    tail.style.borderTop = 'none';
+    tail.style.borderRight = 'none';
+    tail.style.borderBottom = 'none';
+    if (side === 'below' || side === 'above') {
+      const cx = (r.left + r.right) / 2 - bx - ts / 2;
+      const maxX = Math.max(padX, bw - padX - ts);
+      tail.style.left = Math.min(maxX, Math.max(padX, cx)) + 'px';
+      if (side === 'below') {
+        tail.style.top = off;
+        tail.style.borderLeft = edgeB;
+        tail.style.borderTop = edgeB;
+      } else {
+        tail.style.bottom = off;
+        tail.style.borderRight = edgeB;
+        tail.style.borderBottom = edgeB;
+      }
+    } else {
+      const cy = (r.top + r.bottom) / 2 - by - ts / 2;
+      const maxY = Math.max(padY, bh - padY - ts);
+      tail.style.top = Math.min(maxY, Math.max(padY, cy)) + 'px';
+      if (side === 'right') {
+        tail.style.left = off;
+        tail.style.borderLeft = edgeB;
+        tail.style.borderBottom = edgeB;
+      } else {
+        tail.style.right = off;
+        tail.style.borderRight = edgeB;
+        tail.style.borderTop = edgeB;
+      }
+    }
+    return true;
+  };
+
+  const placeBubble = (bubble, tail, borderColor, sel, gapRef, cornerRef) => {
+    const W = window.innerWidth, H = window.innerHeight, k = s();
+    const gap = gapRef * k, m = L['coach.margin'] * k;
+    const bw = bubble.offsetWidth, bh = bubble.offsetHeight;
+    const r = rectOf(sel);
+    let left, top, side = 'center';
+    if (!r) {
+      left = (W - bw) / 2;
+      top = H - bh - m;
+    } else {
+      const ring = (L['spot.pad'] + L['spot.stroke']) * k;
+      const box = {left: r.left - ring, top: r.top - ring,
+                   right: r.right + ring, bottom: r.bottom + ring};
+      const hLeft = Math.min(W - bw - m, Math.max(m, (r.left + r.right - bw) / 2));
+      const vTop = Math.min(H - bh - m,
+                            Math.max(m, (box.top + box.bottom - bh) / 2));
+      const fits = (y) => y >= m && y + bh <= H - m;
+      const belowY = box.bottom + gap, aboveY = box.top - bh - gap;
+      const rightX = box.right + gap, leftX = box.left - bw - gap;
+      const order = r.top < L['coach.below_threshold'] * k ?
+          ['below', 'above'] : ['above', 'below'];
+      const cands = {
+        below: fits(belowY) ? [hLeft, belowY] : null,
+        above: fits(aboveY) ? [hLeft, aboveY] : null,
+        right: rightX + bw <= W - m ? [rightX, vTop] : null,
+        left: leftX >= m ? [leftX, vTop] : null,
+      };
+      const roomR = W - box.right, roomL = box.left;
+      order.push(roomR >= roomL ? 'right' : 'left',
+                 roomR >= roomL ? 'left' : 'right');
+      side = order.find((name) => cands[name]);
+      if (side) {
+        [left, top] = cands[side];
+      } else {
+        side = 'overlap';
+        left = hLeft;
+        top = (box.top - m) > (H - m - box.bottom) ? m : H - bh - m;
+      }
+    }
+    bubble.style.left = left + 'px';
+    bubble.style.top = top + 'px';
+    const tailed = positionTail(
+        tail, borderColor, side, r, left, top, bw, bh, cornerRef);
+    return {left, top, width: bw, height: bh, side, tailed};
   };
 
   const api = {
@@ -630,12 +891,13 @@ _OVERLAY_JS_TEMPLATE = r"""
       return true;
     },
     coach(o) {
-      coach.replaceChildren();
+      beat.style.display = 'none';
+      coachBody.replaceChildren();
       const eyebrow = document.createElement('div');
       eyebrow.id = 'armature-rec-coach-eyebrow';
       eyebrow.style.cssText = 'display:flex;align-items:center;gap:' +
           px(10) + ';margin-bottom:' + px(10) + ';color:' +
-          C['coach.text-secondary'] + ';text-transform:uppercase;' +
+          C['coach.eyebrow'] + ';text-transform:uppercase;' +
           font('coach.eyebrow');
       if (o.state) {
         const badge = document.createElement('span');
@@ -643,27 +905,28 @@ _OVERLAY_JS_TEMPLATE = r"""
         badge.textContent = o.state === 'before' ? 'BEFORE' : 'AFTER';
         badge.style.cssText = 'display:inline-flex;align-items:center;' +
             'height:' + px(26) + ';padding:0 ' + px(10) + ';border-radius:' +
-            '999px;background:' + C['state.' + o.state] + ';color:' +
-            C['on-state'] + ';' + font('coach.badge');
+            '999px;background:' + C['coach.badge.' + o.state + '.bg'] +
+            ';color:' + C['coach.badge.' + o.state + '.text'] + ';' +
+            font('coach.badge');
         eyebrow.appendChild(badge);
       }
       const stepText = document.createElement('span');
       stepText.textContent = 'Step ' + o.step + ' of ' + o.steps;
       eyebrow.appendChild(stepText);
-      coach.appendChild(eyebrow);
+      coachBody.appendChild(eyebrow);
       const primary = document.createElement('div');
       primary.id = 'armature-rec-coach-primary';
       primary.textContent = o.primary;
       primary.style.cssText = font('coach.primary') + 'color:' +
           C['coach.text'] + ';';
-      coach.appendChild(primary);
+      coachBody.appendChild(primary);
       if (o.secondary) {
         const sec = document.createElement('div');
         sec.id = 'armature-rec-coach-secondary';
         sec.textContent = o.secondary;
         sec.style.cssText = font('coach.secondary') + 'color:' +
             C['coach.text-secondary'] + ';margin-top:' + px(8) + ';';
-        coach.appendChild(sec);
+        coachBody.appendChild(sec);
       }
       const dots = document.createElement('div');
       dots.id = 'armature-rec-coach-steps';
@@ -676,62 +939,39 @@ _OVERLAY_JS_TEMPLATE = r"""
             (i <= o.step ? C['coach.step-on'] : C['coach.step-off']) + ';';
         dots.appendChild(d);
       }
-      coach.appendChild(dots);
+      coachBody.appendChild(dots);
       coach.style.display = 'block';
       coach.style.animation = 'none';
       void coach.offsetHeight;
       coach.style.animation = 'armRecCoachIn ' + M.base_ms + 'ms ' +
           M['ease.ui'] + ' both';
-      return api.place(o.selector);
+      return placeBubble(
+          coach, coachTail, C['coach.border'], o.selector,
+          L['coach.gap'], R.coach);
+    },
+    beat(o) {
+      coach.style.display = 'none';
+      beatBody.textContent = o.text || '';
+      beat.style.display = 'inline-flex';
+      beat.style.animation = 'none';
+      void beat.offsetHeight;
+      beat.style.animation = 'armRecCoachIn ' + M.base_ms + 'ms ' +
+          M['ease.ui'] + ' both';
+      return placeBubble(
+          beat, beatTail, C['beat.border'], o.selector,
+          L['beat.gap'], R.beat);
     },
     place(sel) {
-      const W = window.innerWidth, H = window.innerHeight, k = s();
-      const cw = L['coach.width'] * k, gap = L['coach.gap'] * k;
-      const m = L['coach.margin'] * k, ch = coach.offsetHeight;
-      const r = rectOf(sel);
-      let left, top, side = 'center';
-      if (!r) {
-        left = (W - cw) / 2;
-        top = H - ch - m;
-      } else {
-        // Keep clear of the painted ring box (target + pad + stroke).
-        const ring = (L['spot.pad'] + L['spot.stroke']) * k;
-        const box = {left: r.left - ring, top: r.top - ring,
-                     right: r.right + ring, bottom: r.bottom + ring};
-        const hLeft = Math.min(W - cw - m, Math.max(m, r.right - cw));
-        const vTop = Math.min(H - ch - m,
-                              Math.max(m, (box.top + box.bottom - ch) / 2));
-        const fits = (y) => y >= m && y + ch <= H - m;
-        const belowY = box.bottom + gap, aboveY = box.top - ch - gap;
-        const rightX = box.right + gap, leftX = box.left - cw - gap;
-        const order = r.top < L['coach.below_threshold'] * k ?
-            ['below', 'above'] : ['above', 'below'];
-        const cands = {
-          below: fits(belowY) ? [hLeft, belowY] : null,
-          above: fits(aboveY) ? [hLeft, aboveY] : null,
-          right: rightX + cw <= W - m ? [rightX, vTop] : null,
-          left: leftX >= m ? [leftX, vTop] : null,
-        };
-        const roomR = W - box.right, roomL = box.left;
-        order.push(roomR >= roomL ? 'right' : 'left',
-                   roomR >= roomL ? 'left' : 'right');
-        side = order.find((name) => cands[name]);
-        if (side) {
-          [left, top] = cands[side];
-        } else {
-          // Nothing fits outside the ring (target nearly fills the frame):
-          // pin to the edge with the most vertical room.
-          side = 'overlap';
-          left = hLeft;
-          top = (box.top - m) > (H - m - box.bottom) ? m : H - ch - m;
-        }
-      }
-      coach.style.left = left + 'px';
-      coach.style.top = top + 'px';
-      return {left, top, width: cw, height: ch, side};
+      return placeBubble(
+          coach, coachTail, C['coach.border'], sel, L['coach.gap'], R.coach);
+    },
+    clearBeat() {
+      beat.style.display = 'none';
+      return true;
     },
     clearCoach() {
       coach.style.display = 'none';
+      beat.style.display = 'none';
       spot.style.display = 'none';
       return true;
     },
@@ -1149,6 +1389,45 @@ class ReelRecorder(cdp.CDPRecorder):
       self.snap_frame(repeat=1)
       time.sleep(step / 2)
 
+  def show_beat(self, selector: str, text: str) -> dict[str, object]:
+    """Spotlights `selector` and shows a compact beat hint beside it."""
+    self.ensure_overlay()
+    self.eval_js(f"window.__armRec.spot({json.dumps(selector)})")
+    placement = self.eval_js(
+        "window.__armRec.beat("
+        + json.dumps({"selector": selector, "text": text})
+        + ")"
+    )
+    self._capture_transition()
+    return placement if isinstance(placement, dict) else {}
+
+  def beat(
+      self,
+      selector: str,
+      text: str,
+      hold_seconds: float | None = None,
+      travel: bool = True,
+  ) -> float:
+    """Shows a compact tailed beat hint on `selector` for its reading time."""
+    self.ensure_overlay()
+    self.eval_js("window.__armRec.clearCoach()")
+    x, y = self._hotspot(selector)
+    self.eval_js(f"window.__armRec.spot({json.dumps(selector)})")
+    if travel:
+      self.move_to(x, y)
+    placement = self.show_beat(selector, text)
+    computed = resolve_hold(beat_hold_seconds(text), hold_seconds)
+    frames = self.hold_frames(computed)
+    self._log(
+        "beat",
+        text,
+        computed,
+        frames,
+        placement=placement.get("side"),
+        tailed=placement.get("tailed"),
+    )
+    return computed
+
   def narrate(
       self,
       selector: str | None,
@@ -1178,6 +1457,7 @@ class ReelRecorder(cdp.CDPRecorder):
         frames,
         badge=state,
         placement=placement.get("side"),
+        tailed=placement.get("tailed"),
     )
     return computed
 
@@ -1189,14 +1469,38 @@ class ReelRecorder(cdp.CDPRecorder):
       steps: int,
       state: str | None = None,
       observe: bool = True,
+      beat: str | dict[str, object] | None = None,
   ) -> None:
-    """Travel, dwell with spotlight, click, then observe (and narrate)."""
+    """Travel, dwell (with optional beat hint), click, then observe."""
     self.ensure_overlay()
     self.eval_js("window.__armRec.clearCoach()")
     x, y = self._hotspot(selector)
     self.eval_js(f"window.__armRec.spot({json.dumps(selector)})")
     self.move_to(x, y)
-    self.hold_frames(PACING["click.dwell"])
+    beat_placement: dict[str, object] = {}
+    beat_text = ""
+    beat_computed = 0.0
+    if beat is not None:
+      if isinstance(beat, str):
+        beat_text, beat_override = beat, None
+      else:
+        beat_text = str(beat.get("text", ""))
+        beat_override = beat.get("hold_seconds")
+      beat_placement = self.show_beat(selector, beat_text)
+      beat_computed = resolve_hold(beat_hold_seconds(beat_text), beat_override)
+      dwell_s = max(PACING["click.dwell"], beat_computed)
+    else:
+      dwell_s = PACING["click.dwell"]
+    dwell_frames = self.hold_frames(dwell_s)
+    if beat_text:
+      self._log(
+          "beat",
+          beat_text,
+          beat_computed,
+          dwell_frames,
+          placement=beat_placement.get("side"),
+          tailed=beat_placement.get("tailed"),
+      )
     self.eval_js(
         f"window.__armRec.cursor({x:.1f}, {y:.1f}, true);"
         f" window.__armRec.ripple({x:.1f}, {y:.1f});"
@@ -1204,7 +1508,7 @@ class ReelRecorder(cdp.CDPRecorder):
     self._dispatch_click(x, y)
     self.snap_frame(repeat=2)
     self.eval_js(f"window.__armRec.cursor({x:.1f}, {y:.1f}, false)")
-    self.eval_js("window.__armRec.spot('')")
+    self.eval_js("window.__armRec.clearBeat(); window.__armRec.spot('')")
     if not narration:
       if observe:
         self.hold_frames(PACING["click.observe_min"])
@@ -1237,6 +1541,7 @@ class ReelRecorder(cdp.CDPRecorder):
         frames,
         badge=state,
         placement=placement.get("side"),
+        tailed=placement.get("tailed"),
     )
 
   def type_text(
@@ -1247,9 +1552,10 @@ class ReelRecorder(cdp.CDPRecorder):
       step: int,
       steps: int,
       state: str | None = None,
+      beat: str | dict[str, object] | None = None,
   ) -> None:
     """Clicks into `selector`, types `value` at `type.cps`, then observes."""
-    self.click(selector, None, step, steps, state, observe=False)
+    self.click(selector, None, step, steps, state, observe=False, beat=beat)
     written = 0
     for i, ch in enumerate(value):
       self.call("Input.insertText", {"text": ch})
@@ -1260,7 +1566,8 @@ class ReelRecorder(cdp.CDPRecorder):
     if not narration:
       self.hold_frames(PACING["click.observe_min"])
       return
-    target = str(narration.get("selector") or selector)
+    raw_target = narration.get("selector")
+    target = str(raw_target) if raw_target else None
     self.narrate(
         target,
         str(narration.get("text", "")),
@@ -1269,7 +1576,7 @@ class ReelRecorder(cdp.CDPRecorder):
         steps,
         state,
         narration.get("hold_seconds"),
-        travel=target != selector,
+        travel=(target is not None and target != selector),
     )
 
   def fast_forward_wait(
@@ -1518,6 +1825,12 @@ def _run_variant(
           state,
           step.get("hold_seconds"),
       )
+    elif action == "beat":
+      rec.beat(
+          str(step["selector"]),
+          str(step["text"]),
+          step.get("hold_seconds"),
+      )
     elif action == "click":
       narration = (
           step.get("narrate") if isinstance(step.get("narrate"), dict) else None
@@ -1525,7 +1838,12 @@ def _run_variant(
       if narration:
         n += 1
       rec.click(
-          str(step["selector"]), narration, max(n, 1), max(total, 1), state
+          str(step["selector"]),
+          narration,
+          max(n, 1),
+          max(total, 1),
+          state,
+          beat=step.get("beat"),
       )
     elif action == "type":
       narration = (
@@ -1540,6 +1858,7 @@ def _run_variant(
           max(n, 1),
           max(total, 1),
           state,
+          beat=step.get("beat"),
       )
     elif action == "wait_for_js":
       rec.fast_forward_wait(
@@ -1717,10 +2036,10 @@ def run_reel(spec: dict[str, object]) -> dict[str, object]:
 
 
 def readability_violations(frame_log: list[dict[str, object]]) -> list[str]:
-  """Lists coach marks or cards that were readable for less than computed."""
+  """Lists overlays or cards readable for less than their computed hold."""
   problems = []
   for e in frame_log:
-    if e.get("kind") in ("coach", "card", "interstitial", "recap"):
+    if e.get("kind") in ("coach", "beat", "card", "interstitial", "recap"):
       readable = float(e.get("readable_s", 0.0))
       # One frame of tolerance for rounding to the capture frame rate.
       if readable + 1.0 / PACING["fps.capture"] < float(e["computed_hold_s"]):
