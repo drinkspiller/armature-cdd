@@ -3,7 +3,7 @@
 This reference covers the native `ask_question` tool contract across Antigravity
 and compatible agent hosts.
 
-## 1. Same-Step Visible Text (`ADR 0004`, amended by `ADR 0021`)
+## 1. Same-Step Visible Text (`ADR 0004`, amended by `ADR 0022`)
 
 Whenever `ask_question` is invoked (interview turns, Need-More-Context re-tees,
 Devil's Advocate findings, ADR triage, or spec/plan review gates), the

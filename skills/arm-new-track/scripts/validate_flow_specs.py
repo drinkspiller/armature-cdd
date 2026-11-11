@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Flow Spec Altitude & Design Token Drift Validator (ADR 0022).
+"""Flow Spec Altitude & Design Token Drift Validator (ADR 0021).
 
 Validates behavioral UI Flow Specs (User Flows + UI Stack Edge Cases) against
 the Three-Altitude Rule and checks unified VCS diffs against DESIGN.md tokens.

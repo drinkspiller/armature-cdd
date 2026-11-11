@@ -5,7 +5,7 @@ description: Armature universal protocol - operational guardrails for all Armatu
 
 # Armature Universal Protocol (Controller Layer)
 
-## Judgment Over Literal Compliance (`ADR 0021`)
+## Judgment Over Literal Compliance (`ADR 0022`)
 
 Armature rules fall into two kinds:
 
@@ -204,7 +204,7 @@ commits.
     stricter rules than the user stated; carry settled decisions over as the
     agreed intent, quoting the user's words when the scope is ambiguous.
 -   **Large Fan-Out Pilot Gate, Surgical Edits & Blinded Source-Fidelity Review
-    (`ADR 0021`):** Before dispatching workers (parallel subagents) across
+    (`ADR 0022`):** Before dispatching workers (parallel subagents) across
     more than 5 targets (files, skills, docs, or services) in one batch, run a
     pilot on 2–3 representative targets, show the user the pilot diff, and get
     sign-off before the rest. When modifying existing docs, skills, rules, or

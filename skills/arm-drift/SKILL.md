@@ -157,7 +157,7 @@ delegate `/arm-drift` scans to `invoke_subagent`):
     -   Audit active track specifications
         (`{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md`) for required
         `## Manual Verification Plan` (or verification strategy) sections.
-    -   **Flow Spec Altitude & UI Stack Check (`ADR 0022`)**: On any track
+    -   **Flow Spec Altitude & UI Stack Check (`ADR 0021`)**: On any track
         `spec.md` containing `## User Flows`, run `arm-new-track`'s
         `scripts/validate_flow_specs.py` (resolved relative to the
         `arm-new-track` skill directory, or inspect directly) to flag
@@ -172,7 +172,7 @@ delegate `/arm-drift` scans to `invoke_subagent`):
     -   Inspect source tree context files (`GEMINI.md`, `CLAUDE.md`,
         `AGENTS.md`, `AGENT.md`) for standard `START`/`END` boundary tags and
         valid ADR references (accepting Armature Context and Conductor Context).
-    -   **Design Token Drift Check (`ADR 0022`)**: When
+    -   **Design Token Drift Check (`ADR 0021`)**: When
         `{PROJECT_CONTEXT_DIR}/DESIGN.md` exists, inspect added (`+`) UI lines
         (`.css`, `.scss`, `.sass`, `.less`, `.html`, `.tsx`, `.jsx`, `.vue`,
         `.ts`, `.js`) via `audit_design_token_drift`

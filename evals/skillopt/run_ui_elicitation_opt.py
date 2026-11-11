@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SkillOpt Runner for Three-Altitude UI/UX Elicitation & Design CDD (ADR 0022).
+"""SkillOpt Runner for Three-Altitude UI/UX Elicitation & Design CDD (ADR 0021).
 
 Evaluates:
 - UI-only scoping & product.md audience reuse

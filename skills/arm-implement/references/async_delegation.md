@@ -37,7 +37,7 @@ This reference defines phase-level subagent routing (`ADR 0013`) for `/arm-imple
     the background (`run_in_background` or terminal `command & > /tmp/task.log`)
     with proactive status logging.
 
-## 3. Large Fan-Out Pilot Gate (`ADR 0021`)
+## 3. Large Fan-Out Pilot Gate (`ADR 0022`)
 
 When any tier would dispatch work across more than 5 targets in one batch,
 dispatch 2–3 representative targets first, run the Source-Fidelity Review on

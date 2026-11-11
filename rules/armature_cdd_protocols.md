@@ -22,7 +22,7 @@ skill's primary protocol, perform a lightweight drift check:
     literals against authoritative schema declarations (Protobuf definitions,
     SQL DDL, ORM models, or type interfaces). Verify that CLI tool wrappers obey
     execution constraints (e.g., single-statement execution vs batch piping).
-    -   **4b. UI Flow Altitude & Token Drift Check (`ADR 0022`):** When a track
+    -   **4b. UI Flow Altitude & Token Drift Check (`ADR 0021`):** When a track
         spec contains `## User Flows`, validate it via `validate_flow_specs.py`
         for Altitude leaks (raw hex/px in behavioral flows), 4-question step
         completeness, and UI Stack edge-state coverage. When `DESIGN.md` exists,

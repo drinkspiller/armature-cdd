@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for validate_flow_specs.py (ADR 0022)."""
+"""Unit tests for validate_flow_specs.py (ADR 0021)."""
 
 import os
 import sys

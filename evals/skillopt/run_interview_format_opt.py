@@ -36,7 +36,7 @@ import urllib.request
 socket.setdefaulttimeout(120)
 
 # Comma-separated override so the models users actually select can be measured
-# (ADR 0021); defaults to the Flash cascade.
+# (ADR 0022); defaults to the Flash cascade.
 TARGET_MODELS = [
     m.strip()
     for m in os.environ.get(
@@ -227,7 +227,7 @@ def call_gemini(
               fc = p["functionCall"]
               step_calls.append(fc)
               all_tool_calls.append(fc)
-          # Record the visible text of the step that asks (ADR 0021): text
+          # Record the visible text of the step that asks (ADR 0022): text
           # from earlier steps doesn't reach the user next to the box.
           for fc in step_calls:
             if fc.get("name") == "ask_question":
@@ -432,7 +432,7 @@ def _body_region(text):
 def evaluate_invariants(task, text, tool_calls):
   vetoes = []
   # Score the layout on what the user sees next to the box: the asking step's
-  # own visible text, when it has a full turn body (ADR 0021).
+  # own visible text, when it has a full turn body (ADR 0022).
   ask_texts = [
       tc.get("_step_text", "")
       for tc in tool_calls
@@ -622,7 +622,7 @@ def evaluate_invariants(task, text, tool_calls):
             f"{inv}: code identifier or inline backtick in opener"
         )
     elif inv in ("word_budget_220", "word_budget_200"):
-      # About 220 words is the default target (ADR 0021); veto only clear
+      # About 220 words is the default target (ADR 0022); veto only clear
       # overruns.
       limit = 300
       n = len(target_body.split())
@@ -669,7 +669,7 @@ def evaluate_invariants(task, text, tool_calls):
               None, _norm_opt(m_opt), _norm_opt(c_name)
           ).ratio()
           # A self-contained box option may spell out the chat option name in
-          # fuller words (ADR 0021): accept it when it keeps most of the name.
+          # fuller words (ADR 0022): accept it when it keeps most of the name.
           name_words = set(_norm_opt(c_name).split())
           kept = len(name_words & set(_norm_opt(m_opt).split())) / max(
               1, len(name_words)

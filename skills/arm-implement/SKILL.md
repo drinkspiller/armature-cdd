@@ -255,7 +255,7 @@ deliverables, synchronizing documentation, and managing track cleanup.
         absent) plus UI Stack edge states on UI tracks, and unit-test
         bundle/fixture overrides from `spec.md` and `plan.md` directly in the
         worker `Prompt`.
-    -   **Large Fan-Out Pilot Gate (All Entry Paths & Phases — `ADR 0021`)**:
+    -   **Large Fan-Out Pilot Gate (All Entry Paths & Phases — `ADR 0022`)**:
         Before any parallel or sequential worker dispatch in any phase (whether
         `/arm-implement` was reached by track name, auto-resume, or the
         `/arm-new-track` Unified Gate), count the targets (files, skills, docs,
@@ -457,7 +457,7 @@ deliverables, synchronizing documentation, and managing track cleanup.
             diff modifies $\le 5$ lines of code in a single file with zero
             schema or architectural changes, **skip Step 3.6** and finish via
             the Fast-Path Solo Exception.
-        -   **UI Craft Punch List (`ADR 0022`) vs. Code-Style Skip on
+        -   **UI Craft Punch List (`ADR 0021`) vs. Code-Style Skip on
             Visual-Only Tracks (`[Micro-Verification Plan]`):** If the Stage 2
             Empirical VCS Diff Classifier (`Step 3.5`) confirms the track is
             strictly presentational/visual (`[Micro-Verification Plan]`,
@@ -689,7 +689,7 @@ Synchronization has been handled.
 
 ## Guardrails
 
--   **Large Fan-Out Pilot Gate & Source-Fidelity Review (`ADR 0021`)**: Fan-outs
+-   **Large Fan-Out Pilot Gate & Source-Fidelity Review (`ADR 0022`)**: Fan-outs
     over 5 targets run a 2–3 target pilot with user sign-off first, and rewrites
     of existing docs, skills, rules, or configs are reviewed against their
     original files ("facts preserved" is a pass criterion), not only against the

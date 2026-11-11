@@ -1,4 +1,4 @@
-"""Unit tests for the ADR 0022 UI/UX elicitation SkillOpt eval suite."""
+"""Unit tests for the ADR 0021 UI/UX elicitation SkillOpt eval suite."""
 
 import os
 import sys

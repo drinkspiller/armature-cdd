@@ -2,7 +2,7 @@
 
 > Single source of truth for visual tokens, component anatomy, and anti-slop
 > rules across UI tracks. Generated via `/arm-setup` or `/arm-new-track` Step
-> 5.5 (`ADR 0022`). Replaces UI visual sections of `product-guidelines.md` while
+> 5.5 (`ADR 0021`). Replaces UI visual sections of `product-guidelines.md` while
 > keeping prose voice and CLI rules there.
 
 ## 1. Design Read & Register

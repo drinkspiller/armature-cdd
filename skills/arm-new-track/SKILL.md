@@ -74,7 +74,7 @@ resolving all open rounds, questions, and ambiguities.
 -   **Anti-Dictation (Don't Decide for the User):** Don't present technical
     designs, UI layouts, button behaviors, or lifecycle rules as decided when
     the user has not confirmed them; raise them as questions instead.
--   **Settled Decisions Are Agreed Intent (`ADR 0021`):** A settled decision, or
+-   **Settled Decisions Are Agreed Intent (`ADR 0022`):** A settled decision, or
     a batch the user labels *"already agreed, treat them as answered"*, records
     what the user wants, not a literal rule to amplify. User-approved concepts
     or drafts bind as a whole (never diff who authored which sentence). Before
@@ -258,7 +258,7 @@ resolving all open rounds, questions, and ambiguities.
     -   Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md` and
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` for architectural
         context.
-    -   **UI Footprint & Design Contract Check (`ADR 0022`):** Detect whether
+    -   **UI Footprint & Design Contract Check (`ADR 0021`):** Detect whether
         target files or requirements touch user-facing UI (`.html`, `.css`,
         `.scss`, `.tsx`, `.jsx`, `.vue`, client views, or routes). On non-UI
         tracks (backend, CLI, infra, pure refactors), skip UI Flow Specs and
@@ -1063,7 +1063,7 @@ resolving all open rounds, questions, and ambiguities.
                     using `write_to_file`.
 
     -   **Step 5.5 (Conditional UI `Lock the Look` & Adaptive 2-Gate / 1-Gate —
-        `ADR 0022`):**
+        `ADR 0021`):**
 
         -   *Skip on non-UI tracks* and *skip on Day-2 UI tracks* where a locked
             `{PROJECT_CONTEXT_DIR}/DESIGN.md` already exists (without `<e.g.,`
@@ -1253,7 +1253,7 @@ resolving all open rounds, questions, and ambiguities.
             `is_replaying_snapshot`, `is_recovering_wal_state`), or timer
             duration (`ms`) discovered during Step 4 Codebase Reconnaissance.
             Every single reconnaissance fact MUST appear verbatim in `spec.md`.
-        8.  **UI Flow Specs & Three-Altitude Compliance (`ADR 0022` — UI Tracks
+        8.  **UI Flow Specs & Three-Altitude Compliance (`ADR 0021` — UI Tracks
             Only)**: On UI tracks, include `## User Flows` (`**Goal:**`,
             `**Covers:** R#`, numbered/step entries answering **What they
             want**, **What they see**, **What they do**, **What happens**) and

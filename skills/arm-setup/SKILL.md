@@ -309,7 +309,7 @@ design tokens in `DESIGN.md` below for UI repositories):
 
 --------------------------------------------------------------------------------
 
-### Artifact 2b: `DESIGN.md` (UI Repositories Only — `ADR 0022`)
+### Artifact 2b: `DESIGN.md` (UI Repositories Only — `ADR 0021`)
 
 If the repository contains UI views, stylesheets, or frontend components (skip
 pure backend/CLI repos), initialize

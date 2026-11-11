@@ -424,7 +424,7 @@ Across each pass of the review loop, verify:
 Route execution based on the **Stage 2 Empirical VCS Diff Classification** (Step
 2.1):
 
--   **Shared UI Craft Punch List & Mismatch Classification (`ADR 0022` — Both
+-   **Shared UI Craft Punch List & Mismatch Classification (`ADR 0021` — Both
     Path A & Path B UI Tracks):** On any UI track (visual-only Path A or
     stateful Path B):
     1.  Verify `375px` mobile and `1280px` desktop views plus UI Stack states
