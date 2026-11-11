@@ -27,7 +27,7 @@ TRAIN_PATH = os.path.join(EVALS_DIR, "tasks", "train_review_format.jsonl")
 VAL_PATH = os.path.join(EVALS_DIR, "tasks", "val_review_format.jsonl")
 RESULTS_JSON_PATH = os.path.join(EVALS_DIR, "review_format_eval_results.json")
 REPORT_MD_PATH = os.path.join(EVALS_DIR, "skillopt_report_review_format.md")
-ARTIFACT_REPORT_PATH = "/usr/local/google/home/developer/.gemini/antigravity/brain/80d323a5-2bcc-451c-9fa4-0695d1d42137/skillopt_report_arm_review_format.md"
+ARTIFACT_REPORT_PATH = os.path.expanduser("~/.gemini/antigravity/brain/skillopt_report_arm_review_format.md")
 
 TOOL_DECLARATIONS = [{
     "functionDeclarations": [

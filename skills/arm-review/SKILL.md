@@ -424,6 +424,22 @@ Across each pass of the review loop, verify:
 Route execution based on the **Stage 2 Empirical VCS Diff Classification** (Step
 2.1):
 
+-   **Shared UI Craft Punch List & Mismatch Classification (`ADR 0022` — Both
+    Path A & Path B UI Tracks):** On any UI track (visual-only Path A or
+    stateful Path B):
+    1.  Verify `375px` mobile and `1280px` desktop views plus UI Stack states
+        (`Empty`, `Loading`, `Partial`, `Error`) on the live `localhost` server
+        against `DESIGN.md` (comparing directly against any linked Figma frame
+        or visual mock), and flag any added raw `#hex` literal absent from
+        `DESIGN.md` in the empirical diff as **`[WARNING] Token Drift`**.
+    2.  Whenever implemented UI diverges from `spec.md` `## User Flows`, follow
+        the Mandatory Two-Part Turn Contract: render your audit findings in
+        visible markdown FIRST **without** editing `spec.md`, then invoke
+        `ask_question` in the same turn to classify the discrepancy as
+        **Deliberate** (record a dated `## Amendment` in `spec.md` only after
+        confirmation), **Drift** (revert/fix before closeout), or **Not Built /
+        Defer** (log to `tracks.md`).
+
 ##### Path A: Automatic Micro-Verification Walkthrough (Visual-Only Footprints)
 
 When the empirical VCS diff qualifies as **Visual-Only** (including the

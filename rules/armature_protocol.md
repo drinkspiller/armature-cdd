@@ -47,15 +47,17 @@ or test command in that same turn.
 
 Project context lives in `{PROJECT_ROOT}/armature/` (or legacy `conductor/`):
 `active_context.md` ($\le 60$ lines), `index.md`, `product.md`,
-`product-guidelines.md`, `tech-stack.md`, `workflow.md`, `terms.md`,
+`product-guidelines.md`, `DESIGN.md` (if present; legacy UI fallback via
+`product-guidelines.md`), `tech-stack.md`, `workflow.md`, `terms.md`,
 `adr/NNNN-slug.md`, `manual_testing/<domain>.md`, `.api_surface_cache.json`,
 `tracks.md`, and `tracks/<track_id>/` (`spec.md`, `plan.md`,
 `manual_testing.md`, `metadata.json`, `index.md`).
 
 Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 `active_context.md`, `terms.md`, `product.md`, `product-guidelines.md`,
-`tech-stack.md`, `workflow.md`, `tracks.md`, `adr/*.md`, nearest parent
-`GEMINI.md`/`CLAUDE.md`/`AGENTS.md`, and on-demand `manual_testing/<domain>.md`.
+`DESIGN.md` (if present), `tech-stack.md`, `workflow.md`, `tracks.md`,
+`adr/*.md`, nearest parent `GEMINI.md`/`CLAUDE.md`/`AGENTS.md`, and on-demand
+`manual_testing/<domain>.md`.
 
 -   **Prompt-Provided Context Invariant:** Treat files, diffs, or plans provided
     inline in the prompt (`Given context:`, `[Workspace Context...]`,
@@ -79,7 +81,8 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
     Resumption:** Never skip the interview or write application code on Turn 1
     of a new feature request before open architectural questions settle and
     `spec.md` reaches `status: approved`. Once questions settle,
-    `Phase Count ≤ 2` tracks use the **Unified Spec+Plan Approval Gate**
+    `Phase Count ≤ 2` tracks (except `2-Gate` UI tracks locking a new
+    `DESIGN.md`) use the **Unified Spec+Plan Approval Gate**
     (`"(Recommended) Approve spec + plan and begin implementation"`), while
     `Phase Count ≥ 3` tracks use sequential Step 6 and Step 7 gates. Selecting
     Option 1 at the Unified Gate or including an explicit implementation command
@@ -136,10 +139,15 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 -   **Recursive Grill Engine (`Depth <= 2`):** Round choices spawn 1–2 Tier 1
     operational follow-up questions (failure modes, timeouts, concurrency,
     schema evolution, proto3 zero-values/`FieldMask`, GraphQL `@key`
-    deprecation); Tier 2 cosmetic details defer to `plan.md`. Future rounds stay
-    unexpanded stubs in `spec.md` `## Open Questions` (**Lazy Question
-    Materialization**), and every follow-up weaves which confirmed choice
-    spawned it into the orientation paragraph (**Answer-Anchored Provenance**).
+    deprecation); UI tracks interleave UX patterns and UI Stack states
+    (`Empty/Loading/Partial/Error`, reusing `product.md` audience) in Step 5,
+    using **2-Gate** (`spec.md` -> 3-variant `DESIGN.md` + `plan.md`) only when
+    `DESIGN.md` is absent/stub or `--redesign` (not `--fast`), and **1-Gate**
+    everywhere else, while pixel/cosmetic Tier 2 details defer to Step 5.5
+    (`DESIGN.md`) or `plan.md`. Future rounds stay unexpanded stubs in `spec.md`
+    `## Open Questions` (**Lazy Question Materialization**), and every follow-up
+    weaves which confirmed choice spawned it into the orientation paragraph
+    (**Answer-Anchored Provenance**).
     Don't present unconfirmed designs as decided (**Anti-Dictation**). **Settled
     Decisions Are Agreed Intent:** User answers and shorthand (*"already agreed,
     treat them as answered"*) record intent, not literal rules, and

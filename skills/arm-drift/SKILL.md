@@ -157,6 +157,13 @@ delegate `/arm-drift` scans to `invoke_subagent`):
     -   Audit active track specifications
         (`{PROJECT_CONTEXT_DIR}/tracks/<track_id>/spec.md`) for required
         `## Manual Verification Plan` (or verification strategy) sections.
+    -   **Flow Spec Altitude & UI Stack Check (`ADR 0022`)**: On any track
+        `spec.md` containing `## User Flows`, run `arm-new-track`'s
+        `scripts/validate_flow_specs.py` (resolved relative to the
+        `arm-new-track` skill directory, or inspect directly) to flag
+        `[ERROR] ALTITUDE_LEAK` (raw hex/px in behavioral flows),
+        `[ERROR] INCOMPLETE_FLOW_STEP`, and missing UI Stack edge states
+        (`Empty`, `Loading`, `Partial`, `Error`).
 
 3.  **Phase 2: Codebase & Implementation Fixpoint**:
 
@@ -165,6 +172,14 @@ delegate `/arm-drift` scans to `invoke_subagent`):
     -   Inspect source tree context files (`GEMINI.md`, `CLAUDE.md`,
         `AGENTS.md`, `AGENT.md`) for standard `START`/`END` boundary tags and
         valid ADR references (accepting Armature Context and Conductor Context).
+    -   **Design Token Drift Check (`ADR 0022`)**: When
+        `{PROJECT_CONTEXT_DIR}/DESIGN.md` exists, inspect added (`+`) UI lines
+        (`.css`, `.scss`, `.sass`, `.less`, `.html`, `.tsx`, `.jsx`, `.vue`,
+        `.ts`, `.js`) via `audit_design_token_drift`
+        (`scripts/validate_flow_specs.py --diff ... --design-md ...`) and flag
+        unapproved raw hex literals absent from `DESIGN.md` as
+        `[WARNING] Token Drift` (falling back to `product-guidelines.md` on
+        legacy repos without `DESIGN.md`).
     -   **Pre-Closeout Diff-to-Tag Cross-Verification**: Cross-verify the active
         track's cumulative VCS diff against its `manual_testing.md` scope tag.
         If backend, state, auth-guard, or RPC files were modified under a

@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 :: Armature (OSS) Skills & Rules Installer (Windows)
 :: =============================================================================
 
-set "VERSION=0.38.0"
+set "VERSION=0.39.0"
 set "FLAGS_dry_run=0"
 set "FLAGS_force=0"
 set "FLAGS_uninstall=0"
@@ -88,6 +88,7 @@ if "%FLAGS_uninstall%"=="1" goto :do_uninstall
 if not exist "%SOURCE_ASSETS_DIR%\workflow_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\workflow_template.md & exit /b 1 )
 if not exist "%SOURCE_ASSETS_DIR%\adr_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\adr_template.md & exit /b 1 )
 if not exist "%SOURCE_ASSETS_DIR%\manual_testing_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\manual_testing_template.md & exit /b 1 )
+if not exist "%SOURCE_ASSETS_DIR%\design_template.md" ( echo [ERROR] Missing %SOURCE_ASSETS_DIR%\design_template.md & exit /b 1 )
 for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat arm-new-bug-bash arm-bash arm-bug-bash-triage) do (
     if not exist "%SCRIPT_DIR%\skills\%%S\SKILL.md" ( echo [ERROR] Missing %SCRIPT_DIR%\skills\%%S\SKILL.md & exit /b 1 )
 )
@@ -112,6 +113,7 @@ echo --- Installing Armature Assets ---
 call :install_file "%SOURCE_ASSETS_DIR%\workflow_template.md" "%TARGET_ASSETS_DIR%\workflow_template.md"
 call :install_file "%SOURCE_ASSETS_DIR%\adr_template.md" "%TARGET_ASSETS_DIR%\adr_template.md"
 call :install_file "%SOURCE_ASSETS_DIR%\manual_testing_template.md" "%TARGET_ASSETS_DIR%\manual_testing_template.md"
+call :install_file "%SOURCE_ASSETS_DIR%\design_template.md" "%TARGET_ASSETS_DIR%\design_template.md"
 
 :: Version Stamp
 if "%FLAGS_dry_run%"=="1" (
@@ -136,6 +138,19 @@ echo.
 echo --- Installing Armature Core Command Skills ---
 for %%S in (arm-setup arm-new-track arm-implement arm-status arm-review arm-undo arm-drift arm-chat) do (
     call :install_file "%SCRIPT_DIR%\skills\%%S\SKILL.md" "%TARGET_SKILLS_ROOT%\%%S\SKILL.md"
+    if exist "%SCRIPT_DIR%\skills\%%S\references" (
+        for %%F in ("%SCRIPT_DIR%\skills\%%S\references\*.md") do (
+            call :install_file "%%~fF" "%TARGET_SKILLS_ROOT%\%%S\references\%%~nxF"
+        )
+    )
+    if exist "%SCRIPT_DIR%\skills\%%S\scripts" (
+        for %%F in ("%SCRIPT_DIR%\skills\%%S\scripts\*.py") do (
+            set "SCRIPT_NAME=%%~nxF"
+            if /i not "!SCRIPT_NAME:~0,5!"=="test_" if /i not "!SCRIPT_NAME:~-8!"=="_test.py" (
+                call :install_file "%%~fF" "%TARGET_SKILLS_ROOT%\%%S\scripts\%%~nxF"
+            )
+        )
+    )
 )
 
 if "%FLAGS_experimental%"=="1" (

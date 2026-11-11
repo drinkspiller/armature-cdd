@@ -512,6 +512,11 @@ assets, and packaging manifests:
 :                              :                                   :             : template copied   :
 :                              :                                   :             : during            :
 :                              :                                   :             : `/arm-setup`      :
+| `design_template.md`         | `skills/arm-setup/assets/`        | —           | Bundled UI        |
+:                              :                                   :             : `DESIGN.md`       :
+:                              :                                   :             : contract template :
+:                              :                                   :             : copied during     :
+:                              :                                   :             : `/arm-setup`      :
 | `.armature_version`          | `.armature_version`               | —           | Version stamp for |
 :                              :                                   :             : update detection  :
 | `arm-new-track/`             | `skills/arm-new-track/`           | Armature    | `/arm-new-track`  |
@@ -714,4 +719,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.38.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.39.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.

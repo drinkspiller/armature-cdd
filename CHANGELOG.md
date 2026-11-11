@@ -6,6 +6,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.39.0] - 2026-11-11
+
+### Added
+
+-   **Three-Altitude UI/UX Elicitation, Flow Specs, `DESIGN.md` Contract &
+    Adaptive 2-Gate/1-Gate (`ADR 0022`, `skills/arm-setup/SKILL.md`,
+    `skills/arm-setup/assets/design_template.md`,
+    `skills/arm-new-track/SKILL.md`,
+    `skills/arm-new-track/scripts/validate_flow_specs.py`,
+    `skills/arm-implement/SKILL.md`, `skills/arm-review/SKILL.md`,
+    `skills/arm-drift/SKILL.md`, `rules/armature_protocol.md`,
+    `rules/armature_cdd_protocols.md`)**:
+    -   Scoped UI elicitation strictly to UI tracks via Step 4 reconnaissance,
+        reusing `audience` from `product.md` without re-asking while leaving
+        backend, CLI, and non-UI refactor tracks untouched.
+    -   Integrated UX interaction pattern proposals and 5-state **UI Stack**
+        probes (`Ideal`, `Empty`, `Loading`, `Partial`, `Error`) directly inside
+        Step 5's Recursive Grill Engine alongside technical probes and Phase 5b
+        Devil's Advocate.
+    -   Added `DESIGN.md` (`skills/arm-setup/assets/design_template.md`) to
+        replace UI visual sections of `product-guidelines.md` (with `--migrate`
+        extraction and backwards-compatible fallback on legacy repos), plus
+        `validate_flow_specs.py` for behavioral Altitude linting and token-drift
+        checks.
+    -   Added adaptive gating: **2-Gate** (`spec.md` -> 3 live HTML/CSS variants
+        in `scratch/` -> `DESIGN.md` -> `plan.md`) only when `DESIGN.md` is
+        absent or `--redesign` is passed (and not `--fast`), and **1-Gate**
+        everywhere else (including Day-2 UI tracks).
+    -   Added Step 3.6 `ui_craft_verifier` Punch List checks in
+        `/arm-implement`, `375px`/`1280px`/UI Stack evidence + **Deliberate /
+        Drift / Not Built** mismatch classification (with dated `spec.md`
+        amendments) in `/arm-review`, and Flow Spec Altitude +
+        `[WARNING] Token Drift` auditing in `/arm-drift`.
+    -   Added SkillOpt UI elicitation evaluation suite
+        (`evals/skillopt/run_ui_elicitation_opt.py`,
+        `train_ui_elicitation.jsonl`, `val_ui_elicitation.jsonl`) and unit tests
+        (`skills/arm-new-track/scripts/test_validate_flow_specs.py`,
+        `evals/cdd_sdd_benchmark/tests/test_ui_elicitation_evals.py`).
+
 ## [0.38.0] - 2026-11-11
 
 ### Changed

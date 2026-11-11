@@ -39,6 +39,7 @@ running a full multi-seed comparative benchmark:
 
     ```bash
     python3 evals/skillopt/run_optimizer.py --verify_schema
+    python3 evals/skillopt/run_ui_elicitation_opt.py --verify_schema
     python3 evals/skillopt/run_interview_format_opt.py --phase eval --seeds 3 --workers 6
     ```
 

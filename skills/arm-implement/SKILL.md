@@ -250,8 +250,11 @@ deliverables, synchronizing documentation, and managing track cleanup.
         signatures and parameter arity, prerequisite private-to-public helper
         exposure tasks, bidirectional UI `<->` wire field bijections and server
         validator preconditions, hydration echo-suppression flags,
-        self-contained signal/timer constants, and unit-test bundle/fixture
-        overrides from `spec.md` and `plan.md` directly in the worker `Prompt`.
+        self-contained signal/timer constants, named design tokens from
+        `DESIGN.md` (falling back to `product-guidelines.md` if `DESIGN.md` is
+        absent) plus UI Stack edge states on UI tracks, and unit-test
+        bundle/fixture overrides from `spec.md` and `plan.md` directly in the
+        worker `Prompt`.
     -   **Large Fan-Out Pilot Gate (All Entry Paths & Phases — `ADR 0021`)**:
         Before any parallel or sequential worker dispatch in any phase (whether
         `/arm-implement` was reached by track name, auto-resume, or the
@@ -454,15 +457,19 @@ deliverables, synchronizing documentation, and managing track cleanup.
             diff modifies $\le 5$ lines of code in a single file with zero
             schema or architectural changes, **skip Step 3.6** and finish via
             the Fast-Path Solo Exception.
-        -   **Skip on Visual-Only Tracks (`[Micro-Verification Plan]`):** If the
-            Stage 2 Empirical VCS Diff Classifier (`Step 3.5`) confirms the
-            track is strictly presentational/visual
-            (`[Micro-Verification Plan]`, including the Orphaned Dead-Code
-            Cleanup Exemption with zero state, auth-guard, or RPC changes),
-            **skip Step 3.6** and advance directly to
-            `Step 4: Document Synchronization`, noting in your chat summary
-            under `### Verification Audit`: `"Step 3.6 Pre-Closeout Review Loop
-            skipped (Visual-Only [Micro-Verification Plan] track)."`.
+        -   **UI Craft Punch List (`ADR 0022`) vs. Code-Style Skip on
+            Visual-Only Tracks (`[Micro-Verification Plan]`):** If the Stage 2
+            Empirical VCS Diff Classifier (`Step 3.5`) confirms the track is
+            strictly presentational/visual (`[Micro-Verification Plan]`,
+            including the Orphaned Dead-Code Cleanup Exemption with zero state,
+            auth-guard, or RPC changes), skip the heavy code/security loop,
+            **run a lightweight `ui_craft_verifier` Punch List pass** (verifying
+            named `DESIGN.md` tokens vs. unapproved hex literals, concentric
+            radii, contrast, and `Empty`/`Loading`/`Partial`/`Error` UI Stack
+            state coverage), and advance to `Step 4: Document Synchronization`,
+            noting in your chat summary under `### Verification Audit`: `"Step
+            3.6 UI Craft Punch List executed; code/security review loop skipped
+            (Visual-Only [Micro-Verification Plan] track)."`.
         -   **Never skip Source-Fidelity Review:** The visual-only and
             micro-task skips above don't apply to tracks that rewrote existing
             docs, skills, rules, or configs; those always get the
@@ -478,7 +485,8 @@ deliverables, synchronizing documentation, and managing track cleanup.
             Panel (`spec_and_adr_verifier` with `include_intent: true`;
             `code_taste_style_verifier` and `correctness_security_verifier` with
             `include_intent: false` blinded to author rationale;
-            `deterministic_linter_runner`), or Tier 3 Sequential Pass.
+            `deterministic_linter_runner`; plus `ui_craft_verifier` whenever UI
+            components/styles are modified), or Tier 3 Sequential Pass.
         -   Apply repairs in `P0 -> P1 -> P2 -> P3` order while enforcing all
             **Four Repair Safety Circuit Breakers**: CB1
             `blocked_by_legacy_fence`, CB2 `deferred_spec_conflict`, CB3
