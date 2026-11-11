@@ -388,8 +388,21 @@ class MiniCDPWebSocket:
       pass
 
 
-def open_cdp_page_ws(port: int) -> MiniCDPWebSocket:
-  """Connects to the first inspectable `page` target on `127.0.0.1:<port>`."""
+def open_cdp_page_ws(
+    port: int, target_id: str | None = None
+) -> MiniCDPWebSocket:
+  """Connects to a `page` target on `127.0.0.1:<port>`.
+
+  Args:
+    port: Chrome remote debugging port.
+    target_id: Optional page target id; defaults to the first inspectable page.
+
+  Returns:
+    A connected `MiniCDPWebSocket` for the selected page.
+
+  Raises:
+    RuntimeError: If no matching page target exists or the handshake fails.
+  """
   with urllib.request.urlopen(
       f"http://127.0.0.1:{port}/json/list", timeout=5.0
   ) as resp:
@@ -397,6 +410,8 @@ def open_cdp_page_ws(port: int) -> MiniCDPWebSocket:
   ws_url = None
   for t in targets:
     if t.get("type") == "page" and t.get("webSocketDebuggerUrl"):
+      if target_id is not None and t.get("id") != target_id:
+        continue
       ws_url = t["webSocketDebuggerUrl"]
       break
   if not ws_url:
@@ -646,9 +661,7 @@ class CDPRecorder:
         f"window.__cdpDemoSetCursor({self.cur_x:.1f}, {self.cur_y:.1f}, false);"
     )
 
-  def mask_sensitive_dom(
-      self, extra_selectors: list[str] | None = None
-  ) -> int:
+  def mask_sensitive_dom(self, extra_selectors: list[str] | None = None) -> int:
     """Masks password/token DOM inputs and scrubs sensitive URL query parameters before capture."""
     self.ensure_overlay()
     selectors = [
@@ -1034,6 +1047,7 @@ class CDPRecorder:
     subprocess.run(
         [
             "ffmpeg",
+            "-nostdin",
             "-y",
             "-framerate",
             str(self.fps),
@@ -1064,6 +1078,7 @@ class CDPRecorder:
     subprocess.run(
         [
             "ffmpeg",
+            "-nostdin",
             "-y",
             "-framerate",
             str(self.fps),
@@ -1103,6 +1118,7 @@ class CDPRecorder:
     subprocess.run(
         [
             "ffmpeg",
+            "-nostdin",
             "-y",
             "-framerate",
             str(fps),
@@ -1162,6 +1178,7 @@ def stitch_scenario_clips(
     subprocess.run(
         [
             "ffmpeg",
+            "-nostdin",
             "-y",
             "-f",
             "concat",
@@ -1196,6 +1213,7 @@ def stitch_scenario_clips(
     subprocess.run(
         [
             "ffmpeg",
+            "-nostdin",
             "-y",
             "-i",
             out_mp4,
@@ -1227,6 +1245,7 @@ def stitch_scenario_clips(
     subprocess.run(
         [
             "ffmpeg",
+            "-nostdin",
             "-y",
             "-i",
             out_mp4,
@@ -1330,6 +1349,12 @@ def run_spec_file(spec_path: str) -> dict[str, object]:
   """Executes a declarative JSON recording recipe and returns output paths."""
   with open(spec_path, "r", encoding="utf-8") as f:
     spec = json.load(f)
+  if "reel" in spec:
+    # v2 instructional reels (ADR 0020) live in a sibling module; imported
+    # lazily to avoid a circular import.
+    import instructional_reel  # pylint: disable=g-import-not-at-top
+
+    return instructional_reel.run_reel(spec)
   out_dir = os.path.abspath(spec.get("out_dir", "/tmp/cdp_screencasts"))
   os.makedirs(out_dir, exist_ok=True)
   name = spec["name"]

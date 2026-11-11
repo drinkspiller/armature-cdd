@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.37.0] - 2026-11-11
+
+### Added
+
+-   **Instructional Reels (`ADR 0020`, `skills/arm-review/SKILL.md`,
+    `skills/arm-review/references/screencast_adapter.md`,
+    `skills/arm-review/scripts/instructional_reel.py`)**:
+    -   Added a v2 `reel` recipe and engine: intro card, a numbered title card
+        on black before every scenario, narrated footage, and an outro checklist
+        card, with fades through black at every seam and 30 fps output.
+    -   Scenarios show the current implementation by default. A scenario can opt
+        into `compare` (BEFORE footage from a baseline server, a "Now the new
+        version" interstitial, AFTER footage, and a side-by-side recap).
+    -   Replaced the flat 2.8 s holds with reading-time pacing (coach marks at
+        160 wpm, cards at 180 wpm, explicit holds may only raise), click dwell,
+        distance-scaled cursor travel, and a labeled fast-forward chip for long
+        waits. `readability_violations()` checks the frame log.
+    -   Added one design system (`DESIGN_TOKENS`): Direction C title cards and
+        Direction B in-app layers (spotlight ring + coach-mark bubble), with
+        every text pair at or above 7:1 contrast.
+    -   Added `/arm-review` Step 2.5 storyboard approval before recording.
+
+### Fixed
+
+-   Every `ffmpeg` call in `cdp_screencast_recorder.py` now passes `-nostdin`;
+    backgrounded recordings previously stopped responding while waiting on
+    terminal input.
+
 ## [0.36.0] - 2026-11-10
 
 ### Added

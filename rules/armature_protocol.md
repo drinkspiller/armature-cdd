@@ -180,7 +180,8 @@ commits.
     `4x-10x` `wait_for_js` async compression over a live `localhost` server via
     CDP, TrustedTypes-safe `document.createElement` overlays, pre-capture secret
     masking, confirmation-gated prerequisite setup, per-scenario clip staging,
-    and pre-upload preview confirmation) for stateful UI tracks
+    and pre-upload preview confirmation) for stateful UI tracks; reels follow
+    `ADR 0020` (title cards, reading-time pacing, current-only by default)
     (`skills/arm-review/references/screencast_adapter.md`).
 -   **Legacy-Boundary Context Fencing:** When `tech-stack.md` or `metadata.json`
     (`legacy_fences`) defines active fences: (1) render the `> [!NOTE]` boundary
