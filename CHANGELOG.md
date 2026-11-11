@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.38.0] - 2026-11-11
+
+### Changed
+
+-   **Warm Amber Callout System, Compact Beat Hints & Referent Tail Rule
+    (`ADR 0020`, `skills/arm-review/SKILL.md`,
+    `skills/arm-review/references/screencast_adapter.md`,
+    `skills/arm-review/scripts/instructional_reel.py`)**:
+    -   Replaced white coach-mark bubbles and `#8AB4F8` blue card accents with
+        the unified **Warm Amber Note (`#FDD663` surface, `#181200` ink,
+        `13.3:1` WCAG AAA contrast)** design system across Direction C title
+        cards (`15.0:1`), matching `#FDD663` spotlight rings, click ripples, and
+        in-app callout overlays.
+    -   Added **Compact Beat Hints** (`beat` step action and `click.beat` /
+        `type.beat` shorthand, `2.0 s` reading-time floor) to label silent
+        intermediate UI actions such as dropdown picks
+        (`"Selecting Standard Preset..."`) without step bars or action buttons.
+    -   Enforced the **Referent Rule** for pointer tails across both Beat Hints
+        and Full Step Cards: setting `selector` frames the target in the
+        `#FDD663` ring and attaches a directional pointer tail; omitting
+        `selector` drops both ring and tail so stage-narrative Step Cards float
+        cleanly in the bottom-center margin.
+    -   Added plain UX copy authoring guidelines plus `_check_copy_hygiene`
+        warnings in `validate_reel_spec` for `snake_case`, `ALL_CAPS`
+        identifiers, internal paths/API routes, and AI filler words.
+    -   Added `SCR_TRAIN_06`–`08` and `SCR_VAL_04`–`06` SkillOpt tasks covering
+        Warm Amber Beat Hints, referent-based tails, and copy-hygiene /
+        user-goal orientation.
+
 ## [0.37.1] - 2026-11-11
 
 ### Fixed

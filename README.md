@@ -135,7 +135,20 @@ When implementation finishes, run:
 ```
 
 Armature walks you step-by-step through guided manual verification scenarios so
-you can interactively confirm that everything works as expected.
+you can interactively confirm that everything works as expected. With
+`--record` (or on UI tracks), `/arm-review --record` also captures an
+instructional walkthrough reel with Warm Amber callout cards, compact beat hints,
+and optional before/after comparison:
+
+![Armature /arm-review live walkthrough demo](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.gif)
+
+Watch the full-resolution recordings from
+[armature-media](https://github.com/drinkspiller/armature-cdd/releases/tag/armature-media):
+[MP4 (1080p)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.mp4)
+·
+[WebM (1080p)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.webm)
+·
+[GIF (1080px)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.gif).
 
 ### Quick questions and trivial changes (`/arm-chat`)
 
@@ -701,4 +714,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.37.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.38.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.

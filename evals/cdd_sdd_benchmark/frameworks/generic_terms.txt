@@ -554,6 +554,7 @@ section
 security
 seed
 seeded
+selector
 separate
 separately
 serialization
@@ -608,6 +609,7 @@ switch
 sync
 synchronous
 syntax
+tail
 take
 takes
 target
