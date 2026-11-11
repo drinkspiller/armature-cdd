@@ -7,36 +7,55 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
 
 ## Interactive Interview & `ask_question` Contract
 
--   **Two-Part Turn Contract & Strict Part Ordering (`content` -> Draft Writes
-    -> `ask_question`):** Every interactive question, brownfield setup gate,
-    Need-More-Context / `"zoom out"` / `"too vague"` clarification re-tee,
-    Devil's Advocate finding, ADR triage gate, shared-environment /
-    destructive-command safety gate, and spec/plan review gate MUST include in
-    the **same response** in strict order:
-    1.  **Visible markdown text FIRST (`content` — Never Start With a Tool
-        Call):** Always emit the complete visible markdown turn body into
-        `content` **before** calling ANY tool (`write_file`, `write_to_file`,
-        `edit_file`, `replace_file_content`, or `ask_question`). Once any tool
-        call begins, no visible `content` can follow in that turn. Internal
-        reasoning (`thinking` / `thought`) is invisible to the user—keep
-        `thinking` to a brief outline (never draft the full markdown turn
-        verbatim inside `thinking`), and always end `thinking` with *"Now emit
-        visible `content` first, then any draft file writes, then
-        `ask_question`"* (never end `thinking` on word-count math alone).
-    2.  **Working-draft file writes SECOND (when applicable) & native
-        `ask_question` LAST (`questions: [...]` Wrapper):** After emitting
-        visible `content`, invoke any `spec.md` / `metadata.json` /
-        `active_context.md` draft writes, and invoke `ask_question` with
-        `{"questions": [{"question": "...", "options": [...]}]}` (`question`
-        $\le 15$ words, no markdown; Option 1 prefixed with `"(Recommended) "`
-        and options `1..K` matching `<Option name>` in 1:1 order, never
-        `Pick N if …` sentences; no manual `"Other"` option). Never end an
-        interactive or safety-confirmation turn with markdown prose alone.
--   **Zero `ask_question` Abandonment Recovery:** If the user reports *"you
-    didn't answer me in chat"* or *"I only see the question box"*, re-emit the
-    visible markdown explanation into `content` AND invoke `ask_question` in the
-    same turn. Never fall back to plain-text prompts like *"Reply with 1, 2, or
-    3 in chat"*.
+-   **End Waiting Turns With a Question:** Whenever a turn ends waiting on the
+    user (a decision, a confirmation, or an action only the user can take, such
+    as restarting a tunnel, approving an upload, or choosing between next
+    steps), end it with `ask_question`, or with a plain-text question when
+    Plain-Text Question Mode applies. Never end a turn on `- Pick N if …`
+    bullets, numbered options, or *"let me know when"* with `0` tool calls;
+    writing options in chat does NOT ask the user unless `ask_question` is
+    invoked at the end of that same step. Give options that cover the expected
+    replies (for example, "Tunnel is back, continue" or "Work from the local
+    copy instead"). This applies in any conversation, not only during Armature
+    interviews.
+-   **The User Must See the Explanation (Same-Step Visible Text &
+    End-of-`thinking` Cue):** The user sees only visible chat text and the
+    question box; internal reasoning (`thinking` / `thought`) is never shown.
+    The response step that calls `ask_question` must itself carry the visible
+    explanation in `content`, even when earlier steps in the same turn already
+    wrote draft files or ran commands (visible text from an earlier step does
+    not count if it was empty). Write the options, trade-offs, and
+    recommendation as visible text, not as a summary inside `thinking`. If you
+    realize you have just written the user-facing explanation inside `thinking`,
+    write it again as visible text before calling the tool. Always finish
+    `thinking` by explicitly planning both parts (e.g., *"Now emit visible
+    `content` first, then any draft writes, then call `ask_question`"*); never
+    end `thinking` on option trade-offs or word-count checks alone, which causes
+    models to stop after the `- Pick` bullets and drop the `ask_question` tool
+    call. Order within that step: visible text, then any draft writes, then
+    `ask_question` with `{"questions": [{"question": "...", "options": [...]}]}`
+    (Option 1 prefixed with `"(Recommended) "`, options matching the numbered
+    `<Option name>` lines 1:1, no manual `"Other"` option).
+-   **Self-Contained Question Box:** Some models and hosts drop or hide the chat
+    text next to the box, so the box must stand on its own. Use `question` for
+    one or two plain sentences (up to about 40 words, no markdown) that name the
+    decision and the recommendation. Keep each option label the same as its
+    numbered chat option name, and make those names concrete enough to read
+    alone (say what happens, not a slogan). Put extra context in `question`, not
+    in the options.
+-   **Blank-Box Recovery (Box Stays the Default):** The `ask_question` box is
+    the preferred way to ask. If a box came back `User Skipped` or empty, or the
+    user says they couldn't see the explanation (*"I only see the question
+    box"*, *"you didn't answer me in chat"*), give the full explanation as
+    visible text and ask again with `ask_question` on that same step. Keep using
+    the box for later questions.
+-   **Plain-Text Question Mode (Fallback Only):** Ask as numbered plain text in
+    chat, without `ask_question`, only when the user asks you to stop using the
+    box or to ask in chat (keep doing so until they ask for the box again), when
+    `ask_question` is unavailable, or when a recovery box also came back blank
+    or skipped (for that one question). End the turn after the question so the
+    user can reply. Plain-text mode replaces only the delivery; the content
+    (options, recommendation, one question at a time) stays the same.
 -   **Streaming Flush Before Heavy `write_file` Calls:** Keep Step 6/7 visible
     chat summaries concise (`40-200` words) and end with `\n\n_Materializing the
     track artifacts and opening the approval prompt..._\n\n` before calling
@@ -46,10 +65,19 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
 
 -   **Dual Artifact Strategy:** Write canonical track files (`spec.md`,
     `plan.md`, `manual_testing.md`) to `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/`
-    and symlink them into the Antigravity artifact directory for review.
--   **Asynchronous Delegation:** Route parallel disjoint phases to isolated
-    worktree subagents (`workspace: "share"` / `Task`) where only the
-    orchestrator updates shared track files (`plan.md`, `metadata.json`,
-    `tracks.md`, `.api_surface_cache.json`), and route sequential phases or
-    heavy multimodal tasks to `invoke_subagent` with a 90-second conditional
-    `schedule` timer.
+    and symlink them into the artifact directory for review.
+-   **Asynchronous Delegation (Orchestrator-Worker Invariant):** Keep the
+    primary conversation responsive by routing parallel disjoint phases and
+    heavy multimodal or codebase discovery tasks to isolated workers, where only
+    the orchestrator updates shared track files (`plan.md`, `metadata.json`,
+    `tracks.md`, `.api_surface_cache.json`):
+    -   *Claude Code*: `Task(prompt="...", subagent_type="worker")` (or
+        `subagent_type="explorer"`) in isolated `git worktree` checkouts.
+    -   *OpenCode*: `@explore` or `@scout`.
+    -   *OpenAI Codex*: `explorer` (`role="explorer"`) or `worker`
+        (`role="worker"`).
+    -   *Antigravity*: `invoke_subagent` with `Workspace: "share"` for parallel
+        disjoint phases, or a 90-second conditional `schedule` timer for
+        sequential and heavy multimodal tasks.
+    -   *Single-Threaded Harnesses (Cursor, Aider)*: Background shell execution
+        (`&`) with status logging.

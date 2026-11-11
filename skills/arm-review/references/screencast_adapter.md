@@ -82,15 +82,15 @@ run through the legacy `CDPRecorder` path unchanged.
     `document.createElementNS`, `.textContent`, and `.style.cssText`.
 -   **Strict Ban:** Never use `.innerHTML`, `.outerHTML`, or
     `insertAdjacentHTML` in overlay or card scripts.
--   Spotlight ring around the live target rect (positions always come from
+-   Spotlight ring around the live target rect (positions are always read from
     `getBoundingClientRect()` at render time), a white coach-mark bubble beside
     it (flips above/below, then to the side, never covering the ring), a
     top-center scenario chip, and a fast-forward chip during extended waits.
 
 ### 3.3 Reading-Time Pacing & Timelapse
 
--   Coach marks hold for `max(3.0, 1.0 + words / 160 × 60)` s and cards for
-    `max(4.0, 1.5 + words / 180 × 60)` s (kicker excluded). Explicit
+-   Coach-mark bubbles hold for `max(3.0, 1.0 + words / 160 × 60)` s and cards
+    for `max(4.0, 1.5 + words / 180 × 60)` s (kicker excluded). Explicit
     `hold_seconds` may only raise these values.
 -   Clicks: distance-scaled cursor travel (0.6–1.1 s), 0.8 s dwell on the
     spotlighted target, click ripple, then the result coach after 0.5 s.

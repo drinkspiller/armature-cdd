@@ -36,3 +36,12 @@ This reference defines phase-level subagent routing (`ADR 0013`) for `/arm-imple
   - **Single-Threaded Harnesses (Cursor, Aider)**: Execute long-running jobs in
     the background (`run_in_background` or terminal `command & > /tmp/task.log`)
     with proactive status logging.
+
+## 3. Large Fan-Out Pilot Gate (`ADR 0021`)
+
+When any tier would dispatch work across more than 5 targets in one batch,
+dispatch 2–3 representative targets first, run the Source-Fidelity Review on
+their output, show the user the pilot diff, and get sign-off before dispatching
+the rest. Worker briefs include the original source material and the user's
+goal; reviewers compare output against the original files rather than against
+the same instructions the workers received.

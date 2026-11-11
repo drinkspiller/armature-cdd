@@ -5,6 +5,24 @@ description: Armature universal protocol - operational guardrails for all Armatu
 
 # Armature Universal Protocol (Controller Layer)
 
+## Judgment Over Literal Compliance (`ADR 0021`)
+
+Armature rules fall into two kinds:
+
+-   **Hard rules** (never relaxed without explicit user approval): destructive
+    or state-mutating commands against shared environments, secrets and key
+    rotation, bulk deletes, legacy-fence writes, the approval gate before
+    writing implementation code, and invoking `ask_question` whenever a turn
+    ends waiting on the user (unless Plain-Text Question Mode is active).
+-   **Defaults** (layouts, headings, word counts, and turn structure): follow
+    them unless doing so would produce a worse result for the user.
+
+If following a default literally would produce a worse result (for example, the
+user cannot see the question, a word cap would cut a needed caveat, or a format
+rule would hide a real risk), say so in one sentence and use judgment. An
+explicit user preference about how to interact always beats a default. Format
+compliance never outranks correctness.
+
 ## Draft Materialization Protocol
 
 When starting a new track (`/arm-new-track`), create `spec.md` with
@@ -80,8 +98,7 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 ## 1. Core Guardrails & Personas
 
 -   **Verification & Delegation:** Strip `file://` prefixes and validate tool
-    calls. Offload multi-phase or heavy multimodal work to `/swarm` or
-    subagents.
+    calls. Offload multi-phase or heavy multimodal work to parallel subagents.
 -   **Three Perspectives:** Evaluate changes through **Armature Architect**
     (contracts/protos, ADR alignment), **Armature Operator** (execution safety,
     no autonomous destructive commands, manual testing), and **Armature Scribe**
@@ -89,31 +106,33 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 
 ## 2. Interaction Standards & Decision-Tree Interview
 
--   **One Question at a Time & Two-Part Turn Contract:** Ask questions strictly
-    one at a time. Every interactive turn MUST emit (1) non-empty visible
-    markdown `content` FIRST (never drafted only in `thinking`), and (2) the
-    native `ask_question` tool call
-    (`{"questions": [{"question": "...", "options": [...]}]}`) SECOND in the
-    same turn.
--   **Focus + Succinct Zoom-Out Layout (`<= 220` Words Total, Zero Chat
-    Ledger):** Keep settled decisions and queued questions strictly on disk
-    (`spec.md` `status: draft` + `active_context.md`)—never print `**Settled**`,
-    `**Now**`, `**Up next**`, or `Round X settled:` lines in chat. Emit
-    `## <Topic>` (no `Round R, Question Q` prefix), a `1–3` line `text` ASCII
-    flow diagram (`[Before] ──► [★ This choice] ──► [After]`), an unlabeled 2–3
-    sentence plain-English zoom-out orientation (zero prose code identifiers or
-    backend jargon on Pass 1; weave prior-choice provenance into the opening
-    clause on follow-ups) ending with
+-   **One Question at a Time & Mandatory `ask_question` Pairing:** Ask questions
+    one at a time (pruning trivial micro-questions such as minor copy length or
+    Tier 2 styling). Every turn that asks a question or waits on the user MUST
+    emit non-empty visible explanation in `content` on that same step AND invoke
+    `ask_question` (`{"questions": [{"question": "...", "options": [...]}]}`),
+    unless Plain-Text Question Mode applies (`armature_antigravity.md`).
+-   **Focus + Succinct Zoom-Out Layout (`<= 220` Words Target):** Keep settled
+    decisions and queued questions on disk (`spec.md` `status: draft` +
+    `active_context.md`) rather than repeating `**Settled**`, `**Now**`,
+    `**Up next**`, or `Round X settled:` ledgers in chat, so the user can focus
+    on the active question. Default layout: `# <Topic>` (H1, no fenced `text`
+    ASCII flow diagram), a 2–3 sentence plain-English orientation (no code
+    identifiers on the first pass; on follow-ups, name the prior choice that
+    raised the question) ending with
     `The choice here is <X>. Here are some options:`, 2–4 numbered options
-    (`1. <Option name>: <benefit>; <cost>`, recommended first at `1.`),
-    `Safe to ignore for now: <mechanics>.`, 1-sentence
-    `### Recommendation: Option 1`, and 1:1 bulleted `- Pick N if <condition>.`
-    lines. Match `ask_question` options `1..K` directly to `<Option name>`
-    (Option 1 prefixed with `"(Recommended) "`), plus
+    (`1. <Option name>: <benefit>; <cost>`, recommended first),
+    `Safe to ignore for now: <mechanics>.`, `### Recommendation: Option 1`
+    followed on the next line by **exactly one plain-English rationale
+    sentence** (never leave the heading bare above `- Pick`), and
+    `- Pick N if <condition>.` lines. Keep headline-to-last-Pick concise
+    (`120-220` words; exceed `220` only when cutting a critical safety caveat
+    would mislead the user). Match `ask_question` options to the numbered
+    `<Option name>` lines (Option 1 prefixed with `"(Recommended) "`), plus
     `"I need more context, zoom out and give examples"` on substantive turns. On
-    Need-More-Context / `"zoom out"` / `"too vague"` turns, make zero file-read
-    calls, walk through 1–2 concrete domain examples above `---`, and rewrite
-    the turn + `ask_question`.
+    Need-More-Context / `"zoom out"` / `"too vague"` turns, answer from the
+    conversation without new file reads, walk through 1–2 concrete domain
+    examples above `---`, and rewrite the turn + `ask_question`.
 -   **Recursive Grill Engine (`Depth <= 2`):** Round choices spawn 1–2 Tier 1
     operational follow-up questions (failure modes, timeouts, concurrency,
     schema evolution, proto3 zero-values/`FieldMask`, GraphQL `@key`
@@ -121,7 +140,17 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
     unexpanded stubs in `spec.md` `## Open Questions` (**Lazy Question
     Materialization**), and every follow-up weaves which confirmed choice
     spawned it into the orientation paragraph (**Answer-Anchored Provenance**).
-    Never assert unconfirmed designs in prose (**Anti-Dictation Invariant**).
+    Don't present unconfirmed designs as decided (**Anti-Dictation**). **Settled
+    Decisions Are Agreed Intent:** User answers and shorthand (*"already agreed,
+    treat them as answered"*) record intent, not literal rules, and
+    user-approved concepts or drafts bind as a whole (never diff who authored
+    which sentence). Before encoding a settled decision into `spec.md`,
+    cross-check it not just for symbol existence, but semantically against
+    existing skill/controller descriptions, prompts, docs, and sibling
+    contracts. Treat universal words in shorthand (`only`, `never`, `every`,
+    `remove all`) as scope flags: list what existing behaviors, pairings, or
+    capabilities a literal reading would delete, and ask a short
+    **Interpretation Check** question instead of encoding the absolute version.
     When all `## Open Questions` in `spec.md` settle, run **Phase 5b Devil's
     Advocate** (one challenge per turn via `ask_question`), then **Phase 5c
     3-Pillar ADR Candidate Triage** (silent bypass to Step 6 if 0 qualify;
@@ -162,6 +191,23 @@ commits.
     (`ms`), and hydration echo-suppression flags (`isHydrating... = true`), (5)
     test-suite blast radius overrides and copy-pastable test commands, and (6)
     **zero multi-line fenced code blocks** (` ``` `) in `spec.md` or `plan.md`.
+    This precision applies to **verified codebase facts** (paths, symbols,
+    signatures, validators). It does not license turning user shorthand into
+    stricter rules than the user stated; carry settled decisions over as the
+    agreed intent, quoting the user's words when the scope is ambiguous.
+-   **Large Fan-Out Pilot Gate, Surgical Edits & Blinded Source-Fidelity Review
+    (`ADR 0021`):** Before dispatching workers (parallel subagents) across
+    more than 5 targets (files, skills, docs, or services) in one batch, run a
+    pilot on 2–3 representative targets, show the user the pilot diff, and get
+    sign-off before the rest. When modifying existing docs, skills, rules, or
+    configs, default to **surgical line/sentence edits** (`edit_file`) rather
+    than regenerating whole files. Run a **neutral reviewer blinded to the
+    worker's deletion/rewrite rule** that compares each output against its
+    **original source file** and fails any target that drops hardware pairings,
+    compatibility/clash warnings, provenance notes, or method pointers, makes
+    specific facts vaguer (*"some boards"*), or introduces unverified
+    generalizations/overstatements — even if a literal reading of the spec rule
+    seemed to ask for the deletion.
 -   **Manual Testing, Hybrid Smart Gate & Live Screencast Capture (`ADR 0009`,
     `ADR 0019`):** Stateful/route/auth/RPC tracks require the **3-Part Fixture
     Triad** (`Migration -> Seed -> Reset`). When running operational commands,

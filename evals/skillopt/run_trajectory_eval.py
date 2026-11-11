@@ -226,7 +226,7 @@ _ROUND_HEADLINE_RE = re.compile(
     re.IGNORECASE | re.MULTILINE,
 )
 _CLEAN_TOPIC_HEADLINE_RE = re.compile(
-    r"^##\s+(?!Round\b|Question\b|Settled\b|Now\b|Up next\b|Step\s+[67]\b"
+    r"^#{1,2}\s+(?!Round\b|Question\b|Settled\b|Now\b|Up next\b|Step\s+[67]\b"
     r"|Convergence\b|ADR Candidate\b|Phase\s+5[bc]\b)(\S[^\n]*)$",
     re.IGNORECASE | re.MULTILINE,
 )
@@ -235,7 +235,7 @@ _FLOW_BLOCK_RE = re.compile(
     re.IGNORECASE,
 )
 _FINDING_HEADLINE_RE = re.compile(
-    r"^#{2,4}\s+Finding\s+(\d+)(?:\s+of\s+\d+)?:\s*(.+)$",
+    r"^#{1,4}\s+(?:Devil's Advocate:\s*)?(?:Finding\s+(\d+)(?:\s+of\s+\d+)?:\s*)?(.+)$",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -330,7 +330,7 @@ def parse_agent_turn(turn_text: str):
   has_clean_topic_headline = bool(_CLEAN_TOPIC_HEADLINE_RE.search(turn_text))
   has_zoom_out_flow = bool(_FLOW_BLOCK_RE.search(turn_text))
   has_focus_zoom_out_turn = (
-      has_clean_topic_headline and has_zoom_out_flow and not has_progress_list
+      has_clean_topic_headline and not has_zoom_out_flow and not has_progress_list
   )
   has_round_headline = bool(_ROUND_HEADLINE_RE.search(turn_text)) or has_clean_topic_headline
   wrote_any_spec = bool(
@@ -347,7 +347,7 @@ def parse_agent_turn(turn_text: str):
   has_ledger = has_ledger or wrote_draft_spec or has_focus_zoom_out_turn
   has_devil_advocate = bool(
       re.search(
-          r"###?\s*(?:Phase\s*5b:\s*)?Devil's Advocate Analysis",
+          r"#{1,3}\s*(?:Phase\s*5b:\s*)?Devil's Advocate(?:\s+Analysis|:)",
           turn_text,
           re.IGNORECASE,
       )

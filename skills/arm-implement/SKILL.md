@@ -51,11 +51,10 @@ deliverables, synchronizing documentation, and managing track cleanup.
             track creation so the user can run `/arm-implement <track_id>`).
         2.  Render the canonical `/arm-new-track` Turn 1 Focus + Succinct
             `/zoom-out` layout in visible markdown (with zero `**Settled**`,
-            `**Now**`, or `**Up next**` lists):
-            -   Clean topic headline (`## <Topic>`, no `Round 1, Question 1`
+            `**Now**`, or `**Up next**` lists and zero fenced `text` ASCII flow
+            diagrams):
+            -   Clean topic headline (`# <Topic>`, no `Round 1, Question 1`
                 prefix)
-            -   Succinct `1–3` line `text` ASCII mental-model flow diagram
-                (`[Trigger / Before] ──► [★ This choice] ──► [Outcome]`)
             -   Unlabeled 2–3 sentence plain-English orientation (no
                 `**Context:**` label, no prose code identifiers) ending in
                 `The choice here is <X>. Here are some options:`
@@ -97,12 +96,16 @@ deliverables, synchronizing documentation, and managing track cleanup.
     inline prompt context if provided).
 4.  If an existing track name was provided:
     -   Find the exact match in `tracks.md`.
-    -   **Autonomous Execution Invariant (Zero-Permission Turn 1 Dispatch)**:
+    -   **Autonomous Execution Default (Start Without a Confirmation Modal)**:
         When an existing track name is provided or an active track is requested,
-        you are STRICTLY FORBIDDEN from prompting the user with an
-        `ask_question` modal to confirm starting. Immediately proceed to Step 3,
-        audit `plan.md`, and dispatch Phase 1 (or parallel disjoint phases) via
-        `invoke_subagent` on Turn 1.
+        don't ask the user to confirm starting; proceed to Step 3, audit
+        `plan.md`, and dispatch Phase 1 (or parallel disjoint phases/tasks via
+        Phase Execution Routing) on Turn 1. **Exception — Large Fan-Out Pilot
+        Gate:** if the next dispatch would launch workers across more than 5
+        targets (files, skills, docs, or services) in one batch, dispatch a
+        pilot on 2–3 representative targets first, show the user the pilot diff
+        and the Source-Fidelity Review result (Step 3.5), and ask for sign-off
+        before dispatching the rest.
 5.  If no track name was provided and no new-track design prompt was given:
     -   Find the first non-completed track (marked `[ ]` or `[~]`).
     -   If an active track (`[~]`) exists, autonomously resume it without
@@ -249,6 +252,15 @@ deliverables, synchronizing documentation, and managing track cleanup.
         validator preconditions, hydration echo-suppression flags,
         self-contained signal/timer constants, and unit-test bundle/fixture
         overrides from `spec.md` and `plan.md` directly in the worker `Prompt`.
+    -   **Large Fan-Out Pilot Gate (All Entry Paths & Phases — `ADR 0021`)**:
+        Before any parallel or sequential worker dispatch in any phase (whether
+        `/arm-implement` was reached by track name, auto-resume, or the
+        `/arm-new-track` Unified Gate), count the targets (files, skills, docs,
+        or services) the run will touch. If it exceeds 5, dispatch 2–3
+        representative targets first, run the Source-Fidelity Review on their
+        output when they rewrite existing content, show the user the pilot diff,
+        and get sign-off before dispatching the rest. This gate overrides
+        Immediate Turn 1 Dispatch and Autonomous Continuous Pipelining.
     -   **Subagent Fence Injection
         (`[ACTIVE_LEGACY_FENCES & SESSION_UNLOCKS]`)**: When dispatching
         background workers via `invoke_subagent`, you MUST inject an explicit
@@ -398,18 +410,36 @@ deliverables, synchronizing documentation, and managing track cleanup.
     -   **Walkthrough Artifact**: Write
         `{ARTIFACT_DIR}/arm_implement_phase_N_verification.md` using
         `write_to_file`.
-    -   **Autonomous Continuous Pipelining (Zero Intermediate Modals)**:
-        -   If automated tests pass and zero drift is detected: Output a concise
-            phase completion confirmation in chat with a link to
-            `arm_implement_phase_N_verification.md`, and **immediately advance
-            to dispatch the next phase**. Do NOT pause with an interactive
-            `ask_question` modal between phases. Human verification modals are
-            reserved strictly for track completion (Step 5.2).
-        -   *Escalation Exception*: If automated tests fail or drift is
-            detected, pause execution and prompt the user via `ask_question`:
-            "Phase N tests failed or drift was detected. How should we proceed?"
-            (`["(Recommended) Triage and fix failure in-flight", "Revise phase
-            implementation", "Roll back phase"]`).
+    -   **Source-Fidelity Review (Rewrites of Existing Docs, Skills, Rules, or
+        Configs)**: When a phase rewrote existing files whose value is their
+        content (docs, skills, rules, runbooks, configs), run a neutral reviewer
+        that compares each rewritten file against its **original version** (the
+        pre-phase `git` revision), not only against `spec.md` or Armature's
+        own format rules. The reviewer lists facts, commands, paths, numbers,
+        and caveats that were dropped or changed. Any dropped or distorted fact
+        fails the target; "facts preserved" is a pass criterion alongside tests.
+        When modifying existing docs, skills, rules, or configs, instruct
+        workers to make **surgical line/sentence edits** (`edit_file`) rather
+        than regenerating whole files. Blind the reviewer to the worker's
+        deletion/rewrite rule (pass only the original file, the diff, and the
+        high-level goal) so a broad spec rule cannot excuse omitting hardware
+        pairings, clash warnings, provenance/verification notes, or method
+        pointers, replacing specifics with vague phrasing (*"some boards"*), or
+        introducing unverified generalizations.
+    -   **Autonomous Continuous Pipelining (No Modals Between Healthy Phases)**:
+        -   If automated tests pass, zero drift is detected, and any required
+            Source-Fidelity Review passes: Output a concise phase completion
+            confirmation in chat with a link to
+            `arm_implement_phase_N_verification.md`, and advance to dispatch the
+            next phase without an interactive modal. Human verification modals
+            are otherwise reserved for track completion (Step 5.2) and the Large
+            Fan-Out Pilot Gate.
+        -   *Escalation Exception*: If automated tests fail, drift is detected,
+            or the Source-Fidelity Review finds dropped or distorted facts,
+            pause execution and ask the user: "Phase N tests failed, drift was
+            detected, or rewritten files lost source facts. How should we
+            proceed?" (`["(Recommended) Triage and fix failure in-flight",
+            "Revise phase implementation", "Roll back phase"]`).
 
 6.  **Step 3.6: Pre-Closeout Inner-Loop Review & Repair Gate (`ADR 0015`)**:
     When all phases in `plan.md` are marked `[x]` and automated unit tests pass,
@@ -433,6 +463,10 @@ deliverables, synchronizing documentation, and managing track cleanup.
             `Step 4: Document Synchronization`, noting in your chat summary
             under `### Verification Audit`: `"Step 3.6 Pre-Closeout Review Loop
             skipped (Visual-Only [Micro-Verification Plan] track)."`.
+        -   **Never skip Source-Fidelity Review:** The visual-only and
+            micro-task skips above don't apply to tracks that rewrote existing
+            docs, skills, rules, or configs; those always get the
+            Source-Fidelity Review against the original files.
     -   **2-Pass Multi-Expert Review-and-Repair Execution (`MAX_ITERATIONS = 2`
         on Behavioral Code Tracks):**
 
@@ -647,6 +681,12 @@ Synchronization has been handled.
 
 ## Guardrails
 
+-   **Large Fan-Out Pilot Gate & Source-Fidelity Review (`ADR 0021`)**: Fan-outs
+    over 5 targets run a 2–3 target pilot with user sign-off first, and rewrites
+    of existing docs, skills, rules, or configs are reviewed against their
+    original files ("facts preserved" is a pass criterion), not only against the
+    spec. Workers are given the source material and the user's goal, not just
+    Armature's format rules.
 -   **Autonomous Delegation Default**: Multi-phase or multi-task tracks delegate
     phase execution via phase coupling routing (parallel isolated worktree
     subagents for independent disjoint slices, and a single worker for

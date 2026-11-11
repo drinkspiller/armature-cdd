@@ -48,9 +48,8 @@ project).
 -   **User-Specified Scope Direct Execution Invariant (§2.0 -> §3.1):**
     -   If a brownfield workspace is detected and the user has **NOT** yet
         specified a discovery scope, output the Brownfield Focus + Succinct
-        `/zoom-out` body (`## Context Discovery Scope`, a `1–3` line `text`
-        ASCII flow diagram `[History + Codebase] ──► [★ Discovery scope] ──►
-        [Batch setup synthesis]`, unlabeled orientation ending in
+        `/zoom-out` body (`# Context Discovery Scope`, unlabeled orientation
+        with zero fenced `text` ASCII flow diagrams ending in
         `The choice here is <X>. Here are some options:`, numbered one-line
         options, `Safe to ignore for now:` line, `### Recommendation: Option 1`
         with one sentence, and `- Pick N if …` lines) explaining that Deep
@@ -137,19 +136,19 @@ project).
     -   If indicators are found, this is a **Brownfield** project.
         -   **Report & Focus + Succinct `/zoom-out` Turn**: Output a brief
             markdown summary reporting the detected brownfield indicators, then
-            the Focus + Succinct `/zoom-out` body: `## Context Discovery Scope`,
-            a `1–3` line `text` ASCII flow diagram showing how scan sources feed
-            the one-pass setup batch, an unlabeled orientation stating what
-            changes in practice depending on the scope (history-backed setup
-            docs versus a quick file-based start) ending in `The choice here is
-            which sources setup reads before drafting. Here are some options:`,
-            numbered one-line options placing `1. Search past conversations,
-            commit history, and current codebase (Deep Retroactive Archaeology):
-            ...` first, `2. Look only at current codebase contents (Current
-            Snapshot Only): ...` second, and `3. Customize scan sources (e.g.,
-            commits + files only, or manual description): ...` third, a
-            `Safe to ignore for now:` line, `### Recommendation: Option 1` with
-            one sentence, and bulleted `- Pick N if …` lines.
+            the Focus + Succinct `/zoom-out` body: `# Context Discovery Scope`
+            (with zero fenced `text` ASCII flow diagrams), an unlabeled
+            orientation stating what changes in practice depending on the scope
+            (history-backed setup docs versus a quick file-based start) ending
+            in `The choice here is which sources setup reads before drafting.
+            Here are some options:`, numbered one-line options placing `1.
+            Search past conversations, commit history, and current codebase
+            (Deep Retroactive Archaeology): ...` first, `2. Look only at current
+            codebase contents (Current Snapshot Only): ...` second, and `3.
+            Customize scan sources (e.g., commits + files only, or manual
+            description): ...` third, a `Safe to ignore for now:` line,
+            `### Recommendation: Option 1` with one sentence, and bulleted
+            `- Pick N if …` lines.
             -   In the Deep Retroactive Archaeology option line and the
                 recommendation sentence, explicitly state that it mines VCS
                 commits and past session transcripts to inform all setup
