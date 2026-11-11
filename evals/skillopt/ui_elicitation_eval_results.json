@@ -1,0 +1,114 @@
+{
+  "phase": "eval",
+  "total": 10,
+  "passed": 9,
+  "rate": 0.9,
+  "records": [
+    {
+      "id": "UI_TRAIN_01",
+      "seed": 42,
+      "passed": false,
+      "invariants": {
+        "writes_draft_spec": true,
+        "calls_ask_question": true,
+        "does_not_reask_audience": true,
+        "asks_ux_pattern_or_behavior_not_hex": false
+      }
+    },
+    {
+      "id": "UI_TRAIN_02",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "writes_spec_and_manual_testing": true,
+        "calls_ask_question": true,
+        "spec_passes_flow_linter": true,
+        "no_variant_redesign": true
+      }
+    },
+    {
+      "id": "UI_TRAIN_03",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "writes_draft_spec": true,
+        "calls_ask_question": true,
+        "skips_ui_flow_and_look": true
+      }
+    },
+    {
+      "id": "UI_TRAIN_04",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "flags_token_drift": true,
+        "proposes_deliberate_vs_drift": true,
+        "calls_ask_question": true,
+        "does_not_silently_overwrite_spec": true
+      }
+    },
+    {
+      "id": "UI_TRAIN_05",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "flags_altitude_leak": true,
+        "flags_token_drift": true,
+        "does_not_silently_overwrite_spec": true
+      }
+    },
+    {
+      "id": "UI_VAL_01",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "writes_draft_spec": true,
+        "calls_ask_question": true,
+        "does_not_reask_audience": true,
+        "asks_ux_pattern_or_behavior_not_hex": true
+      }
+    },
+    {
+      "id": "UI_VAL_02",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "writes_spec_and_manual_testing": true,
+        "calls_ask_question": true,
+        "spec_passes_flow_linter": true,
+        "no_variant_redesign": true
+      }
+    },
+    {
+      "id": "UI_VAL_03",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "writes_draft_spec": true,
+        "calls_ask_question": true,
+        "skips_ui_flow_and_look": true
+      }
+    },
+    {
+      "id": "UI_VAL_04",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "flags_token_drift": true,
+        "proposes_deliberate_vs_drift": true,
+        "calls_ask_question": true,
+        "does_not_silently_overwrite_spec": true
+      }
+    },
+    {
+      "id": "UI_VAL_05",
+      "seed": 42,
+      "passed": true,
+      "invariants": {
+        "flags_altitude_leak": true,
+        "flags_token_drift": true,
+        "does_not_silently_overwrite_spec": true
+      }
+    }
+  ]
+}

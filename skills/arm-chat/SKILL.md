@@ -40,7 +40,11 @@ Read the following files in order:
 
 1.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/active_context.md` (if present) — Compact session scratchpad (`<= 40` lines: active track, settled decisions, modified files, next task)
 2.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` — Product definition & vision
-3.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product-guidelines.md` — Tone, visual identity, UX
+3.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product-guidelines.md` — Tone, voice,
+    and interaction rules (legacy fallback for UI guidelines if `DESIGN.md` is
+    absent)
+    -   `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/DESIGN.md` (if present) — Locked UI
+        visual tokens, palette, spacing, and anti-slop rules
 4.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md` — Technical choices & frameworks
 5.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/workflow.md` — Task workflow & coding practices
 6.  `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks.md` — Track registry
@@ -88,9 +92,9 @@ After context is loaded, determine next action:
     uncommitted change or requested edit contradicts an accepted ADR or glossary
     term, surface the conflict and options via `ask_question` before proceeding.
 -   **Read-Only Files**: Do NOT modify `product.md`, `tech-stack.md`,
-    `product-guidelines.md`, `tracks.md`, or track `spec.md`/`plan.md` unless
-    requested (or when persisting a Legacy Fence via the Reactive Self-Healing
-    Steering Hook).
+    `product-guidelines.md`, `DESIGN.md`, `tracks.md`, or track
+    `spec.md`/`plan.md` unless requested (or when persisting a Legacy Fence via
+    the Reactive Self-Healing Steering Hook).
 -   **No Ceremony**: Do NOT create artifacts for the loading process.
 -   **LLM Streaming vs. Static Microcopy**: When addressing tasks or developer
     corrections involving LLM streaming responses or dynamic outputs, focus on

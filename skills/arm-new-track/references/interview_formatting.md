@@ -62,7 +62,7 @@ in `content` before invoking `ask_question`:
    (`rules/armature_antigravity.md`), render the same block in chat and end the
    turn without `ask_question`.
 
-These layout rules are defaults (`ADR 0021`): if following one literally would
+These layout rules are defaults (`ADR 0022`): if following one literally would
 hide a needed caveat or make the question harder to understand, say so and
 adjust.
 

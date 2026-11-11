@@ -74,7 +74,7 @@ resolving all open rounds, questions, and ambiguities.
 -   **Anti-Dictation (Don't Decide for the User):** Don't present technical
     designs, UI layouts, button behaviors, or lifecycle rules as decided when
     the user has not confirmed them; raise them as questions instead.
--   **Settled Decisions Are Agreed Intent (`ADR 0021`):** A settled decision, or
+-   **Settled Decisions Are Agreed Intent (`ADR 0022`):** A settled decision, or
     a batch the user labels *"already agreed, treat them as answered"*, records
     what the user wants, not a literal rule to amplify. User-approved concepts
     or drafts bind as a whole (never diff who authored which sentence). Before
@@ -258,6 +258,17 @@ resolving all open rounds, questions, and ambiguities.
     -   Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md` and
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md` for architectural
         context.
+    -   **UI Footprint & Design Contract Check (`ADR 0021`):** Detect whether
+        target files or requirements touch user-facing UI (`.html`, `.css`,
+        `.scss`, `.tsx`, `.jsx`, `.vue`, client views, or routes). On non-UI
+        tracks (backend, CLI, infra, pure refactors), skip UI Flow Specs and
+        visual gating completely. On UI tracks:
+        -   Pull `audience` / target personas directly from `product.md` (do NOT
+            re-ask who the user is unless scoping a narrower sub-persona).
+        -   Check whether `{PROJECT_CONTEXT_DIR}/DESIGN.md` exists and is locked
+            (treat a template stub containing `<e.g.,` placeholders as unlocked;
+            fall back to `product-guidelines.md` UI notes if legacy) and note
+            `--redesign` or `--fast` flags for Adaptive 2-Gate / 1-Gate routing.
     -   Read `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/terms.md` (if it exists) to
         ground term usage and prevent symbol/concept drift.
     -   Scan the `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/` directory listing
@@ -599,14 +610,25 @@ resolving all open rounds, questions, and ambiguities.
             -   *Tier 1 (Mandatory Operational Probes)*: Failure modes,
                 network/RPC drops, timeout thresholds, degraded fallback states,
                 payload/token bounds, multi-tab sync, concurrency races, schema
-                evolution contracts.
-            -   *Tier 2 (Deferred Implementation Details — Prune from
-                Interview)*: Pure cosmetic styling (exact pixel padding, hex
-                colors), micro-copy variations, internal helper function naming.
-                *Rule:* Do NOT spawn interactive interview questions for Tier 2
-                items (including whether 1–2 extra sentences affect
-                pacing/latency, micro-copy phrasing, or minor UI polish). Defer
-                them as sensible defaults in `plan.md`.
+                evolution contracts. On UI tracks, interleave **UX Pattern
+                Selection** (propose competing interaction patterns such as
+                drawer vs. modal vs. inline job in plain English) and **5-State
+                UI Stack** probes (`Ideal`, `Empty`, `Loading`, `Partial`,
+                `Error`) directly inside Step 5a alongside technical probes
+                since UX patterns and technical failure modes co-constrain each
+                other. Order UI Flow Specs by **Red Routes**
+                (`frequency of use x consequence of failure`) so foundational
+                flows constrain later ones.
+            -   *Tier 2 (Three-Altitude Visual Deferral — Prune Pixels from Step
+                5a)*: Pure pixel/cosmetic details (exact hex colors, pixel
+                padding, corner radii), internal helper function naming, and
+                minor micro-copy variations (including whether 1–2 extra
+                sentences affect pacing/latency, micro-copy phrasing, or minor
+                UI polish) MUST NOT intrude into Step 5a behavioral Flow Specs
+                (`ALTITUDE_LEAK`) or spawn interactive interview questions.
+                Route project-wide visual direction to Step 5.5 (`DESIGN.md`) or
+                reuse existing `DESIGN.md` tokens by name and sensible defaults
+                in `plan.md`.
 
         -   **Anti-Dictation (Don't Decide for the User)**: Don't present
             implementation designs, button placements, countdown rules, or
@@ -1040,6 +1062,34 @@ resolving all open rounds, questions, and ambiguities.
                     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/adr/NNNN-slug.md`
                     using `write_to_file`.
 
+    -   **Step 5.5 (Conditional UI `Lock the Look` & Adaptive 2-Gate / 1-Gate —
+        `ADR 0021`):**
+
+        -   *Skip on non-UI tracks* and *skip on Day-2 UI tracks* where a locked
+            `{PROJECT_CONTEXT_DIR}/DESIGN.md` already exists (without `<e.g.,`
+            stub placeholders and unless `--redesign` is requested), flowing
+            directly into Phase 5d / Step 6 as **1-Gate** referencing existing
+            `DESIGN.md` token names.
+        -   *When UI track has no locked `DESIGN.md` (or `--redesign` is
+            passed):*
+            -   **Default (`2-Gate` — exempt from Unified Spec+Plan Gate):**
+                -   *Gate 1:* Run Step 6 (`spec.md` approval with
+                    `## User Flows` + `## Edge Cases`, plus `manual_testing.md`)
+                    first so behavior and all 5 UI Stack states are locked.
+                -   *Gate 2:* Derive a 1-line **Design Read** (`Surface Kind`,
+                    `Audience` from `product.md`, `Aesthetic Register`, Craft
+                    dials), generate **3 contrasting HTML/CSS prototypes** in
+                    `<Artifact Directory>/scratch/` (or a standalone local
+                    preview sandbox) populated with real domain copy and the
+                    Gate 1 states, and present them alongside `plan.md` via
+                    `ask_question` (omitting `"I need more context..."` per the
+                    visual-styling modal rule) to pick a variant, lock
+                    `{PROJECT_CONTEXT_DIR}/DESIGN.md` (replacing legacy UI
+                    sections of `product-guidelines.md`), and approve `plan.md`
+                    in one final confirmation.
+            -   **Fast Path (`--fast` / Survey mode):** Collapse to **1-Gate**,
+                bundling the `spec.md` review and 3 visual variants together.
+
     -   **Phase 5d: Complexity Classifier & Explicit-Sign-Off Fast-Forward**:
 
         -   **Bounded Single-Component Features (1–2 Clarifying Rounds)**: When
@@ -1081,7 +1131,7 @@ resolving all open rounds, questions, and ambiguities.
         lesser model with zero prior conversation context) can implement the
         feature without guessing symbols, signatures, field mappings, or build
         dependencies—while strictly remaining a specification blueprint rather
-        than source code. Every `spec.md` MUST satisfy all 6 points below:
+        than source code. Every `spec.md` MUST satisfy all points below:
         1.  **Exact Target File Paths, Non-Obvious Imports, Build/Package
             Dependencies & Build-Generated Artifacts**: Name the exact
             repository-relative file paths for every source, schema, config, and
@@ -1203,6 +1253,16 @@ resolving all open rounds, questions, and ambiguities.
             `is_replaying_snapshot`, `is_recovering_wal_state`), or timer
             duration (`ms`) discovered during Step 4 Codebase Reconnaissance.
             Every single reconnaissance fact MUST appear verbatim in `spec.md`.
+        8.  **UI Flow Specs & Three-Altitude Compliance (`ADR 0021` — UI Tracks
+            Only)**: On UI tracks, include `## User Flows` (`**Goal:**`,
+            `**Covers:** R#`, numbered/step entries answering **What they
+            want**, **What they see**, **What they do**, **What happens**) and
+            `## Edge Cases` covering the 5-state UI Stack (**Ideal**, **Empty**,
+            **Loading**, **Partial**, **Error**, or explicit `N/A`). Keep
+            behavioral flow steps strictly free of hex colors, pixel widths, and
+            CSS properties, and reference `DESIGN.md` tokens by name (e.g.
+            `--color-accent`). Validate using `scripts/validate_flow_specs.py`
+            relative to the `arm-new-track` skill base directory.
     -   Write
         `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_id>/manual_testing.md`
         based on `manual_testing_template.md` tailored to the classified testing
@@ -1228,22 +1288,30 @@ resolving all open rounds, questions, and ambiguities.
             during implementation).*
     -   **Unified Spec+Plan Gate Routing (Default vs. Legacy Step-by-Step
         Prompts)**:
-        -   **Legacy Step-6-Only Prompt Compatibility**: If the prompt context
-            explicitly instructs you to run *only* Step 6 (or if `spec.md` is
-            already approved in `Given context:` and the prompt asks you to run
-            Step 7 separately), keep Step 6 and Step 7 as separate turns: in
-            Step 6 emit `### Convergence Summary` (`40–200` words +
-            ``\n\n_Materializing \`spec.md\` and \`manual_testing.md\` and
-            opening the Step 6 approval prompt..._\n\n``), write `spec.md` and
-            `manual_testing.md`, and call `ask_question` (`"Approve spec.md and
-            manual_testing.md to proceed to Step 7 plan generation?"`).
+        -   **Legacy Step-6-Only & `2-Gate` UI Gate-1 Compatibility**: If the
+            prompt context explicitly instructs you to run *only* Step 6 (or if
+            `spec.md` is already approved in `Given context:` and the prompt
+            asks you to run Step 7 separately, or on a `2-Gate` UI track without
+            a locked `DESIGN.md` running Gate 1 per Step 5.5), keep Step 6 and
+            Step 7 as separate turns: in Step 6 emit `### Convergence Summary`
+            (`40–200` words + ``\n\n_Materializing \`spec.md\` and
+            \`manual_testing.md\` and opening the Step 6 approval
+            prompt..._\n\n``), write `spec.md` (on UI tracks, ensuring `spec.md`
+            contains a behavioral `## User Flows` section with `**Goal:**`,
+            `**Covers:** R#`, and step/numbered entries answering *What they
+            want*, *What they see*, *What they do*, *What happens* with zero
+            hex/px literals, plus `## Edge Cases` covering **Ideal**, **Empty**,
+            **Loading**, **Partial**, and **Error**) and `manual_testing.md`,
+            and call `ask_question` (`"Approve spec.md and manual_testing.md to
+            proceed to Step 7 plan generation?"`).
         -   **Default Unified Spec+Plan Gate (Standard Workflow)**: In all
-            standard sessions, Step 6 immediately flows into Step 7 in the
-            **same turn** so `spec.md` (`status: draft`), `manual_testing.md`
-            (`status: draft`), and `plan.md` (`status: draft`) are materialized
-            together and reviewed at a single **Unified Spec+Plan Approval
-            Gate** (cutting post-interview approval ceremony from 2 modal turns
-            to 1).
+            standard `1-Gate` sessions (including non-UI tracks and Day-2 UI
+            tracks with an existing locked `DESIGN.md`), Step 6 immediately
+            flows into Step 7 in the **same turn** so `spec.md`
+            (`status: draft`), `manual_testing.md` (`status: draft`), and
+            `plan.md` (`status: draft`) are materialized together and reviewed
+            at a single **Unified Spec+Plan Approval Gate** (cutting
+            post-interview approval ceremony from 2 modal turns to 1).
 
 7.  **Interactive Plan Generation & Unified Spec+Plan Approval Gate:**
 
@@ -1358,7 +1426,10 @@ resolving all open rounds, questions, and ambiguities.
             `manual_testing.md`.
         -   **Verification Bridge**: For each verification checkbox `[ ]`
             defined in an ADR's Confirmation section, inject a corresponding
-            explicit verification task into `plan.md`.
+            explicit verification task into `plan.md`. On UI tracks with
+            `## User Flows`, include a Phase 1 task to reference `DESIGN.md`
+            tokens by name and validate `spec.md` via `arm-new-track`'s
+            `scripts/validate_flow_specs.py` helper.
         -   **Phase Checkpointing**: If `workflow.md` defines phase
             checkpointing, inject Phase Completion checkpoint meta-tasks at the
             end of each Phase.

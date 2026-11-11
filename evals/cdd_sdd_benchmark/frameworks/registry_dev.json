@@ -28,6 +28,7 @@
         "rules/armature_adr_preflight.md",
         "rules/armature_cdd_protocols.md",
         "skills/arm-setup/assets/*.md",
+        "skills/arm-new-track/scripts/validate_flow_specs.py",
         "skills/*/references/*.md"
       ],
       "path_rewrites": [

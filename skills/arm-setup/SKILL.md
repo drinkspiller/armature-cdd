@@ -205,12 +205,13 @@ project).
                         `"Approve vs. Suggest changes"` modals along the way.
                     -   Autonomously synthesize and write **all** setup
                         artifacts (`product.md`, `product-guidelines.md`,
-                        `tech-stack.md` with Legacy Fences,
-                        `code_styleguides/*.md`, `workflow.md`, `tracks.md`,
-                        `index.md`, `terms.md`, `manual_testing/<domain>.md`,
-                        and initial `adr/NNNN-slug.md` files) in one
-                        uninterrupted batch pass using the rules in Section 3,
-                        updating `setup_state.json`.
+                        `DESIGN.md` on UI repositories, `tech-stack.md` with
+                        Legacy Fences, `code_styleguides/*.md`, `workflow.md`,
+                        `tracks.md`, `index.md`, `terms.md`,
+                        `manual_testing/<domain>.md`, and initial
+                        `adr/NNNN-slug.md` files) in one uninterrupted batch
+                        pass using the rules in Section 3, updating
+                        `setup_state.json`.
                     -   After all files are written, pause **once** at the
                         **Single Unified Review Gate (§3.1)** before committing.
             -   **If Option 2 (Current Snapshot Only) is selected**:
@@ -295,15 +296,39 @@ Draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product.md`:
 
 ### Artifact 2: `product-guidelines.md`
 
-Draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product-guidelines.md`:
+Draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/product-guidelines.md` for prose
+tone, voice, CLI output hierarchy, and interaction protocols (keeping visual
+design tokens in `DESIGN.md` below for UI repositories):
 
--   **Brownfield Batch Mode**: Synthesize brand voice, UI/UX design patterns,
-    component conventions, and accessibility decisions recovered from past
-    design/frontend conversations, UI-related commits, and existing
-    stylesheets/components.
+-   **Brownfield Batch Mode**: Synthesize brand voice, communication tone, and
+    interaction/CLI conventions recovered from past conversations, PR/commit
+    messages, and docs.
 -   **Greenfield / Interactive Step-by-Step Mode**: Use `ask_question`
-    (`"Interactive"` vs. `"Autogenerate"`), guide through tone and UX patterns,
-    and run the Draft Review Loop.
+    (`"Interactive"` vs. `"Autogenerate"`), guide through tone and interaction
+    guidelines, and run the Draft Review Loop.
+
+--------------------------------------------------------------------------------
+
+### Artifact 2b: `DESIGN.md` (UI Repositories Only — `ADR 0021`)
+
+If the repository contains UI views, stylesheets, or frontend components (skip
+pure backend/CLI repos), initialize
+`{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/DESIGN.md` from
+`assets/design_template.md` (`audience` pulled from `product.md`):
+
+-   **Brownfield Batch Mode**: Reverse-engineer existing CSS variables, theme
+    files, typography, radii, and component state conventions into `DESIGN.md`
+    with source file references per token for review at the Unified Gate.
+-   **Legacy Migration (`--migrate`)**: When `product-guidelines.md` holds
+    existing UI/visual notes and `DESIGN.md` is absent, extract visual tokens
+    and component rules into `DESIGN.md` non-destructively while leaving prose
+    tone and CLI guidelines in `product-guidelines.md`. Legacy repos without
+    `DESIGN.md` remain backwards compatible via fallback to
+    `product-guidelines.md`.
+-   **Greenfield Mode**: Defer locking `DESIGN.md` to the first UI track's Step
+    5.5 three-variant `Lock the Look` gate (or seed an unlocked stub retaining
+    `<e.g.,` placeholders from `assets/design_template.md`, which Step 5.5 still
+    treats as unlocked).
 
 --------------------------------------------------------------------------------
 

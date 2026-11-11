@@ -101,6 +101,7 @@ run through the legacy `CDPRecorder` path unchanged.
 -   Coach marks hold for `max(3.0, 1.0 + words / 160 × 60)` s, compact Beat
     Hints (`beat` / `click.beat` / `type.beat`) hold for
     `max(2.0, 0.8 + words / 160 × 60)` s, and cards hold for
+    `max(4.0, 1.5 + words / 180 × 60)` s (kicker excluded). Explicit
     `hold_seconds` may only raise these values.
 -   Clicks: distance-scaled cursor travel (0.6–1.1 s), 0.8 s dwell on the
     spotlighted target, click ripple, then the result coach after 0.5 s.

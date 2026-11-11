@@ -18,8 +18,8 @@
 #     ├── CHANGELOG.md
 #     ├── .armature_version
 #     ├── skills/
-#     │   ├── arm-setup/SKILL.md (with assets/)
-#     │   ├── arm-new-track/SKILL.md
+#     │   ├── arm-setup/SKILL.md (with assets/design_template.md)
+#     │   ├── arm-new-track/SKILL.md (with scripts/validate_flow_specs.py)
 #     │   ├── arm-implement/SKILL.md
 #     │   ├── arm-status/SKILL.md
 #     │   ├── arm-review/SKILL.md
@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.38.0"
+VERSION="0.39.1"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -201,6 +201,10 @@ validate_sources() {
   fi
   if [[ ! -f "${SOURCE_ASSETS_DIR}/manual_testing_template.md" ]]; then
     msg_error "Source not found: ${SOURCE_ASSETS_DIR}/manual_testing_template.md"
+    ((missing++))
+  fi
+  if [[ ! -f "${SOURCE_ASSETS_DIR}/design_template.md" ]]; then
+    msg_error "Source not found: ${SOURCE_ASSETS_DIR}/design_template.md"
     ((missing++))
   fi
   for sub_skill in "${SUB_SKILL_NAMES[@]}"; do
@@ -307,6 +311,7 @@ build_target_list() {
     "${TARGET_ASSETS_DIR}/workflow_template.md"
     "${TARGET_ASSETS_DIR}/adr_template.md"
     "${TARGET_ASSETS_DIR}/manual_testing_template.md"
+    "${TARGET_ASSETS_DIR}/design_template.md"
     "${TARGET_SKILLS_ROOT}/arm-setup/.armature_version"
     "${TARGET_PLUGIN_DIR}/.armature_version"
     "${TARGET_PLUGIN_DIR}/plugin.json"
@@ -325,7 +330,11 @@ build_target_list() {
     fi
     if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/scripts" ]]; then
       for skill_script in "${SCRIPT_DIR}/skills/${sub_skill}/scripts"/*.py; do
-        [[ -f "$skill_script" ]] && ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/scripts/$(basename "$skill_script")")
+        [[ -f "$skill_script" ]] || continue
+        local script_base
+        script_base="$(basename "$skill_script")"
+        [[ "$script_base" == test_*.py || "$script_base" == *_test.py ]] && continue
+        ALL_TARGET_FILES+=("${TARGET_SKILLS_ROOT}/${sub_skill}/scripts/${script_base}")
       done
     fi
   done
@@ -788,6 +797,7 @@ echo ""
 install_file "${SOURCE_ASSETS_DIR}/workflow_template.md" "${TARGET_ASSETS_DIR}/workflow_template.md"
 install_file "${SOURCE_ASSETS_DIR}/adr_template.md" "${TARGET_ASSETS_DIR}/adr_template.md"
 install_file "${SOURCE_ASSETS_DIR}/manual_testing_template.md" "${TARGET_ASSETS_DIR}/manual_testing_template.md"
+install_file "${SOURCE_ASSETS_DIR}/design_template.md" "${TARGET_ASSETS_DIR}/design_template.md"
 
 # --- Write version stamps ---
 if [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]]; then
@@ -843,7 +853,10 @@ for sub_skill in "${CORE_SKILL_NAMES[@]}"; do
   fi
   if [[ -d "${SCRIPT_DIR}/skills/${sub_skill}/scripts" ]]; then
     for skill_script in "${SCRIPT_DIR}/skills/${sub_skill}/scripts"/*.py; do
-      [[ -f "$skill_script" ]] && install_file "$skill_script" "${TARGET_SKILLS_ROOT}/${sub_skill}/scripts/$(basename "$skill_script")"
+      [[ -f "$skill_script" ]] || continue
+      script_base="$(basename "$skill_script")"
+      [[ "$script_base" == test_*.py || "$script_base" == *_test.py ]] && continue
+      install_file "$skill_script" "${TARGET_SKILLS_ROOT}/${sub_skill}/scripts/${script_base}"
     done
   fi
 done

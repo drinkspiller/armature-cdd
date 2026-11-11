@@ -6,6 +6,57 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.39.1] - 2026-11-11
+
+### Changed
+
+-   **Canonical `ADR 0021` / `ADR 0022` Numbering & Release Alignment**:
+    -   Standardizes `ADR 0021` across rules, skills, validators, and evaluation
+        harnesses to Three-Altitude UI/UX Elicitation, Flow Specs & `DESIGN.md`
+        Contract (`0.39.0`), and standardizes `ADR 0022` to Judgment Over
+        Literal Compliance, Waiting Turns, Question-Box Fallback & Large
+        Fan-Out Pilot Gate (originally introduced in `0.37.1`) so release
+        versions and ADR identifiers stay aligned across editions.
+
+## [0.39.0] - 2026-11-11
+
+### Added
+
+-   **Three-Altitude UI/UX Elicitation, Flow Specs, `DESIGN.md` Contract &
+    Adaptive 2-Gate/1-Gate (`ADR 0021`, `skills/arm-setup/SKILL.md`,
+    `skills/arm-setup/assets/design_template.md`,
+    `skills/arm-new-track/SKILL.md`,
+    `skills/arm-new-track/scripts/validate_flow_specs.py`,
+    `skills/arm-implement/SKILL.md`, `skills/arm-review/SKILL.md`,
+    `skills/arm-drift/SKILL.md`, `rules/armature_protocol.md`,
+    `rules/armature_cdd_protocols.md`)**:
+    -   Scoped UI elicitation strictly to UI tracks via Step 4 reconnaissance,
+        reusing `audience` from `product.md` without re-asking while leaving
+        backend, CLI, and non-UI refactor tracks untouched.
+    -   Integrated UX interaction pattern proposals and 5-state **UI Stack**
+        probes (`Ideal`, `Empty`, `Loading`, `Partial`, `Error`) directly inside
+        Step 5's Recursive Grill Engine alongside technical probes and Phase 5b
+        Devil's Advocate.
+    -   Added `DESIGN.md` (`skills/arm-setup/assets/design_template.md`) to
+        replace UI visual sections of `product-guidelines.md` (with `--migrate`
+        extraction and backwards-compatible fallback on legacy repos), plus
+        `validate_flow_specs.py` for behavioral Altitude linting and token-drift
+        checks.
+    -   Added adaptive gating: **2-Gate** (`spec.md` -> 3 live HTML/CSS variants
+        in `scratch/` -> `DESIGN.md` -> `plan.md`) only when `DESIGN.md` is
+        absent or `--redesign` is passed (and not `--fast`), and **1-Gate**
+        everywhere else (including Day-2 UI tracks).
+    -   Added Step 3.6 `ui_craft_verifier` Punch List checks in
+        `/arm-implement`, `375px`/`1280px`/UI Stack evidence + **Deliberate /
+        Drift / Not Built** mismatch classification (with dated `spec.md`
+        amendments) in `/arm-review`, and Flow Spec Altitude +
+        `[WARNING] Token Drift` auditing in `/arm-drift`.
+    -   Added SkillOpt UI elicitation evaluation suite
+        (`evals/skillopt/run_ui_elicitation_opt.py`,
+        `train_ui_elicitation.jsonl`, `val_ui_elicitation.jsonl`) and unit tests
+        (`skills/arm-new-track/scripts/test_validate_flow_specs.py`,
+        `evals/cdd_sdd_benchmark/tests/test_ui_elicitation_evals.py`).
+
 ## [0.38.0] - 2026-11-11
 
 ### Changed
@@ -39,7 +90,7 @@ and this project adheres to
 
 ### Fixed
 
--   **Blank Question Boxes & Restored Fallback (`ADR 0021`,
+-   **Blank Question Boxes & Restored Fallback (`ADR 0022`,
     `rules/armature_antigravity.md`, `rules/armature_protocol.md`,
     `skills/arm-new-track/SKILL.md`,
     `skills/arm-new-track/references/ask_question_guide.md`,
@@ -59,26 +110,26 @@ and this project adheres to
 
 ### Changed
 
--   **End Waiting Turns With a Question (`ADR 0021`,
+-   **End Waiting Turns With a Question (`ADR 0022`,
     `rules/armature_antigravity.md`)**: Any turn that ends waiting on the user
     (a decision, a confirmation, or an action only the user can take, such as
     restarting a tunnel) now ends with `ask_question`, or a plain-text question
     in Plain-Text Question Mode, in any conversation.
--   **Judgment Over Literal Compliance (`ADR 0021`,
+-   **Judgment Over Literal Compliance (`ADR 0022`,
     `rules/armature_protocol.md`)**: Separates hard rules (shared-environment
     mutations, secrets, bulk deletes, legacy-fence writes, the implementation
     approval gate, and invoking `ask_question` on waiting turns) from defaults.
     When a default would make the result worse, the agent says so and uses
     judgment; explicit user preferences win. Word caps and layout rules are now
     targets instead of hard limits.
--   **Settled Decisions Are Agreed Intent (`ADR 0021`, `ADR 0016` amendment,
+-   **Settled Decisions Are Agreed Intent (`ADR 0022`, `ADR 0016` amendment,
     `skills/arm-new-track/SKILL.md`)**: Settled decisions are verified
     semantically against existing skill/controller descriptions, prompts, docs,
     and sibling contracts before being encoded, treat approved concepts/drafts
     as binding as a whole, and trigger an Interpretation Check question when
     universal words (`only`, `never`, `every`, `remove all`) would delete
     existing behaviors. `ADR 0016` precision applies to verified facts.
--   **Large Fan-Out Pilot Gate & Source-Fidelity Review (`ADR 0021`, `ADR 0013`
+-   **Large Fan-Out Pilot Gate & Source-Fidelity Review (`ADR 0022`, `ADR 0013`
     amendment, `skills/arm-implement/SKILL.md`,
     `skills/arm-implement/references/async_delegation.md`)**: Fan-outs over 5
     targets pilot 2–3 targets with user sign-off first and default to surgical

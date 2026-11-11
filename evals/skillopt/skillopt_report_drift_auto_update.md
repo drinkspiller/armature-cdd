@@ -1,5 +1,4 @@
 <!-- disableFinding(SNIPPET_EM_DASH) -->
-<!-- disableFinding(LINK_RELATIVE_G3DOC) -->
 
 # Formal Proof-of-Verification: Two-Tier Drift Auto-Update & Notify by Default (`v0.33.0`)
 
