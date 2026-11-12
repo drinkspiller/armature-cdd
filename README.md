@@ -140,15 +140,15 @@ you can interactively confirm that everything works as expected. With
 instructional walkthrough reel with Warm Amber callout cards, compact beat hints,
 and optional before/after comparison:
 
-![Armature /arm-review live walkthrough demo](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.gif)
+![Armature /arm-review live walkthrough demo](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/amber_chips_demo.gif)
 
 Watch the full-resolution recordings from
 [armature-media](https://github.com/drinkspiller/armature-cdd/releases/tag/armature-media):
-[MP4 (1080p)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.mp4)
+[MP4 (1080p)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/amber_chips_demo.mp4)
 ·
-[WebM (1080p)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.webm)
+[WebM (1080p)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/amber_chips_demo.webm)
 ·
-[GIF (1080px)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/drawdb_fk_audit_demo.gif).
+[GIF (1080px)](https://github.com/drinkspiller/armature-cdd/releases/download/armature-media/amber_chips_demo.gif).
 
 ### Quick questions and trivial changes (`/arm-chat`)
 
@@ -719,4 +719,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.39.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.39.2** — See [CHANGELOG.md](CHANGELOG.md) for release notes.

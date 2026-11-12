@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.39.2] - 2026-11-12
+
+### Changed
+
+-   **Warm Amber Screencast Status Chips (`ADR 0020`,
+    `skills/arm-review/scripts/instructional_reel.py`,
+    `skills/arm-review/scripts/test_instructional_reel.py`,
+    `skills/arm-review/references/screencast_adapter.md`,
+    `skills/arm-review/SKILL.md`)**:
+    -   Updated top-center `#armature-rec-chip` (`Scenario k of N`) and
+        `#armature-rec-ff-chip` (`Fast-forward ×N`) pills from dark translucent
+        black (`rgba(0,0,0,0.74)` / `#FFFFFF`) to the Warm Amber Note palette
+        (`chip.bg: #FDD663`, `chip.text: #181200`,
+        `chip.text-secondary: #332700` for the fast-forward clock,
+        `chip.border: rgba(24,18,0,0.28)`, `shadow.chip`) so they match the
+        spotlight ring, compact Beat Hints, and Step Cards (`13.3:1` and
+        `10.5:1` contrast).
+    -   Framed the compare-mode state dot (`BEFORE` / `AFTER`) with a `2px`
+        `#181200` border so both state indicators stay legible against the
+        `#FDD663` pill surface.
+
 ## [0.39.1] - 2026-11-11
 
 ### Fixed

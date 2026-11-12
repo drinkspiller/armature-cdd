@@ -63,8 +63,10 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
         "on-state": "#1B1300",
         "on-state.swatch": "#141414",
         "on-check": "#0D2614",
-        "chip.bg": "rgba(0,0,0,0.74)",
-        "chip.text": "#FFFFFF",
+        "chip.bg": "#FDD663",
+        "chip.text": "#181200",
+        "chip.text-secondary": "#332700",
+        "chip.border": "rgba(24,18,0,0.28)",
         "spot.ring": "#FDD663",
         "spot.glow": "rgba(253,214,99,0.45)",
         "spot.scrim": "rgba(0,0,0,0.57)",
@@ -108,6 +110,7 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
     "shadow": {
         "coach": "0 16px 48px rgba(0,0,0,0.46)",
         "beat": "0 12px 32px rgba(0,0,0,0.42)",
+        "chip": "0 12px 32px rgba(0,0,0,0.42)",
         "cursor": "drop-shadow(0 2px 4px rgba(0,0,0,0.40))",
     },
     "motion": {
@@ -148,7 +151,7 @@ DESIGN_TOKENS: dict[str, dict[str, object]] = {
 }
 
 # (foreground token, background token, minimum ratio, label). A background of
-# "chip.bg@white" means `chip.bg` composited over white (worst case).
+# "<token>@white" means `<token>` composited over white (worst case).
 CONTRAST_PAIRS: list[tuple[str, str, float, str]] = [
     ("coach.text", "coach.bg", 7.0, "coach primary"),
     ("coach.text-secondary", "coach.bg", 7.0, "coach secondary"),
@@ -171,7 +174,8 @@ CONTRAST_PAIRS: list[tuple[str, str, float, str]] = [
     ("card.text", "card.bg", 7.0, "card headline"),
     ("card.text-secondary", "card.bg", 7.0, "card body"),
     ("accent", "card.bg", 7.0, "card number and kicker"),
-    ("chip.text", "chip.bg@white", 7.0, "chip over light app"),
+    ("chip.text", "chip.bg", 7.0, "chip text"),
+    ("chip.text-secondary", "chip.bg", 7.0, "fast-forward elapsed clock"),
     ("on-check", "state.after", 7.0, "outro check"),
     ("on-state.swatch", "state.before", 7.0, "recap BEFORE swatch"),
     ("on-state.swatch", "state.after", 7.0, "recap AFTER swatch"),
@@ -653,11 +657,12 @@ _OVERLAY_JS_TEMPLATE = r"""
   const mkChip = (id) => {
     const c = document.createElement('div');
     c.id = id;
-    c.style.cssText = 'display:none;align-items:center;gap:' +
-        px(L['chip.gap'] - 2) + ';height:' + px(L['chip.height']) +
+    c.style.cssText = 'display:none;align-items:center;box-sizing:border-box;' +
+        'gap:' + px(L['chip.gap'] - 2) + ';height:' + px(L['chip.height']) +
         ';padding:0 ' + px(L['chip.pad_x']) + ';border-radius:999px;' +
         'background:' + C['chip.bg'] + ';color:' + C['chip.text'] + ';' +
-        font('chip') + 'white-space:nowrap;';
+        'border:1.5px solid ' + C['chip.border'] + ';box-shadow:' +
+        T.shadow.chip + ';' + font('chip') + 'white-space:nowrap;';
     chips.appendChild(c);
     return c;
   };
@@ -868,7 +873,9 @@ _OVERLAY_JS_TEMPLATE = r"""
         const dot = document.createElement('span');
         const d = px(L['chip.dot']);
         dot.style.cssText = 'width:' + d + ';height:' + d +
-            ';border-radius:50%;background:' + C['state.' + state] + ';';
+            ';border-radius:50%;box-sizing:border-box;background:' +
+            C['state.' + state] + ';border:' + px(2) + ' solid ' +
+            C['chip.text'] + ';';
         chip.appendChild(dot);
       }
       const label = document.createElement('span');
@@ -884,7 +891,8 @@ _OVERLAY_JS_TEMPLATE = r"""
       label.textContent = text;
       const clock = document.createElement('span');
       clock.textContent = elapsed || '';
-      clock.style.cssText = 'font-family:' + T.font.mono + ';opacity:0.85;';
+      clock.style.cssText = 'font-family:' + T.font.mono + ';color:' +
+          C['chip.text-secondary'] + ';';
       ffChip.appendChild(label);
       ffChip.appendChild(clock);
       ffChip.style.display = 'inline-flex';

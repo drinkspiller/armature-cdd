@@ -84,10 +84,11 @@ run through the legacy `CDPRecorder` path unchanged.
 -   **Strict Ban:** Never use `.innerHTML`, `.outerHTML`, or
     `insertAdjacentHTML` in overlay or card scripts.
 -   **Warm Amber Visual System & Referent Rule:** Direction C black cards use
-    `#FDD663` accents (`15.0:1`). In-app Step Cards (`#armature-rec-coach`) and
-    compact Beat Hints (`#armature-rec-beat`) share the Warm Amber Note palette
-    (`#FDD663` bg, `#181200` ink, `13.3:1`) paired with a matching `#FDD663`
-    spotlight ring (`getBoundingClientRect()` at render time). Setting
+    `#FDD663` accents (`15.0:1`). In-app Step Cards (`#armature-rec-coach`),
+    compact Beat Hints (`#armature-rec-beat`), and top-center status pills
+    (`#armature-rec-chip`, `#armature-rec-ff-chip`) share the Warm Amber Note
+    palette (`#FDD663` bg, `#181200` ink, `13.3:1`) paired with a matching
+    `#FDD663` spotlight ring (`getBoundingClientRect()` at render time). Setting
     `selector` shows the spotlight ring and attaches a directional pointer tail;
     omitting `selector` drops both ring and tail so stage-narrative Step Cards
     float in the bottom-center margin.
