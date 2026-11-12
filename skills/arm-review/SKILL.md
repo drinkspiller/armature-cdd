@@ -29,6 +29,10 @@ the developer through automated interactive manual testing across scenarios.
 1.  Check for user-provided arguments describing what to review and mode flags:
     -   `--both` or `--comprehensive`: Run Full Review (Iterative Multi-Expert
         Review-and-Repair Loop + Guided Manual Testing).
+    -   `--automated` or `--screencast`: Run Full Review + Automated Screencast
+        Testing (Iterative Multi-Expert Review-and-Repair Loop, then
+        automatically execute all `manual_testing.md` scenarios against the live
+        app with screencast recordings instead of manual walkthrough steps).
     -   `--manual` or `--interactive`: Run Guided Manual Testing only.
     -   `--static`: Run Iterative Multi-Expert Review-and-Repair Loop (Code
         Audit) only.
@@ -107,6 +111,9 @@ the developer through automated interactive manual testing across scenarios.
     -   *Options:*
         -   `"(Recommended) Full Review: Check code and tests, then walk through
             manual scenarios together"`
+        -   `"Full Review + Automated Screencast Testing: Check code and tests,
+            then run all scenarios automatically against the live app with
+            screencasts"`
         -   `"Interactive Testing only: Prepare the environment and guide me
             through manual scenarios"`
         -   `"Code Audit only: Inspect diff, automated tests, style guides, and
@@ -284,7 +291,8 @@ Across each pass of the review loop, verify:
     `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tracks/<track_name>/manual_testing.md`.
 -   **Pre-Manual-Testing Unapplied Blocker Gate (Transition to Step 2.5):**
     -   When the review mode includes Interactive Manual Testing (`Full Review`)
-        and the repair loop finishes:
+        or Automated Screencast Testing (`Full Review + Automated Screencast
+        Testing`) and the repair loop finishes:
         -   **Case A — Unapplied `S0` or `S1` Blockers Remain (Mandatory
             Same-Turn `ask_question` Modal — Never End Turn With Text Alone):**
             If $\ge 1$ blocking (`S0` or `S1`) findings remain unapplied (e.g.,
@@ -305,21 +313,27 @@ Across each pass of the review loop, verify:
                     (treat as false positive / tech debt)"`
                 3.  `"Stop after Code Audit and write review.md now"`
         -   **Case B — Zero Unapplied `S0`/`S1` Blockers Remain (Mandatory
-            Same-Turn Transition Into Step 2.5 Scenario 1 + `ask_question`):**
+            Same-Turn Transition Into Step 2.5):**
             If `0` unapplied `S0`/`S1` findings remain (even if non-blocking
             `S2`/`S3` suggestions were skipped via `skipped_spec_adr_precedence`
             or surgical scope filtering), do **NOT** pause at the blocker gate
             and do **NOT** write `review.md` yet. In that **single response
             turn**, render the `## Review Loop Iteration Breakdown` markdown
-            table at the top of your chat response, proceed **directly into Step
-            2.5** by rendering **Scenario 1** (using the canonical 6-part
-            structure with sanitized `localhost` URL and
-            `##### Expected Observations`), and **IMMEDIATELY invoke the native
-            `ask_question` tool in the same turn** asking
-            `"Did Scenario 1 meet the expected outcome?"` with the Step 2.5
-            verification options (`"(Recommended) Verified: ..."`,
-            `"Didn't match expectation (I will describe what occurred)"`,
-            `"Skip to next scenario"`).
+            table at the top of your chat response, and proceed **directly into
+            Step 2.5**:
+            -   For **`Full Review + Automated Screencast Testing`** (`--automated`
+                / `--screencast` / `--both --record`), proceed directly into
+                **Path C (Automated Scenario Testing with Screencasts)** below
+                (running Hybrid Smart Gate setup, `check_recording_prerequisites`,
+                and storyboard/server confirmation via `ask_question`).
+            -   For **`Full Review`** (interactive), render **Scenario 1**
+                (using the canonical 6-part structure with sanitized `localhost`
+                URL and `##### Expected Observations`), and **IMMEDIATELY invoke
+                the native `ask_question` tool in the same turn** asking
+                `"Did Scenario 1 meet the expected outcome?"` with the Step 2.5
+                verification options (`"(Recommended) Verified: ..."`,
+                `"Didn't match expectation (I will describe what occurred)"`,
+                `"Skip to next scenario"`).
 
 #### 2.5 Interactive Verification Phase (Guided Manual Testing)
 
@@ -730,9 +744,13 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 title and summary (never a comma-separated feature list), one
                 entry per scenario (`title`, `goal`, `watch_for`, narrated
                 `steps`), and outro checklist items. Write all on-screen copy in
-                active second-person UX copy (zero `snake_case`, `ALL_CAPS`, API
-                paths, function names, or AI filler such as `cleanly`,
-                `seamlessly`, `effortlessly`, `leverage`, or `robust`). Attach compact `beat`
+                active second-person UX copy describing only what a viewer sees
+                on screen and why it matters (run a quick `/ux-copy`
+                plain-language pass; zero `snake_case`, `ALL_CAPS`, API paths,
+                function names, backend/test jargon such as `mesh`, `GLB`,
+                `read-only`, `latches`, `unmatched`, or `status stays at none`,
+                or AI filler such as `cleanly`, `seamlessly`, `effortlessly`,
+                `leverage`, or `robust`). Attach compact `beat`
                 hints (`"Selecting Standard Preset..."`, `click.beat` /
                 `type.beat` or standalone `beat`) on intermediate control
                 actions that would otherwise happen silently, and apply the
@@ -788,6 +806,56 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 via the active Host Screencast Adapter
                 (`references/screencast_adapter.md`) and embedding the verified
                 media links in `manual_testing.md` and `review.md`.
+
+##### Path C: Automated Scenario Testing with Screencasts (`Full Review + Automated Screencast Testing` / `--automated`)
+
+When the user selects `"Full Review + Automated Screencast Testing: ..."` at
+the Review Mode Gate (or passes `--automated` / `--screencast` / `--both
+--record`), **skip the manual step-by-step user walkthrough** and instead run
+all scenarios automatically against the live `localhost` application while
+capturing screencasts:
+
+1.  **Scenario Extraction & Environment Prep (Hybrid Smart Gate):**
+    -   Extract all scenarios `1..N` from `manual_testing.md` (and any matching
+        domain runbooks).
+    -   Execute non-destructive fixture/seed setup commands automatically via
+        the Hybrid Smart Gate (reporting exit codes in chat), and gate any
+        state-mutating or destructive setup commands via `ask_question`.
+2.  **Prerequisite Pre-Flight & Storyboard Confirmation (`ask_question`):**
+    -   Run `check_recording_prerequisites` to verify `localhost` reachability
+        and required binaries (`google-chrome`/`chromium`/`playwright`,
+        `ffmpeg`, `gifsicle`). If the server is not running or binaries are
+        missing, prompt via `ask_question` before starting the server or
+        installing packages (`spawned_server_pid` tracked for cleanup).
+    -   On Tier 0 non-UI tracks (no browser routes or UI scenarios), execute
+        automated CLI/backend scenario checks directly without launching a
+        browser.
+    -   On UI tracks, build and validate the `ADR 0020` v2 `reel` recipe covering
+        all scenarios (`instructional_reel.py --spec <recipe> --validate_only`),
+        surface the scenario list and storyboard summary in chat, and confirm
+        via `ask_question` before starting capture.
+3.  **Automated Execution, Observation Verification & Reel Capture:**
+    -   Execute every scenario `1..N` sequentially against the live
+        `localhost` server via `instructional_reel.run_reel` (or
+        `cdp_screencast_recorder.py`), verifying each scenario's
+        `Expected Observations` (DOM state, visible text, console/network
+        assertions) and recording per-scenario staged clips (`scenario_<id>.mp4`)
+        stitched into H.264 `.mp4`, VP9 `.webm`, and `1080px` Lanczos 2-pass
+        `.gif`.
+    -   Update the `### Manual Testing Verification Ledger` (`[x] Verified` /
+        `[!] Logged Issue`) as each scenario completes.
+    -   If a scenario fails an assertion, times out, or hits
+        `fatal_error_selector`, save `<name>_diagnostic.png`, clean up
+        `spawned_server_pid` if needed, and prompt via `ask_question` to apply
+        a targeted fix and re-record only invalidated scenario(s) or log the
+        issue.
+4.  **Pre-Upload Inspection Gate & Step 3 Transition:**
+    -   Verify `readability_violations(frame_log)` is empty, surface the local
+        preview paths and automated scenario results, and confirm via
+        `ask_question` before any remote upload via the active Host Screencast
+        Adapter (`references/screencast_adapter.md`), then proceed directly to
+        Step 3 (`review.md` with `## Interactive Verification Log` and
+        `## Recorded Verification Media`).
 
 ### 3. Review & Resolution
 

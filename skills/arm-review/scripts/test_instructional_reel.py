@@ -257,6 +257,39 @@ class ValidationTest(unittest.TestCase):
     self.assertIn("AI-filler", joined)
     self.assertNotIn("Selecting Standard Preset", joined)
 
+  def test_copy_hygiene_warns_on_backend_and_state_jargon(self):
+    """Warns on lowercase backend/test jargon and passes plain UX copy."""
+    spec = self._base()
+    spec["reel"]["summary"] = "Build latches once on first open"
+    sc = spec["reel"]["scenarios"][0]
+    sc["title"] = "Project reads stay read-only"
+    sc["goal"] = "Solid mesh part where status stays at none"
+    sc["steps"] = [
+        {"action": "narrate", "text": "Step 2 has an unmatched part."}
+    ]
+    errors, warnings = reel.validate_reel_spec(spec)
+    self.assertEqual(errors, [])
+    joined = "\n".join(warnings)
+    for term in (
+        "read-only",
+        "latches",
+        "mesh",
+        "status stays at none",
+        "unmatched",
+    ):
+      self.assertIn(term, joined)
+
+    plain = self._base()
+    plain["reel"]["scenarios"][0][
+        "title"
+    ] = "Open Build to refresh an outdated guide"
+    plain["reel"]["scenarios"][0]["goal"] = (
+        "Skips creating a guide for a one-piece 3D part"
+    )
+    p_errors, p_warnings = reel.validate_reel_spec(plain)
+    self.assertEqual(p_errors, [])
+    self.assertEqual(p_warnings, [])
+
   def test_beat_does_not_increment_coach_step_total(self):
     steps = [
         {"action": "beat", "selector": "#a", "text": "Selecting Standard Preset..."},

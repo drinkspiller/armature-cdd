@@ -402,6 +402,23 @@ _COPY_HYGIENE_CHECKS: tuple[tuple[re.Pattern[str], str], ...] = (
         ),
         "contains AI-filler phrasing; use plain UX copy",
     ),
+    (
+        re.compile(
+            r"\b(?:mesh|GLB|latches?|read-only|RPC|payload|unmatched)\b",
+            re.IGNORECASE,
+        ),
+        (
+            "contains backend/test jargon; describe what is visible on screen"
+            " in plain language"
+        ),
+    ),
+    (
+        re.compile(
+            r"\bstatus\s+(?:stays\s+at|is|=)\s+(?:none|null)\b",
+            re.IGNORECASE,
+        ),
+        "contains internal state jargon; describe what the user sees instead",
+    ),
 )
 
 

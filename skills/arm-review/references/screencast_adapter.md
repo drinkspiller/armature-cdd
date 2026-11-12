@@ -92,10 +92,12 @@ run through the legacy `CDPRecorder` path unchanged.
     `selector` shows the spotlight ring and attaches a directional pointer tail;
     omitting `selector` drops both ring and tail so stage-narrative Step Cards
     float in the bottom-center margin.
--   **Copy Hygiene:** Keep intro/scenario cards oriented on user goals and avoid
-    code identifiers (`snake_case`, `ALL_CAPS`, internal paths) or AI filler
-    (`cleanly`, `seamlessly`, `effortlessly`); `validate_reel_spec` warns when
-    these appear.
+-   **Copy Hygiene (Visible-on-Screen Plain Language):** Keep intro/scenario
+    cards and callouts oriented on user goals and what is visibly happening on
+    screen; avoid code identifiers (`snake_case`, `ALL_CAPS`, internal paths),
+    backend/test jargon (`mesh`, `GLB`, `read-only`, `latches`, `unmatched`,
+    `status stays at none`), or AI filler (`cleanly`, `seamlessly`,
+    `effortlessly`); `validate_reel_spec` warns when these appear.
 
 ### 3.3 Reading-Time Pacing & Timelapse
 

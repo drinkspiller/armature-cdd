@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 :: Armature (OSS) Skills & Rules Installer (Windows)
 :: =============================================================================
 
-set "VERSION=0.39.2"
+set "VERSION=0.40.0"
 set "FLAGS_dry_run=0"
 set "FLAGS_force=0"
 set "FLAGS_uninstall=0"

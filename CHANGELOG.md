@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.40.0] - 2026-11-12
+
+### Added
+
+-   **Automated Screencast Review Mode Option (`/arm-review`, `ADR 0019`,
+    `ADR 0020`)**:
+    -   Added `"Full Review + Automated Screencast Testing: Check code and
+        tests, then run all scenarios automatically against the live app with
+        screencasts"` to the Review Mode Gate `ask_question` options (plus
+        `--automated` / `--screencast` flag aliases).
+    -   Added **Path C: Automated Scenario Testing with Screencasts** in Step
+        2.5 so selecting that option skips manual step-by-step user
+        walkthroughs, runs Hybrid Smart Gate setup, executes all
+        `manual_testing.md` scenarios against the live `localhost` server via
+        `instructional_reel.run_reel`, records stitched `.mp4`/`.webm`/`1080px`
+        `.gif` reels, and proceeds to `review.md` after pre-upload confirmation.
+-   **Unit & Eval Coverage (`evals/cdd_sdd_benchmark/tests/`,
+    `evals/skillopt/tasks/val_review_format.jsonl`)**:
+    -   Added `test_arm_review_screencast_options.py` and
+        `VAL_05_ARM_REVIEW_MODE_GATE_SCREENCAST` to verify the `/arm-review`
+        Review Mode Gate screencast option and plain-language guardrails.
+
+### Fixed
+
+-   **Plain-Language Copy Hygiene Guardrails (`instructional_reel.py`,
+    `rules/armature_protocol.md`, `skills/arm-review/SKILL.md`,
+    `skills/arm-review/references/screencast_adapter.md`)**: Added
+    `_COPY_HYGIENE_CHECKS` warnings for lowercase backend/test jargon (`mesh`,
+    `GLB`, `read-only`, `latches`, `unmatched`, `status stays at none`),
+    required a visible-on-screen UX-copy pass for screencast storyboards, and
+    reinforced behavior-first plain-language prose in `ask_question` turns.
+
 ## [0.39.2] - 2026-11-12
 
 ### Changed
