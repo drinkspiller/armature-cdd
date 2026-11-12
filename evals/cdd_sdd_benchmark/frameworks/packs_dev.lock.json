@@ -18,7 +18,7 @@
         "skills/arm-drift/SKILL.md": "41d657b2c09f4625ed1cc6917b15907ab95a695e8187f1a44ca317153c2d5836",
         "skills/arm-implement/SKILL.md": "7a4cffdeb7944d64925d4c868780d04bff59b58006807516f6c92b1cbdf6e6c5",
         "skills/arm-implement/references/async_delegation.md": "cf094a4452a58acaeb04a0bbf4d6ae169382d4d3ae59dd0cc0c06fca02a3af71",
-        "skills/arm-new-track/SKILL.md": "d5df3d1f48c5b030c0415c11e65a07c4db46775804c1298861d9948e6f1f8dd0",
+        "skills/arm-new-track/SKILL.md": "c0588e3744ee2c86df87fab2ab8a76bf5c760e270610c6cd21fb9eef2b5e2e0a",
         "skills/arm-new-track/references/ask_question_guide.md": "438b67852df31a48c3a808f3ac20c0a91870fbb47f23b3beb93c742f44b4bffa",
         "skills/arm-new-track/references/interview_formatting.md": "d81890213dc72049b976d16cc24de873e2e24246d908de82fb0ed313ee6d6353",
         "skills/arm-new-track/scripts/validate_flow_specs.py": "819e8e628d0324729d81503308fa2318579e2082e014cf637e4899715c23b11c",
@@ -38,13 +38,13 @@
         "system_prompt_addition_chars": 24973,
         "always_on_tokens_est": 5540,
         "system_prompt_addition_tokens_est": 6243,
-        "total_pack_chars": 373069,
-        "total_pack_tokens_est": 93267,
+        "total_pack_chars": 373922,
+        "total_pack_tokens_est": 93480,
         "files": 21,
         "skills": 8
       },
-      "git_head": "0729c3e48b9048345c71baf14f21e34a5a54104a",
-      "dirty_files": 21
+      "git_head": "fc5e7bac819c9249f1db849fdb68839cf577cc07",
+      "dirty_files": 1
     }
   },
   "excluded": {}
