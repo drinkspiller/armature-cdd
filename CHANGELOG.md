@@ -8,15 +8,30 @@ and this project adheres to
 
 ## [0.39.1] - 2026-11-11
 
+### Fixed
+
+-   **Zero-ADR Complexity Classifier Routing & Step 5.5 Gate 2 Two-Part Turn
+    Ordering (`ADR 0021`, `ADR 0022`, `skills/arm-new-track/SKILL.md`)**:
+    -   Routes tracks with zero qualifying ADRs at Phase 5b/5c through Step 5.5
+        (`Lock the Look` `2-Gate` when a UI track lacks a locked `DESIGN.md`)
+        and the Phase 5d Complexity Classifier (`Unified Spec+Plan Gate` when
+        `Phase Count ≤ 2`, or `Sequential Step 6` when `Phase Count ≥ 3`)
+        instead of jumping unconditionally to a single gate.
+    -   Enforces explicit Two-Part Turn Ordering on Step 5.5 Gate 2 and `--fast`
+        1-Gate so the 1-line Design Read and 3 visual variant summaries are
+        emitted in visible markdown `content` first, HTML/CSS prototype and
+        `plan.md` file writes execute second, and `ask_question` is invoked
+        last.
+
 ### Changed
 
 -   **Canonical `ADR 0021` / `ADR 0022` Numbering & Release Alignment**:
     -   Standardizes `ADR 0021` across rules, skills, validators, and evaluation
         harnesses to Three-Altitude UI/UX Elicitation, Flow Specs & `DESIGN.md`
         Contract (`0.39.0`), and standardizes `ADR 0022` to Judgment Over
-        Literal Compliance, Waiting Turns, Question-Box Fallback & Large
-        Fan-Out Pilot Gate (originally introduced in `0.37.1`) so release
-        versions and ADR identifiers stay aligned across editions.
+        Literal Compliance, Waiting Turns, Question-Box Fallback & Large Fan-Out
+        Pilot Gate (originally introduced in `0.37.1`) so release versions and
+        ADR identifiers stay aligned across editions.
 
 ## [0.39.0] - 2026-11-11
 
@@ -216,10 +231,11 @@ and this project adheres to
     `skills/arm-new-track/references/interview_formatting.md`,
     `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`,
     `skills/arm-implement/SKILL.md`, `skills/arm-review/SKILL.md`)**:
-    -   Promoted Step 5a, Phase 5b Devil's Advocate (`# Devil's Advocate:
-        <Topic>` followed by `### Finding 1 of N: <Subtitle>`), Brownfield
-        context discovery, and Turn 1 mismatch headings from `## <Topic>` (H2)
-        to `# <Topic>` (H1) for clearer visual hierarchy in chat.
+    -   Promoted Step 5a, Phase 5b Devil's Advocate
+        (`# Devil's Advocate: <Topic>` followed by
+        `### Finding 1 of N: <Subtitle>`), Brownfield context discovery, and
+        Turn 1 mismatch headings from `## <Topic>` (H2) to `# <Topic>` (H1) for
+        clearer visual hierarchy in chat.
     -   Removed the `1–3` line fenced `text` ASCII mental-model flow diagram
         blocks (`[Before] ──► [★ This choice] ──► [After]`) beneath interview
         headlines and added an explicit prohibition against fenced `text` ASCII
