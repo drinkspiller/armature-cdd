@@ -120,9 +120,11 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
     `active_context.md`) rather than repeating `**Settled**`, `**Now**`,
     `**Up next**`, or `Round X settled:` ledgers in chat, so the user can focus
     on the active question. Default layout: `# <Topic>` (H1, no fenced `text`
-    ASCII flow diagram), a 2–3 sentence plain-English orientation (no code
-    identifiers on the first pass; on follow-ups, name the prior choice that
-    raised the question) ending with
+    ASCII flow diagram), a 2–3 sentence plain-English orientation (behavior-first,
+    no code identifiers on the first pass; push internal symbol/RPC names into
+    parentheticals or `Safe to ignore for now`, never headlines or option
+    labels; on follow-ups, name the prior choice that raised the question)
+    ending with
     `The choice here is <X>. Here are some options:`, 2–4 numbered options
     (`1. <Option name>: <benefit>; <cost>`, recommended first),
     `Safe to ignore for now: <mechanics>.`, `### Recommendation: Option 1`
