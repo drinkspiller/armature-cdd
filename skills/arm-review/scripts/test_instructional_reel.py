@@ -129,7 +129,8 @@ class PacingAndTokensTest(unittest.TestCase):
         "card headline": 21.0,
         "card body": 13.0,
         "card number and kicker": 15.0,
-        "chip over light app": 10.0,
+        "chip text": 13.3,
+        "fast-forward elapsed clock": 10.5,
         "outro check": 8.2,
         "recap BEFORE swatch": 13.1,
         "recap AFTER swatch": 9.4,
@@ -150,6 +151,8 @@ class PacingAndTokensTest(unittest.TestCase):
     self.assertNotIn("cdp-demo-overlay-root", reel.REEL_OVERLAY_JS)
     self.assertIn("armature-rec-coach", reel.REEL_OVERLAY_JS)
     self.assertIn("armature-rec-beat", reel.REEL_OVERLAY_JS)
+    self.assertEqual(reel.DESIGN_TOKENS["color"]["chip.bg"], "#FDD663")
+    self.assertEqual(reel.DESIGN_TOKENS["color"]["chip.text"], "#181200")
 
 
 class ValidationTest(unittest.TestCase):
@@ -537,6 +540,34 @@ class ReelIntegrationTest(unittest.TestCase):
       unanchored = rec.show_coach(None, "All checks passed.", None, 1, 1, None)
       self.assertEqual(unanchored["side"], "center")
       self.assertFalse(unanchored["tailed"])
+      rec.set_chip("Scenario 1 of 1", "before")
+      rec.eval_js("window.__armRec.ff('Fast-forward ×9', '12s')")
+      chip_styles = rec.eval_js(
+          "(() => { const c = document.getElementById('armature-rec-chip');"
+          " const f = document.getElementById('armature-rec-ff-chip');"
+          " const cs = getComputedStyle(c);"
+          " const fs = getComputedStyle(f);"
+          " const dot = c.firstElementChild;"
+          " return {cBg: cs.backgroundColor, cColor: cs.color,"
+          " fBg: fs.backgroundColor, fColor: fs.color,"
+          " fClockColor: getComputedStyle(f.lastElementChild).color,"
+          " dotBorder: dot ? getComputedStyle(dot).borderTopColor : null}; })()"
+      )
+      self.assertEqual(chip_styles["cBg"], "rgb(253, 214, 99)")
+      self.assertEqual(chip_styles["cColor"], "rgb(24, 18, 0)")
+      self.assertEqual(chip_styles["fBg"], "rgb(253, 214, 99)")
+      self.assertEqual(chip_styles["fColor"], "rgb(24, 18, 0)")
+      self.assertEqual(chip_styles["fClockColor"], "rgb(51, 39, 0)")
+      self.assertEqual(chip_styles["dotBorder"], "rgb(24, 18, 0)")
+      rec.set_chip("Scenario 1 of 1 \u00b7 AFTER", "after")
+      after_dot = rec.eval_js(
+          "(() => { const d ="
+          " document.getElementById('armature-rec-chip').firstElementChild;"
+          " const s = getComputedStyle(d);"
+          " return {bg: s.backgroundColor, border: s.borderTopColor}; })()"
+      )
+      self.assertEqual(after_dot["bg"], "rgb(129, 201, 149)")
+      self.assertEqual(after_dot["border"], "rgb(24, 18, 0)")
     finally:
       rec.close()
 

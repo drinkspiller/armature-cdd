@@ -758,8 +758,10 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
                 `cdp_screencast_recorder.py --spec` with a `reel` recipe). The
                 engine renders Direction C title cards with Warm Amber
                 (`#FDD663`) accents in a dedicated tab, Warm Amber Note
-                (`#FDD663` surface, `#181200` ink) Step Cards and compact Beat
-                Hints with matching `#FDD663` spotlight rings built only with
+                (`#FDD663` surface, `#181200` ink, `#332700` fast-forward clock,
+                `#181200`-rimmed compare state dots) Step Cards, compact Beat
+                Hints, and top-center status/fast-forward chips with matching
+                `#FDD663` spotlight rings built only with
                 `document.createElement` (never `.innerHTML`), referent-based
                 tails (`selector` set → tailed; `selector` omitted → tailless),
                 reading-time holds, labeled fast-forward segments for extended
