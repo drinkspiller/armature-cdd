@@ -36,6 +36,18 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     `ask_question` with `{"questions": [{"question": "...", "options": [...]}]}`
     (Option 1 prefixed with `"(Recommended) "`, options matching the numbered
     `<Option name>` lines 1:1, no manual `"Other"` option).
+-   **Question First, Bookkeeping in the Same Step:** When a turn has to record
+    something (append a settled decision, update a draft, run a quick command)
+    and then ask, don't spend separate steps on the bookkeeping first. Put the
+    whole visible turn (the `# <Topic>` heading and body) at the start of one
+    step, then the bookkeeping calls, then `ask_question`, all in that step.
+    Don't check whether a draft file exists before asking; create or append to
+    it in the asking step. If earlier steps in the turn already ran tools,
+    write the asking step's visible text as if it were the whole reply,
+    starting with the `# <Topic>` heading. A first-person summary of the
+    options or recommendation in `thinking` (*"I'm recommending option 1..."*)
+    means the explanation went to the wrong place: put it in visible text
+    before calling the tool.
 -   **Self-Contained Question Box:** Some models and hosts drop or hide the chat
     text next to the box, so the box must stand on its own. Use `question` for
     one or two plain sentences (up to about 40 words, no markdown) that name the
@@ -53,7 +65,9 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     chat, without `ask_question`, only when the user asks you to stop using the
     box or to ask in chat (keep doing so until they ask for the box again), when
     `ask_question` is unavailable, or when a recovery box also came back blank
-    or skipped (for that one question). End the turn after the question so the
+    or skipped (for that one question), including when the Armature
+    `ask_question` guard hook blocks a blank box a second time. End the turn
+    after the question so the
     user can reply. Plain-text mode replaces only the delivery; the content
     (options, recommendation, one question at a time) stays the same.
 -   **Streaming Flush Before Heavy `write_file` Calls:** Keep Step 6/7 visible
