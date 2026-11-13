@@ -50,13 +50,14 @@ project).
         specified a discovery scope, output the Brownfield Focus + Succinct
         `/zoom-out` body (`# Context Discovery Scope`, unlabeled orientation
         with zero fenced `text` ASCII flow diagrams ending in
-        `The choice here is <X>. Here are some options:`, numbered one-line
-        options, `Safe to ignore for now:` line, `### Recommendation: Option 1`
-        with one sentence, and `- Pick N if …` lines) explaining that Deep
-        Retroactive Archaeology mines VCS commits and transcripts to inform all
-        artifacts AND executes an autonomous batch synthesis "Ralph loop"
-        pausing once at a Single Unified Review Gate, and invoke `ask_question`
-        (Step 2.0 Scope Gate).
+        `The choice here is <X>. Here are some options:`, concise blockquote
+        option cards with `Pros` / `Cons` / `Implications`,
+        `Safe to ignore for now:` line, `### Recommendation: Option 1` with one
+        sentence, and `- Pick N if …` lines) explaining that Deep Retroactive
+        Archaeology mines VCS commits and transcripts to inform all artifacts
+        AND executes an autonomous batch synthesis "Ralph loop" pausing once at
+        a Single Unified Review Gate, and invoke `ask_question` (Step 2.0 Scope
+        Gate).
     -   If the user prompt **ALREADY explicitly specifies or selects** a
         discovery scope (e.g., `"using Deep Retroactive Archaeology"`,
         `"choose Deep Retroactive Archaeology"`, or selecting Option 1), do
@@ -141,27 +142,28 @@ project).
             orientation stating what changes in practice depending on the scope
             (history-backed setup docs versus a quick file-based start) ending
             in `The choice here is which sources setup reads before drafting.
-            Here are some options:`, numbered one-line options placing `1.
-            Search past conversations, commit history, and current codebase
-            (Deep Retroactive Archaeology): ...` first, `2. Look only at current
-            codebase contents (Current Snapshot Only): ...` second, and `3.
-            Customize scan sources (e.g., commits + files only, or manual
-            description): ...` third, a `Safe to ignore for now:` line,
-            `### Recommendation: Option 1` with one sentence, and bulleted
-            `- Pick N if …` lines.
-            -   In the Deep Retroactive Archaeology option line and the
-                recommendation sentence, explicitly state that it mines VCS
-                commits and past session transcripts to inform all setup
-                artifacts (`product.md`, `tech-stack.md` Legacy Fences,
-                `workflow.md`, `terms.md`, `manual_testing/`, and `adr/`), AND
-                explicitly note that it executes an **autonomous batch synthesis
-                ("Ralph loop")** across all setup artifacts in one uninterrupted
-                pass—pausing **once** at a **Single Unified Review Gate** before
-                committing rather than prompting on every individual file.
+            Here are some options:`, concise blockquote option cards
+            (`> **Option 1: Search past conversations, commit history, and
+            current codebase (Deep Retroactive Archaeology) (Recommended)**`,
+            `> **Option 2: Look only at current codebase contents (Current
+            Snapshot Only)**`, `> **Option 3: Customize scan sources (e.g.,
+            commits + files only, or manual description)**`, each with concise
+            inline `Pros`, `Cons`, and `Implications` bullets), a
+            `Safe to ignore for now:` line, `### Recommendation: Option 1` with
+            one sentence, and bulleted `- Pick N if …` lines.
+            -   In the Deep Retroactive Archaeology card and the recommendation
+                sentence, explicitly state that it mines VCS commits and past
+                session transcripts to inform all setup artifacts (`product.md`,
+                `tech-stack.md` Legacy Fences, `workflow.md`, `terms.md`,
+                `manual_testing/`, and `adr/`), AND explicitly note that it
+                executes an **autonomous batch synthesis ("Ralph loop")** across
+                all setup artifacts in one uninterrupted pass—pausing **once**
+                at a **Single Unified Review Gate** before committing rather
+                than prompting on every individual file.
         -   **Context Discovery Scope Gate (Two-Part Turn Contract)**: Output
             **BOTH** non-empty visible markdown (finishing directly on the final
             `- Pick 3 if …` bullet with zero trailing self-narration and keeping
-            the decision block `<= 220` words total) **AND** a native structured
+            the decision block `<= 300` words total) **AND** a native structured
             `ask_question` tool call in that **exact same turn** (never stop
             with markdown text alone, and never emit a bare `ask_question` call
             without visible markdown), matching `<Option name>` from `1..3`

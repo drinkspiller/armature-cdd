@@ -115,7 +115,7 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
     emit non-empty visible explanation in `content` on that same step AND invoke
     `ask_question` (`{"questions": [{"question": "...", "options": [...]}]}`),
     unless Plain-Text Question Mode applies (`armature_antigravity.md`).
--   **Focus + Succinct Zoom-Out Layout (`<= 220` Words Target):** Keep settled
+-   **Focus + Succinct Zoom-Out Layout (`<= 300` Words Target):** Keep settled
     decisions and queued questions on disk (`spec.md` `status: draft` +
     `active_context.md`) rather than repeating `**Settled**`, `**Now**`,
     `**Up next**`, or `Round X settled:` ledgers in chat, so the user can focus
@@ -125,19 +125,26 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
     parentheticals or `Safe to ignore for now`, never headlines or option
     labels; on follow-ups, name the prior choice that raised the question)
     ending with
-    `The choice here is <X>. Here are some options:`, 2–4 numbered options
-    (`1. <Option name>: <benefit>; <cost>`, recommended first),
+    `The choice here is <X>. Here are some options:`, 2–4 concise blockquote
+    option cards (recommended first as
+    `> **Option 1: <Option name> (Recommended)**` with single-clause inline
+    `> - **Pros:**`, `> - **Cons:**`, and `> - **Implications:**` bullets),
     `Safe to ignore for now: <mechanics>.`, `### Recommendation: Option 1`
     followed on the next line by **exactly one plain-English rationale
     sentence** (never leave the heading bare above `- Pick`), and
     `- Pick N if <condition>.` lines. Keep headline-to-last-Pick concise
-    (`120-220` words; exceed `220` only when cutting a critical safety caveat
-    would mislead the user). Match `ask_question` options to the numbered
-    `<Option name>` lines (Option 1 prefixed with `"(Recommended) "`), plus
-    `"I need more context, zoom out and give examples"` on substantive turns. On
-    Need-More-Context / `"zoom out"` / `"too vague"` turns, answer from the
-    conversation without new file reads, walk through 1–2 concrete domain
-    examples above `---`, and rewrite the turn + `ask_question`.
+    (`160-300` words; exceed `300` only when cutting a critical safety caveat
+    would mislead the user). Match `ask_question` options to the `<Option name>`
+    titles (Option 1 prefixed with `"(Recommended) "`), plus
+    `"I need more context, zoom out and give examples"` on substantive turns.
+    When the user asks a follow-up question, always start the reply with an
+    `# <Topic>` H1 heading describing the topic being followed up on (never a
+    bare numbered or H3 heading), answer clearly, and if a decision remains
+    open, follow `---` with the re-teed `# <Decision Topic>` turn and
+    `ask_question`. On Need-More-Context / `"zoom out"` / `"too vague"` turns,
+    answer from the conversation without new file reads, walk through 1–2
+    concrete domain examples in plain paragraphs above `---` (no cards above
+    `---`), and rewrite the turn + `ask_question`.
 -   **Recursive Grill Engine (`Depth <= 2`):** Round choices spawn 1–2 Tier 1
     operational follow-up questions (failure modes, timeouts, concurrency,
     schema evolution, proto3 zero-values/`FieldMask`, GraphQL `@key`
