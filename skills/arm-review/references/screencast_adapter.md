@@ -101,18 +101,18 @@ run through the legacy `CDPRecorder` path unchanged.
 
 ### 3.3 Reading-Time Pacing & Timelapse
 
--   Coach marks hold for `max(3.0, 1.0 + words / 160 × 60)` s, compact Beat
+-   Coach marks hold for `max(2.0, 0.65 + words / 240 × 60)` s, compact Beat
     Hints (`beat` / `click.beat` / `type.beat`) hold for
-    `max(2.0, 0.8 + words / 160 × 60)` s, and cards hold for
-    `max(4.0, 1.5 + words / 180 × 60)` s (kicker excluded). Explicit
+    `max(1.3, 0.5 + words / 240 × 60)` s, and cards hold for
+    `max(2.7, 1.0 + words / 270 × 60)` s (kicker excluded). Explicit
     `hold_seconds` may only raise these values.
--   Clicks: distance-scaled cursor travel (0.6–1.1 s), 0.8 s dwell on the
-    spotlighted target, click ripple, then the result coach after 0.5 s.
+-   Clicks: distance-scaled cursor travel (0.4–0.75 s), 0.55 s dwell on the
+    spotlighted target, click ripple, then the result coach after 0.35 s.
 -   Extended async waits (`wait_for_js`) capture one frame per `0.5-1.0s`
-    interval behind a `Fast-forward ×N` chip with elapsed seconds, with 1.0 s
-    real-time holds before and after.
--   Capture at 10 fps, encode segments at 30 fps with fades (0.5 s in, 0.6 s
-    out, 0.4 s per side through black), then stitch.
+    interval (default `0.9s`, `9x` timelapse) behind a `Fast-forward ×N` chip
+    with elapsed seconds, with 0.7 s real-time holds before and after.
+-   Capture at 10 fps, encode segments at 30 fps with fades (0.35 s in, 0.4 s
+    out, 0.25 s per side through black), then stitch.
 -   After recording, `readability_violations(frame_log)` must return no entries.
 
 ### 3.4 Before/After Baseline Sourcing (Compare Scenarios Only)

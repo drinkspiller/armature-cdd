@@ -95,31 +95,34 @@ resolving all open rounds, questions, and ambiguities.
     answer. Probing depth is strictly bounded to Depth <= 2 (Round -> Question).
     Question answers are terminal (Settled) and MUST NOT spawn further nested
     questions.
--   **Focus + Succinct `/zoom-out` Interview Turn Format & Mandatory Tool
-    Pairing (Zero Text-Only Stalls):** In EVERY turn of Step 5 where choices are
-    presented, render the Focus + Succinct `/zoom-out` layout defined in Phase
+-   **Focus + Concise Option Cards Interview Format & Mandatory Tool Pairing
+    (Zero Text-Only Stalls):** In EVERY turn of Step 5 where choices are
+    presented, render the Focus + Concise Option Cards layout defined in Phase
     5a (see `skills/arm-new-track/references/interview_formatting.md` and
     `skills/arm-new-track/references/ask_question_guide.md` for detailed
     formatting examples and Zoom-Out/Zoom-In templates—`# <Topic>` clean H1
     topic headline without `Round R, Question Q` prefixes and with zero fenced
     `text` ASCII flow diagrams, an unlabeled 2–3 sentence plain-English
     orientation ending in `The choice here is <X>. Here are some options:` with
-    zero prose code identifiers or backend systems jargon, numbered one-line
-    options placing the recommended option at `1.`, `Safe to ignore for now:`
-    line, `### Recommendation: Option 1` with one sentence, and bulleted
-    `- Pick N if …` lines, with **zero `**Settled**` / `**Now**` / `**Up next**`
-    lists**) and pair it with an immediate native `ask_question` tool call in
-    the exact same turn. End your markdown response immediately after the last
-    `- Pick N if …` line with a clean newline. NEVER append transitional
-    self-narration sentences at the end of your text (e.g., *"I will now ask for
-    your decision on..."* or *"Let's call ask_question..."*), which cause token
-    concatenation and break tool parsing. Invoke `ask_question` exclusively as a
-    native structured tool call in that exact same turn—never emit raw
+    zero prose code identifiers or backend systems jargon, concise blockquote
+    option cards (`> **Option 1: <Option name> (Recommended)**` with
+    single-clause inline `> - **Pros:**`, `> - **Cons:**`, and
+    `> - **Implications:**` bullets) placing the recommended option at `1.`,
+    `Safe to ignore for now:` line, `### Recommendation: Option 1` with one
+    sentence, and bulleted `- Pick N if …` lines—staying compact (`160–300`
+    words) with **zero `**Settled**` / `**Now**` / `**Up next**` lists**) and
+    pair it with an immediate native `ask_question` tool call in the exact same
+    turn. End your markdown response immediately after the last `- Pick N if …`
+    line with a clean newline. NEVER append transitional self-narration
+    sentences at the end of your text (e.g., *"I will now ask for your decision
+    on..."* or *"Let's call ask_question..."*), which cause token concatenation
+    and break tool parsing. Invoke `ask_question` exclusively as a native
+    structured tool call in that exact same turn—never emit raw
     `call:default_api:ask_question{...}` strings in the markdown stream, and
     don't end your turn after markdown without calling `ask_question` unless
     Plain-Text Question Mode applies. In `ask_question`, populate options `1..K`
-    using the **exact same plain-English `<Option name>`** (the phrase before
-    `:` in `1. <Option name>: <benefit>; <cost>`) in exact 1-to-1 order, prefix
+    using the **exact same plain-English `<Option name>`** from each
+    `> **Option N: <Option name>**` card header in exact 1-to-1 order, prefix
     Option 1 with `"(Recommended) "` (never replacing `<Option name>` with the
     `Pick N if` sentences!), and append
     `"I need more context, zoom out and give examples"` as the final choice on
@@ -129,15 +132,17 @@ resolving all open rounds, questions, and ambiguities.
     `"I need more context, zoom out and give examples"` (or writes in
     `"zoom out"` / `"too vague"` / `"explain"`), make zero read/search tool
     calls, walk through 1–2 concrete named domain examples in plain everyday
-    English above `---`, and re-tee a rewritten Focus + Succinct `/zoom-out`
-    turn + `ask_question`. Render the Zoom-In View (`**Pros:**` / `**Cons:**` /
-    `**Implications:**` cards) strictly when the user explicitly writes in
-    `"zoom in"`. **Visible text and Plain-Text Question Mode:** The step that
-    calls `ask_question` must itself carry the visible turn body (never only in
-    `thinking`). When Plain-Text Question Mode applies
-    (`rules/armature_antigravity.md`: the user asked for chat questions,
-    `ask_question` is unavailable, or a recovery box also came back blank),
-    render the same turn as plain text and end the turn without calling
+    English above `---` (never blockquote cards above `---`), and re-tee a
+    rewritten decision turn + `ask_question` beneath `---`. If the user asks a
+    clarifying follow-up question, open the response with a `# <Topic>` H1
+    heading describing the topic being followed up on (never a bare numbered or
+    H3 heading), answer directly, and if an open decision remains, follow `---`
+    with the re-teed decision turn + `ask_question`. **Visible text and
+    Plain-Text Question Mode:** The step that calls `ask_question` must itself
+    carry the visible turn body (never only in `thinking`). When Plain-Text
+    Question Mode applies (`rules/armature_antigravity.md`: the user asked for chat
+    questions, `ask_question` is unavailable, or a recovery box also came back
+    blank), render the same turn as plain text and end the turn without calling
     `ask_question`; that is not a text-only stall.
 -   **Compound Directive Shielding:** If the user invokes `/arm-new-track`
     alongside other instructions (e.g., `/diagnose`, `Fix`, or implementation
@@ -327,12 +332,14 @@ resolving all open rounds, questions, and ambiguities.
         legacy/modern directories (e.g., migrating from `<legacy_dir>/` to
         `<modern_dir>/`), DO NOT call `code_search` or `view_file` to search for
         `product.md` or `tech-stack.md`. Immediately in Turn 1:
-        1.  Output the Focus + Succinct `/zoom-out` interview turn (`# <Topic>`
+        1.  Output the Focus + Concise Option Cards interview turn (`# <Topic>`
             headline without `Round R, Question Q` prefixes, unlabeled
             plain-English orientation with zero fenced `text` ASCII flow
             diagrams ending in `The choice here is <X>. Here are some options:`,
-            numbered one-line options, `Safe to ignore for now:` line,
-            `### Recommendation: Option 1` with one sentence, and
+            concise blockquote option cards
+            (`> **Option 1: <Option name> (Recommended)**` with single-clause
+            inline `Pros` / `Cons` / `Implications`), `Safe to ignore for now:`
+            line, `### Recommendation: Option 1` with one sentence, and
             `- Pick N if …` bullets—with zero `**Settled**` / `**Now**` /
             `**Up next**` lists) proposing to record `legacy_fences` in
             `armature/tech-stack.md` (`## Legacy & Deprecated Boundaries` for
@@ -459,27 +466,27 @@ resolving all open rounds, questions, and ambiguities.
                 *"mutex"*). Follow with
                 `The choice here is <5–9 words>. Here are some options:`
                 (`<= 14 words`).
-            4.  *Numbered options (Order-Locked with Recommended Option First at
-                `1.`, `<= 16 Words` Each)*:
-                `1. <Option name>: <benefit>; <cost>`, one line each, **at most
-                16 words per line**, **2–3 concise items** preferred (at most
-                4), no `(Recommended)` tag, always placing your recommended
-                option **first at `1.`** so chat options `1..K` match modal
-                choices `1..K` in exact 1-to-1 order. `<Option name>` (`3–6`
-                plain words) MUST state what happens in plain, everyday words on
-                **Pass 1**—never an invented architectural slogan or CS storage
-                term:
-                -   *BAD Pass 1:* `1. Mint an independent file clone per copy
-                    and append sample versions monotonically: safe deletes and
-                    updates; uses extra storage`
-                -   *GOOD Pass 1:* `1. Give each copy its own files and add a
-                    new version on updates: nothing breaks; uses extra space`
-                -   *GOOD Pass 1:* `3. Point remixes at the sample's files until
-                    edited: saves space; deleting or editing needs tracking`
+            4.  *Concise blockquote option cards (Order-Locked with Recommended
+                Option First at Option 1)*: Present **2–4 concise blockquote
+                option cards** (`1..K`, separated by a blank line or `&nbsp;`),
+                always placing the recommended option first at Option 1 so chat
+                options `1..K` match modal choices `1..K` in exact 1-to-1 order.
+                `<Option name>` (`3–8` plain words) MUST state what happens in
+                plain, everyday words on **Pass 1**—never an invented
+                architectural slogan or CS storage term—and each `Pros`, `Cons`,
+                and `Implications` bullet stays a concise single clause (`<= 16`
+                words, zero code identifiers on Pass 1):
+
+                ```markdown
+                > **Option 1: <Option name> (Recommended)**
+                > - **Pros:** <concise 1-clause benefit>
+                > - **Cons:** <concise 1-clause cost or trade-off>
+                > - **Implications:** <concise 1-clause operational or design impact>
+                ```
             5.  *Ignore line (`<= 8 Words`)*:
                 `Safe to ignore for now: <2–3 short mechanics>.` (Put bucket
                 paths, cleanup jobs, version counters, and rate-limiter
-                internals here—never in the orientation or numbered options.)
+                internals here—never in the orientation or option cards.)
             6.  *Recommendation (`<= 18 Words`, Strictly 1 Sentence)*:
                 `### Recommendation: Option 1` (H3), then **strictly 1 single
                 concise sentence (`<= 18 words`, ending in a single period—never
@@ -488,16 +495,16 @@ resolving all open rounds, questions, and ambiguities.
             7.  *Pick recap (Bulleted Markdown List, Exact `- Pick N if `
                 Prefix, `<= 11 Words` Each)*: `- Pick 1 if <condition>.`
                 strictly one concise Markdown bullet line (`<= 11 words`) for
-                **every** numbered option (`len(picks) == len(numbered)`—e.g., 3
-                numbered options require all 3 `- Pick 1 if …`, `- Pick 2 if …`,
+                **every** option card (`len(picks) == len(cards)`—e.g., 3 option
+                cards require all 3 `- Pick 1 if …`, `- Pick 2 if …`,
                 `- Pick 3 if …` bullets), in `1..K` order, ALWAYS starting with
                 the exact literal words `- Pick N if ` (never `- Pick N to `,
                 `- Pick N for`, or `- Pick N when `), stating the concrete
                 scenario or priority without repeating abstract nouns from
                 `<Option name>`, with zero trailing narration after the last
-                bullet (total word count from `## <Topic>` / `#### Finding`
-                headline through the final `- Pick` bullet MUST target `130–185`
-                words and stay `<= 220` words by default). Always prefix every
+                bullet (total word count from `# <Topic>` / `### Finding`
+                headline through the final `- Pick` bullet MUST target `160–280`
+                words and stay `<= 300` words by default). Always prefix every
                 line with `- ` so CommonMark renders each `Pick` item on its own
                 line. Never add an extra `Pick` line for modal-only actions such
                 as `"I need more context, zoom out and give examples"`.
@@ -512,8 +519,9 @@ resolving all open rounds, questions, and ambiguities.
                 visible markdown turn, and don't stop with markdown prose alone
                 unless Plain-Text Question Mode applies). Populate options
                 `1..K` in the **exact same `1..K` order** using the **exact same
-                `<Option name>`** (the phrase before `:` on each numbered chat
-                line), prefixing Option 1 with `"(Recommended) "` (e.g.,
+                `<Option name>`** (the title phrase inside
+                `> **Option N: <Option name>**`, stripping `(Recommended)`),
+                prefixing Option 1 with `"(Recommended) "` (e.g.,
                 `"(Recommended) Live chat first, newest-first backfill"`,
                 `"Summarize everything during the scan"`,
                 `"Summarize only when a panel runs"`—**NEVER** replace
@@ -554,9 +562,20 @@ resolving all open rounds, questions, and ambiguities.
             second or two. The choice here is which work goes first and how
             older sessions catch up. Here are some options:
 
-            1. Live chat first, newest-first backfill: replies stay 1–2s; oldest sessions finish a few minutes later
-            2. Summarize everything during the scan: every session ready at once; first scan is slow and chat waits
-            3. Summarize only when a panel runs: scan costs nothing; first panel run waits on summaries
+            > **Option 1: Live chat first, newest-first backfill (Recommended)**
+            > - **Pros:** Live chat replies stay at 1–2s and recent sessions appear first.
+            > - **Cons:** Oldest sessions take a few extra minutes to finish indexing.
+            > - **Implications:** Background workers pause whenever an interactive chat request is active.
+
+            > **Option 2: Summarize everything during the scan**
+            > - **Pros:** Every past session is searchable the moment scanning completes.
+            > - **Cons:** First scan is slow and stalls active chat typing.
+            > - **Implications:** Uses the full Gemini quota for batch summaries ahead of user prompts.
+
+            > **Option 3: Summarize only when a panel runs**
+            > - **Pros:** Background scans finish quickly with zero Gemini calls.
+            > - **Cons:** Opening a panel waits while unindexed sessions summarize on demand.
+            > - **Implications:** Shifts token spikes from install time to interactive panel runs.
 
             Safe to ignore for now: rate-limiter internals, tree layout.
 
@@ -578,12 +597,14 @@ resolving all open rounds, questions, and ambiguities.
             Track state accurately on disk in `spec.md` (`## Settled Decisions`
             and `## Open Questions`) and `armature/active_context.md`—never
             print `**Settled**`, `**Now**`, or `**Up next**` lists in chat. Do
-            not use tables, icons, emoji, glyphs, progress bars, fenced `text`
-            ASCII flow diagrams, blockquote cards, or `[!NOTE]` / `[!TIP]`
-            callouts inside the default `# <Topic>` interview turn block. The
-            full `**Pros:**` / `**Cons:**` / `**Implications:**` cards are the
-            Zoom-In View and render strictly when the user explicitly writes in
-            `"zoom in"` (never when
+            not use tables, icons, emoji, glyphs, progress bars, or fenced
+            `text` ASCII flow diagrams inside the default `# <Topic>` interview
+            turn block. When the user asks a follow-up question, always begin
+            the response with an `# <Topic>` H1 heading describing the topic
+            being followed up on. Expanded multi-sentence `**Pros:**` /
+            `**Cons:**` / `**Implications:**` detail is the Zoom-In View and
+            renders only when the user explicitly writes in `"zoom in"` (never
+            render blockquote cards above `---` when
             `"I need more context, zoom out and give examples"` is selected).
 
         -   **Lazy Question Materialization (Pre-Population Ban)**: Future
@@ -716,29 +737,32 @@ resolving all open rounds, questions, and ambiguities.
                 diagrams), an unlabeled 2–3 sentence plain-English orientation
                 (zero prose code identifiers and zero backend systems jargon on
                 Pass 1) ending in
-                `The choice here is <X>. Here are some options:`, numbered
-                one-line options placing the recommended option first at `1.`
-                (`1. <Name>: <benefit>; <cost>`, 2–4 items, no `(Recommended)`
-                tag, with `<Name>` stating concrete behavior in plain everyday
-                words rather than coined architectural slogans or CS storage
-                terms), a `Safe to ignore for now: <mechanics>.` line,
+                `The choice here is <X>. Here are some options:`, 2–4 concise
+                blockquote option cards placing the recommended option first as
+                `> **Option 1: <Option name> (Recommended)**` with single-clause
+                inline `> - **Pros:**`, `> - **Cons:**`, and
+                `> - **Implications:**` bullets (with `<Option name>` stating
+                concrete behavior in plain everyday words rather than coined
+                architectural slogans or CS storage terms), a
+                `Safe to ignore for now: <mechanics>.` line,
                 `### Recommendation: Option 1` with exactly one sentence
                 grounded in concrete constraints, and strictly one bulleted
-                `- Pick N if <condition>.` line per numbered option
-                (`len(picks) == len(numbered)`). Keep the headline through the
-                last `- Pick N if …` line concise: **target 120–175 words and <=
-                220 words** (target 120–175 words; exceed 220 only when cutting
-                a critical safety caveat would mislead the user). Don't render
-                `**Settled**` / `**Now**` / `**Up next**` lists, fenced `text`
-                ASCII flow diagrams, or blockquote cards in the default turn.
+                `- Pick N if <condition>.` line per option card
+                (`len(picks) == len(cards)`). Keep the headline through the last
+                `- Pick N if …` line concise: **target 160–280 words and <= 300
+                words** (exceed 300 only when cutting a critical safety caveat
+                would mislead the user). Don't render `**Settled**` / `**Now**`
+                / `**Up next**` lists or fenced `text` ASCII flow diagrams in
+                the turn.
             -   **Zoom-In View (`"zoom in"` Write-In Only):** Strictly when the
-                user explicitly writes in `"zoom in"`, render the full Option
+                user explicitly writes in `"zoom in"`, expand the Option
                 Trade-Off cards for the same options (`> **Option N: <Name>**`
-                with `> - **Pros:**`, `> - **Cons:**`, and
+                with deeper multi-detail `> - **Pros:**`, `> - **Cons:**`, and
                 `> - **Implications:**` rows, `&nbsp;` spacers, and
                 `### Recommendation: Option 1` with 1–3 sentences), then re-ask
-                the same `ask_question`. Never render blockquote cards when
-                `"I need more context, zoom out and give examples"` is selected.
+                the same `ask_question`. Never render blockquote cards above
+                `---` when `"I need more context, zoom out and give examples"`
+                is selected.
             -   **Mandatory Two-Part Turn Pairing (Zero Trailing Narration &
                 Zero Text-Only Stalls):** Finish your visible markdown prose
                 directly on the last `- Pick N if …` bullet line (or the
@@ -757,12 +781,11 @@ resolving all open rounds, questions, and ambiguities.
                 -   Ask questions **strictly one at a time**.
                 -   Populate options `1..K` in the **exact same `1..K` order**
                     using the **exact same `<Option name>`** (the plain-English
-                    phrase before `:` on each numbered chat line
-                    `1. <Option name>: <benefit>; <cost>`), prefixing Option 1
-                    with `"(Recommended) "` (e.g., `"(Recommended) Give each
-                    copy its own files and add a new version on updates"`,
-                    `"Give each copy its own files and replace the old sample
-                    right away"`,
+                    title inside `> **Option N: <Option name>**`, stripping
+                    `(Recommended)`), prefixing Option 1 with `"(Recommended) "`
+                    (e.g., `"(Recommended) Give each copy its own files and add
+                    a new version on updates"`, `"Give each copy its own files
+                    and replace the old sample right away"`,
                     `"Point remixes at the sample's files until edited"`).
                     **NEVER** replace `<Option name>` in `ask_question` with the
                     `Pick N if …` sentences!
@@ -787,7 +810,7 @@ resolving all open rounds, questions, and ambiguities.
                 exact same 3-part workflow zoom-out + concrete examples +
                 rewritten re-tee flow defined in **Case B** below (with **zero
                 `**Settled**` / `**Now**` / `**Up next**` lines**, never
-                blockquote `Pros`/`Cons` cards, AND ALWAYS a native
+                blockquote `Pros`/`Cons` cards above `---`, AND ALWAYS a native
                 `ask_question` `functionCall` in that same turn).
             -   **User `@[Quote]`,
                 `"I need more context, zoom out and give examples"`, & Write-In
@@ -812,24 +835,26 @@ resolving all open rounds, questions, and ambiguities.
                         commit description commitment, and output
                         `# Devil's Advocate: <Topic>`
                         (`### Finding 1 of N: <Plain Everyday Title>`) with the
-                        Focus + Succinct `/zoom-out` body (about `220` words by
-                        default: 2–3 sentence plain-English hazard orientation +
-                        bridge with zero fenced `text` ASCII flow diagrams, 2–3
-                        numbered `<= 16`-word countermeasure options with
-                        recommended at `1.`, `<= 8`-word ignore line, 1-sentence
-                        `<= 18`-word `### Recommendation: Option 1`, and
-                        `<= 11`-word `- Pick N if …` bullets—with zero
+                        concise option-card body (`<= 300` words by default: 2–3
+                        sentence plain-English hazard orientation + bridge with
+                        zero fenced `text` ASCII flow diagrams, 2–3 concise
+                        blockquote countermeasure cards
+                        (`> **Option 1: <Option name> (Recommended)**` with
+                        single-clause `> - **Pros:**`, `> - **Cons:**`, and
+                        `> - **Implications:**` lines), `<= 8`-word ignore line,
+                        1-sentence `<= 18`-word `### Recommendation: Option 1`,
+                        and `<= 11`-word `- Pick N if …` bullets—with zero
                         `**Settled**` / `**Now**` / `**Up next**` lists).
                     2.  **Native Tool Call Part (Required Second in Same
                         Turn):** Emit structured `ask_question` in that same
                         response for Finding 1 with options `1..K` matching
-                        countermeasure `<Option name>` directly (Option 1
+                        countermeasure card `<Option name>` directly (Option 1
                         prefixed with `"(Recommended) "`; if reopening a prior
                         decision is warranted, include
                         `"Reopen Round <R> to revise <topic>"` as one of the
-                        numbered `1..K` options in chat so chat and modal stay
-                        strictly 1:1—never add an unnumbered `"Reopen..."`
-                        option to `ask_question` alone) and trailing
+                        `Option N` cards in chat so chat and modal stay strictly
+                        1:1—never add an unnumbered `"Reopen..."` option to
+                        `ask_question` alone) and trailing
                         `"I need more context, zoom out and give examples"`.
                 -   *Case B — Need-More-Context Selection
                     (`"I need more context, zoom out and give examples"`),
@@ -849,30 +874,33 @@ resolving all open rounds, questions, and ambiguities.
                         immediately from existing conversation context.
                     2.  **Visible Markdown Part — Deeper Plain-English Zoom-Out
                         Above `---`:** Output ONLY:
-                        -   Plain paragraphs (no `## Round` headings, no
-                            `**Settled**` bullets, and no `> **Option` cards)
-                            stepping back to explain why this decision comes up
-                            in the overall workflow in plain everyday English
-                            and walking through **1–2 concrete named domain
-                            examples** illustrating how each choice behaves in
-                            practice (e.g., contrasting what happens when
-                            linking a `Badge` layer onto a `Card` that pops in
-                            from `0%` size, when someone deletes or updates a
-                            remixed gallery sample, or when visiting the entry
-                            URL vs. clicking **Skip** or **Back** inside a
-                            step).
+                        -   Begin with an `# <Topic>` H1 heading describing the
+                            topic being followed up on (never a bare numbered or
+                            H3 heading), then plain paragraphs (no `## Round`
+                            headings, no `**Settled**` bullets, and no
+                            `> **Option` cards above `---`) stepping back to
+                            explain why this decision comes up in the overall
+                            workflow in plain everyday English and walking
+                            through **1–2 concrete named domain examples**
+                            illustrating how each choice behaves in practice
+                            (e.g., contrasting what happens when linking a
+                            `Badge` layer onto a `Card` that pops in from `0%`
+                            size, when someone deletes or updates a remixed
+                            gallery sample, or when visiting the entry URL vs.
+                            clicking **Skip** or **Back** inside a step).
                         -   A `---` horizontal rule directly beneath the
                             examples.
                         -   Directly beneath `---`, the **rewritten** Focus +
-                            Succinct `/zoom-out` block (about `220` words by
+                            Succinct `/zoom-out` block (about `300` words by
                             default: `# <Plain Topic>` or
                             `# Devil's Advocate: <Topic>` /
                             `### Finding F of N: <Plain Title>` with zero fenced
                             `text` ASCII flow diagrams, plain-English
-                            orientation + bridge, numbered `1..K`
-                            `<Option name>: <benefit>; <cost>` lines with
-                            recommended first at `1.`, `Safe to ignore for now:`
-                            line, `### Recommendation: Option 1`, and bulleted
+                            orientation + bridge, `1..K` concise blockquote
+                            option cards with `Pros` / `Cons` / `Implications`
+                            and recommended first at Option 1,
+                            `Safe to ignore for now:` line,
+                            `### Recommendation: Option 1`, and bulleted
                             `- Pick N if …` lines) in concrete everyday domain
                             words. **NEVER** copy-paste the prior turn's vague
                             headlines, openers, or option names verbatim.
@@ -939,15 +967,14 @@ resolving all open rounds, questions, and ambiguities.
                         (`### Finding 1 of N: <Plain Everyday Title>`), and the
                         Focus + Succinct `/zoom-out` body in plain everyday
                         English (zero prose code identifiers and zero backend
-                        systems jargon on Pass 1; **about `220` words total by
+                        systems jargon on Pass 1; **about `300` words total by
                         default**: 2–3 sentence plain-English hazard
-                        orientation + bridge, 2–3 numbered `<= 16`-word
-                        countermeasure options placing the recommended
-                        countermeasure at `1.`, `<= 8`-word
-                        `Safe to ignore for now:` line, 1-sentence `<= 18`-word
-                        `### Recommendation: Option 1`, and `<= 11`-word
-                        bulleted `- Pick N if …` lines). No
-                        Pros/Cons/Implications cards in the default turn.
+                        orientation + bridge, 2–3 concise blockquote
+                        countermeasure option cards with `Pros` / `Cons` /
+                        `Implications` placing the recommended countermeasure at
+                        Option 1, `<= 8`-word `Safe to ignore for now:` line,
+                        1-sentence `<= 18`-word `### Recommendation: Option 1`,
+                        and `<= 11`-word bulleted `- Pick N if …` lines).
                     -   *Part 2 (Native Tool Call — Required in Same Response):*
                         Emit structured `ask_question` in that **exact same
                         turn** matching countermeasure `<Option name>` strings

@@ -183,32 +183,32 @@ CONTRAST_PAIRS: list[tuple[str, str, float, str]] = [
 ]
 
 PACING: dict[str, float] = {
-    "coach.min": 3.0,
-    "coach.settle": 1.0,
-    "coach.wpm": 160.0,
-    "beat.min": 2.0,
-    "beat.settle": 0.8,
-    "card.min": 4.0,
-    "card.settle": 1.5,
-    "card.wpm": 180.0,
-    "recap.min": 5.0,
-    "recap.settle": 2.5,
-    "recap.wpm": 140.0,
-    "interstitial.hold": 2.0,
-    "cursor.min_s": 0.6,
-    "cursor.max_s": 1.1,
+    "coach.min": 2.0,
+    "coach.settle": 0.65,
+    "coach.wpm": 240.0,
+    "beat.min": 1.3,
+    "beat.settle": 0.5,
+    "card.min": 2.7,
+    "card.settle": 1.0,
+    "card.wpm": 270.0,
+    "recap.min": 3.3,
+    "recap.settle": 1.7,
+    "recap.wpm": 210.0,
+    "interstitial.hold": 1.3,
+    "cursor.min_s": 0.4,
+    "cursor.max_s": 0.75,
     "cursor.near_px": 200.0,
     "cursor.far_px": 1200.0,
-    "click.dwell": 0.8,
-    "click.observe_min": 1.5,
-    "click.result_delay": 0.5,
-    "type.cps": 12.0,
-    "scene.settle": 1.0,
-    "ff.margin": 1.0,
-    "ff.sample_default": 0.6,
-    "fade.in": 0.5,
-    "fade.out": 0.6,
-    "fade.through": 0.4,
+    "click.dwell": 0.55,
+    "click.observe_min": 1.0,
+    "click.result_delay": 0.35,
+    "type.cps": 18.0,
+    "scene.settle": 0.7,
+    "ff.margin": 0.7,
+    "ff.sample_default": 0.9,
+    "fade.in": 0.35,
+    "fade.out": 0.4,
+    "fade.through": 0.25,
     "fps.capture": 10.0,
     "fps.output": 30.0,
 }
@@ -296,7 +296,7 @@ def resolve_hold(computed: float, override: float | None) -> float:
 
 
 def cursor_travel_seconds(distance_ref_px: float) -> float:
-  """Maps cursor travel distance (reference px) to 0.6-1.1 s, linear."""
+  """Maps cursor travel distance (reference px) to 0.4-0.75 s, linear."""
   near, far = PACING["cursor.near_px"], PACING["cursor.far_px"]
   frac = min(1.0, max(0.0, (distance_ref_px - near) / (far - near)))
   return PACING["cursor.min_s"] + frac * (

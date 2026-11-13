@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.40.1"
+VERSION="0.41.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -837,7 +837,7 @@ install_update_checker
 section "📦 Installing Armature Plugin Manifests & Docs"
 echo ""
 install_file "${SCRIPT_DIR}/plugin.json" "${TARGET_PLUGIN_DIR}/plugin.json"
-# Blank-box guard: plugin discovery loads hooks.json from the plugin root.
+# Blank-box & dropped-ask guard: plugin discovery loads hooks.json from the plugin root.
 install_file "${SCRIPT_DIR}/hooks.json" "${TARGET_PLUGIN_DIR}/hooks.json"
 install_file "${SCRIPT_DIR}/hooks/ask_question_guard.py" "${TARGET_PLUGIN_DIR}/hooks/ask_question_guard.py"
 install_file "${SCRIPT_DIR}/README.md" "${TARGET_PLUGIN_DIR}/README.md"

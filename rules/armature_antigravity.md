@@ -12,12 +12,18 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     as restarting a tunnel, approving an upload, or choosing between next
     steps), end it with `ask_question`, or with a plain-text question when
     Plain-Text Question Mode applies. Never end a turn on `- Pick N if …`
-    bullets, numbered options, or *"let me know when"* with `0` tool calls;
-    writing options in chat does NOT ask the user unless `ask_question` is
-    invoked at the end of that same step. Give options that cover the expected
-    replies (for example, "Tunnel is back, continue" or "Work from the local
-    copy instead"). This applies in any conversation, not only during Armature
-    interviews.
+    bullets, blockquote option cards, or *"let me know when"* with `0` tool
+    calls; writing options in chat does NOT ask the user unless `ask_question`
+    is invoked at the end of that same step. Give options that cover the
+    expected replies (for example, "Tunnel is back, continue" or "Work from the
+    local copy instead"). This applies in any conversation, not only during
+    Armature interviews.
+-   **Follow-Up Question H1 Heading:** Whenever the user asks a follow-up
+    question (about a prior option, term, or consequence), always start the
+    visible response with an `# <Topic>` H1 heading describing the topic being
+    followed up on (never a bare numbered or H3 heading), answer clearly, and
+    when an open decision remains, follow `---` with the re-teed decision turn
+    and `ask_question`.
 -   **The User Must See the Explanation (Same-Step Visible Text &
     End-of-`thinking` Cue):** The user sees only visible chat text and the
     question box; internal reasoning (`thinking` / `thought`) is never shown.
@@ -34,20 +40,20 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     models to stop after the `- Pick` bullets and drop the `ask_question` tool
     call. Order within that step: visible text, then any draft writes, then
     `ask_question` with `{"questions": [{"question": "...", "options": [...]}]}`
-    (Option 1 prefixed with `"(Recommended) "`, options matching the numbered
-    `<Option name>` lines 1:1, no manual `"Other"` option).
+    (Option 1 prefixed with `"(Recommended) "`, options matching the chat
+    `<Option name>` titles 1:1, no manual `"Other"` option).
 -   **Question First, Bookkeeping in the Same Step:** When a turn has to record
     something (append a settled decision, update a draft, run a quick command)
     and then ask, don't spend separate steps on the bookkeeping first. Put the
     whole visible turn (the `# <Topic>` heading and body) at the start of one
     step, then the bookkeeping calls, then `ask_question`, all in that step.
     Don't check whether a draft file exists before asking; create or append to
-    it in the asking step. If earlier steps in the turn already ran tools,
-    write the asking step's visible text as if it were the whole reply,
-    starting with the `# <Topic>` heading. A first-person summary of the
-    options or recommendation in `thinking` (*"I'm recommending option 1..."*)
-    means the explanation went to the wrong place: put it in visible text
-    before calling the tool.
+    it in the asking step. If earlier steps in the turn already ran tools, write
+    the asking step's visible text as if it were the whole reply, starting with
+    the `# <Topic>` heading. A first-person summary of the options or
+    recommendation in `thinking` (*"I'm recommending option 1..."*) means the
+    explanation went to the wrong place: put it in visible text before calling
+    the tool.
 -   **Self-Contained Question Box:** Some models and hosts drop or hide the chat
     text next to the box, so the box must stand on its own. Use `question` for
     one or two plain sentences (up to about 40 words, no markdown) that name the
@@ -67,9 +73,9 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     `ask_question` is unavailable, or when a recovery box also came back blank
     or skipped (for that one question), including when the Armature
     `ask_question` guard hook blocks a blank box a second time. End the turn
-    after the question so the
-    user can reply. Plain-text mode replaces only the delivery; the content
-    (options, recommendation, one question at a time) stays the same.
+    after the question so the user can reply. Plain-text mode replaces only the
+    delivery; the content (options, recommendation, one question at a time)
+    stays the same.
 -   **Streaming Flush Before Heavy `write_file` Calls:** Keep Step 6/7 visible
     chat summaries concise (`40-200` words) and end with `\n\n_Materializing the
     track artifacts and opening the approval prompt..._\n\n` before calling
