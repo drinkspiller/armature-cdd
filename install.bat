@@ -4,7 +4,7 @@ setlocal EnableDelayedExpansion
 :: Armature (OSS) Skills & Rules Installer (Windows)
 :: =============================================================================
 
-set "VERSION=0.40.0"
+set "VERSION=0.40.1"
 set "FLAGS_dry_run=0"
 set "FLAGS_force=0"
 set "FLAGS_uninstall=0"
@@ -129,6 +129,8 @@ if "%FLAGS_dry_run%"=="1" (
 echo.
 echo --- Installing Armature Plugin Manifests ---
 if exist "%SCRIPT_DIR%\plugin.json" call :install_file "%SCRIPT_DIR%\plugin.json" "%TARGET_MANIFEST_ROOT%\plugin.json"
+if exist "%SCRIPT_DIR%\hooks.json" call :install_file "%SCRIPT_DIR%\hooks.json" "%TARGET_MANIFEST_ROOT%\hooks.json"
+if exist "%SCRIPT_DIR%\hooks\ask_question_guard.py" call :install_file "%SCRIPT_DIR%\hooks\ask_question_guard.py" "%TARGET_MANIFEST_ROOT%\hooks\ask_question_guard.py"
 if exist "%SCRIPT_DIR%\README.md" call :install_file "%SCRIPT_DIR%\README.md" "%TARGET_MANIFEST_ROOT%\README.md"
 if exist "%SCRIPT_DIR%\CHANGELOG.md" call :install_file "%SCRIPT_DIR%\CHANGELOG.md" "%TARGET_MANIFEST_ROOT%\CHANGELOG.md"
 if exist "%SCRIPT_DIR%\.claude-plugin\marketplace.json" call :install_file "%SCRIPT_DIR%\.claude-plugin\marketplace.json" "%TARGET_MANIFEST_ROOT%\.claude-plugin\marketplace.json"

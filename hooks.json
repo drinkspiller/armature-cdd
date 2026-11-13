@@ -1,0 +1,17 @@
+{
+  "armature-ask-question-guard": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "ask_question",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./hooks/ask_question_guard.py",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

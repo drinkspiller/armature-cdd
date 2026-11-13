@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.40.1] - 2026-11-12
+
+### Fixed
+
+-   **Blank `ask_question` boxes after a tool step**: Claude Opus 5.5 Medium
+    often wrote the interview turn into `thinking` and called `ask_question`
+    with empty visible text whenever a tool step (recording a decision, a
+    command) came earlier in the same turn, so the user saw a bare question
+    box. Added the **Question First, Bookkeeping in the Same Step** rule to
+    `rules/armature_antigravity.md`, and a `PreToolUse` guard hook
+    (`hooks.json`, `hooks/ask_question_guard.py`) that denies an
+    `ask_question` whose step has fewer than 25 visible words. The first
+    denial asks for a retry with visible text; the second switches that
+    question to Plain-Text Question Mode, which Opus delivers reliably. The
+    guard fails open (including on hosts that don't provide a transcript
+    path) and stops denying after 4 attempts in a turn. `install.sh` and
+    `install.bat` install the hook into the plugin root.
+
 ## [0.40.0] - 2026-11-12
 
 ### Added
