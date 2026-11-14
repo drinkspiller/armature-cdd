@@ -196,18 +196,20 @@ implementation plan is drafted:
     upcoming open questions are checkpointed silently on disk (`spec.md`
     `status: draft` and `armature/active_context.md`) rather than reprinted at
     the top of every chat message. Each turn opens directly with a clean
-    `# <Topic>` headline grounded in familiar domain nouns from the request and
-    a 2–3 sentence plain-English orientation free of code symbols, backend
+    `# <Topic>` (H1) headline grounded in familiar domain nouns from the request
+    and a 2–3 sentence plain-English orientation free of code symbols, backend
     jargon, and fenced `text` ASCII flow diagram blocks, followed by
-    `The choice here is … Here are some options:`, numbered one-line options
-    placing the recommended option first
-    (`1. <Option name>: <benefit>; <cost>`), a `Safe to ignore for now` line, a
-    one-sentence `Recommendation: Option 1`, and bulleted `- Pick N if …` recap
-    lines. Modal choices match `<Option name>` in 1-to-1 order followed by
-    `"I need more context, zoom out and give examples"`, which steps back with
-    concrete workflow examples above `---` before re-teeing a rewritten
-    question; full `Pros` / `Cons` / `Implications` cards render on explicit
-    `"zoom in"` write-ins.
+    `The choice here is … Here are some options:`, 2–4 concise blockquote option
+    cards (`> **Option 1: <Option name> (Recommended)**` with single-clause
+    inline `**Pros:**`, `**Cons:**`, and `**Implications:**` bullets), a
+    `Safe to ignore for now` line, a one-sentence `Recommendation: Option 1`,
+    and bulleted `- Pick N if …` recap lines. Modal choices match `<Option name>`
+    in 1-to-1 order followed by
+    `"I need more context, zoom out and give examples"`, which opens with an
+    `# <Topic>` H1 heading and walks through concrete workflow examples above
+    `---` before re-teeing a rewritten question; `"zoom in"` expands the option
+    cards with deeper failure-mode detail. Follow-up answers always open with an
+    `# <Topic>` H1 heading before answering and re-teeing any open decision.
 -   **Dynamic Question Traversal**: Traverses edge cases, concurrency
     boundaries, error recovery, and security scope up to Depth 2 without
     unconfirmed dictation.
@@ -719,4 +721,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.41.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.41.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.

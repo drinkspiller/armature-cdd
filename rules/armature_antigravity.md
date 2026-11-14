@@ -58,7 +58,7 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     text next to the box, so the box must stand on its own. Use `question` for
     one or two plain sentences (up to about 40 words, no markdown) that name the
     decision and the recommendation. Keep each option label the same as its
-    numbered chat option name, and make those names concrete enough to read
+    chat option card name, and make those names concrete enough to read
     alone (say what happens, not a slogan). Put extra context in `question`, not
     in the options.
 -   **Blank-Box Recovery (Box Stays the Default):** The `ask_question` box is
