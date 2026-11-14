@@ -325,7 +325,11 @@ REC_HEADING_RE = re.compile(
     r"^###\s+Recommendation:\s+Option\s+(\d+)\s*$", re.M
 )
 IGNORE_RE = re.compile(r"^\s*Safe to ignore for now:", re.M)
-CARD_RE = re.compile(r"^>\s*\*\*Option\s+\d+", re.M)
+CARD_RE = re.compile(r"^>\s*\*\*Option\s+\d+:\s*(.+?)\*\*\s*$", re.M)
+CARD_BLOCK_RE = re.compile(
+    r"(^>\s*\*\*Option\s+\d+:[^\n]*(?:\n>(?!\s*\*\*Option\s+\d+:)[^\n]*)*)",
+    re.M,
+)
 LABEL_LINE_RE = re.compile(r"^\s*\*\*[A-Za-z][A-Za-z /]{1,30}:\*\*", re.M)
 CONTEXT_OPT_RE = re.compile(
     r"^i need more context,\s*zoom out and give examples$", re.I
@@ -347,10 +351,21 @@ SYSTEMS_JARGON_RE = re.compile(
 
 
 def _extract_chat_option_name(line):
-  s = re.sub(r"^\s*\d+\.\s*", "", line).strip()
+  s = re.sub(r"^\s*(?:>\s*\*\*Option\s+\d+:\s*|\d+\.\s*)", "", line).strip()
+  s = re.sub(r"\*\*\s*$", "", s).strip()
   s = s.split(":", 1)[0].strip()
+  s = re.sub(r"\s*\(Recommended\)\s*$", "", s, flags=re.I).strip()
   s = re.sub(r"^\*\*|\*\*$", "", s).strip()
   return s
+
+
+def _extract_card_option_names(text):
+  """Extracts option names from `> **Option N: <Name>**` blockquote headers."""
+  names = []
+  for m in CARD_RE.finditer(text):
+    raw = re.sub(r"\s*\(Recommended\)\s*$", "", m.group(1), flags=re.I).strip()
+    names.append(raw)
+  return names
 
 
 def _norm_opt(s):
@@ -410,7 +425,13 @@ def _headline_and_body_region(text):
   fb = FLOW_BLOCK_RE.search(after)
   num_search_offset = fb.end() if (fb and fb.start() < 80) else 0
   nm = NUMBERED_RE.search(after[num_search_offset:])
-  opener = after[: num_search_offset + nm.start()] if nm else after
+  cm = CARD_RE.search(after[num_search_offset:])
+  opt_positions = [m.start() for m in (nm, cm) if m]
+  opener = (
+      after[: num_search_offset + min(opt_positions)]
+      if opt_positions
+      else after
+  )
   picks = list(PICK_RE.finditer(text[abs_hm_start:]))
   if picks:
     last = picks[-1]
@@ -447,6 +468,9 @@ def evaluate_invariants(task, text, tool_calls):
   target_body = body or text
   numbered = NUMBERED_RE.findall(target_body)
   numbered_lines = [l for l in target_body.splitlines() if NUMBERED_RE.match(l)]
+  card_blocks = CARD_BLOCK_RE.findall(target_body)
+  card_names = _extract_card_option_names(target_body)
+  option_count = len(card_names) if card_names else len(numbered)
   picks = PICK_RE.findall(target_body)
   asq_opts = _asq_options(tool_calls)
   nonempty = [l for l in text.splitlines() if l.strip()]
@@ -506,6 +530,8 @@ def evaluate_invariants(task, text, tool_calls):
       turn_surface = (
           f"{headline_line}\n{opener_prose}\n"
           + "\n".join(numbered_lines)
+          + "\n"
+          + "\n".join(card_names)
       )
       jm = SYSTEMS_JARGON_RE.search(turn_surface)
       if jm:
@@ -570,8 +596,23 @@ def evaluate_invariants(task, text, tool_calls):
       if re.search(r"Here are the options:", text):
         vetoes.append(f"{inv}: used 'the options' (implies exhaustive)")
     elif inv == "has_numbered_options":
-      if len(numbered) < 2:
-        vetoes.append(f"{inv}: fewer than 2 numbered options")
+      if option_count < 2:
+        vetoes.append(f"{inv}: fewer than 2 options")
+    elif inv == "has_blockquote_option_cards":
+      if len(card_blocks) < 2:
+        vetoes.append(f"{inv}: fewer than 2 blockquote option cards")
+      else:
+        for idx, blk in enumerate(card_blocks, 1):
+          for row in ("Pros", "Cons", "Implications"):
+            if not re.search(rf"\*\*{row}:\*\*", blk):
+              vetoes.append(f"{inv}: Option {idx} card missing '**{row}:**'")
+    elif inv == "followup_starts_with_h1":
+      first_nonempty = nonempty[0] if nonempty else ""
+      if not re.match(r"^#\s+\S", first_nonempty):
+        vetoes.append(
+            f"{inv}: follow-up response did not start with an '# <Topic>' H1"
+            f" heading ('{first_nonempty[:80]}')"
+        )
     elif inv == "no_numbered_tradeoff_options":
       if re.search(r"Here are some options:", text) or REC_HEADING_RE.search(text):
         vetoes.append(f"{inv}: rendered design options on a procedural gate")
@@ -596,8 +637,10 @@ def evaluate_invariants(task, text, tool_calls):
       bulleted_picks = BULLETED_PICK_RE.findall(target_body)
       if len(picks) < 2:
         vetoes.append(f"{inv}: fewer than 2 'Pick N if' lines")
-      elif len(numbered) and len(picks) != len(numbered):
-        vetoes.append(f"{inv}: {len(picks)} Pick lines for {len(numbered)} options")
+      elif option_count and len(picks) != option_count:
+        vetoes.append(
+            f"{inv}: {len(picks)} Pick lines for {option_count} options"
+        )
       elif len(bulleted_picks) != len(picks):
         vetoes.append(
             f"{inv}: Pick lines must be formatted as Markdown bullets"
@@ -611,7 +654,9 @@ def evaluate_invariants(task, text, tool_calls):
         vetoes.append(f"{inv}: trailing text after the last Pick line")
     elif inv == "no_blockquote_cards_default":
       if CARD_RE.search(text) or re.search(r"\*\*Pros:\*\*", text):
-        vetoes.append(f"{inv}: rendered Pros/Cons blockquote cards in default turn")
+        vetoes.append(
+            f"{inv}: rendered Pros/Cons blockquote cards on procedural gate"
+        )
     elif inv == "zoom_in_renders_cards":
       if len(CARD_RE.findall(text)) < 2 or not all(
           re.search(rf"\*\*{k}:\*\*", text) for k in ("Pros", "Cons", "Implications")):
@@ -621,10 +666,10 @@ def evaluate_invariants(task, text, tool_calls):
         vetoes.append(
             f"{inv}: code identifier or inline backtick in opener"
         )
-    elif inv in ("word_budget_220", "word_budget_200"):
-      # About 220 words is the default target (ADR 0022); veto only clear
-      # overruns.
-      limit = 300
+    elif inv in ("word_budget_220", "word_budget_200", "word_budget_300"):
+      # Target ~300 words with concise blockquote cards (ADR 0003); veto
+      # clear overruns.
+      limit = 380
       n = len(target_body.split())
       if n > limit:
         vetoes.append(f"{inv}: {n} words from headline to last Pick line")
@@ -636,7 +681,9 @@ def evaluate_invariants(task, text, tool_calls):
         vetoes.append(
             f"{inv}: used legacy 'Compare technical trade-offs...' modal option"
         )
-      chat_names = [_extract_chat_option_name(l) for l in numbered_lines]
+      chat_names = card_names or [
+          _extract_chat_option_name(l) for l in numbered_lines
+      ]
       non_ctx = [
           o
           for o in asq_opts
@@ -1010,8 +1057,15 @@ PLAIN_LANGUAGE = {
     ),
     "no_pick_recap": "added a pick recap to an approval step",
     "ends_with_pick_line": "added narration after the pick recap",
+    "has_blockquote_option_cards": (
+        "did not render concise blockquote option cards with Pros, Cons, and"
+        " Implications"
+    ),
+    "followup_starts_with_h1": (
+        "follow-up answer did not begin with an # <Topic> H1 heading"
+    ),
     "no_blockquote_cards_default": (
-        "rendered the long pros/cons cards instead of keeping the compact turn"
+        "rendered pros/cons option cards on a procedural gate"
     ),
     "zoom_in_renders_cards": (
         "did not expand to the detailed pros/cons cards when the user"
@@ -1023,10 +1077,10 @@ PLAIN_LANGUAGE = {
         " in-flight, or file handles) into a first-pass interview turn"
     ),
     "word_budget_220": (
-        "the body from headline to the last pick line exceeded 220 words"
+        "the body from headline to the last pick line exceeded 300 words"
     ),
     "word_budget_200": (
-        "the body from headline to the last pick line exceeded 220 words"
+        "the body from headline to the last pick line exceeded 300 words"
     ),
     "modal_options_match_chat_options": (
         "the modal choices did not match the numbered option names in 1:1"

@@ -33,14 +33,15 @@ Devil's Advocate findings, ADR triage, or spec/plan review gates), the
 
 ## 2. Option Mapping & Modal Rules
 
-1.  **1-to-1 `<Option name>` Mapping:** Copy each `<Option name>` (the phrase
-    before `:` in `1. <Option name>: <benefit>; <cost>`) into `options` in exact
-    1-to-1 order, prefixing Option 1 with `"(Recommended) "`. Never substitute
-    the `- Pick N if …` sentences as option labels.
+1.  **1-to-1 `<Option name>` Mapping:** Copy each `<Option name>` (the title
+    phrase inside `> **Option N: <Option name>**`, stripping `(Recommended)`)
+    into `options` in exact 1-to-1 order, prefixing Option 1 with
+    `"(Recommended) "`. Never substitute the `- Pick N if …` sentences as option
+    labels.
 2.  **Self-Contained Box, No Markdown:** The modal renders raw characters and
     some hosts hide the chat text next to it, so `question` should stand on its
     own: one or two plain sentences without backticks or bolding. Keep option
-    labels identical to the numbered chat option names (make the names concrete
+    labels identical to the chat option card titles (make the names concrete
     rather than longer), and put any extra context in `question`.
 3.  **No Manual `"Other"` Option:** The UI modal provides a built-in write-in
     field automatically.

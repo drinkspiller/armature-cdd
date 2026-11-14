@@ -12,6 +12,13 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python3 ./hooks/ask_question_guard.py",
+        "timeout": 5
+      }
     ]
   }
 }

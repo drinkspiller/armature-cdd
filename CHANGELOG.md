@@ -6,6 +6,48 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.41.0] - 2026-11-13
+
+### Added
+
+-   **`Stop`-hook guard for dropped `ask_question` tool calls**: Added a `Stop`
+    hook in `hooks.json` backed by `hooks/ask_question_guard.py` (with unit
+    tests in `hooks/test_ask_question_guard.py`) that detects assistant turns
+    ending with option cards, `- Pick N if` recaps, or waiting-turn phrasing
+    without invoking `ask_question`, and forces a continuation to surface the
+    interactive prompt. When the stopped step already emitted >= 25 visible
+    words of options, the continuation instructs a zero-prose immediate
+    `ask_question` call (paired with a `PreToolUse` allowance via
+    `_prior_stopped_decision_words`) so models do not re-list options and stall
+    again. Stops blocking after 2 retries per turn and automatically skips when
+    the user requested plain-text questions or the turn is purely informational.
+
+### Changed
+
+-   **Concise blockquote option cards with inline `Pros`, `Cons`, and
+    `Implications` (`<= 300` words)**: Updated `rules/armature_protocol.md`,
+    `skills/arm-new-track/SKILL.md`, `skills/arm-setup/SKILL.md`,
+    `skills/arm-new-track/references/interview_formatting.md`,
+    `skills/arm-new-track/references/ask_question_guide.md`, and
+    `evals/skillopt/` so default interview turns render compact blockquote
+    option cards (`> **Option 1: <Option name> (Recommended)**` with
+    single-clause inline `Pros`, `Cons`, and `Implications` bullets) while
+    staying within a concise `160-300` word budget (`<= 300` words target).
+-   **Follow-up question `# <Topic>` H1 heading**: Updated
+    `rules/armature_antigravity.md`, `rules/armature_protocol.md`,
+    `skills/arm-new-track/SKILL.md`, and
+    `skills/arm-new-track/references/interview_formatting.md` so follow-up
+    answers always open with an `# <Topic>` H1 heading describing the topic
+    being followed up on (never a bare numbered or H3 heading), followed by
+    `---` and the re-teed decision turn when a choice remains open.
+-   **1.5x faster automated screencast pacing**: Sped up default hold timers,
+    reading rates (`3.6` -> `5.4` words/s on coach bars, `3.0` -> `4.5` words/s
+    on title cards), beat hints, and cursor travel times by ~1.5x across
+    `skills/arm-review/scripts/instructional_reel.py`,
+    `skills/arm-review/scripts/cdp_screencast_recorder.py`,
+    `skills/arm-review/references/screencast_adapter.md`, and
+    `skills/arm-review/scripts/test_instructional_reel.py`.
+
 ## [0.40.1] - 2026-11-12
 
 ### Fixed

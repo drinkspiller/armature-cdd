@@ -95,25 +95,25 @@ class PacingAndTokensTest(unittest.TestCase):
   """Pacing formulas, token contrast, and overlay script hygiene."""
 
   def test_coach_hold_matches_spec_examples(self):
-    self.assertAlmostEqual(reel.coach_hold_seconds(_words(19)), 8.125)
-    self.assertEqual(reel.coach_hold_seconds("Short."), 3.0)
-    self.assertEqual(reel.beat_hold_seconds("Selecting Standard Preset..."), 2.0)
-    self.assertAlmostEqual(reel.beat_hold_seconds(_words(8)), 3.8)
+    self.assertAlmostEqual(reel.coach_hold_seconds(_words(19)), 5.4)
+    self.assertEqual(reel.coach_hold_seconds("Short."), 2.0)
+    self.assertEqual(reel.beat_hold_seconds("Selecting Standard Preset..."), 1.3)
+    self.assertAlmostEqual(reel.beat_hold_seconds(_words(8)), 2.5)
 
   def test_card_hold_ignores_kicker_and_has_floor(self):
-    self.assertAlmostEqual(reel.card_hold_seconds(_words(23)), 1.5 + 23 / 3)
-    self.assertEqual(reel.card_hold_seconds("Hi"), 4.0)
+    self.assertAlmostEqual(reel.card_hold_seconds(_words(23)), 1.0 + 23 / 4.5)
+    self.assertEqual(reel.card_hold_seconds("Hi"), 2.7)
 
   def test_recap_and_override_only_raise(self):
-    self.assertEqual(reel.recap_hold_seconds("Tiny."), 5.0)
+    self.assertEqual(reel.recap_hold_seconds("Tiny."), 3.3)
     self.assertEqual(reel.resolve_hold(5.0, 2.0), 5.0)
     self.assertEqual(reel.resolve_hold(5.0, 7.5), 7.5)
     self.assertEqual(reel.resolve_hold(5.0, None), 5.0)
 
   def test_cursor_travel_is_clamped_linear(self):
-    self.assertAlmostEqual(reel.cursor_travel_seconds(50), 0.6)
-    self.assertAlmostEqual(reel.cursor_travel_seconds(700), 0.85)
-    self.assertAlmostEqual(reel.cursor_travel_seconds(5000), 1.1)
+    self.assertAlmostEqual(reel.cursor_travel_seconds(50), 0.4)
+    self.assertAlmostEqual(reel.cursor_travel_seconds(700), 0.575)
+    self.assertAlmostEqual(reel.cursor_travel_seconds(5000), 0.75)
 
   def test_every_token_pair_meets_its_contrast_minimum(self):
     """Every text pair in CONTRAST_PAIRS meets its minimum ratio."""

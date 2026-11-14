@@ -10,8 +10,8 @@ Implements the ADR 0019 `AttachedCDPRecorder` / `CDPRecorder` standard for
      `document.createElement` and `document.createElementNS` (zero `.innerHTML`
      or `.outerHTML` sinks).
   3. Dual-Pacing Variable-Speed Timelapse Engine (`fps=10`):
-     - `explain_and_hold(seconds >= 2.8)` for `1x` interactive inspection beats.
-     - `wait_for_js(..., capture_interval_s=0.6)` for `4x-10x` timelapse async
+     - `explain_and_hold(seconds >= 1.9)` for `1x` interactive inspection beats.
+     - `wait_for_js(..., capture_interval_s=0.9)` for `5x-10x` timelapse async
        waits with live HUD elapsed-time and phase updates and fatal error banner
        fast-fail.
   4. Pre-Capture Secret & Token Masking (`mask_sensitive_dom`), Stalled-Wait
@@ -544,7 +544,7 @@ class CDPRecorder:
       width: int = 1440,
       height: int = 900,
       fps: int = 10,
-      min_hold_sec: float = 2.8,
+      min_hold_sec: float = 1.9,
       allow_prototype_harness: bool = False,
       chrome_bin: str = "/usr/bin/google-chrome",
       attach_port: int | None = None,
@@ -737,7 +737,7 @@ class CDPRecorder:
       badge: str,
       title: str,
       subtitle: str,
-      seconds: float = 2.8,
+      seconds: float = 1.9,
       highlight_selector: str | None = None,
       position: str = "bottom",
   ) -> None:
@@ -764,7 +764,7 @@ class CDPRecorder:
       self,
       predicate_js: str,
       timeout_s: float = 300.0,
-      capture_interval_s: float = 0.6,
+      capture_interval_s: float = 0.9,
       badge: str = "TIMELAPSE",
       title: str = "Waiting for async operation",
       phase_expr_js: str | None = None,
@@ -860,7 +860,7 @@ class CDPRecorder:
     count = max(1, int(round(seconds * self.fps)))
     self.snap_frame(repeat=count)
 
-  def move_to(self, x: float, y: float, steps: int = 8) -> None:
+  def move_to(self, x: float, y: float, steps: int = 5) -> None:
     """Smoothly interpolates the overlay cursor to `(x, y)` over `steps` frames."""
     self.ensure_overlay()
     x0, y0 = self.cur_x, self.cur_y
@@ -886,7 +886,7 @@ class CDPRecorder:
     """)
 
   def move_to_selector(
-      self, selector: str, steps: int = 8, highlight_target: bool = True
+      self, selector: str, steps: int = 5, highlight_target: bool = True
   ) -> dict[str, float] | None:
     """Moves the cursor to the center of `selector` and optionally highlights it."""
     if highlight_target:
@@ -901,7 +901,7 @@ class CDPRecorder:
       x: float,
       y: float,
       real_click_selector: str | None = None,
-      steps: int = 8,
+      steps: int = 5,
       hold_after: float = 0.0,
   ) -> None:
     """Moves to `(x, y)`, renders a click ripple, and dispatches a click."""
@@ -947,7 +947,7 @@ class CDPRecorder:
       self.hold(hold_after)
 
   def click_selector(
-      self, selector: str, steps: int = 8, hold_after: float = 0.0
+      self, selector: str, steps: int = 5, hold_after: float = 0.0
   ) -> dict[str, float] | None:
     """Moves to `selector`, highlights it, and clicks it."""
     pt = self.get_center(selector)
@@ -967,12 +967,12 @@ class CDPRecorder:
       y0: float,
       x1: float,
       y1: float,
-      steps: int = 10,
+      steps: int = 7,
       modifiers: int = 0,
       hold_after: float = 0.0,
   ) -> None:
     """Performs a visible mouse drag from (x0, y0) to (x1, y1) via CDP mouse events."""
-    self.move_to(x0, y0, steps=6)
+    self.move_to(x0, y0, steps=4)
     self.eval_js(
         f"window.__cdpDemoSetCursor({x0:.1f}, {y0:.1f}, true);"
         f" window.__cdpDemoPulseRipple({x0:.1f}, {y0:.1f});"
@@ -1026,7 +1026,7 @@ class CDPRecorder:
     if hold_after > 0:
       self.hold(hold_after)
 
-  def navigate(self, url: str, wait_sec: float = 1.6) -> None:
+  def navigate(self, url: str, wait_sec: float = 1.1) -> None:
     """Navigates to a live `http://` or `https://` URL, mounts overlays, and masks secrets."""
     parsed = urllib.parse.urlparse(url)
     scheme = (parsed.scheme or "").lower()
@@ -1384,14 +1384,14 @@ def run_spec_file(spec_path: str) -> dict[str, object]:
       width=int(spec.get("width", 1440)),
       height=int(spec.get("height", 900)),
       fps=fps,
-      min_hold_sec=float(spec.get("min_hold_sec", 2.8)),
+      min_hold_sec=float(spec.get("min_hold_sec", 1.9)),
       attach_port=spec.get("attach_port"),
   )
   try:
     for step in spec.get("steps", []):
       action = step.get("action")
       if action == "navigate":
-        rec.navigate(step["url"], wait_sec=float(step.get("wait_sec", 1.6)))
+        rec.navigate(step["url"], wait_sec=float(step.get("wait_sec", 1.1)))
       elif action == "mask_secrets":
         rec.mask_sensitive_dom(step.get("extra_selectors"))
       elif action == "caption":
@@ -1399,7 +1399,7 @@ def run_spec_file(spec_path: str) -> dict[str, object]:
             badge=step.get("badge", "STEP"),
             title=step.get("title", step.get("text", "")),
             subtitle=step.get("subtitle", ""),
-            seconds=float(step.get("hold_seconds", 2.8)),
+            seconds=float(step.get("hold_seconds", 1.9)),
             highlight_selector=step.get("highlight_selector"),
             position=step.get("position", "bottom"),
         )
@@ -1407,7 +1407,7 @@ def run_spec_file(spec_path: str) -> dict[str, object]:
         rec.wait_for_js(
             predicate_js=step["predicate_js"],
             timeout_s=float(step.get("timeout_s", 300.0)),
-            capture_interval_s=float(step.get("capture_interval_s", 0.6)),
+            capture_interval_s=float(step.get("capture_interval_s", 0.9)),
             badge=step.get("badge", "TIMELAPSE"),
             title=step.get("title", "Waiting for async operation"),
             phase_expr_js=step.get("phase_expr_js"),
@@ -1419,34 +1419,34 @@ def run_spec_file(spec_path: str) -> dict[str, object]:
       elif action == "eval":
         rec.eval_js(step["expression"])
       elif action == "hold":
-        rec.hold(float(step.get("seconds", 2.8)))
+        rec.hold(float(step.get("seconds", 1.9)))
       elif action == "move":
         if "selector" in step:
           rec.move_to_selector(
               step["selector"],
-              steps=int(step.get("steps", 8)),
+              steps=int(step.get("steps", 5)),
               highlight_target=bool(step.get("highlight", True)),
           )
         else:
           rec.move_to(
               float(step["x"]),
               float(step["y"]),
-              steps=int(step.get("steps", 8)),
+              steps=int(step.get("steps", 5)),
           )
       elif action == "click":
         if "selector" in step:
           rec.click_selector(
               step["selector"],
-              steps=int(step.get("steps", 8)),
-              hold_after=float(step.get("hold_after", 2.8)),
+              steps=int(step.get("steps", 5)),
+              hold_after=float(step.get("hold_after", 1.9)),
           )
         else:
           rec.click_at(
               float(step["x"]),
               float(step["y"]),
               real_click_selector=step.get("real_click_selector"),
-              steps=int(step.get("steps", 8)),
-              hold_after=float(step.get("hold_after", 2.8)),
+              steps=int(step.get("steps", 5)),
+              hold_after=float(step.get("hold_after", 1.9)),
           )
       elif action == "drag":
         rec.drag(
@@ -1454,9 +1454,9 @@ def run_spec_file(spec_path: str) -> dict[str, object]:
             float(step["y0"]),
             float(step["x1"]),
             float(step["y1"]),
-            steps=int(step.get("steps", 10)),
+            steps=int(step.get("steps", 7)),
             modifiers=int(step.get("modifiers", 0)),
-            hold_after=float(step.get("hold_after", 2.8)),
+            hold_after=float(step.get("hold_after", 1.9)),
         )
       elif action == "screenshot":
         rec.save_clean_screenshot(step["path"])

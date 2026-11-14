@@ -41,21 +41,29 @@ in `content` before invoking `ask_question`:
    choice naturally into the opening clause rather than printing a separate
    settled line), followed by `The choice here is <5-9 words>. Here are some
    options:`.
-3. **Numbered one-line options (`1..K`, recommended first at `1.`):**
-   `1. <Option name>: <plain-English benefit>; <plain-English cost>`
+3. **Concise blockquote option cards (`1..K`, recommended first at Option 1):**
+   render one compact blockquote card per option (separated by `&nbsp;` or a
+   blank line) with single-clause inline `Pros`, `Cons`, and `Implications`:
+
+   ```markdown
+   > **Option 1: <Option name> (Recommended)**
+   > - **Pros:** <concise 1-clause benefit>
+   > - **Cons:** <concise 1-clause trade-off or cost>
+   > - **Implications:** <concise 1-clause operational or design impact>
+   ```
 4. **Deferred mechanics line:** `Safe to ignore for now: <2-3 low-level details>.`
 5. **Recommendation (strictly 1 sentence):**
    `### Recommendation: Option 1` followed by strictly a single plain-English
    sentence (never 2 sentences).
 6. **Decision recap bullets (exact `- Pick N if ` prefix):**
-   `- Pick N if <short condition>.` (strictly one bullet per numbered option
-   `1..K` using the exact words `- Pick N if `, never `- Pick N to `; target
-   `120-175` words total from headline through the final `- Pick` bullet, `<= 220`
-   words by default unless a critical safety caveat requires a few extra words).
+   `- Pick N if <short condition>.` (strictly one bullet per option card `1..K`
+   using the exact words `- Pick N if `, never `- Pick N to `; target `160-280`
+   words total from headline through the final `- Pick` bullet, `<= 300` words
+   by default unless a critical safety caveat requires a few extra words).
    Never insert unnumbered options (such as `"Reopen Round <R>..."`) into
    `ask_question` alone—if reopening a prior decision is warranted in Phase 5b,
-   include it as one of the numbered `1..K` options in chat so chat `1..K` and
-   modal `1..K` match strictly 1:1 (Option 1 prefixed with `"(Recommended) "`).
+   include it as one of the `1..K` option cards in chat so chat `1..K` and modal
+   `1..K` match strictly 1:1 (Option 1 prefixed with `"(Recommended) "`).
    Always emit the full visible Markdown block into `content` on the **same
    step** that calls `ask_question` (before any draft `write_file`/`edit_file`
    calls in that step). In Plain-Text Question Mode
@@ -66,12 +74,21 @@ These layout rules are defaults (`ADR 0022`): if following one literally would
 hide a needed caveat or make the question harder to understand, say so and
 adjust.
 
-## 3. Deeper Zoom-Out & Zoom-In Handling
+## 3. Follow-Up Questions, Zoom-Out & Zoom-In Handling
 
+- **Follow-Up Questions (`# <Topic>` H1 Heading):** Whenever the user asks a
+  follow-up question (about a term, option, or consequence), **always start the
+  response with an `# <Topic>` H1 heading describing the topic being followed up
+  on** (never a bare numbered or H3 heading), answer clearly in plain English,
+  and if a decision remains open, append `---` followed by the re-teed
+  `# <Decision Topic>` H1 turn + option cards + `ask_question`.
 - **Need More Context (`"I need more context, zoom out and give examples"` /
   `"too vague"` / `"zoom out"`):** Make zero read/search tool calls, step back
-  further in plain everyday English to walk through 1–2 concrete named domain
-  examples above a `---` separator, and rewrite the Focus + Succinct Zoom-Out
-  interview turn in simpler everyday words followed by `ask_question`.
-- **Zoom-In (`"zoom in"`):** Render `**Pros:**` / `**Cons:**` /
-  `**Implications:**` blockquote cards only when explicitly requested.
+  further in plain everyday English (starting with an `# <Topic>` H1 heading
+  above plain paragraphs, **no blockquote cards above `---`**) to walk through
+  1–2 concrete named domain examples above a `---` separator, and rewrite the
+  Focus + Succinct Zoom-Out interview turn (with rewritten concise option cards)
+  in simpler everyday words followed by `ask_question`.
+- **Zoom-In (`"zoom in"`):** Expand the blockquote `**Pros:**` / `**Cons:**` /
+  `**Implications:**` rows with deeper failure-mode and architectural detail
+  when explicitly requested, and re-ask `ask_question`.
