@@ -24,9 +24,12 @@ def _write_transcript(directory, steps, full=False):
   return path
 
 
-def _run_hook(payload):
+def _run_hook(payload, extra_args=None):
+  cmd = [sys.executable, os.path.join(HOOKS_DIR, "ask_question_guard.py")]
+  if extra_args:
+    cmd.extend(extra_args)
   proc = subprocess.run(
-      [sys.executable, os.path.join(HOOKS_DIR, "ask_question_guard.py")],
+      cmd,
       input=json.dumps(payload),
       capture_output=True,
       text=True,
@@ -798,6 +801,510 @@ class AskQuestionGuardTest(unittest.TestCase):
           "transcriptPath": path_reenable,
       })
       self.assertEqual(res_reenable["decision"], "continue")
+
+  def test_stop_ignores_completed_numbered_changelog_and_build_summary(self):
+    """Completed numbered summaries and build notes must not trigger Stop."""
+    completed_changelog = (
+        "Summary of changes:\n\n"
+        "1. Added the `--strict` option to the CLI parser.\n"
+        "2. Updated users to prefer the new cached endpoint.\n"
+        "3. Fixed the unit tests."
+    )
+    self.assertFalse(guard.looks_like_dropped_ask_question(completed_changelog))
+
+    build_note = (
+        "Build started in the background.\n\n"
+        "Once it's ready, the binary will appear in bin/."
+    )
+    self.assertFalse(guard.looks_like_dropped_ask_question(build_note))
+
+    done_note = "Once that's done, the test suite exits with status 0."
+    self.assertFalse(guard.looks_like_dropped_ask_question(done_note))
+
+    for status_summary in (
+        "Once the server is up, it will respond on port 8080.",
+        "Once it's ready, the health check will reply with ok.",
+        "Once it's ready, stdout will say Listening on :8080.",
+        "Once it's done, the essay is saved to disk.",
+    ):
+      self.assertFalse(
+          guard.looks_like_dropped_ask_question(status_summary),
+          msg=f"Unexpected Stop trigger on: {status_summary}",
+      )
+
+    waiting_handoff = (
+        "The tunnel dropped.\n\n"
+        "Once it's back up, let me know and I'll continue."
+    )
+    self.assertTrue(guard.looks_like_dropped_ask_question(waiting_handoff))
+
+    real_numbered_choice = (
+        "Here are two ways to handle retries:\n\n"
+        "1. Exponential backoff\n"
+        "2. Fixed 5s delay\n\n"
+        "Which option do you prefer?"
+    )
+    self.assertTrue(guard.looks_like_dropped_ask_question(real_numbered_choice))
+
+  def test_stop_catches_confirm_before_proceed_bullets(self):
+    """Catches Sonnet-style 'worth confirming / questions before proceed'."""
+    for prompt in (
+        (
+            "I inspected the rename blast radius.\n\n"
+            "A few things worth confirming before you proceed:\n"
+            "- Should old routes redirect or return 404?\n"
+            "- Update archived docs too?"
+        ),
+        (
+            "I mapped the affected files.\n\n"
+            "A few questions before we proceed:\n"
+            "- Should old routes redirect or return 404?"
+        ),
+        (
+            "Before proceeding, two details remain.\n\n"
+            "Two questions before proceeding:\n"
+            "- Keep legacy path?"
+        ),
+    ):
+      self.assertTrue(
+          guard.looks_like_dropped_ask_question(prompt),
+          msg=f"Expected Stop trigger on: {prompt}",
+      )
+
+    completed_prose = (
+        "I confirmed the tests pass before proceeding with the upload."
+    )
+    self.assertFalse(guard.looks_like_dropped_ask_question(completed_prose))
+
+  def test_stop_marker_in_prose_does_not_suppress_guard_or_spoof_words(self):
+    """User or tool output quoting STOP_MARKER must not bypass Stop/PreTool."""
+    options_text = (
+        "# Storage\n\nPick a backend.\n\n"
+        "> **Option 1: SQLite (Recommended)**\n\n"
+        "### Recommendation: Option 1\n"
+        "Simplest choice.\n\n"
+        "- Pick 1 if local."
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+      # 1. Human USER_INPUT + GENERIC file read quoting STOP_MARKER must NOT
+      # suppress Stop on a dropped options turn.
+      path_stop = _write_transcript(
+          tmp,
+          [
+              {
+                  "type": "USER_INPUT",
+                  "content": f"Why did {guard.STOP_MARKER} fire earlier?",
+              },
+              {
+                  "type": "GENERIC",
+                  "status": "DONE",
+                  "content": f"STOP_MARKER = '{guard.STOP_MARKER}'",
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": options_text,
+                  "tool_calls": [],
+              },
+          ],
+      )
+      res_stop = _run_hook({
+          "hookEventName": "Stop",
+          "executionNum": 0,
+          "transcriptPath": path_stop,
+      })
+      self.assertEqual(res_stop["decision"], "continue")
+
+      # 2. GENERIC file read quoting STOP_MARKER must NOT grant PreToolUse word
+      # credit to a subsequent bare ask_question step.
+      path_pre = _write_transcript(
+          tmp,
+          [
+              {"type": "USER_INPUT", "content": "Inspect the guard"},
+              {
+                  "type": "GENERIC",
+                  "status": "DONE",
+                  "content": f"STOP_MARKER = '{guard.STOP_MARKER}'",
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": options_text + " " + " ".join(["w"] * 25),
+                  "tool_calls": [],
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "",
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+          ],
+      )
+      res_pre = _run_hook({
+          "hookEventName": "PreToolUse",
+          "toolCall": {"name": "ask_question"},
+          "transcriptPath": path_pre,
+      })
+      self.assertEqual(res_pre["decision"], "deny")
+
+      # 3. Real SYSTEM_MESSAGE continuation DOES mark round_continued and
+      # grants PreToolUse word credit.
+      path_sys = _write_transcript(
+          tmp,
+          [
+              {"type": "USER_INPUT", "content": "Start interview"},
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": options_text + " " + " ".join(["w"] * 25),
+                  "tool_calls": [],
+              },
+              {
+                  "type": "SYSTEM_MESSAGE",
+                  "source": "SYSTEM",
+                  "status": "DONE",
+                  "content": guard.STOP_CONTINUE_REASON,
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "",
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+          ],
+      )
+      res_sys_pre = _run_hook({
+          "hookEventName": "PreToolUse",
+          "toolCall": {"name": "ask_question"},
+          "transcriptPath": path_sys,
+      })
+      self.assertEqual(res_sys_pre["decision"], "allow")
+
+  def test_plain_mode_precedence_inline_code_and_ask_question_qa_filter(self):
+    """Handles 'Don't use the question box again', inline code, and Q1:/A1:."""
+    # 1. "Don't / do not / never use the question box again" must enable plain
+    # mode (overlap with "use the question box again" must not re-enable box).
+    for phrase in (
+        "Don't use the question box again",
+        "Please do not use the question box again",
+        "Never use the question box again",
+    ):
+      self.assertTrue(
+          guard.user_requested_plain_mode([
+              {"type": "USER_INPUT", "content": phrase},
+          ]),
+          msg=f"Expected plain_mode=True for: {phrase}",
+      )
+    # Explicit USER_EXPLICIT prompt starting with STOP_MARKER is not a system
+    # continuation and starts a new turn.
+    turn_after_explicit = guard.current_turn([
+        {"type": "USER_INPUT", "content": "Prior turn"},
+        {"type": "PLANNER_RESPONSE", "content": "Old reply", "tool_calls": []},
+        {
+            "type": "USER_INPUT",
+            "source": "USER_EXPLICIT",
+            "content": f"{guard.STOP_MARKER} why did this appear in logs?",
+        },
+        {"type": "PLANNER_RESPONSE", "content": "New reply", "tool_calls": []},
+    ])
+    self.assertEqual(len(turn_after_explicit), 1)
+    self.assertEqual(turn_after_explicit[0]["content"], "New reply")
+    # 2. Inline backtick code spans must be ignored.
+    self.assertFalse(
+        guard.user_requested_plain_mode([
+            {
+                "type": "USER_INPUT",
+                "content": (
+                    "Check regex for `stop using the question box` in tests"
+                ),
+            }
+        ])
+    )
+    # 3. ASK_QUESTION Q1: prompt text must be ignored; only A1: counts.
+    self.assertFalse(
+        guard.user_requested_plain_mode([
+            {
+                "type": "ASK_QUESTION",
+                "status": "DONE",
+                "content": (
+                    "Q1: Should we stop using the question box?\n"
+                    "A1: No, keep using it"
+                ),
+            }
+        ])
+    )
+    # 4. Multi-line A1: write-in spanning multiple lines enables plain mode.
+    self.assertTrue(
+        guard.user_requested_plain_mode([
+            {
+                "type": "PLANNER_RESPONSE",
+                "status": "DONE",
+                "content": "Round 1 " + " ".join(["w"] * 30),
+                "tool_calls": [{"name": "ask_question"}],
+            },
+            {
+                "type": "GENERIC",
+                "status": "DONE",
+                "content": (
+                    "Created At: 2026-11-14\n"
+                    "Q1: Pick an option\n"
+                    "A1: Option 1\n"
+                    "Also, please stop using the question box from now on.\n"
+                    "Completed At: 2026-11-14"
+                ),
+            },
+        ])
+    )
+
+  def test_non_guard_ask_question_error_does_not_reset_round(self):
+    """A non-guard ask_question tool error keeps the round open."""
+    with tempfile.TemporaryDirectory() as tmp:
+      path = _write_transcript(
+          tmp,
+          [
+              {"type": "USER_INPUT", "content": "Start interview"},
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "",
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+              {
+                  "type": "GENERIC",
+                  "status": "ERROR",
+                  "error": f"{guard.MARKER} Blocked: 0 words",
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "short",
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+              {
+                  "type": "ASK_QUESTION",
+                  "status": "ERROR",
+                  "error": "ask_question transport timeout",
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "",
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+          ],
+      )
+      # Because the non-guard error did NOT reset the round, the earlier guard
+      # denial still counts (denials == 1 -> escalates to PLAIN_REASON).
+      res = _run_hook({
+          "hookEventName": "PreToolUse",
+          "toolCall": {"name": "ask_question"},
+          "transcriptPath": path,
+      })
+      self.assertEqual(res["decision"], "deny")
+      self.assertIn("Plain-Text Question Mode", res["reason"])
+
+      # Conversely, when a multi-tool step has a sibling error mentioning
+      # "ask_question" (e.g. editing ask_question_guard.py) while ASK_QUESTION
+      # finishes DONE, the round MUST advance cleanly.
+      turn_with_sibling_err = [
+          {
+              "type": "PLANNER_RESPONSE",
+              "status": "DONE",
+              "content": "Round 1 " + " ".join(["w"] * 30),
+              "tool_calls": [
+                  {"name": "edit_file"},
+                  {"name": "ask_question"},
+              ],
+          },
+          {
+              "type": "GENERIC",
+              "status": "ERROR",
+              "error": "edit_file failed on hooks/ask_question_guard.py",
+          },
+          {
+              "type": "ASK_QUESTION",
+              "status": "DONE",
+              "content": "A1: Option 1",
+          },
+          {
+              "type": "PLANNER_RESPONSE",
+              "status": "DONE",
+              "content": "",
+              "tool_calls": [{"name": "ask_question"}],
+          },
+      ]
+      round_after = guard.current_question_round(
+          turn_with_sibling_err, active_ask_step=turn_with_sibling_err[-1]
+      )
+      self.assertEqual(len(round_after), 3)
+      self.assertIs(round_after[-1], turn_with_sibling_err[-1])
+
+  def test_round2_benign_status_step_does_not_burn_stop_cap(self):
+    """Benign Round 2 text-only status updates must not burn the Stop cap."""
+    options_text = (
+        "# Caching\n\nChoose cache strategy.\n\n"
+        "> **Option 1: In-memory (Recommended)**\n\n"
+        "### Recommendation: Option 1\n"
+        "Fastest default.\n\n"
+        "- Pick 1 if single-node."
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+      path = _write_transcript(
+          tmp,
+          [
+              {"type": "USER_INPUT", "content": "Start interview"},
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "Round 1 " + " ".join(["w"] * 30),
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+              {
+                  "type": "ASK_QUESTION",
+                  "status": "DONE",
+                  "content": "A1: Opt 1",
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "Checking config files before Round 2.",
+                  "tool_calls": [],
+              },
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": options_text,
+                  "tool_calls": [],
+              },
+          ],
+      )
+      res = _run_hook({
+          "hookEventName": "Stop",
+          "executionNum": 1,
+          "continuationActive": True,
+          "transcriptPath": path,
+      })
+      self.assertEqual(res["decision"], "continue")
+
+  def test_defer_flags_skip_when_workspace_hooks_file_owns_guard(self):
+    """Global hook defers inside matching workspace when hooks.json owns it."""
+    with tempfile.TemporaryDirectory() as tmp:
+      hooks_file = os.path.join(tmp, "hooks.json")
+      with open(hooks_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "armature-ask-question-guard": {
+                    "enabled": True,
+                    "PreToolUse": [{"matcher": "ask_question", "hooks": []}],
+                    "Stop": [{"type": "command", "command": "true"}],
+                }
+            },
+            f,
+        )
+      path = _write_transcript(
+          tmp,
+          [
+              {"type": "USER_INPUT", "content": "Start interview"},
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": "",
+                  "tool_calls": [{"name": "ask_question"}],
+              },
+          ],
+      )
+      defer_args = [
+          "--defer-when-workspace-prefix",
+          "/srv/monorepo/",
+          "--defer-if-hooks-file",
+          hooks_file,
+      ]
+      # Inside matching workspace -> defers cleanly (allows).
+      res_defer = _run_hook(
+          {
+              "hookEventName": "PreToolUse",
+              "toolCall": {"name": "ask_question"},
+              "workspacePaths": ["/srv/monorepo/user/ws/repo"],
+              "transcriptPath": path,
+          },
+          extra_args=defer_args,
+      )
+      self.assertEqual(res_defer["decision"], "allow")
+
+      # Outside matching workspace -> runs guard normally (denies blank box).
+      res_outside_prefix = _run_hook(
+          {
+              "hookEventName": "PreToolUse",
+              "toolCall": {"name": "ask_question"},
+              "workspacePaths": ["/home/user/Documents/oss-repo"],
+              "transcriptPath": path,
+          },
+          extra_args=defer_args,
+      )
+      self.assertEqual(res_outside_prefix["decision"], "deny")
+
+      # PreToolUse-only workspace entry -> Stop MUST NOT defer.
+      with open(hooks_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "armature-ask-question-guard": {
+                    "enabled": True,
+                    "PreToolUse": [{"matcher": "ask_question", "hooks": []}],
+                }
+            },
+            f,
+        )
+      stop_dir = os.path.join(tmp, "stop_case")
+      os.makedirs(stop_dir, exist_ok=True)
+      stop_path = _write_transcript(
+          stop_dir,
+          [
+              {"type": "USER_INPUT", "content": "Start interview"},
+              {
+                  "type": "PLANNER_RESPONSE",
+                  "status": "DONE",
+                  "content": (
+                      "# Choice\n\n> **Option 1: Keep (Recommended)**\n\n"
+                      "### Recommendation: Option 1\nSimplest.\n\n"
+                      "- Pick 1 if local."
+                  ),
+                  "tool_calls": [],
+              },
+          ],
+      )
+      res_stop_no_defer = _run_hook(
+          {
+              "hookEventName": "Stop",
+              "executionNum": 0,
+              "workspacePaths": ["/srv/monorepo/user/ws/repo"],
+              "transcriptPath": stop_path,
+          },
+          extra_args=defer_args,
+      )
+      self.assertEqual(res_stop_no_defer["decision"], "continue")
+
+      # Disabled workspace entry -> global guard stays active (denies).
+      with open(hooks_file, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "armature-ask-question-guard": {
+                    "enabled": False,
+                    "PreToolUse": [{"matcher": "ask_question", "hooks": []}],
+                    "Stop": [{"type": "command", "command": "true"}],
+                }
+            },
+            f,
+        )
+      res_disabled = _run_hook(
+          {
+              "hookEventName": "PreToolUse",
+              "toolCall": {"name": "ask_question"},
+              "workspacePaths": ["/srv/monorepo/user/ws/repo"],
+              "transcriptPath": path,
+          },
+          extra_args=defer_args,
+      )
+      self.assertEqual(res_disabled["decision"], "deny")
 
 
 if __name__ == "__main__":

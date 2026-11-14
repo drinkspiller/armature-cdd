@@ -2,9 +2,9 @@
 """SkillOpt harness for the Armature Focus + Succinct /zoom-out interview format.
 
 Evaluates and optimizes the focused interview turn (zero chat progress-list
-clutter, clean topic headline, 1-3 line ASCII mental-model flow diagram,
-unlabeled 2-3 sentence orientation opener, numbered one-line options, ignore
-line, one-sentence recommendation, Pick-if recap, mirrored ask_question
+clutter, clean # <Topic> H1 headline, zero fenced text ASCII flow diagrams,
+unlabeled 2-3 sentence orientation opener, concise blockquote option cards,
+ignore line, one-sentence recommendation, Pick-if recap, mirrored ask_question
 options) across K seeds with a Two-Tier rubric: deterministic [INVARIANT]
 vetoes plus LLM-judged [QUALITY] partial credit.
 
@@ -708,7 +708,7 @@ def evaluate_invariants(task, text, tool_calls):
       if len(core) != len(chat_names):
         vetoes.append(
             f"{inv}: {len(core)} core modal options for {len(chat_names)}"
-            " numbered chat options"
+            " chat option cards"
         )
       elif core:
         if not core[0].lstrip().startswith("(Recommended)"):
@@ -804,6 +804,10 @@ Agent Tool Calls:
 {json.dumps(_public_tool_calls(tool_calls), indent=2)}
 
 Quality Criteria (1.0 fully met, 0.5 partially met, 0.0 not met):
+Note: placing "(Recommended)" as a suffix on the Option 1 markdown card header
+(`> **Option 1: <Name> (Recommended)**`) while prefixing `"(Recommended) <Name>"`
+in the `ask_question` tool call is the canonical format and counts as an exact
+1-to-1 match.
 """
   for i, q in enumerate(qualities, 1):
     prompt += f"{i}. {q}\n"
@@ -1019,15 +1023,19 @@ PLAIN_LANGUAGE = {
     ),
     "headline_clean_topic_format": (
         "the topic headline was missing or included Round/Question bookkeeping"
-        " prefixes instead of a clean ## <Topic> heading"
+        " prefixes instead of a clean # <Topic> (H1) heading"
     ),
     "headline_round_question_format": (
         "the topic headline was missing or included Round/Question bookkeeping"
-        " prefixes instead of a clean ## <Topic> heading"
+        " prefixes instead of a clean # <Topic> (H1) heading"
+    ),
+    "no_ascii_flow_block": (
+        "rendered a fenced text ASCII workflow diagram beneath the headline"
+        " instead of starting directly with the plain-English orientation"
     ),
     "has_succinct_zoom_out_flow": (
-        "did not include a compact 1-3 line fenced text ASCII workflow diagram"
-        " right beneath the headline"
+        "rendered a fenced text ASCII workflow diagram beneath the headline"
+        " instead of starting directly with the plain-English orientation"
     ),
     "no_chat_progress_list": (
         "printed Settled / Now / Up next lists or Round settled lines in chat"
@@ -1041,7 +1049,9 @@ PLAIN_LANGUAGE = {
         "did not state the decision in one sentence followed by a"
         " non-exhaustive options lead-in"
     ),
-    "has_numbered_options": "options were not a short numbered list",
+    "has_numbered_options": (
+        "options were not formatted as concise blockquote option cards"
+    ),
     "no_numbered_tradeoff_options": (
         "offered design options on a step that only needed approval"
     ),
@@ -1080,6 +1090,9 @@ PLAIN_LANGUAGE = {
         "leaked backend systems jargon (such as blob, copy-on-write, refcount,"
         " in-flight, or file handles) into a first-pass interview turn"
     ),
+    "word_budget_300": (
+        "the body from headline to the last pick line exceeded 300 words"
+    ),
     "word_budget_220": (
         "the body from headline to the last pick line exceeded 300 words"
     ),
@@ -1087,12 +1100,12 @@ PLAIN_LANGUAGE = {
         "the body from headline to the last pick line exceeded 300 words"
     ),
     "modal_options_match_chat_options": (
-        "the modal choices did not match the numbered option names in 1:1"
+        "the modal choices did not match the option card names in 1:1"
         " order, put the recommended option first, or replace deprecated"
         " context wording"
     ),
     "modal_options_mirror_pick": (
-        "the modal choices did not match the numbered option names in 1:1"
+        "the modal choices did not match the option card names in 1:1"
         " order, put the recommended option first, or replace deprecated"
         " context wording"
     ),

@@ -6,6 +6,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.41.2] - 2026-11-14
+
+### Fixed
+
+-   **`Stop` Guard False-Positive & Edge-Case Hardening
+    (`hooks/ask_question_guard.py`, `hooks/test_ask_question_guard.py`)**:
+    -   Tightened `_NUMBERED_CHOICE_PROMPT_RE` (removing bare `Option`,
+        `choose`, `prefer`) and anchored `_WAITING_TURN_TAIL_RE` (`once it's
+        ready...`) to word-bounded user-handoff phrases, eliminating false
+        positives on completed changelogs, server status summaries, and build
+        notes.
+    -   Scoped `STOP_MARKER` checks via `_is_stop_continuation_step()` to
+        `SYSTEM_MESSAGE` and system/unattributed `USER_INPUT` continuations so
+        human `USER_EXPLICIT` prompts or tool output quoting
+        `[armature-ask-stop-guard]` cannot suppress the `Stop` guard or spoof
+        `PreToolUse` word credit.
+    -   Added `_CONFIRM_BEFORE_PROCEED_RE` to catch `"worth confirming before
+        you proceed:"` and `"questions before we proceed:"` bullet-list stalls.
+    -   Fixed `"Don't / do not / never use the question box again"` overlap
+        precedence, stripped inline backtick code spans in
+        `user_requested_plain_mode()`, and extended multi-line `A1:` extraction
+        to both `ASK_QUESTION` and `GENERIC` steps (ignoring `Q1:` prompt text).
+    -   Updated `_ask_was_denied()` to treat non-guard `ask_question` tool
+        errors as uncompleted rounds without letting a sibling multi-tool error
+        mask a completed `ASK_QUESTION` step, and scoped the Round 2+ `Stop`
+        cap to dropped-question steps rather than benign status updates.
+    -   Added optional `--defer-when-workspace-prefix` and
+        `--defer-if-hooks-file` flags (verifying enabled handler presence for
+        the active event) so global hooks can cleanly defer when a
+        workspace-scoped `hooks.json` already owns the guard.
+-   **Eval Rubric & Option-Card Terminology Alignment
+    (`evals/skillopt/run_interview_format_opt.py`,
+    `train_interview_format.jsonl`, `skills/arm-review/SKILL.md`,
+    `skills/arm-new-track/SKILL.md`,
+    `skills/arm-new-track/references/interview_formatting.md`)**: Added
+    `"word_budget_300"` to SkillOpt `PLAIN_LANGUAGE`, clarified canonical Option
+    1 `(Recommended)` suffix/prefix equivalence in `judge_qualities()`, and
+    aligned residual numbered-option wording to concise blockquote option cards.
+
 ## [0.41.1] - 2026-11-14
 
 ### Fixed
