@@ -53,13 +53,15 @@ deliverables, synchronizing documentation, and managing track cleanup.
             `/zoom-out` layout in visible markdown (with zero `**Settled**`,
             `**Now**`, or `**Up next**` lists and zero fenced `text` ASCII flow
             diagrams):
-            -   Clean topic headline (`# <Topic>`, no `Round 1, Question 1`
+            -   Clean topic headline (`# <Topic>`, H1, no `Round 1, Question 1`
                 prefix)
             -   Unlabeled 2–3 sentence plain-English orientation (no
                 `**Context:**` label, no prose code identifiers) ending in
                 `The choice here is <X>. Here are some options:`
-            -   Numbered one-line options (`1. <Name>: <benefit>; <cost>`, 2–4
-                items, recommended at `1.`, no `(Recommended)` tag)
+            -   2–4 concise blockquote option cards
+                (`> **Option 1: <Option name> (Recommended)**` with
+                single-clause inline `> - **Pros:**`, `> - **Cons:**`, and
+                `> - **Implications:**` bullets)
             -   `Safe to ignore for now: <2–3 mechanics>.`
             -   `### Recommendation: Option 1` with exactly one sentence
             -   `- Pick N if <condition>.` one bullet per option

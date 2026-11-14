@@ -319,8 +319,12 @@ FLOW_BLOCK_RE = re.compile(
 )
 FLOW_ARROW_OR_STAGE_RE = re.compile(r"(?:►|→|->|──>|==>|\[\s*★|\[\S[^\]]*\])")
 NUMBERED_RE = re.compile(r"^\s*(\d+)\.\s+\S", re.M)
-PICK_RE = re.compile(r"^\s*(?:-\s+)?Pick\s+\d+\s+if\b", re.M)
-BULLETED_PICK_RE = re.compile(r"^\s*-\s+Pick\s+\d+\s+if\b", re.M)
+PICK_RE = re.compile(
+    r"^\s*(?:[-*]\s+)*(?:\*\*)?Pick\s+\d+(?:\*\*)?\s+if\b", re.M
+)
+BULLETED_PICK_RE = re.compile(
+    r"^\s*(?:[-*]\s+)+(?:\*\*)?Pick\s+\d+(?:\*\*)?\s+if\b", re.M
+)
 REC_HEADING_RE = re.compile(
     r"^###\s+Recommendation:\s+Option\s+(\d+)\s*$", re.M
 )

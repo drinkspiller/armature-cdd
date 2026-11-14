@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.41.1] - 2026-11-14
+
+### Fixed
+
+-   **Multi-Round Interview Isolation & Strict `Stop`-Credit Gating
+    (`hooks/ask_question_guard.py`, `hooks/test_ask_question_guard.py`)**: Added
+    `current_question_round()` to slice transcripts at the last completed
+    (non-denied) `ask_question` exchange so multi-round interviews reset `Stop`
+    word credit, denial counters, and per-round `Stop` continuation eligibility
+    even when an earlier round in the same turn already triggered a `Stop`
+    continuation. Gated `_prior_stopped_decision_words()` strictly on
+    `STOP_MARKER` presence in the active round so non-`Stop` text-only steps
+    cannot bypass `PreToolUse` blank-box checks.
+-   **`Stop` Guard Robustness (`hooks/ask_question_guard.py`)**: Added
+    chronological Plain-Text Question Mode toggling across both `USER_INPUT` and
+    completed `ask_question` write-in responses (ignoring non-answer `GENERIC`
+    tool outputs such as `read_file`) with box re-enable support and
+    quote/code-fence stripping, narrowed `"no question box"` bug-report false
+    triggers, anchored option-pattern matching to the reply tail outside fenced
+    code blocks, broadened waiting-turn phrasing (including `"ping/tell me once"`
+    and `"let me know once"`) without tripping polite closings (`"Let me know if
+    you want more details"`), added `fullyIdle: false` and nested
+    `stopHookArgs`/`common` payload support, and ensured exceptions during
+    `Stop` fail open with `{"decision": "stop"}`.
+-   **Stale Numbered-List Doc Parity (`rules/armature_antigravity.md`,
+    `skills/arm-implement/SKILL.md`, `README.md`)**: Reconciled remaining docs
+    with concise blockquote option cards (`~300`-word target) and follow-up
+    `# <Topic>` H1 headings.
+-   **Interview Format Eval Grader & Task Parity
+    (`evals/skillopt/run_interview_format_opt.py`,
+    `evals/skillopt/tasks/{train,val}_interview_format.jsonl`)**: Widened
+    `PICK_RE` and `BULLETED_PICK_RE` to accept `*` and bold `**Pick N**`
+    bullets, and updated task invariants (`word_budget_300`, removed obsolete
+    `no_recommended_tag_in_list`, refreshed `IFT_TRAIN_03` prior-turn prompt).
+
 ## [0.41.0] - 2026-11-13
 
 ### Added
