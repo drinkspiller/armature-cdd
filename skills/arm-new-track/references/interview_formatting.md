@@ -10,7 +10,7 @@ must be written in everyday plain English anchored in familiar domain nouns from
 the user's request:
 
 - **Zero code identifiers or inline backticks** in prose (the orientation
-  paragraph, numbered option lines, recommendation, or `Pick N if …` bullets).
+  paragraph, option card lines, recommendation, or `Pick N if …` bullets).
 - **Zero un-translated backend jargon** (*"blob"*, *"copy-on-write"*,
   *"refcount"*, *"in-flight"*, *"idempotent"*, *"fan-out"*, *"mutex"*).
 - **Silent On-Disk State Checkpointing (Zero Chat Ledger Clutter):** Persist

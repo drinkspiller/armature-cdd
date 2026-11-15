@@ -982,8 +982,8 @@ resolving all open rounds, questions, and ambiguities.
                         (`"(Recommended) <Option 1 name>"`, `"<Option 2 name>"`,
                         ...; if reopening a prior decision is warranted, include
                         `"Reopen Round <R> to revise <topic>"` as one of the
-                        numbered `1..K` options in chat rather than adding an
-                        unnumbered `"Reopen..."` option to `ask_question` alone)
+                        `1..K` option cards in chat rather than adding an
+                        extra `"Reopen..."` option to `ask_question` alone)
                         and trailing
                         `"I need more context, zoom out and give examples"`.
                         Never emit a bare `ask_question` call without visible

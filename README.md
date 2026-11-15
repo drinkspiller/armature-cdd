@@ -721,4 +721,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.41.1** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.41.2** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
