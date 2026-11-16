@@ -45,28 +45,31 @@ deliverables, synchronizing documentation, and managing track cleanup.
         `find`), MUST NOT pack multiple questions into `ask_question`, MUST NOT
         write `spec.md` or `plan.md`, and MUST NOT call `invoke_subagent` or
         `define_subagent`. Instead, in that exact turn:
-        1.  Explicitly state in visible markdown that no active track exists in
-            `tracks.md` for this request, so Armature is routing into
+        1.  Write a one-line lead-in in chat noting that no active track exists
+            in `tracks.md` for this request, so Armature is routing into
             `/arm-new-track` one-question-at-a-time planning (and will halt upon
             track creation so the user can run `/arm-implement <track_id>`).
-        2.  Render the canonical `/arm-new-track` Turn 1 Focus + Succinct
-            `/zoom-out` layout in visible markdown (with zero `**Settled**`,
-            `**Now**`, or `**Up next**` lists and zero fenced `text` ASCII flow
-            diagrams):
-            -   Clean topic headline (`# <Topic>`, H1, no `Round 1, Question 1`
+        2.  Invoke `ask_question` natively in that exact same step with strictly
+            ONE question (`len(questions) == 1`) and 3–4 options, putting the
+            canonical `/arm-new-track` Turn 1 Full-Context Question Box layout
+            inside `questions[0].question` (zero `**Settled**`, `**Now**`, or
+            `**Up next**` lists and zero fenced `text` ASCII flow diagrams):
+            -   Clean topic headline (`## <Topic>`, no `Round 1, Question 1`
                 prefix)
-            -   Unlabeled 2–3 sentence plain-English orientation (no
-                `**Context:**` label, no prose code identifiers) ending in
-                `The choice here is <X>. Here are some options:`
-            -   2–4 concise blockquote option cards
-                (`> **Option 1: <Option name> (Recommended)**` with
-                single-clause inline `> - **Pros:**`, `> - **Cons:**`, and
-                `> - **Implications:**` bullets)
-            -   `Safe to ignore for now: <2–3 mechanics>.`
-            -   `### Recommendation: Option 1` with exactly one sentence
-            -   `- Pick N if <condition>.` one bullet per option
-        3.  Invoke `ask_question` natively in the same turn with strictly ONE
-            question (`len(questions) == 1`) and 3–4 options.
+            -   Unlabeled 2–3 sentence plain-English overview (no `**Context:**`
+                label, no prose code identifiers) ending in
+                `The choice here is <X>.`
+            -   `Options` eyebrow (`<div>` in GUI HTML or `#### OPTIONS` in Pure
+                Markdown) followed by 2–4 flush-left numbered options
+                (`1. <Option 1 name>` with `Recommended` badge/tag, then
+                `2..K`), each with an indented one-sentence summary (folding in
+                operational impact and Option 1's rationale) and indented bold
+                `Pros:` / `Cons:` (no `Implications:`, no redundant bottom
+                `Recommendation:`, no `Safe to ignore for now:`)
+            -   *(In Plain-Text Question Mode only, render `# <Topic>`,
+                overview, `#### OPTIONS`, pure CommonMark nested ordered list
+                options, and `- Pick N if` bullets in chat and skip
+                `ask_question`.)*
     -   **Post-Interview Step 10 Terminal Stop Preservation (Two-Part Step 8–10
         Turn Contract)**: When a session that originally started with
         `/arm-implement` in Turn 1 was routed into `/arm-new-track` and reaches

@@ -447,12 +447,13 @@ Route execution based on the **Stage 2 Empirical VCS Diff Classification** (Step
         or visual mock), and flag any added raw `#hex` literal absent from
         `DESIGN.md` in the empirical diff as **`[WARNING] Token Drift`**.
     2.  Whenever implemented UI diverges from `spec.md` `## User Flows`, follow
-        the Mandatory Two-Part Turn Contract: render your audit findings in
-        visible markdown FIRST **without** editing `spec.md`, then invoke
-        `ask_question` in the same turn to classify the discrepancy as
-        **Deliberate** (record a dated `## Amendment` in `spec.md` only after
-        confirmation), **Drift** (revert/fix before closeout), or **Not Built /
-        Defer** (log to `tracks.md`).
+        the Full-Context Question Box contract (`rules/armature_antigravity.md`):
+        write a one-line chat lead-in **without** editing `spec.md`, and invoke
+        `ask_question` in the same turn with the audit findings inside
+        `question` to classify the discrepancy as **Deliberate** (record a dated
+        `## Amendment` in `spec.md` only after confirmation), **Drift**
+        (revert/fix before closeout), or **Not Built / Defer** (log to
+        `tracks.md`).
 
 ##### Path A: Automatic Micro-Verification Walkthrough (Visual-Only Footprints)
 
@@ -664,10 +665,9 @@ When the diff modifies state, auth guards, or RPCs (or when the user selects
             -   `"Skip to next scenario"`
         -   *Guardrail (Empirical Verification Only):* Verification gates test
             empirical application state, not architectural trade-offs. Do
-            **NOT** output the interview option-comparison body (orientation
-            opener, concise blockquote option cards with `**Pros:**` /
-            `**Cons:**` / `**Implications:**`, `### Recommendation: Option N`,
-            `Pick N if …` lines) or the
+            **NOT** output the interview option-comparison body (overview
+            paragraph, `Options` eyebrow, numbered options with `Pros:` /
+            `Cons:` rows, or `Pick N if …` lines) or the
             `"I need more context, zoom out and give examples"` option on
             scenario verification prompts.
     -   **In-Flight Discrepancy Triage:**

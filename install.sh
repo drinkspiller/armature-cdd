@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.41.2"
+VERSION="0.42.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -315,8 +315,6 @@ build_target_list() {
     "${TARGET_SKILLS_ROOT}/arm-setup/.armature_version"
     "${TARGET_PLUGIN_DIR}/.armature_version"
     "${TARGET_PLUGIN_DIR}/plugin.json"
-    "${TARGET_PLUGIN_DIR}/hooks.json"
-    "${TARGET_PLUGIN_DIR}/hooks/ask_question_guard.py"
     "${TARGET_PLUGIN_DIR}/README.md"
     "${TARGET_PLUGIN_DIR}/CHANGELOG.md"
   )
@@ -660,6 +658,78 @@ migrate_to_v0_12_0() {
   done
 }
 
+# Remove the retired v0.40.1-v0.41.2 ask_question guard hook from local plugin
+# installations and ~/.gemini/config/hooks.json while preserving sibling hooks.
+purge_legacy_ask_guard_hook() {
+  local legacy_plugin_files=(
+    "${TARGET_PLUGIN_DIR}/hooks.json"
+    "${TARGET_PLUGIN_DIR}/hooks/ask_question_guard.py"
+  )
+  for f in "${legacy_plugin_files[@]}"; do
+    if [[ -f "$f" ]]; then
+      if [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]]; then
+        msg_info "${YELLOW}[dry-run]${NC} Would remove retired hook file: ${CYAN}${f}${NC}"
+      else
+        rm -f "$f"
+        msg_success "Removed retired hook file: ${CYAN}${f}${NC}"
+      fi
+    fi
+  done
+  if [[ -d "${TARGET_PLUGIN_DIR}/hooks" ]] && [[ -z "$(ls -A "${TARGET_PLUGIN_DIR}/hooks" 2>/dev/null)" ]]; then
+    if [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]]; then
+      msg_info "${YELLOW}[dry-run]${NC} Would remove empty hook directory: ${CYAN}${TARGET_PLUGIN_DIR}/hooks${NC}"
+    else
+      rmdir "${TARGET_PLUGIN_DIR}/hooks" 2>/dev/null || true
+    fi
+  fi
+
+  local global_hooks="${HOME}/.gemini/config/hooks.json"
+  if [[ -f "$global_hooks" ]] && command -v python3 >/dev/null 2>&1; then
+    local dry_flag="0"
+    [[ "${FLAGS_dry_run}" -eq "${FLAGS_TRUE}" ]] && dry_flag="1"
+    local status
+    status=$(python3 - "$global_hooks" "$dry_flag" << 'PYEOF'
+import json
+import os
+import sys
+
+path = sys.argv[1]
+dry = sys.argv[2] == "1"
+try:
+  with open(path, encoding="utf-8") as f:
+    data = json.load(f)
+except Exception:
+  print("MALFORMED")
+  sys.exit(0)
+if not isinstance(data, dict) or "armature-ask-question-guard" not in data:
+  print("CLEAN")
+  sys.exit(0)
+if dry:
+  print("DRY_REMOVE")
+  sys.exit(0)
+del data["armature-ask-question-guard"]
+tmp = path + ".tmp"
+with open(tmp, "w", encoding="utf-8") as f:
+  json.dump(data, f, indent=2)
+  f.write("\n")
+os.replace(tmp, path)
+print("REMOVED")
+PYEOF
+    )
+    case "$status" in
+      DRY_REMOVE)
+        msg_info "${YELLOW}[dry-run]${NC} Would remove retired 'armature-ask-question-guard' entry from ${CYAN}${global_hooks}${NC}"
+        ;;
+      REMOVED)
+        msg_success "Removed retired 'armature-ask-question-guard' entry from ${CYAN}${global_hooks}${NC}"
+        ;;
+      MALFORMED)
+        msg_warn "Skipped ${global_hooks}: malformed JSON (left untouched)."
+        ;;
+    esac
+  fi
+}
+
 # --- Version check ---
 check_for_updates() {
   local latest_version="${VERSION}"
@@ -765,6 +835,7 @@ if [[ "${FLAGS_uninstall}" -eq "${FLAGS_TRUE}" ]]; then
   # Also clean legacy conductor/geppetto plugin, extension, and antigravity directories if present
   migrate_legacy_conductor_plugin
   migrate_to_v0_12_0
+  purge_legacy_ask_guard_hook
 
   echo ""
   if [[ $removed -eq 0 ]]; then
@@ -837,9 +908,7 @@ install_update_checker
 section "📦 Installing Armature Plugin Manifests & Docs"
 echo ""
 install_file "${SCRIPT_DIR}/plugin.json" "${TARGET_PLUGIN_DIR}/plugin.json"
-# Blank-box & dropped-ask guard: plugin discovery loads hooks.json from the plugin root.
-install_file "${SCRIPT_DIR}/hooks.json" "${TARGET_PLUGIN_DIR}/hooks.json"
-install_file "${SCRIPT_DIR}/hooks/ask_question_guard.py" "${TARGET_PLUGIN_DIR}/hooks/ask_question_guard.py"
+purge_legacy_ask_guard_hook
 install_file "${SCRIPT_DIR}/README.md" "${TARGET_PLUGIN_DIR}/README.md"
 install_file "${SCRIPT_DIR}/CHANGELOG.md" "${TARGET_PLUGIN_DIR}/CHANGELOG.md"
 if [[ -f "${SCRIPT_DIR}/.claude-plugin/marketplace.json" ]]; then

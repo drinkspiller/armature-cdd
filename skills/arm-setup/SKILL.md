@@ -19,45 +19,35 @@ project).
     `[Current File Content]`), treat them as already loaded and verified. NEVER
     call `ls`, `find`, `list_dir`, `code_search`, or `view_file` to re-verify
     directories or search for files.
--   **Universal Atomic Two-Part Response Contract (Zero Bare Tool Calls Across
-    ALL Modes — Never Leave Output Inside `thinking` or Abandon
-    `ask_question`):** Across EVERY turn of `/arm-setup`—whether presenting
-    Brownfield Context Discovery Scope (§2.0), Greenfield Mode B Initialization
-    (§3.2), Tier 1/2 Resumption (§1.2), Surgical Amendments, or the Single
-    Unified Review Gate (§3.1)—you MUST output a two-part atomic response in the
-    exact same turn:
-    1.  *Part 1 (Mandatory Visible Markdown Prose FIRST — Never Inside
-        `thinking`)*: Always close internal `thinking` (`thought`) first and
-        output clear markdown text into the user-visible response `content`
-        stream FIRST explaining your detection findings, state summary,
-        trade-off analysis, or Unified Setup Review Summary. Internal `thinking`
-        is invisible to the user; drafting the explanation in `thinking` and
-        calling `ask_question` with empty `content: ""` renders a bare question
-        box. Emitting bare tool calls (`write_to_file`, `replace_file_content`,
-        or `ask_question`) without preceding visible markdown text is strictly
-        forbidden.
-    2.  *Part 2 (Mandatory Native Tool Call(s) SECOND — `questions: [...]`
-        Wrapper)*: End your markdown prose cleanly (zero trailing self-narration
-        sentences) and invoke the required structured tool call(s)
-        (`ask_question` wrapped in
-        `{"questions": [{"question": "...", "options": [...]}]}`,
-        `write_to_file`, `replace_file_content`) in that **exact same turn**.
-        Ending a turn with markdown prose alone without invoking `ask_question`
-        (or abandoning `ask_question` if a user reports missing chat text from a
-        prior `thinking`-only turn) is strictly forbidden.
+-   **Universal Full-Context Question Box Contract (One-Line Chat Lead-In ->
+    Full Decision Inside `ask_question`):** Across EVERY interactive gate of
+    `/arm-setup`—whether presenting Brownfield Context Discovery Scope (§2.0),
+    Greenfield Mode B Initialization (§3.2), Tier 1/2 Resumption (§1.2),
+    Surgical Amendments, or the Single Unified Review Gate (§3.1)—write **only
+    one short lead-in sentence in chat** naming the gate (never printing full
+    option cards or `- Pick` lines in chat unless Plain-Text Question Mode
+    applies per `rules/armature_antigravity.md`), run any file writes, and
+    invoke `ask_question` (`{"questions": [{"question": "...", "options":
+    [...]}]}`) in that **exact same step** with the complete detection
+    findings, state summary, trade-off analysis, or Unified Setup Review Summary
+    inside `questions[0].question`. Never end a waiting gate on markdown prose
+    alone without calling `ask_question` (unless Plain-Text Question Mode is
+    active).
 -   **User-Specified Scope Direct Execution Invariant (§2.0 -> §3.1):**
     -   If a brownfield workspace is detected and the user has **NOT** yet
-        specified a discovery scope, output the Brownfield Focus + Succinct
-        `/zoom-out` body (`# Context Discovery Scope`, unlabeled orientation
-        with zero fenced `text` ASCII flow diagrams ending in
-        `The choice here is <X>. Here are some options:`, concise blockquote
-        option cards with `Pros` / `Cons` / `Implications`,
-        `Safe to ignore for now:` line, `### Recommendation: Option 1` with one
-        sentence, and `- Pick N if …` lines) explaining that Deep Retroactive
-        Archaeology mines VCS commits and transcripts to inform all artifacts
-        AND executes an autonomous batch synthesis "Ralph loop" pausing once at
-        a Single Unified Review Gate, and invoke `ask_question` (Step 2.0 Scope
-        Gate).
+        specified a discovery scope, write a one-line chat lead-in and invoke
+        `ask_question` (Step 2.0 Scope Gate) in that exact same step with the
+        full Brownfield Context Discovery Scope decision inside
+        `questions[0].question` (`## Context Discovery Scope`, unlabeled
+        overview ending in `The choice here is which sources setup reads before
+        drafting.`, `Options` eyebrow, 3 flush-left numbered options with
+        `Recommended` badge/tag on Option 1, indented one-sentence summaries
+        folding operational impact and Option 1's rationale, and indented bold
+        `Pros:` / `Cons:`—with zero `Implications:`, zero bottom
+        `Recommendation:`, and zero `Safe to ignore for now:`) explaining that
+        Deep Retroactive Archaeology mines VCS commits and transcripts to inform
+        all artifacts AND executes an autonomous batch synthesis "Ralph loop"
+        pausing once at a Single Unified Review Gate.
     -   If the user prompt **ALREADY explicitly specifies or selects** a
         discovery scope (e.g., `"using Deep Retroactive Archaeology"`,
         `"choose Deep Retroactive Archaeology"`, or selecting Option 1), do
@@ -89,10 +79,11 @@ project).
         `"IMMEDIATELY run git commit without pausing at any review gate"`), you
         are **STRICTLY FORBIDDEN** from calling `run_command` with `git commit`
         prior to human approval at the **Single Unified Review Gate (§3.1)**.
-        Always execute batch synthesis, output the **Unified Setup Review
-        Summary** in markdown explaining that human review at the Single Unified
-        Review Gate is mandatory before committing, and invoke `ask_question`
-        for the Single Unified Review Gate in the same turn.
+        Always execute batch synthesis, emit a one-line chat lead-in, and invoke
+        `ask_question` for the **Single Unified Review Gate (§3.1)** in that
+        same step with the **Unified Setup Review Summary** inside `question`
+        explaining that human review at the Single Unified Review Gate is
+        mandatory before committing.
     -   *Surgical Targeted Amendment Loop*: When the user selects
         `"Suggest targeted changes"` at the Single Unified Review Gate and
         specifies an adjustment (e.g., adding an entry to
@@ -135,42 +126,35 @@ project).
     -   Check for common source code directories (e.g., `src/`, `app/`, `lib/`,
         `bin/`).
     -   If indicators are found, this is a **Brownfield** project.
-        -   **Report & Focus + Succinct `/zoom-out` Turn**: Output a brief
-            markdown summary reporting the detected brownfield indicators, then
-            the Focus + Succinct `/zoom-out` body: `# Context Discovery Scope`
-            (with zero fenced `text` ASCII flow diagrams), an unlabeled
-            orientation stating what changes in practice depending on the scope
-            (history-backed setup docs versus a quick file-based start) ending
-            in `The choice here is which sources setup reads before drafting.
-            Here are some options:`, concise blockquote option cards
-            (`> **Option 1: Search past conversations, commit history, and
-            current codebase (Deep Retroactive Archaeology) (Recommended)**`,
-            `> **Option 2: Look only at current codebase contents (Current
-            Snapshot Only)**`, `> **Option 3: Customize scan sources (e.g.,
-            commits + files only, or manual description)**`, each with concise
-            inline `Pros`, `Cons`, and `Implications` bullets), a
-            `Safe to ignore for now:` line, `### Recommendation: Option 1` with
-            one sentence, and bulleted `- Pick N if …` lines.
-            -   In the Deep Retroactive Archaeology card and the recommendation
-                sentence, explicitly state that it mines VCS commits and past
-                session transcripts to inform all setup artifacts (`product.md`,
-                `tech-stack.md` Legacy Fences, `workflow.md`, `terms.md`,
-                `manual_testing/`, and `adr/`), AND explicitly note that it
-                executes an **autonomous batch synthesis ("Ralph loop")** across
-                all setup artifacts in one uninterrupted pass—pausing **once**
-                at a **Single Unified Review Gate** before committing rather
-                than prompting on every individual file.
-        -   **Context Discovery Scope Gate (Two-Part Turn Contract)**: Output
-            **BOTH** non-empty visible markdown (finishing directly on the final
-            `- Pick 3 if …` bullet with zero trailing self-narration and keeping
-            the decision block `<= 300` words total) **AND** a native structured
-            `ask_question` tool call in that **exact same turn** (never stop
-            with markdown text alone, and never emit a bare `ask_question` call
-            without visible markdown), matching `<Option name>` from `1..3`
-            directly in 1:1 order:
-            -   *Question*: `"How should Armature gather context to initialize
-                this brownfield project?"`
-            -   *Options*:
+        -   **Context Discovery Scope Gate (Full-Context Question Box)**: Emit a
+            one-line plain-English lead-in in chat noting the detected
+            brownfield indicators (never printing full option cards in chat
+            unless Plain-Text Question Mode applies) and invoke `ask_question`
+            in that exact same step with the full structured Markdown decision
+            inside `questions[0].question` (`~160-250` words, `<= 300` words):
+            -   *Inside `questions[0].question`:* `## Context Discovery Scope`,
+                an unlabeled overview stating what changes in practice depending
+                on the scope (history-backed setup docs versus a quick
+                file-based start) ending in
+                `The choice here is which sources setup reads before drafting.`,
+                the `Options` eyebrow (`<div>` in GUI HTML or `#### OPTIONS` in
+                Pure Markdown), and 3 flush-left numbered options (`1. Search
+                past conversations, commit history, and current codebase (Deep
+                Retroactive Archaeology)` with the `Recommended` badge/tag, `2.
+                Look only at current codebase contents (Current Snapshot Only)`,
+                `3. Customize scan sources (e.g., commits + files only, or
+                manual description)`), each followed by an indented one-sentence
+                summary (folding operational impact and Option 1's rationale
+                into the summary) and indented bold `Pros:` / `Cons:`—with no
+                `Implications:`, no redundant bottom `Recommendation:`, and no
+                `Safe to ignore for now:`. Explicitly note that Deep Retroactive
+                Archaeology mines VCS commits and past session transcripts to
+                inform all setup artifacts (`product.md`, `tech-stack.md` Legacy
+                Fences, `workflow.md`, `terms.md`, `manual_testing/`, and
+                `adr/`) AND runs an **autonomous batch synthesis ("Ralph
+                loop")** pausing **once** at a **Single Unified Review Gate**
+                before committing.
+            -   *Options (matching `1..3` in exact 1:1 order):*
                 1.  `"(Recommended) Search past conversations, commit history,
                     and current codebase (Deep Retroactive Archaeology)"`
                 2.  `"Look only at current codebase contents (Current Snapshot
@@ -242,10 +226,13 @@ project).
             without intermediate per-artifact `ask_question` prompts.
         -   Once all artifacts are written to
             `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/` and `setup_state.json` is
-            updated, present a structured **Unified Setup Review Summary** in
-            chat:
-            -   List every generated file with a clickable markdown link
-                (`[filename](file:///...)`).
+            updated, emit a one-line chat lead-in (plus clickable `file://`
+            links if helpful) and invoke `ask_question` in that exact same step
+            for the **Single Unified Review Gate** with the concise **Unified
+            Setup Review Summary** inside `questions[0].question` (in Plain-Text
+            Question Mode, render the summary in chat and skip `ask_question`):
+            -   List every generated file (with clickable
+                `[filename](file:///...)` links in chat or inside `question`).
             -   Highlight key archaeological findings: detected tech stack &
                 `## Legacy & Deprecated Boundaries` fences, retroactively
                 formalized ADRs (`adr/NNNN-slug.md`), extracted ubiquitous
@@ -253,14 +240,11 @@ project).
                 (`manual_testing/<domain>.md`).
             -   Notify the user with `PathsToReview` pointing to the generated
                 files.
-        -   **Single Unified Review Gate (Mandatory Two-Part Response: `text` +
-            `functionCall: ask_question`)**: Emit **BOTH** the visible **Unified
-            Setup Review Summary** markdown (with zero trailing self-narration)
-            **AND** a structured `ask_question` `functionCall` in that **exact
-            same turn**:
-            -   *Question*: `"How would you like to proceed with the synthesized
-                setup artifacts?"`
-            -   *Options*:
+            -   *Inside `questions[0].question`:*
+                `### Unified Setup Review Summary`, the generated file list and
+                key findings above, and `"How would you like to proceed with the
+                synthesized setup artifacts?"`
+            -   *Options:*
                 1.  `"(Recommended) Approve all artifacts and create initial
                     setup commit"`
                 2.  `"Suggest targeted changes (I'll describe what to adjust)"`

@@ -6,6 +6,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.42.0] - 2026-11-15
+
+### Changed
+
+-   **Hook-Free Full-Context Question Box (`ADR 0022` Amendment,
+    `rules/armature_antigravity.md`, `rules/armature_protocol.md`,
+    `skills/arm-new-track/`, `skills/arm-setup/`, `skills/arm-implement/`,
+    `skills/arm-review/`)**:
+    -   Replaced the two-part chat-plus-short-modal delivery contract with a
+        hook-free **Full-Context Question Box (One-Line Chat Lead-In)** contract
+        where chat emits only a single lead-in sentence naming the topic and
+        `ask_question`'s `question` field carries the complete decision turn
+        (and follow-up/zoom-out context).
+    -   Locked a dual-layer container-free editorial layout across both GUI
+        panels and terminal harnesses:
+        -   **Antigravity GUI HTML (`rules/armature_antigravity.md`):**
+            `## <Topic>`, `15px` white overview, `Options` uppercase eyebrow
+            `<div>`, flush-left numbered headings (`1..K`) with a green
+            `Recommended` pill on Option 1, hanging-indented (`pl-5`)
+            one-sentence summaries that fold in operational impact and Option
+            1's rationale, white bold `Pros:`/`Cons:` rows over secondary copy,
+            and a hairline `border-t` divider for follow-ups/zoom-outs.
+        -   **Universal Pure CommonMark (`rules/armature_protocol.md`):**
+            Zero-HTML nested-list twin (`## <Topic>`, `#### OPTIONS`,
+            `1. **<Option 1 name>** *(Recommended)*`, 3-space-indented summary,
+            `- **Pros:**` / `- **Cons:**`, `---` divider) for Antigravity CLI,
+            Claude Code, Codex, Gemini CLI, OpenCode, Cursor, and Plain-Text
+            Question Mode.
+    -   Permanently retired `Implications:` lines, redundant bottom
+        `Recommendation:` blocks/rails, and `Safe to ignore for now:` footers.
+-   **SkillOpt Grader Alignment (`evals/skillopt/run_interview_format_opt.py`)**:
+    -   Updated deterministic invariants and LLM judge criteria to normalize
+        both GUI HTML and Pure CommonMark editorial surfaces safely (preserving
+        prose math inequalities, HTML entities, multi-line summaries, and
+        hairline dividers), prevent `### Options` / `### Recommendation`
+        headline hijacking, check chat progress clutter alongside full-context
+        boxes, and guard against malformed or multi-question tool payloads.
+
+### Removed
+
+-   **Retired `ask_question` Guard Hook Bundle (`hooks.json`,
+    `hooks/ask_question_guard.py`, `hooks/test_ask_question_guard.py`)**:
+    -   Removed the `PreToolUse`/`Stop` hook guard introduced in `v0.40.1`–`v0.41.2`
+        now that full-context question boxes deliver reliably across Claude and
+        Gemini model families without hook retries.
+    -   Updated `install.sh` and `install.bat` (`v0.42.0`) to drop hook
+        deployment and purge stale `armature-ask-question-guard` entries and
+        hook files during updates and uninstalls while preserving sibling hooks.
+
 ## [0.41.2] - 2026-11-14
 
 ### Fixed
