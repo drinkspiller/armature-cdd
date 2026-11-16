@@ -109,42 +109,65 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 
 ## 2. Interaction Standards & Decision-Tree Interview
 
--   **One Question at a Time & Mandatory `ask_question` Pairing:** Ask questions
+-   **One Question at a Time & Full-Context `ask_question` Box:** Ask questions
     one at a time (pruning trivial micro-questions such as minor copy length or
     Tier 2 styling). Every turn that asks a question or waits on the user MUST
-    emit non-empty visible explanation in `content` on that same step AND invoke
-    `ask_question` (`{"questions": [{"question": "...", "options": [...]}]}`),
-    unless Plain-Text Question Mode applies (`armature_antigravity.md`).
--   **Focus + Succinct Zoom-Out Layout (`<= 300` Words Target):** Keep settled
-    decisions and queued questions on disk (`spec.md` `status: draft` +
-    `active_context.md`) rather than repeating `**Settled**`, `**Now**`,
-    `**Up next**`, or `Round X settled:` ledgers in chat, so the user can focus
-    on the active question. Default layout: `# <Topic>` (H1, no fenced `text`
-    ASCII flow diagram), a 2–3 sentence plain-English orientation (behavior-first,
-    no code identifiers on the first pass; push internal symbol/RPC names into
-    parentheticals or `Safe to ignore for now`, never headlines or option
-    labels; on follow-ups, name the prior choice that raised the question)
-    ending with
-    `The choice here is <X>. Here are some options:`, 2–4 concise blockquote
-    option cards (recommended first as
-    `> **Option 1: <Option name> (Recommended)**` with single-clause inline
-    `> - **Pros:**`, `> - **Cons:**`, and `> - **Implications:**` bullets),
-    `Safe to ignore for now: <mechanics>.`, `### Recommendation: Option 1`
-    followed on the next line by **exactly one plain-English rationale
-    sentence** (never leave the heading bare above `- Pick`), and
-    `- Pick N if <condition>.` lines. Keep headline-to-last-Pick concise
-    (`160-300` words; exceed `300` only when cutting a critical safety caveat
-    would mislead the user). Match `ask_question` options to the `<Option name>`
-    titles (Option 1 prefixed with `"(Recommended) "`), plus
+    invoke `ask_question`
+    (`{"questions": [{"question": "...", "options": [...]}]}`), putting the full
+    structured Markdown turn inside `question` and only a one-line lead-in
+    sentence in chat (`armature_antigravity.md`), unless Plain-Text Question
+    Mode applies. Never print option cards or `- Pick` bullets in chat when
+    using `ask_question`.
+-   **Focus + Succinct Zoom-Out Layout (`~160-250` Words Target, `<= 300`
+    Default Cap):** Keep settled decisions and queued questions on disk
+    (`spec.md` `status: draft` + `active_context.md`) rather than repeating
+    `**Settled**`, `**Now**`, `**Up next**`, or `Round X settled:` ledgers, so
+    the user can focus on the active question. Inside `ask_question`'s
+    `question` field (universal Pure CommonMark below—or the host GUI adapter
+    template in `armature_antigravity.md` when running in Antigravity's GUI
+    panel):
+
+    ```markdown
+    ## <Topic>
+
+    2-3 sentence plain-English overview (behavior-first, no code identifiers on Pass 1; weave any prior settled choice into the opening clause) ending with The choice here is <X>.
+
+    #### OPTIONS
+
+    1. **<Option 1 name>** *(Recommended)*
+
+       <One-sentence plain-English summary explaining what Option 1 does and why it is recommended.>
+
+       - **Pros:** <single-clause benefit>
+       - **Cons:** <single-clause trade-off>
+
+    2. **<Option 2 name>**
+
+       <One-sentence plain-English summary explaining what Option 2 does and what happens.>
+
+       - **Pros:** <single-clause benefit>
+       - **Cons:** <single-clause trade-off>
+    ```
+
+    Omit fenced `text` ASCII flow diagrams, `Implications:` lines (fold
+    operational impact into each option's one-sentence summary), redundant
+    bottom `Recommendation:` blocks (Option 1 carries `Recommended` and its
+    summary explains why), and `Safe to ignore for now:` lines. Never put
+    internal symbol/RPC names in headlines, overviews, or option names during
+    Pass 1; match `options` 1:1 to `<Option name>` titles (Option 1 prefixed
+    with `"(Recommended) "`), plus
     `"I need more context, zoom out and give examples"` on substantive turns.
-    When the user asks a follow-up question, always start the reply with an
-    `# <Topic>` H1 heading describing the topic being followed up on (never a
-    bare numbered or H3 heading), answer clearly, and if a decision remains
-    open, follow `---` with the re-teed `# <Decision Topic>` turn and
-    `ask_question`. On Need-More-Context / `"zoom out"` / `"too vague"` turns,
-    answer from the conversation without new file reads, walk through 1–2
-    concrete domain examples in plain paragraphs above `---` (no cards above
-    `---`), and rewrite the turn + `ask_question`.
+    When the user asks a purely informational follow-up (no open decision),
+    answer in chat starting with `# <Topic>` (H1) and skip `ask_question`. When
+    the user asks a follow-up or selects zoom-out (`"zoom out"` / `"too vague"`)
+    while a decision remains open, make zero file-read/search calls on zoom-out,
+    write a one-line chat lead-in, and put `## <Follow-Up Topic>` plus the
+    plain-English answer or 1–2 concrete domain examples above `---` (or the
+    host GUI hairline divider) followed by the rewritten decision inside
+    `ask_question`'s `question` field. In Plain-Text Question Mode (fallback
+    only), render `# <Topic>`, plain overview, `#### OPTIONS`, the pure
+    CommonMark nested ordered list options above, and `- Pick N if <condition>.`
+    lines directly in chat without calling `ask_question`.
 -   **Recursive Grill Engine (`Depth <= 2`):** Round choices spawn 1–2 Tier 1
     operational follow-up questions (failure modes, timeouts, concurrency,
     schema evolution, proto3 zero-values/`FieldMask`, GraphQL `@key`

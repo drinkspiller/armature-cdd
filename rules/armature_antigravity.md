@@ -11,75 +11,121 @@ description: Armature Antigravity UX adapter - maps interaction requirements ont
     user (a decision, a confirmation, or an action only the user can take, such
     as restarting a tunnel, approving an upload, or choosing between next
     steps), end it with `ask_question`, or with a plain-text question when
-    Plain-Text Question Mode applies. Never end a turn on `- Pick N if …`
-    bullets, blockquote option cards, or *"let me know when"* with `0` tool
-    calls; writing options in chat does NOT ask the user unless `ask_question`
-    is invoked at the end of that same step. Give options that cover the
-    expected replies (for example, "Tunnel is back, continue" or "Work from the
-    local copy instead"). This applies in any conversation, not only during
-    Armature interviews.
--   **Follow-Up Question H1 Heading:** Whenever the user asks a follow-up
-    question (about a prior option, term, or consequence), always start the
-    visible response with an `# <Topic>` H1 heading describing the topic being
-    followed up on (never a bare numbered or H3 heading), answer clearly, and
-    when an open decision remains, follow `---` with the re-teed decision turn
-    and `ask_question`.
--   **The User Must See the Explanation (Same-Step Visible Text &
-    End-of-`thinking` Cue):** The user sees only visible chat text and the
-    question box; internal reasoning (`thinking` / `thought`) is never shown.
-    The response step that calls `ask_question` must itself carry the visible
-    explanation in `content`, even when earlier steps in the same turn already
-    wrote draft files or ran commands (visible text from an earlier step does
-    not count if it was empty). Write the options, trade-offs, and
-    recommendation as visible text, not as a summary inside `thinking`. If you
-    realize you have just written the user-facing explanation inside `thinking`,
-    write it again as visible text before calling the tool. Always finish
-    `thinking` by explicitly planning both parts (e.g., *"Now emit visible
-    `content` first, then any draft writes, then call `ask_question`"*); never
-    end `thinking` on option trade-offs or word-count checks alone, which causes
-    models to stop after the `- Pick` bullets and drop the `ask_question` tool
-    call. Order within that step: visible text, then any draft writes, then
-    `ask_question` with `{"questions": [{"question": "...", "options": [...]}]}`
-    (Option 1 prefixed with `"(Recommended) "`, options matching the chat
-    `<Option name>` titles 1:1, no manual `"Other"` option).
+    Plain-Text Question Mode applies. Never end a turn on option cards,
+    `- Pick N if …` bullets, or *"let me know when"* with `0` tool calls;
+    writing options in chat does not ask the user unless `ask_question` is
+    called in that same step. Give options that cover the expected replies (for
+    example, "Tunnel is back, continue" or "Work from the local copy instead").
+    This applies in any conversation, not only during Armature interviews.
+-   **Full-Context Question Box (One-Line Chat Lead-In):** `ask_question`'s
+    `question` field renders Markdown and sanitized HTML inside a scrollable
+    Antigravity chat UI card (across Antigravity IDE, Hub, and Desktop) and is
+    the one channel every model family fills reliably without hooks. Whenever a
+    turn calls `ask_question`:
+
+    -   **Chat (`content`):** Write **only one short lead-in sentence** naming
+        the topic (for example, `"One decision to settle before moving on: how
+        background indexing shares the rate limit."`). Do **not** print option
+        cards, `Pros`/`Cons` lists, or `- Pick N if …` bullets in chat—writing
+        full option cards in chat causes Gemini-family models to treat the turn
+        as finished and skip `ask_question`, while Claude models often drop chat
+        text next to tool calls.
+    -   **Question box (`questions[0].question`, Antigravity GUI HTML):**
+        Put the full turn inside `question` (target `~160-250` words of visible
+        copy, default cap `~300` words unless a safety caveat needs more; omit
+        `Implications:`, redundant bottom `Recommendation:` blocks, and
+        `Safe to ignore for now:` lines; fold each option's operational impact—
+        and on Option 1, the recommendation rationale—into its indented
+        one-sentence summary):
+
+        ```html
+        ## <Topic>
+
+        <span style="font-size: 15px;">2-3 sentence plain-English overview (no code identifiers on Pass 1; weave any prior settled choice into the opening clause) ending with The choice here is <X>.</span>
+
+        <div class="mt-5 mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Options</div>
+
+        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1">
+        <p class="text-lg font-semibold text-foreground">1. <Option 1 name> <span style="font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: color-mix(in srgb, var(--success) 16%, transparent); color: var(--success); margin-left: 6px; vertical-align: middle;">Recommended</span></p>
+        <div class="pl-5 flex flex-col gap-1.5">
+
+        <One-sentence plain-English summary explaining what Option 1 does and why it is recommended.>
+
+        <div class="flex flex-col gap-1 text-secondary-foreground">
+
+        <span style="color: var(--foreground); font-weight: 600;">Pros:</span> <single-clause benefit>
+
+        <span style="color: var(--foreground); font-weight: 600;">Cons:</span> <single-clause trade-off>
+
+        </div>
+        </div>
+        </div>
+        <div class="flex flex-col gap-1">
+        <p class="text-lg font-semibold text-foreground">2. <Option 2 name></p>
+        <div class="pl-5 flex flex-col gap-1.5">
+
+        <One-sentence plain-English summary explaining what Option 2 does and what happens.>
+
+        <div class="flex flex-col gap-1 text-secondary-foreground">
+
+        <span style="color: var(--foreground); font-weight: 600;">Pros:</span> <single-clause benefit>
+
+        <span style="color: var(--foreground); font-weight: 600;">Cons:</span> <single-clause trade-off>
+
+        </div>
+        </div>
+        </div>
+        </div>
+        ```
+
+        Render the `Options` eyebrow as a `<div>` (not `<p>`, because the panel
+        resets `<p>` vertical margins) and keep options container-free with bold
+        `Pros:`/`Cons:` (never `+`/`-`). **CLI / Plain-Markdown Fallback:** In
+        terminal/CLI sessions (Antigravity CLI, Claude Code, Codex, Gemini CLI,
+        OpenCode) or plain-Markdown editors (Cursor), use the Pure CommonMark
+        nested-list template in `armature_protocol.md` instead of HTML.
+    -   **Option labels (`questions[0].options`):** Match the `<Option name>`
+        titles inside `question` 1:1 in the same order, prefixing Option 1 with
+        `"(Recommended) "`. Make option names concrete enough to read alone.
+        Append `"I need more context, zoom out and give examples"` on
+        substantive decision turns. Never add a manual `"Other"` option.
+-   **Follow-Up Questions & Need-More-Context Zoom-Outs:**
+
+    -   *Informational follow-up (no open decision):* Answer directly in chat
+        starting with an `# <Topic>` H1 heading (never a bare numbered or H3
+        heading) and do not call `ask_question`.
+    -   *Follow-up or zoom-out while a decision remains open:* Write a one-line
+        lead-in in chat, and put the complete answer plus the re-teed decision
+        inside `ask_question`'s `question` field: start with
+        `## <Follow-Up Topic>` and plain-English explanation (or 1–2 concrete
+        named domain examples on zoom-out, with zero file-read/search calls),
+        then `<div class="border-t border-border my-2"></div>` (or `---` in
+        CLI/Pure-Markdown fallback; never `---` in GUI panels where `<hr>` adds
+        48px of dead space), then the rewritten `## <Decision Topic>`, overview,
+        `Options`, and choices.
 -   **Question First, Bookkeeping in the Same Step:** When a turn has to record
     something (append a settled decision, update a draft, run a quick command)
-    and then ask, don't spend separate steps on the bookkeeping first. Put the
-    whole visible turn (the `# <Topic>` heading and body) at the start of one
-    step, then the bookkeeping calls, then `ask_question`, all in that step.
-    Don't check whether a draft file exists before asking; create or append to
-    it in the asking step. If earlier steps in the turn already ran tools, write
-    the asking step's visible text as if it were the whole reply, starting with
-    the `# <Topic>` heading. A first-person summary of the options or
-    recommendation in `thinking` (*"I'm recommending option 1..."*) means the
-    explanation went to the wrong place: put it in visible text before calling
-    the tool.
--   **Self-Contained Question Box:** Some models and hosts drop or hide the chat
-    text next to the box, so the box must stand on its own. Use `question` for
-    one or two plain sentences (up to about 40 words, no markdown) that name the
-    decision and the recommendation. Keep each option label the same as its
-    chat option card name, and make those names concrete enough to read
-    alone (say what happens, not a slogan). Put extra context in `question`, not
-    in the options.
+    and then ask, run the bookkeeping calls and `ask_question` in the same step
+    right after the one-line chat lead-in rather than spending extra turns on
+    bookkeeping first.
 -   **Blank-Box Recovery (Box Stays the Default):** The `ask_question` box is
     the preferred way to ask. If a box came back `User Skipped` or empty, or the
-    user says they couldn't see the explanation (*"I only see the question
-    box"*, *"you didn't answer me in chat"*), give the full explanation as
-    visible text and ask again with `ask_question` on that same step. Keep using
-    the box for later questions.
--   **Plain-Text Question Mode (Fallback Only):** Ask as numbered plain text in
-    chat, without `ask_question`, only when the user asks you to stop using the
-    box or to ask in chat (keep doing so until they ask for the box again), when
-    `ask_question` is unavailable, or when a recovery box also came back blank
-    or skipped (for that one question), including when the Armature
-    `ask_question` guard hook blocks a blank box a second time. End the turn
-    after the question so the user can reply. Plain-text mode replaces only the
-    delivery; the content (options, recommendation, one question at a time)
-    stays the same.
--   **Streaming Flush Before Heavy `write_file` Calls:** Keep Step 6/7 visible
-    chat summaries concise (`40-200` words) and end with `\n\n_Materializing the
-    track artifacts and opening the approval prompt..._\n\n` before calling
-    `write_file` and `ask_question`.
+    user says they could not see the explanation, put the full explanation
+    inside `ask_question`'s `question` field (with a one-line chat lead-in) and
+    ask again. Keep using the box for later questions.
+-   **Plain-Text Question Mode (Fallback Only):** Ask directly in chat without
+    `ask_question` only when the user asks to stop using the box or to ask in
+    chat (keep doing so until they ask for the box again), when `ask_question`
+    is unavailable, or when a recovery box also came back blank or skipped (for
+    that one question). End the turn after the question so the user can reply.
+    In Plain-Text Question Mode, render `# <Topic>`, plain overview,
+    `#### OPTIONS`, the pure CommonMark nested ordered list options from
+    `armature_protocol.md`, and `- Pick N if …` lines in chat.
+-   **Heavy `write_file` Calls (Steps 6–7 Approval Gates):** Keep the chat
+    lead-in to one short sentence, write the track artifacts (`write_file`), and
+    put the concise spec/plan summary and approval choices inside `ask_question`
+    in the same step.
 
 ## Dual Artifact Strategy & Async Delegation
 

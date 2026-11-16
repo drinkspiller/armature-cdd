@@ -21,6 +21,7 @@ import argparse
 import concurrent.futures
 import datetime
 import difflib
+import html
 import json
 import math
 import os
@@ -188,11 +189,14 @@ def call_gemini(
           "contents": [{"role": "user", "parts": [{"text": prompt}]}],
           "generationConfig": gen_cfg,
           "safetySettings": [
-              {"category": c, "threshold": "BLOCK_NONE"} for c in (
-                  "HARM_CATEGORY_HARASSMENT", "HARM_CATEGORY_HATE_SPEECH",
+              {"category": c, "threshold": "BLOCK_NONE"}
+              for c in (
+                  "HARM_CATEGORY_HARASSMENT",
+                  "HARM_CATEGORY_HATE_SPEECH",
                   "HARM_CATEGORY_SEXUALLY_EXPLICIT",
                   "HARM_CATEGORY_DANGEROUS_CONTENT",
-                  "HARM_CATEGORY_CIVIC_INTEGRITY")
+                  "HARM_CATEGORY_CIVIC_INTEGRITY",
+              )
           ],
       }
       if system_instruction:
@@ -292,6 +296,11 @@ TOPIC_HEADLINE_RE = re.compile(
     r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*$",
     re.M | re.I,
 )
+BOX_TOPIC_HEADLINE_RE = re.compile(
+    r"^#{1,3}\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*$",
+    re.M | re.I,
+)
 FINDING_HEADLINE_RE = re.compile(
     r"^#{1,4}\s+(?:Phase\s*5b[,:]?\s*|Devil's"
     r" Advocate:\s*)?(?:Finding\s+\d+(?:\s+of\s+\d+)?:\s*)?\S[^\n]*$",
@@ -299,8 +308,13 @@ FINDING_HEADLINE_RE = re.compile(
 )
 HEADLINE_RE = re.compile(
     r"^(?:#\s+(?!#)(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
-    r"|ADR Candidate\b|Phase\s+5[bc]\b)\S[^\n]*"
+    r"|ADR Candidate\b|Phase\s+5[bc]\b|Options\b|Recommendation\b)\S[^\n]*"
     r"|#{1,4}\s+(?:Phase\s*5b[,:]?\s*)?Finding\s+\d+(?:\s+of\s+\d+)?:\s*\S[^\n]*)$",
+    re.M | re.I,
+)
+BOX_HEADLINE_RE = re.compile(
+    r"^#{1,3}\s+(?!Settled\b|Now\b|Up next\b|Step\s+[67]\b|Convergence\b"
+    r"|ADR Candidate\b|Phase\s+5[bc]\b|Options\b|Recommendation\b)\S[^\n]*$",
     re.M | re.I,
 )
 ROUND_BOOKKEEPING_HEADLINE_RE = re.compile(
@@ -308,7 +322,7 @@ ROUND_BOOKKEEPING_HEADLINE_RE = re.compile(
     re.M | re.I,
 )
 CHAT_PROGRESS_LIST_RE = re.compile(
-    r"(?:^\s*\*\*(?:Settled|Now|Up next)\*\*:?"
+    r"(?:^\s*(?:[-*]\s+)?\*\*(?:Settled|Now|Up next):?\*\*:?"
     r"|^(?:Round|Question)\s+\d+(?:\.\d+)?\s+settled:"
     r"|^###?\s+(?:Active\s+)?Decision Tree (?:Ledger|Status))",
     re.M | re.I,
@@ -328,10 +342,47 @@ BULLETED_PICK_RE = re.compile(
 REC_HEADING_RE = re.compile(
     r"^###\s+Recommendation:\s+Option\s+(\d+)\s*$", re.M
 )
+BOX_REC_RE = re.compile(r"^\*\*Recommendation:\s+([^*\n]+?)\*\*\s*$", re.M)
 IGNORE_RE = re.compile(r"^\s*Safe to ignore for now:", re.M)
 CARD_RE = re.compile(r"^>\s*\*\*Option\s+\d+:\s*(.+?)\*\*\s*$", re.M)
 CARD_BLOCK_RE = re.compile(
     r"(^>\s*\*\*Option\s+\d+:[^\n]*(?:\n>(?!\s*\*\*Option\s+\d+:)[^\n]*)*)",
+    re.M,
+)
+HTML_HR_RE = re.compile(
+    r"(?:<div\b[^>]*border-t[^>]*>\s*</div>|<hr\b[^<>]*/?>)", re.I
+)
+HTML_P_BLOCK_RE = re.compile(r"(<p\b[^<>]*>)(.*?)(</p>)", re.I | re.S)
+HTML_H_TAG_RE = re.compile(r"<h([1-6])\b[^<>]*>(.*?)</h\1>", re.I | re.S)
+HTML_BLOCK_BREAK_RE = re.compile(
+    r"</?(?:div|p|li|ul|ol|blockquote|section|article|header|footer|tr)\b[^<>]*/?>"
+    r"|<br\b[^<>]*/?>",
+    re.I,
+)
+HTML_TAG_RE = re.compile(r"</?[A-Za-z][A-Za-z0-9-]*(?:\s+[^<>]*)?/?>")
+OPTIONS_EYEBROW_RE = re.compile(
+    r"^\s*(?:#{1,4}\s+OPTIONS|Options)\s*$", re.M | re.I
+)
+NUMBERED_OPT_RE = re.compile(r"^\s*(\d+)\.\s+(.+?)\s*$", re.M)
+RECOMMENDED_PREFIX_RE = re.compile(
+    r"^\s*[*_]*\(\s*Recommended\s*\)[*_]*\s*[:\-–—]?\s*", re.I
+)
+RECOMMENDED_SUFFIX_RE = re.compile(
+    r"(?:\s+[*_]*\(\s*Recommended\s*\)[*_]*|\s+[*_]+Recommended[*_]+"
+    r"|\s+\bRecommended)\s*$",
+    re.I,
+)
+PROS_ROW_RE = re.compile(
+    r"(?:^|\n)\s*(?:[-*]\s+)?(?:\*\*|__)?Pros(?:\*\*|__)?\s*:(?:\*\*|__)?",
+    re.I,
+)
+CONS_ROW_RE = re.compile(
+    r"(?:^|\n)\s*(?:[-*]\s+)?(?:\*\*|__)?Cons(?:\*\*|__)?\s*:(?:\*\*|__)?",
+    re.I,
+)
+BOX_OPT_HEADING_RE = re.compile(
+    r"^\*\*(?!Recommendation:|Safe to ignore\b|Pros:|Cons:|Implications:)"
+    r"([^*\n]+?)\*\*\s*$",
     re.M,
 )
 LABEL_LINE_RE = re.compile(r"^\s*\*\*[A-Za-z][A-Za-z /]{1,30}:\*\*", re.M)
@@ -354,8 +405,89 @@ SYSTEMS_JARGON_RE = re.compile(
 )
 
 
+def _normalize_surface(text):
+  """Normalizes GUI HTML dividers/blocks and strips real HTML tags."""
+  s = text or ""
+  s = HTML_P_BLOCK_RE.sub(
+      lambda m: m.group(1) + re.sub(r"\s*\n\s*", " ", m.group(2)) + m.group(3),
+      s,
+  )
+  s = HTML_HR_RE.sub("\n---\n", s)
+  s = HTML_H_TAG_RE.sub(
+      lambda m: "\n"
+      + "#" * int(m.group(1))
+      + " "
+      + re.sub(r"\s*\n\s*", " ", m.group(2)).strip()
+      + "\n",
+      s,
+  )
+  s = HTML_BLOCK_BREAK_RE.sub("\n", s)
+  s = HTML_TAG_RE.sub("", s)
+  return html.unescape(s)
+
+
+def _clean_editorial_option_title(raw):
+  """Returns (clean_name, has_recommended_badge) for a numbered option title."""
+  s = raw.strip()
+  has_rec = False
+  for _ in range(2):
+    if RECOMMENDED_SUFFIX_RE.search(s):
+      has_rec = True
+      s = RECOMMENDED_SUFFIX_RE.sub("", s).strip()
+    if RECOMMENDED_PREFIX_RE.search(s):
+      has_rec = True
+      s = RECOMMENDED_PREFIX_RE.sub("", s).strip()
+    s = re.sub(r"^(?:\*\*|__)|(?:\*\*|__)$", "", s).strip()
+  s = re.sub(r"^(?:Option\s+\d+:\s*)", "", s, flags=re.I).strip()
+  return s, has_rec
+
+
+def _extract_editorial_option_blocks(norm_text):
+  """Extracts `(blocks, names, rec_flags)` for v0.42.0 numbered options."""
+  em = OPTIONS_EYEBROW_RE.search(norm_text)
+  search_start = em.end() if em else 0
+  matches = list(NUMBERED_OPT_RE.finditer(norm_text, search_start))
+  if not matches:
+    return [], [], []
+  stop_positions = []
+  for pat in (PICK_RE, BOX_REC_RE, REC_HEADING_RE):
+    m = pat.search(norm_text, matches[0].start())
+    if m:
+      stop_positions.append(m.start())
+  section_end = min(stop_positions) if stop_positions else len(norm_text)
+  matches = [m for m in matches if m.start() < section_end]
+  blocks, names, rec_flags = [], [], []
+  for idx, m in enumerate(matches):
+    end = matches[idx + 1].start() if idx + 1 < len(matches) else section_end
+    blk = norm_text[m.start() : end].strip()
+    clean_name, has_rec = _clean_editorial_option_title(m.group(2))
+    blocks.append(blk)
+    names.append(clean_name)
+    rec_flags.append(has_rec)
+  return blocks, names, rec_flags
+
+
+def _block_has_summary_sentence(blk):
+  """Checks for a non-empty summary between the option title and Pros:."""
+  summary_lines = []
+  for ln in blk.splitlines()[1:]:
+    s = ln.strip()
+    if not s:
+      continue
+    if re.match(
+        r"^(?:[-*]\s+)?(?:\*\*|__)?(?:Pros|Cons|Implications)(?:\*\*|__)?\s*:",
+        s,
+        re.I,
+    ):
+      break
+    summary_lines.append(s)
+  return len(" ".join(summary_lines).split()) >= 4
+
+
 def _extract_chat_option_name(line):
   s = re.sub(r"^\s*(?:>\s*\*\*Option\s+\d+:\s*|\d+\.\s*)", "", line).strip()
+  s = RECOMMENDED_SUFFIX_RE.sub("", s).strip()
+  s = RECOMMENDED_PREFIX_RE.sub("", s).strip()
   s = re.sub(r"\*\*\s*$", "", s).strip()
   s = s.split(":", 1)[0].strip()
   s = re.sub(r"\s*\(Recommended\)\s*$", "", s, flags=re.I).strip()
@@ -372,6 +504,33 @@ def _extract_card_option_names(text):
   return names
 
 
+def _extract_box_option_blocks(text):
+  """Extracts `(blocks, names)` for legacy bold-only `**<Option name>**` blocks."""
+  matches = list(BOX_OPT_HEADING_RE.finditer(text))
+  if not matches:
+    return [], []
+  stop_positions = []
+  for pat in (IGNORE_RE, BOX_REC_RE, REC_HEADING_RE):
+    m = pat.search(text, matches[0].start())
+    if m:
+      stop_positions.append(m.start())
+  section_end = min(stop_positions) if stop_positions else len(text)
+  matches = [m for m in matches if m.start() < section_end]
+  blocks, names = [], []
+  for idx, m in enumerate(matches):
+    end = matches[idx + 1].start() if idx + 1 < len(matches) else section_end
+    blk = text[m.start() : end].strip()
+    raw_name = re.sub(
+        r"^(?:Option\s+\d+:\s*)", "", m.group(1), flags=re.I
+    ).strip()
+    raw_name = re.sub(
+        r"\s*\(Recommended\)\s*$", "", raw_name, flags=re.I
+    ).strip()
+    blocks.append(blk)
+    names.append(raw_name)
+  return blocks, names
+
+
 def _norm_opt(s):
   s = re.sub(r"^\(Recommended\)\s*", "", s, flags=re.I).strip()
   s = re.sub(r"\s*\(Option\s+\d+\)\s*$", "", s, flags=re.I).strip()
@@ -386,7 +545,7 @@ def _pre_retee_region(text):
     return text[: hr.start()].strip()
   candidates = []
   for pat in (
-      re.compile(r"^###\s+Devil's Advocate", re.M),
+      re.compile(r"^#{1,3}\s+Devil's Advocate", re.M),
       re.compile(r"^\*\*(?:Settled|Now)\*\*", re.M),
       HEADLINE_RE,
   ):
@@ -399,25 +558,31 @@ def _pre_retee_region(text):
 
 
 def _asq_options(tool_calls):
-  opts = []
-  for tc in tool_calls:
-    if tc.get("name") != "ask_question":
+  """Returns string option labels from the last ask_question's primary item."""
+  last_opts = []
+  for tc in tool_calls or []:
+    if not isinstance(tc, dict) or tc.get("name") != "ask_question":
       continue
-    for q in tc.get("args", {}).get("questions", []) or []:
-      opts.extend(q.get("options", []) or [])
-  return opts
+    args = tc.get("args")
+    qs = args.get("questions") if isinstance(args, dict) else None
+    if isinstance(qs, list) and qs and isinstance(qs[0], dict):
+      raw_opts = qs[0].get("options")
+      if isinstance(raw_opts, list):
+        last_opts = [o for o in raw_opts if isinstance(o, str)]
+  return last_opts
 
 
-def _headline_and_body_region(text):
+def _headline_and_body_region(text, allow_box_layout=False):
   """Returns (headline_line, opener_region, headline_to_last_pick_region)."""
   hr_matches = list(re.finditer(r"^---\s*$", text, re.M))
   search_base = hr_matches[-1].end() if hr_matches else 0
   sub = text[search_base:]
-  matches = list(HEADLINE_RE.finditer(sub))
+  headline_pat = BOX_HEADLINE_RE if allow_box_layout else HEADLINE_RE
+  matches = list(headline_pat.finditer(sub))
   if not matches and search_base > 0:
     sub = text
     search_base = 0
-    matches = list(HEADLINE_RE.finditer(sub))
+    matches = list(headline_pat.finditer(sub))
   if not matches:
     return "", "", ""
   hm = matches[-1]
@@ -428,9 +593,15 @@ def _headline_and_body_region(text):
   after = text[line_end:]
   fb = FLOW_BLOCK_RE.search(after)
   num_search_offset = fb.end() if (fb and fb.start() < 80) else 0
+  om = OPTIONS_EYEBROW_RE.search(after[num_search_offset:])
   nm = NUMBERED_RE.search(after[num_search_offset:])
   cm = CARD_RE.search(after[num_search_offset:])
-  opt_positions = [m.start() for m in (nm, cm) if m]
+  bm = (
+      BOX_OPT_HEADING_RE.search(after[num_search_offset:])
+      if allow_box_layout
+      else None
+  )
+  opt_positions = [m.start() for m in (om, nm, cm, bm) if m]
   opener = (
       after[: num_search_offset + min(opt_positions)]
       if opt_positions
@@ -456,38 +627,67 @@ def _body_region(text):
 
 def evaluate_invariants(task, text, tool_calls):
   vetoes = []
-  # Score the layout on what the user sees next to the box: the asking step's
-  # own visible text, when it has a full turn body (ADR 0022).
-  ask_texts = [
-      tc.get("_step_text", "")
-      for tc in tool_calls
-      if tc.get("name") == "ask_question"
-  ]
-  if ask_texts and len(ask_texts[-1].split()) >= 25:
-    text = ask_texts[-1]
-  headline_line, opener, body = _headline_and_body_region(text)
+  # Score the layout on what the user sees inside the full-context question box
+  # (ADR 0022 v0.42.0), falling back to chat text only when no ask_question call
+  # exists (e.g. Plain-Text Question Mode or informational follow-ups).
+  ask_calls = [tc for tc in tool_calls if tc.get("name") == "ask_question"]
+  box_questions = []
+  for tc in ask_calls:
+    args = tc.get("args") or {}
+    qs = args.get("questions") if isinstance(args, dict) else None
+    if isinstance(qs, list) and qs and isinstance(qs[0], dict):
+      q = qs[0].get("question")
+      if isinstance(q, str) and q.strip():
+        box_questions.append(q.strip())
+  grading_box = bool(
+      box_questions and len(_normalize_surface(box_questions[-1]).split()) >= 25
+  )
+  raw_chat_text = _normalize_surface(text)
+  if grading_box:
+    text = box_questions[-1]
+  text = _normalize_surface(text)
+  headline_line, opener, body = _headline_and_body_region(
+      text, allow_box_layout=grading_box
+  )
   opener_prose = FLOW_BLOCK_RE.sub("", opener).strip()
   flow_match = FLOW_BLOCK_RE.search(opener)
   flow_text = flow_match.group(1) if flow_match else ""
   target_body = body or text
   numbered = NUMBERED_RE.findall(target_body)
   numbered_lines = [l for l in target_body.splitlines() if NUMBERED_RE.match(l)]
+  editorial_blocks, editorial_names, editorial_recs = (
+      _extract_editorial_option_blocks(target_body)
+  )
   card_blocks = CARD_BLOCK_RE.findall(target_body)
   card_names = _extract_card_option_names(target_body)
+  using_editorial = False
+  if editorial_blocks:
+    card_blocks = editorial_blocks
+    card_names = editorial_names
+    using_editorial = True
+  elif grading_box and not card_blocks:
+    box_blocks, box_names = _extract_box_option_blocks(target_body)
+    if box_blocks:
+      card_blocks = box_blocks
+      card_names = box_names
   option_count = len(card_names) if card_names else len(numbered)
   picks = PICK_RE.findall(target_body)
   asq_opts = _asq_options(tool_calls)
   nonempty = [l for l in text.splitlines() if l.strip()]
   last_line = nonempty[-1] if nonempty else ""
 
-  for tc in tool_calls:
-    if (
-        tc.get("name") == "ask_question"
-        and len(tc.get("_step_text", "").split()) < 25
-    ):
+  for tc in ask_calls:
+    args = tc.get("args") or {}
+    qs = args.get("questions") if isinstance(args, dict) else None
+    q_text = ""
+    if isinstance(qs, list) and qs and isinstance(qs[0], dict):
+      raw_q = qs[0].get("question")
+      q_text = raw_q if isinstance(raw_q, str) else ""
+    vis_words = len(_normalize_surface(q_text).split())
+    if vis_words < 25:
       vetoes.append(
-          "ask_step_has_visible_text: the step that called ask_question had"
-          f" {len(tc.get('_step_text', '').split())} words of visible text"
+          "ask_step_has_visible_text: ask_question.question had only"
+          f" {vis_words} visible words (expected >= 25 for full-context box)"
       )
 
   for inv in task.get("invariants", []):
@@ -519,13 +719,15 @@ def evaluate_invariants(task, text, tool_calls):
             f"{inv}: fewer than 35 words of workflow zoom-out and concrete"
             f" examples before the re-teed question ({len(pre.split())} words)"
         )
-      elif CARD_RE.search(pre):
+      elif CARD_RE.search(pre) or PROS_ROW_RE.search(pre):
         vetoes.append(
-            f"{inv}: rendered blockquote Pros/Cons cards instead of plain"
+            f"{inv}: rendered Pros/Cons option cards instead of plain"
             " workflow zoom-out and examples"
         )
     elif inv in ("no_chat_progress_list", "no_settled_on_clarification_retee"):
-      if CHAT_PROGRESS_LIST_RE.search(text):
+      if CHAT_PROGRESS_LIST_RE.search(text) or CHAT_PROGRESS_LIST_RE.search(
+          raw_chat_text
+      ):
         vetoes.append(
             f"{inv}: printed Settled/Now/Up next progress list or Round"
             " settled line in chat instead of keeping progress on disk"
@@ -566,26 +768,30 @@ def evaluate_invariants(task, text, tool_calls):
               f"{inv}: repeated vague phrase '{phrase}' verbatim in rewritten"
               " options"
           )
-    elif inv in ("headline_clean_topic_format", "headline_round_question_format"):
+    elif inv in (
+        "headline_clean_topic_format",
+        "headline_round_question_format",
+    ):
+      topic_re = BOX_TOPIC_HEADLINE_RE if grading_box else TOPIC_HEADLINE_RE
       if (
           not headline_line
-          or not TOPIC_HEADLINE_RE.search(headline_line)
+          or not topic_re.search(headline_line)
           or ROUND_BOOKKEEPING_HEADLINE_RE.search(headline_line)
       ):
         vetoes.append(
-            f"{inv}: headline missing or not H1 '# <Topic>' or uses 'Round R,"
-            f" Question Q' bookkeeping prefix ('{headline_line}')"
+            f"{inv}: headline missing or uses 'Round R, Question Q' bookkeeping"
+            f" prefix ('{headline_line}')"
         )
     elif inv in ("no_ascii_flow_block", "has_succinct_zoom_out_flow"):
       if flow_match and FLOW_ARROW_OR_STAGE_RE.search(flow_text):
         vetoes.append(
-            f"{inv}: rendered banned fenced text ASCII flow diagram beneath"
-            " headline"
+            f"{inv}: rendered a fenced text ASCII flow diagram beneath the"
+            " headline (removed in v0.35.1)"
         )
     elif inv == "no_labeled_opener":
       if not opener_prose:
         vetoes.append(
-            f"{inv}: no orientation paragraph between headline and options"
+            f"{inv}: no orientation paragraph between headline/flow and options"
         )
       elif LABEL_LINE_RE.search(opener_prose):
         vetoes.append(f"{inv}: orientation paragraph carries a bold label")
@@ -595,8 +801,10 @@ def evaluate_invariants(task, text, tool_calls):
     elif inv == "has_choice_sentence_some_options":
       if not re.search(r"The choice here is", text):
         vetoes.append(f"{inv}: missing 'The choice here is …'")
-      if not re.search(r"Here are some options:", text):
-        vetoes.append(f"{inv}: missing 'Here are some options:'")
+      if not OPTIONS_EYEBROW_RE.search(text) and not re.search(
+          r"Here are some options:", text
+      ):
+        vetoes.append(f"{inv}: missing 'Options' eyebrow")
       if re.search(r"Here are the options:", text):
         vetoes.append(f"{inv}: used 'the options' (implies exhaustive)")
     elif inv == "has_numbered_options":
@@ -604,72 +812,109 @@ def evaluate_invariants(task, text, tool_calls):
         vetoes.append(f"{inv}: fewer than 2 options")
     elif inv == "has_blockquote_option_cards":
       if len(card_blocks) < 2:
-        vetoes.append(f"{inv}: fewer than 2 blockquote option cards")
+        vetoes.append(f"{inv}: fewer than 2 structured options")
       else:
         for idx, blk in enumerate(card_blocks, 1):
-          for row in ("Pros", "Cons", "Implications"):
-            if not re.search(rf"\*\*{row}:\*\*", blk):
-              vetoes.append(f"{inv}: Option {idx} card missing '**{row}:**'")
+          if using_editorial and not _block_has_summary_sentence(blk):
+            vetoes.append(
+                f"{inv}: Option {idx} missing indented one-sentence summary"
+            )
+          if not PROS_ROW_RE.search(blk):
+            vetoes.append(f"{inv}: Option {idx} missing 'Pros:'")
+          if not CONS_ROW_RE.search(blk):
+            vetoes.append(f"{inv}: Option {idx} missing 'Cons:'")
     elif inv == "followup_starts_with_h1":
       first_nonempty = nonempty[0] if nonempty else ""
-      if not re.match(r"^#\s+\S", first_nonempty):
+      heading_pat = r"^#{1,3}\s+\S" if grading_box else r"^#\s+\S"
+      if not re.match(heading_pat, first_nonempty):
         vetoes.append(
-            f"{inv}: follow-up response did not start with an '# <Topic>' H1"
-            f" heading ('{first_nonempty[:80]}')"
+            f"{inv}: follow-up response did not start with a topic heading"
+            f" ('{first_nonempty[:80]}')"
         )
     elif inv == "no_numbered_tradeoff_options":
-      if re.search(r"Here are some options:", text) or REC_HEADING_RE.search(text):
+      if (
+          re.search(r"Here are some options:", text)
+          or OPTIONS_EYEBROW_RE.search(text)
+          or REC_HEADING_RE.search(text)
+          or BOX_REC_RE.search(text)
+      ):
         vetoes.append(f"{inv}: rendered design options on a procedural gate")
     elif inv == "no_recommended_tag_in_list":
-      if any("(Recommended)" in l for l in numbered_lines):
+      # v0.42.0 editorial layout puts Recommended on Option 1 instead of a
+      # bottom Recommendation block.
+      if not using_editorial and any(
+          "(Recommended)" in l for l in numbered_lines
+      ):
         vetoes.append(f"{inv}: '(Recommended)' tag inside the numbered list")
     elif inv == "has_ignore_line":
-      if not IGNORE_RE.search(text):
-        vetoes.append(f"{inv}: missing 'Safe to ignore for now:'")
-    elif inv in ("has_recommendation_heading", "has_recommendation_heading_one_sentence"):
-      m = REC_HEADING_RE.search(text)
-      if not m:
-        vetoes.append(f"{inv}: missing '### Recommendation: Option N'")
-      elif inv.endswith("one_sentence"):
-        tail = text[m.end():]
-        pm = PICK_RE.search(tail)
-        rationale = (tail[:pm.start()] if pm else tail).strip()
-        sentences = len(re.findall(r"[.!?](?:\s|$)", rationale))
-        if sentences != 1:
-          vetoes.append(f"{inv}: rationale has {sentences} sentences, expected 1")
+      # Retired in v0.42.0 (ADR 0022): Safe-to-ignore footers were removed.
+      pass
+    elif inv in (
+        "has_recommendation_heading",
+        "has_recommendation_heading_one_sentence",
+    ):
+      if using_editorial:
+        if not (editorial_recs and editorial_recs[0]):
+          vetoes.append(f"{inv}: Option 1 missing 'Recommended' badge/tag")
+        elif not _block_has_summary_sentence(editorial_blocks[0]):
+          vetoes.append(
+              f"{inv}: Option 1 missing one-sentence rationale summary"
+          )
+      else:
+        m = (
+            (BOX_REC_RE.search(text) or REC_HEADING_RE.search(text))
+            if grading_box
+            else REC_HEADING_RE.search(text)
+        )
+        if not m:
+          expected = (
+              "'Recommended' badge on Option 1"
+              if grading_box
+              else "'### Recommendation: Option N'"
+          )
+          vetoes.append(f"{inv}: missing {expected}")
+        elif inv.endswith("one_sentence"):
+          tail = text[m.end() :]
+          pm = PICK_RE.search(tail)
+          rationale = (tail[: pm.start()] if pm else tail).strip()
+          sentences = len(re.findall(r"[.!?](?:\s|$)", rationale))
+          if sentences != 1:
+            vetoes.append(
+                f"{inv}: rationale has {sentences} sentences, expected 1"
+            )
     elif inv == "has_pick_recap":
-      bulleted_picks = BULLETED_PICK_RE.findall(target_body)
-      if len(picks) < 2:
-        vetoes.append(f"{inv}: fewer than 2 'Pick N if' lines")
-      elif option_count and len(picks) != option_count:
-        vetoes.append(
-            f"{inv}: {len(picks)} Pick lines for {option_count} options"
-        )
-      elif len(bulleted_picks) != len(picks):
-        vetoes.append(
-            f"{inv}: Pick lines must be formatted as Markdown bullets"
-            " ('- Pick N if ...') so CommonMark renders each on its own line"
-        )
+      if not grading_box:
+        bulleted_picks = BULLETED_PICK_RE.findall(target_body)
+        if len(picks) < 2:
+          vetoes.append(f"{inv}: fewer than 2 'Pick N if' lines")
+        elif option_count and len(picks) != option_count:
+          vetoes.append(
+              f"{inv}: {len(picks)} Pick lines for {option_count} options"
+          )
+        elif len(bulleted_picks) != len(picks):
+          vetoes.append(
+              f"{inv}: Pick lines must be formatted as Markdown bullets"
+              " ('- Pick N if ...') so CommonMark renders each on its own line"
+          )
     elif inv == "no_pick_recap":
       if picks:
         vetoes.append(f"{inv}: Pick recap rendered on a procedural gate")
     elif inv == "ends_with_pick_line":
-      if not PICK_RE.match(last_line):
+      if not grading_box and not PICK_RE.match(last_line):
         vetoes.append(f"{inv}: trailing text after the last Pick line")
     elif inv == "no_blockquote_cards_default":
-      if CARD_RE.search(text) or re.search(r"\*\*Pros:\*\*", text):
+      if CARD_RE.search(text) or PROS_ROW_RE.search(text):
         vetoes.append(
-            f"{inv}: rendered Pros/Cons blockquote cards on procedural gate"
+            f"{inv}: rendered Pros/Cons option cards on procedural gate"
         )
     elif inv == "zoom_in_renders_cards":
-      if len(CARD_RE.findall(text)) < 2 or not all(
-          re.search(rf"\*\*{k}:\*\*", text) for k in ("Pros", "Cons", "Implications")):
-        vetoes.append(f"{inv}: zoom-in did not render Pros/Cons/Implications cards")
+      if len(card_blocks) < 2 or not (
+          PROS_ROW_RE.search(text) and CONS_ROW_RE.search(text)
+      ):
+        vetoes.append(f"{inv}: zoom-in did not render Pros/Cons option details")
     elif inv == "no_code_identifiers_in_opener":
       if CODE_ID_RE.search(opener_prose):
-        vetoes.append(
-            f"{inv}: code identifier or inline backtick in opener"
-        )
+        vetoes.append(f"{inv}: code identifier or inline backtick in opener")
     elif inv in ("word_budget_220", "word_budget_200", "word_budget_300"):
       # Target ~300 words with concise blockquote cards (ADR 0003); veto
       # clear overruns.
@@ -804,10 +1049,18 @@ Agent Tool Calls:
 {json.dumps(_public_tool_calls(tool_calls), indent=2)}
 
 Quality Criteria (1.0 fully met, 0.5 partially met, 0.0 not met):
-Note: placing "(Recommended)" as a suffix on the Option 1 markdown card header
-(`> **Option 1: <Name> (Recommended)**`) while prefixing `"(Recommended) <Name>"`
-in the `ask_question` tool call is the canonical format and counts as an exact
-1-to-1 match.
+Note: under v0.42.0 (ADR 0022), placing the full turn inside
+`ask_question.questions[0].question` with a one-line chat lead-in is canonical,
+in either the Antigravity GUI HTML layout (`## <Topic>`, 15px overview,
+`Options` eyebrow div, flush-left numbered titles with a green `Recommended`
+pill on Option 1, indented one-sentence summary, and bold `Pros:`/`Cons:`) or
+the Pure CommonMark nested-list twin (`## <Topic>`, overview, `#### OPTIONS`,
+`1. **<Name>** *(Recommended)*`, indented one-sentence summary, and
+`- **Pros:**`/`- **Cons:**`). `Implications:`, redundant bottom
+`Recommendation:` blocks, and `Safe to ignore for now:` footers are retired—
+operational impact and Option 1's rationale live inside each option's
+one-sentence summary, and `"(Recommended) <Name>"` on Option 1 in
+`questions[0].options` counts as an exact 1-to-1 match.
 """
   for i, q in enumerate(qualities, 1):
     prompt += f"{i}. {q}\n"
@@ -847,7 +1100,7 @@ Return JSON only:
 def build_system_instruction(protocol_text, antigravity_text, skill_text):
   return (
       "You are an AI coding agent running the Armature `/arm-new-track` skill "
-      "inside an agentic IDE. Obey the rules and the skill below exactly. The "
+      "inside the Antigravity IDE. Obey the rules and the skill below exactly. The "
       "project context directory is `armature/`; Steps 1-4 are already done "
       "unless the prompt says otherwise.\n\n"
       "# RULE: armature_protocol.md\n\n" + protocol_text +
@@ -1023,19 +1276,19 @@ PLAIN_LANGUAGE = {
     ),
     "headline_clean_topic_format": (
         "the topic headline was missing or included Round/Question bookkeeping"
-        " prefixes instead of a clean # <Topic> (H1) heading"
+        " prefixes instead of a clean ## <Topic> heading"
     ),
     "headline_round_question_format": (
         "the topic headline was missing or included Round/Question bookkeeping"
-        " prefixes instead of a clean # <Topic> (H1) heading"
+        " prefixes instead of a clean ## <Topic> heading"
     ),
     "no_ascii_flow_block": (
         "rendered a fenced text ASCII workflow diagram beneath the headline"
-        " instead of starting directly with the plain-English orientation"
+        " instead of starting directly with the plain-English overview"
     ),
     "has_succinct_zoom_out_flow": (
         "rendered a fenced text ASCII workflow diagram beneath the headline"
-        " instead of starting directly with the plain-English orientation"
+        " instead of starting directly with the plain-English overview"
     ),
     "no_chat_progress_list": (
         "printed Settled / Now / Up next lists or Round settled lines in chat"
@@ -1046,11 +1299,11 @@ PLAIN_LANGUAGE = {
     ),
     "no_problem_label": "framed a preference question as a problem",
     "has_choice_sentence_some_options": (
-        "did not state the decision in one sentence followed by a"
-        " non-exhaustive options lead-in"
+        "did not state the decision in one sentence followed by an Options"
+        " eyebrow"
     ),
     "has_numbered_options": (
-        "options were not formatted as concise blockquote option cards"
+        "options were not formatted as numbered editorial options"
     ),
     "no_numbered_tradeoff_options": (
         "offered design options on a step that only needed approval"
@@ -1059,12 +1312,13 @@ PLAIN_LANGUAGE = {
         "tagged an option in the list as recommended instead of using the"
         " recommendation heading"
     ),
-    "has_ignore_line": (
-        "did not tell the reader which mechanics are safe to ignore"
+    "has_ignore_line": "retired safe-to-ignore check",
+    "has_recommendation_heading": (
+        "Option 1 did not carry the Recommended badge/tag and rationale summary"
     ),
-    "has_recommendation_heading": "no recommendation heading",
     "has_recommendation_heading_one_sentence": (
-        "the recommendation rationale was longer than one sentence or missing"
+        "Option 1 did not carry the Recommended badge/tag or lacked its"
+        " one-sentence rationale summary"
     ),
     "has_pick_recap": (
         "did not close with one bulleted '- Pick N if' line per option"
@@ -1072,18 +1326,18 @@ PLAIN_LANGUAGE = {
     "no_pick_recap": "added a pick recap to an approval step",
     "ends_with_pick_line": "added narration after the pick recap",
     "has_blockquote_option_cards": (
-        "did not render concise blockquote option cards with Pros, Cons, and"
-        " Implications"
+        "did not render numbered options with an indented one-sentence summary"
+        " and bold Pros/Cons"
     ),
     "followup_starts_with_h1": (
-        "follow-up answer did not begin with an # <Topic> H1 heading"
+        "follow-up answer did not begin with a topic heading"
     ),
     "no_blockquote_cards_default": (
-        "rendered pros/cons option cards on a procedural gate"
+        "rendered pros/cons option details on a procedural gate"
     ),
     "zoom_in_renders_cards": (
-        "did not expand to the detailed pros/cons cards when the user"
-        " explicitly wrote in zoom-in"
+        "did not expand to detailed pros/cons when the user explicitly wrote in"
+        " zoom-in"
     ),
     "no_code_identifiers_in_opener": "used code names in the opening paragraph",
     "no_systems_jargon_in_turn": (
@@ -1242,7 +1496,13 @@ def summarize(label, res):
 
 
 def write_report(data):
-  lines = ["# SkillOpt Report: Focus + Succinct `/zoom-out` Interview Turn (`arm-new-track` + protocol rules)", ""]
+  lines = [
+      (
+          "# SkillOpt Report: Focus + Succinct `/zoom-out` Interview Turn"
+          " (`arm-new-track` + protocol rules)"
+      ),
+      "",
+  ]
   lines.append(f"Generated: {datetime.datetime.now().isoformat(timespec='seconds')}")
   lines.append("")
   lines.append("| Pass | Train mean | Train vetoes | Val mean | Val LB90 | Val vetoes | Val pass rate |")

@@ -37,8 +37,9 @@ Before launching a recording or screenshot capture:
             `Pillow`.
 2.  **Confirmation-Gated Auto-Install & Server Startup (`ask_question`):**
     -   If the local server is unreachable or any required binary/package is
-        missing, display the exact missing prerequisites and copy-ready setup or
-        startup commands in visible markdown first, then invoke `ask_question`:
+        missing, write a one-line chat lead-in and invoke `ask_question` with
+        the exact missing prerequisites and copy-ready setup or startup commands
+        inside `question`:
         -   *Question:* `"Recording prerequisites are missing or the local
             server is not running. Proceed with setup?"`
         -   *Options:*
