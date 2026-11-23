@@ -24,7 +24,7 @@
 #     │   ├── arm-status/SKILL.md
 #     │   ├── arm-review/SKILL.md
 #     │   ├── arm-undo/SKILL.md
-#     │   ├── arm-drift/SKILL.md
+#     │   ├── arm-drift/SKILL.md (with scripts/scan_project_drift.py)
 #     │   ├── arm-chat/SKILL.md
 #     │   ├── arm-new-bug-bash/SKILL.md [BETA — opt-in via --experimental]
 #     │   ├── arm-bash/SKILL.md         [BETA — opt-in via --experimental]
@@ -127,7 +127,7 @@ done
 parse_flags "$@"
 
 
-VERSION="0.42.0"
+VERSION="0.43.0"
 
 # --- Resolve source directory (relative to this script) ---
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

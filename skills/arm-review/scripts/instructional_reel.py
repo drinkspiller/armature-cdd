@@ -26,6 +26,7 @@ The authoritative spec is
 import argparse
 import base64
 import json
+import math
 import os
 import re
 import shutil
@@ -228,13 +229,24 @@ STEP_ACTIONS = (
     "narrate",
     "beat",
     "click",
+    "drag",
     "type",
+    "record_realtime",
     "wait_for_js",
     "navigate",
     "mask_secrets",
     "eval",
     "screenshot",
 )
+
+
+def _is_number(value: object) -> bool:
+  """Returns True for finite int/float values (excluding bool)."""
+  return (
+      isinstance(value, (int, float))
+      and not isinstance(value, bool)
+      and math.isfinite(value)
+  )
 
 
 # --------------------------------------------------------------------------
@@ -480,9 +492,55 @@ def _validate_steps(
       errors.append(f"{loc}: unknown or missing action")
       continue
     action = step["action"]
-    if action in ("click", "type", "beat"):
+    if action in ("click", "drag", "type", "beat"):
       if not step.get("selector"):
         errors.append(f"{loc}: {action} requires selector")
+    if action == "drag":
+      raw_to_sel = step.get("to_selector")
+      if "to_selector" in step and raw_to_sel is not None:
+        if not isinstance(raw_to_sel, str) or not raw_to_sel.strip():
+          errors.append(f"{loc}: drag to_selector must be a non-empty str")
+      has_to_sel = isinstance(raw_to_sel, str) and bool(raw_to_sel.strip())
+      has_dx = "dx" in step
+      has_dy = "dy" in step
+      if not has_to_sel and not (has_dx or has_dy):
+        errors.append(f"{loc}: drag requires to_selector or numeric dx/dy")
+      if has_dx and not _is_number(step["dx"]):
+        errors.append(f"{loc}: drag dx must be a number")
+      if has_dy and not _is_number(step["dy"]):
+        errors.append(f"{loc}: drag dy must be a number")
+      for off_key in ("from_offset", "to_offset"):
+        if off_key in step and step[off_key] is not None:
+          off = step[off_key]
+          if (
+              not isinstance(off, (list, tuple))
+              or len(off) != 2
+              or not (_is_number(off[0]) and _is_number(off[1]))
+          ):
+            errors.append(f"{loc}: {off_key} must be a [dx, dy] number pair")
+      if "duration_s" in step and step["duration_s"] is not None:
+        dur = step["duration_s"]
+        if not _is_number(dur) or float(dur) < 0.1 or float(dur) > 15.0:
+          errors.append(f"{loc}: drag duration_s must be in [0.1, 15.0]")
+    if action == "record_realtime":
+      dur = step.get("duration_s")
+      if not _is_number(dur) or float(dur) < 0.2 or float(dur) > 20.0:
+        errors.append(
+            f"{loc}: record_realtime requires duration_s in [0.2, 20.0]"
+        )
+      if "label" in step and step["label"] is not None:
+        lbl = step["label"]
+        if not isinstance(lbl, str) or not lbl.strip():
+          errors.append(f"{loc}: record_realtime label must be a non-empty str")
+        else:
+          _check_len(warnings, f"{loc}.label", "beat.text", lbl)
+          _check_copy_hygiene(warnings, f"{loc}.label", lbl)
+      if "selector" in step and step["selector"] is not None:
+        if (
+            not isinstance(step["selector"], str)
+            or not step["selector"].strip()
+        ):
+          errors.append(f"{loc}: record_realtime selector must be non-empty")
     if action == "narrate" and not step.get("text"):
       errors.append(f"{loc}: narrate requires text")
     if action == "beat":
@@ -502,9 +560,12 @@ def _validate_steps(
       errors.append(f"{loc}: eval requires expression")
     if action == "screenshot" and not step.get("path"):
       errors.append(f"{loc}: screenshot requires path")
-    if action in ("click", "type") and step.get("beat") is not None:
+    if action in ("click", "drag", "type") and step.get("beat") is not None:
       _validate_beat_value(step["beat"], loc, errors, warnings)
-    if action in ("click", "type") and step.get("narrate") is not None:
+    if (
+        action in ("click", "drag", "type", "record_realtime")
+        and step.get("narrate") is not None
+    ):
       nar = step["narrate"]
       if not isinstance(nar, dict) or not nar.get("text"):
         errors.append(f"{loc}: narrate must be an object with text")
@@ -598,12 +659,13 @@ def validate_reel_spec(spec: dict[str, object]) -> tuple[list[str], list[str]]:
 
 
 def coach_step_total(steps: list[dict[str, object]]) -> int:
-  """Counts steps that show a coach mark (`narrate`, or narrated click/type)."""
+  """Counts steps that show a coach mark (`narrate`, or narrated actions)."""
   total = 0
   for step in steps:
     action = step.get("action")
     if action == "narrate" or (
-        action in ("click", "type") and isinstance(step.get("narrate"), dict)
+        action in ("click", "drag", "type", "record_realtime")
+        and isinstance(step.get("narrate"), dict)
     ):
       total += 1
   return total
@@ -630,10 +692,20 @@ _OVERLAY_JS_TEMPLATE = r"""
 
   const root = document.createElement('div');
   root.id = 'armature-rec-root';
-  root.style.cssText = 'position:fixed;inset:0;pointer-events:none;' +
+  const supportsPopover = typeof root.showPopover === 'function';
+  if (supportsPopover) {
+    root.setAttribute('popover', 'manual');
+  }
+  root.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;' +
+      'max-width:none;max-height:none;margin:0;padding:0;border:0;' +
+      'background:transparent;overflow:visible;pointer-events:none;' +
       'z-index:2147483646;';
   const style = document.createElement('style');
   style.textContent = `
+    #armature-rec-root::backdrop {
+      display: none !important;
+      background: transparent !important;
+    }
     @keyframes armRecCoachIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: none; }
@@ -742,6 +814,27 @@ _OVERLAY_JS_TEMPLATE = r"""
   root.appendChild(cursor);
 
   (document.body || document.documentElement).appendChild(root);
+
+  let lastModalEl = null;
+  const promoteTopLayer = () => {
+    if (!supportsPopover || !root.isConnected || root.style.display === 'none') {
+      return;
+    }
+    try {
+      const openDialogs = document.querySelectorAll('dialog[open]');
+      const curModal = openDialogs.length ?
+          openDialogs[openDialogs.length - 1] : null;
+      if (curModal && curModal !== lastModalEl) {
+        if (root.matches(':popover-open')) root.hidePopover();
+        root.showPopover();
+        lastModalEl = curModal;
+      } else {
+        if (!curModal) lastModalEl = null;
+        if (!root.matches(':popover-open')) root.showPopover();
+      }
+    } catch (_e) {}
+  };
+  promoteTopLayer();
 
   const rectOf = (sel) => {
     if (!sel) return null;
@@ -855,6 +948,7 @@ _OVERLAY_JS_TEMPLATE = r"""
   const api = {
     rect: rectOf,
     cursor(x, y, pressed) {
+      promoteTopLayer();
       cursor.style.left = x + 'px';
       cursor.style.top = y + 'px';
       cursor.style.transform = pressed ?
@@ -862,6 +956,7 @@ _OVERLAY_JS_TEMPLATE = r"""
       return true;
     },
     ripple(x, y) {
+      promoteTopLayer();
       const r = document.createElement('div');
       const d = 44 * s();
       r.style.cssText = 'position:fixed;left:' + x + 'px;top:' + y +
@@ -873,6 +968,7 @@ _OVERLAY_JS_TEMPLATE = r"""
       return true;
     },
     spot(sel) {
+      promoteTopLayer();
       const r = rectOf(sel);
       if (!r) { spot.style.display = 'none'; return null; }
       const p = L['spot.pad'] * s();
@@ -884,6 +980,7 @@ _OVERLAY_JS_TEMPLATE = r"""
       return r;
     },
     chip(text, state) {
+      promoteTopLayer();
       chip.replaceChildren();
       if (!text) { chip.style.display = 'none'; return true; }
       if (state) {
@@ -902,6 +999,7 @@ _OVERLAY_JS_TEMPLATE = r"""
       return true;
     },
     ff(text, elapsed) {
+      promoteTopLayer();
       ffChip.replaceChildren();
       if (!text) { ffChip.style.display = 'none'; return true; }
       const label = document.createElement('span');
@@ -916,6 +1014,7 @@ _OVERLAY_JS_TEMPLATE = r"""
       return true;
     },
     coach(o) {
+      promoteTopLayer();
       beat.style.display = 'none';
       coachBody.replaceChildren();
       const eyebrow = document.createElement('div');
@@ -975,6 +1074,7 @@ _OVERLAY_JS_TEMPLATE = r"""
           L['coach.gap'], R.coach);
     },
     beat(o) {
+      promoteTopLayer();
       coach.style.display = 'none';
       beatBody.textContent = o.text || '';
       beat.style.display = 'inline-flex';
@@ -987,6 +1087,7 @@ _OVERLAY_JS_TEMPLATE = r"""
           L['beat.gap'], R.beat);
     },
     place(sel) {
+      promoteTopLayer();
       return placeBubble(
           coach, coachTail, C['coach.border'], sel, L['coach.gap'], R.coach);
     },
@@ -1002,6 +1103,13 @@ _OVERLAY_JS_TEMPLATE = r"""
     },
     setVisible(v) {
       root.style.display = v ? '' : 'none';
+      if (v) {
+        promoteTopLayer();
+      } else if (supportsPopover) {
+        try {
+          if (root.matches(':popover-open')) root.hidePopover();
+        } catch (_e) {}
+      }
       return true;
     },
   };
@@ -1354,6 +1462,23 @@ class ReelRecorder(cdp.CDPRecorder):
         float(rect["top"]) + float(rect["height"]) * k,
     )
 
+  def _center(
+      self,
+      selector: str,
+      offset: list[float] | tuple[float, float] | None = None,
+  ) -> tuple[float, float]:
+    """Returns the exact center of `selector` plus optional `[ox, oy]` offset."""
+    rect = self.eval_js(f"window.__armRec.rect({json.dumps(selector)})")
+    if not isinstance(rect, dict):
+      where = self.eval_js("location.href + ' (' + document.readyState + ')'")
+      raise RuntimeError(f"Target not found or hidden: {selector} on {where}")
+    ox = float(offset[0]) if offset else 0.0
+    oy = float(offset[1]) if offset else 0.0
+    return (
+        float(rect["left"]) + float(rect["width"]) * 0.5 + ox,
+        float(rect["top"]) + float(rect["height"]) * 0.5 + oy,
+    )
+
   def _dispatch_click(self, x: float, y: float) -> None:
     """Dispatches a real left click at viewport `(x, y)`."""
     for kind in ("mousePressed", "mouseReleased"):
@@ -1361,6 +1486,225 @@ class ReelRecorder(cdp.CDPRecorder):
           "Input.dispatchMouseEvent",
           {"type": kind, "x": x, "y": y, "button": "left", "clickCount": 1},
       )
+
+  def drag(
+      self,
+      selector: str,
+      narration: dict[str, object] | None,
+      step: int,
+      steps: int,
+      state: str | None = None,
+      to_selector: str | None = None,
+      dx: float = 0.0,
+      dy: float = 0.0,
+      from_offset: list[float] | tuple[float, float] | None = None,
+      to_offset: list[float] | tuple[float, float] | None = None,
+      duration_s: float = 0.9,
+      observe: bool = True,
+      beat: str | dict[str, object] | None = None,
+  ) -> None:
+    """Travels to `selector`, drags smoothly while capturing live frames, releases."""
+    self.ensure_overlay()
+    self.eval_js("window.__armRec.clearCoach()")
+    x0, y0 = self._center(selector, from_offset)
+    if to_selector:
+      x1, y1 = self._center(to_selector, to_offset)
+    else:
+      x1, y1 = x0 + float(dx), y0 + float(dy)
+    self.eval_js(f"window.__armRec.spot({json.dumps(selector)})")
+    self.move_to(x0, y0)
+    beat_placement: dict[str, object] = {}
+    beat_text = ""
+    beat_computed = 0.0
+    if beat is not None:
+      if isinstance(beat, str):
+        beat_text, beat_override = beat, None
+      else:
+        beat_text = str(beat.get("text", ""))
+        beat_override = beat.get("hold_seconds")
+      beat_placement = self.show_beat(selector, beat_text)
+      beat_computed = resolve_hold(beat_hold_seconds(beat_text), beat_override)
+      dwell_s = max(PACING["click.dwell"], beat_computed)
+    else:
+      dwell_s = PACING["click.dwell"]
+    dwell_frames = self.hold_frames(dwell_s)
+    if beat_text:
+      self._log(
+          "beat",
+          beat_text,
+          beat_computed,
+          dwell_frames,
+          placement=beat_placement.get("side"),
+          tailed=beat_placement.get("tailed"),
+      )
+    self.eval_js("window.__armRec.clearBeat(); window.__armRec.spot('')")
+    self.call(
+        "Input.dispatchMouseEvent", {"type": "mouseMoved", "x": x0, "y": y0}
+    )
+    self.eval_js(
+        f"window.__armRec.cursor({x0:.1f}, {y0:.1f}, true);"
+        f" window.__armRec.ripple({x0:.1f}, {y0:.1f});"
+    )
+    if not _is_number(duration_s) or float(duration_s) <= 0:
+      raise ValueError(
+          f"drag duration_s must be a positive number, got {duration_s!r}"
+      )
+    self.call(
+        "Input.dispatchMouseEvent",
+        {
+            "type": "mousePressed",
+            "x": x0,
+            "y": y0,
+            "button": "left",
+            "buttons": 1,
+            "clickCount": 1,
+        },
+    )
+    drag_steps = max(4, int(round(float(duration_s) * self.fps)))
+    step_dt = float(duration_s) / drag_steps
+    try:
+      self.snap_frame(repeat=1)
+      for i in range(1, drag_steps + 1):
+        t0 = time.monotonic()
+        t = i / drag_steps
+        ease = 4 * t * t * t if t < 0.5 else 1 - pow(-2 * t + 2, 3) / 2
+        cx = x0 + (x1 - x0) * ease
+        cy = y0 + (y1 - y0) * ease
+        self.cur_x, self.cur_y = cx, cy
+        self.call(
+            "Input.dispatchMouseEvent",
+            {
+                "type": "mouseMoved",
+                "x": cx,
+                "y": cy,
+                "button": "left",
+                "buttons": 1,
+            },
+        )
+        self.eval_js(f"window.__armRec.cursor({cx:.1f}, {cy:.1f}, true)")
+        self.snap_frame(repeat=1)
+        rem = step_dt - (time.monotonic() - t0)
+        if rem > 0:
+          time.sleep(rem)
+    finally:
+      try:
+        self.call(
+            "Input.dispatchMouseEvent",
+            {
+                "type": "mouseReleased",
+                "x": self.cur_x,
+                "y": self.cur_y,
+                "button": "left",
+                "buttons": 0,
+                "clickCount": 1,
+            },
+        )
+      except Exception:  # pylint: disable=broad-except
+        pass
+      try:
+        self.eval_js(
+            f"window.__armRec && window.__armRec.cursor({self.cur_x:.1f},"
+            f" {self.cur_y:.1f}, false)"
+        )
+      except Exception:  # pylint: disable=broad-except
+        pass
+    self.snap_frame(repeat=2)
+    self._log("drag", beat_text or selector, float(duration_s), drag_steps + 3)
+    if not narration:
+      if observe:
+        self.hold_frames(PACING["click.observe_min"])
+      return
+    self.hold_frames(PACING["click.result_delay"])
+    self.ensure_overlay()
+    target = narration.get("selector")
+    text = str(narration.get("text", ""))
+    secondary = narration.get("secondary")
+    placement = self.show_coach(
+        str(target) if target else None,
+        text,
+        str(secondary) if secondary else None,
+        step,
+        steps,
+        state,
+    )
+    computed = resolve_hold(
+        max(
+            PACING["click.observe_min"],
+            coach_hold_seconds(text, str(secondary or "")),
+        ),
+        narration.get("hold_seconds"),
+    )
+    frames = self.hold_frames(computed)
+    self._log(
+        "coach",
+        text,
+        computed,
+        frames,
+        badge=state,
+        placement=placement.get("side"),
+        tailed=placement.get("tailed"),
+    )
+
+  def record_realtime(
+      self,
+      duration_s: float,
+      label: str | None = None,
+      selector: str | None = None,
+      narration: dict[str, object] | None = None,
+      step: int = 1,
+      steps: int = 1,
+      state: str | None = None,
+  ) -> int:
+    """Captures true 1x real-time frames for `duration_s` without freezing."""
+    if not _is_number(duration_s) or float(duration_s) <= 0:
+      raise ValueError(
+          f"record_realtime duration_s must be positive, got {duration_s!r}"
+      )
+    dur_s = float(duration_s)
+    self.ensure_overlay()
+    self.eval_js("window.__armRec.clearCoach(); window.__armRec.clearBeat();")
+    if selector:
+      self.eval_js(f"window.__armRec.spot({json.dumps(selector)})")
+    else:
+      self.eval_js("window.__armRec.spot('')")
+    total_frames = max(2, int(round(dur_s * self.fps)))
+    frame_dt = 1.0 / self.fps
+    start = time.monotonic()
+    written = 0
+    while written < total_frames:
+      elapsed = time.monotonic() - start
+      if label:
+        shown_s = min(elapsed, dur_s)
+        self.eval_js(
+            f"window.__armRec.ff({json.dumps(label)},"
+            f" {json.dumps(f'{shown_s:.1f}s')})"
+        )
+      due_after = int(round((time.monotonic() - start + frame_dt) * self.fps))
+      rep = max(1, min(total_frames - written, due_after - written))
+      self.snap_frame(repeat=rep)
+      written += rep
+      if written >= total_frames:
+        break
+      target_t = start + written * frame_dt
+      rem = target_t - time.monotonic()
+      if rem > 0:
+        time.sleep(rem)
+    self.eval_js("window.__armRec.ff('', ''); window.__armRec.spot('');")
+    self._log("realtime", label or "Live playback", dur_s, written)
+    if narration:
+      raw_target = narration.get("selector")
+      target = str(raw_target) if raw_target else None
+      self.narrate(
+          target,
+          str(narration.get("text", "")),
+          narration.get("secondary"),
+          step,
+          steps,
+          state,
+          narration.get("hold_seconds"),
+          travel=(target is not None),
+      )
+    return written
 
   # ---- narration ----------------------------------------------------------
 
@@ -1869,6 +2213,50 @@ def _run_variant(
           max(total, 1),
           state,
           beat=step.get("beat"),
+      )
+    elif action == "drag":
+      narration = (
+          step.get("narrate") if isinstance(step.get("narrate"), dict) else None
+      )
+      if narration:
+        n += 1
+      rec.drag(
+          str(step["selector"]),
+          narration,
+          max(n, 1),
+          max(total, 1),
+          state,
+          to_selector=(
+              str(step["to_selector"]).strip()
+              if isinstance(step.get("to_selector"), str)
+              and step["to_selector"].strip()
+              else None
+          ),
+          dx=float(step.get("dx", 0.0)),
+          dy=float(step.get("dy", 0.0)),
+          from_offset=step.get("from_offset"),
+          to_offset=step.get("to_offset"),
+          duration_s=(
+              float(step["duration_s"])
+              if step.get("duration_s") is not None
+              else 0.9
+          ),
+          beat=step.get("beat"),
+      )
+    elif action == "record_realtime":
+      narration = (
+          step.get("narrate") if isinstance(step.get("narrate"), dict) else None
+      )
+      if narration:
+        n += 1
+      rec.record_realtime(
+          float(step["duration_s"]),
+          label=str(step["label"]) if step.get("label") else None,
+          selector=str(step["selector"]) if step.get("selector") else None,
+          narration=narration,
+          step=max(n, 1),
+          steps=max(total, 1),
+          state=state,
       )
     elif action == "type":
       narration = (

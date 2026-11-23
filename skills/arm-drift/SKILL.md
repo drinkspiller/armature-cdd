@@ -61,6 +61,10 @@ reconciliation until the project reaches a verified **Fixpoint Reached** state.
         missing `index.md` / `tracks.md` links, `.api_surface_cache.json`
         refresh, additive `terms.md` symbol sync, and installer/packaging
         manifest arrays) and notify the user.
+    -   `--full`: Ignore the saved `drift_watermark` in `.api_surface_cache.json`
+        and re-inventory every owned project directory from scratch.
+    -   `--since <rev>`: Override the saved commit watermark for a single
+        multi-directory scan without mutating prior history.
     -   `--check` (or `--report-only` / `--dry-run`): Non-interactive read-only
         CI / pre-submit validation mode. Verifies fixpoint state, outputs
         pass/fail status, and performs **zero** repository file mutations (never
@@ -200,7 +204,31 @@ delegate `/arm-drift` scans to `invoke_subagent`):
         precondition checks and handler validation rules with active ADRs and
         track specifications to verify required payload invariants.
 
-4.  **Phase 3: Meta, Packaging & Release Manifest Fixpoint (Developer Mode)**:
+4.  **Phase 2b: Multi-Directory Discovery, Non-Armature Teammate Changes & Human
+    Docs Audit (`ADR 0023`)**:
+
+    -   Resolve all owned project directories from
+        `## Owned Project Directories` in `{PROJECT_CONTEXT_DIR}/tech-stack.md`
+        (automatically falling back to non-legacy paths referenced in
+        `tech-stack.md`, `index.md`, `product.md`, and sibling `docs/` trees
+        when the explicit table is absent).
+    -   Run `python3 <ARM_DRIFT_SKILL_DIR>/scripts/scan_project_drift.py
+        --armature-dir <PROJECT_ROOT>/<PROJECT_CONTEXT_DIR> --repo-root
+        <REPO_ROOT>` (resolved relative to the `arm-drift` skill directory;
+        passing `--full`, `--since <rev>`, or `--check` when supplied; fall back
+        to native Git/file inspection if Python is unavailable).
+    -   Inspect the returned `external_non_armature_commits` (submitted commits
+        since the saved `drift_watermark` in `.api_surface_cache.json` that
+        touched owned code or docs without touching `armature/`),
+        `new_files_since_watermark`, `unindexed_docs`,
+        `undocumented_code_files`, `missing_code_doc_headers`, and
+        `stale_doc_references`.
+    -   Audit human-facing documentation (`docs/`, `README.md`) alongside
+        `armature/` docs for stale counts, renamed flags/routes, broken file
+        links, and teammate-authored code modules missing docs or inline module
+        docstrings/comments.
+
+5.  **Phase 3: Meta, Packaging & Release Manifest Fixpoint (Developer Mode)**:
 
     -   Verify all sub-skills in `skills/` are registered in `install.sh`
         (`SUB_SKILL_NAMES`), `install.bat`, and `README.md`.
@@ -212,7 +240,7 @@ delegate `/arm-drift` scans to `invoke_subagent`):
         `install.bat` (`set "VERSION="`), `plugin.json` (`"version"`),
         `.claude-plugin/marketplace.json`, and `CHANGELOG.md`.
 
-5.  **Phase 4: Legacy-Boundary Context Fence Diff Firewall & Stale Fence Garbage
+6.  **Phase 4: Legacy-Boundary Context Fence Diff Firewall & Stale Fence Garbage
     Collection**:
 
     -   *Immediate Turn 1 Markdown Report & Same-Turn Execution First (Zero
@@ -322,6 +350,15 @@ directly in your markdown chat response before any tool call:
             conversation session and reported prior drift, automatically update
             `arm_status.md` so `Fixpoint Health` reflects
             `✅ Fixpoint Reached (N mechanical drift issue(s) auto-updated)`.
+        7.  **Unindexed Docs & Commit Watermark Sync (`ADR 0023`)**: Existing
+            Markdown guides inside owned `docs/` or `armature/guidelines/`
+            directories missing from `index.md`, `sitemap.md`, or
+            `armature/index.md` -> automatically add the index entries; update
+            `drift_watermark` in `.api_surface_cache.json` via
+            `python3 <ARM_DRIFT_SKILL_DIR>/scripts/scan_project_drift.py
+            --armature-dir <PROJECT_ROOT>/<PROJECT_CONTEXT_DIR> --repo-root
+            <REPO_ROOT> --update-watermark` once no blocking Tier B items remain
+            (or when recording an initial clean baseline).
     -   **Default Action (When `--check` / `--report-only` Is NOT Passed)**:
         -   **Automatically apply all Tier A fixes in-place** using
             `replace_file_content` or `write_to_file` in the **exact same turn**
@@ -360,10 +397,26 @@ directly in your markdown chat response before any tool call:
             never auto-edit fenced files) or a fenced directory deleted from
             disk (`VAL_LF_04`: prompt via `ask_question` to confirm 1-click
             auto-pruning from `tech-stack.md` while preserving active fences).
+        5.  **Undocumented Teammate Code, Missing Inline Code Comments, & Human
+            Doc Prose Updates (`ADR 0023`)**: Newly discovered or non-Armature
+            code modules needing inline docstrings/comments in source files, new
+            or revised human-facing docs (`docs/`, `README.md`, or
+            `armature/guidelines/`), stale doc links or factual claims, and
+            candidate ADRs for teammate work. Never silently edit source code
+            comments or rewrite human prose without one grouped confirmation.
     -   **Action**: Auto-apply any co-occurring Tier A mechanical fixes first,
         display the Tier B architectural/semantic findings with file paths, code
         snippets, and matching ADR/rule quotes, and (when interactive resolution
-        is required) prompt via `ask_question` with structured options:
-        `["(Recommended) Update code to match ADR", "Update ADR to reflect new
-        decision", "Acknowledge as tech debt in spec.md", "Show me the
-        details"]`.
+        is required) prompt via `ask_question`:
+        -   For ADR/spec contradictions: `["(Recommended) Update code to match
+            ADR", "Update ADR to reflect new decision", "Acknowledge as tech
+            debt in spec.md", "Show me the details"]`.
+        -   For grouped undocumented code / human doc sync batches (`ADR 0023`):
+            `["(Recommended) Document all listed code and doc gaps now", "Update
+            human and Armature docs only (skip source code comments)", "Log gaps
+            in arm_drift.md and update watermark only", "Show full details for
+            each gap before deciding"]`. After applying the approved batch, run
+            `python3 <ARM_DRIFT_SKILL_DIR>/scripts/scan_project_drift.py
+            --armature-dir <PROJECT_ROOT>/<PROJECT_CONTEXT_DIR> --repo-root
+            <REPO_ROOT> --update-watermark` to advance `drift_watermark` in
+            `.api_surface_cache.json`.

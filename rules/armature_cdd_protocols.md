@@ -29,6 +29,16 @@ skill's primary protocol, perform a lightweight drift check:
         flag added (`+`) UI lines introducing unapproved hex literals as
         `[WARNING] Token Drift` (falling back to `product-guidelines.md` on
         legacy repos without `DESIGN.md`).
+    -   **4c. Multi-Directory Watermark & Non-Armature Change Scan
+        (`ADR 0023`):** In `/arm-drift`, discover all owned code and docs
+        directories from `## Owned Project Directories` in `tech-stack.md` (with
+        automatic fallback from non-legacy referenced paths) and scan submitted
+        commits since `drift_watermark` in `.api_surface_cache.json` via
+        `skills/arm-drift/scripts/scan_project_drift.py`. Auto-sync mechanical
+        index links and the watermark in Tier A, and batch undocumented teammate
+        code comments/docstrings, human doc updates (`docs/`, `README.md`), and
+        candidate ADRs behind one Tier B `ask_question` confirmation gate before
+        writing prose or editing source files.
 5.  **Two-Tier Drift Classification & Resolution (Auto-Update & Notify by
     Default on Mechanical Drift):**
     -   **Tier A — Mechanical & Deterministic Documentation Drift (Auto-Update &
@@ -39,8 +49,9 @@ skill's primary protocol, perform a lightweight drift check:
             wrapped Markdown tables in `tracks.md` / `index.md` missing
             `<!-- mdformat off(prevent table wrapping) -->` /
             `<!-- disableFinding(LINE_OVER_80) -->`, missing `tracks.md` /
-            `index.md` links for existing tracks/ADRs, additive
-            `.api_surface_cache.json` and `terms.md` symbol sync, and
+            `index.md` / `sitemap.md` links for existing tracks, ADRs, or human
+            docs, additive `.api_surface_cache.json` (including compact
+            `drift_watermark` per `ADR 0023`) and `terms.md` symbol sync, and
             installer/packaging manifest arrays (`install.sh`, `install.bat`,
             `plugin.json`, `README.md`).
         -   *Default behavior (unless `--check` / `--report-only` is passed):*
@@ -60,16 +71,22 @@ skill's primary protocol, perform a lightweight drift check:
             symbol removals (`[ERROR] Breaking API Surface Change` requiring a
             MAJOR semver bump), `[WARNING] Diff-to-Tag Mismatch` (`ADR 0010`),
             unauthorized edits inside `<deprecated_path>`
-            (`[BLOCKING] Legacy Fence Violation`, `CB1`), or a fenced directory
-            deleted from disk (`[DRIFT] Stale Legacy Fence`, `VAL_LF_04`).
+            (`[BLOCKING] Legacy Fence Violation`, `CB1`), a fenced directory
+            deleted from disk (`[DRIFT] Stale Legacy Fence`, `VAL_LF_04`), or
+            grouped undocumented teammate code comments/docstrings and human doc
+            (`docs/`/`README.md`) prose updates (`ADR 0023`).
         -   *Behavior:* Auto-apply any co-occurring Tier A mechanical fixes
             first, NEVER silently rewrite an approved `ADR` or `spec.md`,
             present a `> [!WARNING]` callout naming the ADR/rule, the file, and
             the contradiction, and use `ask_question`:
-            *   "Drift detected against {source}. How to handle?"
-            *   "The code diverges from {source}. What's the call?"
-            *   *Options*: `["(Recommended) Fix the code now", "Update the ADR",
-                "Acknowledge as tech debt and proceed", "Show me the details"]`
+            *   For ADR/spec contradictions: `["(Recommended) Fix the code now",
+                "Update the ADR", "Acknowledge as tech debt and proceed", "Show
+                me the details"]`.
+            *   For grouped undocumented code and human doc sync batches
+                (`ADR 0023`): `["(Recommended) Document all listed code and doc
+                gaps now", "Update human and Armature docs only (skip source
+                code comments)", "Log gaps in arm_drift.md and update watermark
+                only", "Show full details for each gap before deciding"]`.
         -   Handle the selection:
             -   **Fix the code now**: Apply a targeted fix before proceeding
                 with the originally invoked command.

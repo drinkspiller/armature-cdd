@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.43.0] - 2026-11-23
+
+### Added
+
+-   **Multi-Directory Project Drift Watermark & Teammate Doc-Sync Gate
+    (`ADR 0023`, `skills/arm-drift/scripts/scan_project_drift.py`,
+    `skills/arm-drift/scripts/test_scan_project_drift.py`,
+    `skills/arm-drift/SKILL.md`, `skills/arm-setup/SKILL.md`,
+    `rules/armature_cdd_protocols.md`, `rules/armature_protocol.md`,
+    `README.md`)**:
+    -   Extended `/arm-drift` with Phase 2b multi-directory project discovery
+        (`## Owned Project Directories` in `tech-stack.md`, seeded by
+        `/arm-setup`, with automatic fallback from non-legacy referenced paths)
+        and a compact shared `drift_watermark` (`vcs`, `revision`, `audited_at`,
+        `project_roots`) stored in `armature/.api_surface_cache.json`.
+    -   Added `--full` and `--since <rev>` flags plus `scan_project_drift.py` to
+        detect submitted commits that touched owned code or docs without
+        touching `armature/`, unindexed human docs (`docs/`, `README.md`),
+        undocumented source modules, missing module doc headers, and stale doc
+        links.
+    -   Mechanical index links and watermark advances auto-update in Tier A,
+        while new prose, inline code comments/docstrings, and human doc rewrites
+        pause once at a grouped Tier B confirmation gate.
+-   **Instructional Reel Pointer Dragging, Wall-Clock 1x Capture & Top-Layer
+    Modal Overlays (`skills/arm-review/scripts/instructional_reel.py`,
+    `skills/arm-review/scripts/test_instructional_reel.py`)**:
+    -   Added first-class interactive pointer drag support between targets or
+        relative offsets with guaranteed mouse-release cleanup on failure,
+        wall-clock-paced real-time playback capture, and browser top-layer
+        overlay promotion so coaching cards stay sharp above native modal
+        dialog backdrops.
+
 ## [0.42.0] - 2026-11-15
 
 ### Changed
