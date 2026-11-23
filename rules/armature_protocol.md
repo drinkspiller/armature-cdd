@@ -66,17 +66,19 @@ Before executing any command, resolve `{PROJECT_CONTEXT_DIR}` (§5) and load:
 -   **Two-Tier Drift Scan (Auto-Heal Tier A):**
     -   *Tier A (Mechanical Drift — Auto-Update in Same Turn):* Stale `[~]`
         statuses when 100% of `plan.md` tasks are `[x]`, wrapped tables missing
-        `mdformat off`, missing registry links, additive `terms.md` /
-        `.api_surface_cache.json` updates, and installer manifests. Unless
-        `--check` or `--report-only` is passed, auto-apply Tier A fixes in-place
-        without prompting
+        `mdformat off`, missing registry/doc index links, additive `terms.md` /
+        `.api_surface_cache.json` (including `drift_watermark` per `ADR 0023`)
+        updates, and installer manifests. Unless `--check` or `--report-only` is
+        passed, auto-apply Tier A fixes in-place without prompting
         (`✅ Fixpoint Reached (N mechanical drift issue(s) auto-updated)`).
-    -   *Tier B (Semantic / Architectural Contradictions — Interactive):* Code
-        violating an approved `ADR` or `spec.md`, breaking API removals vs.
-        `.api_surface_cache.json` (`[ERROR]`), `[WARNING] Diff-to-Tag Mismatch`,
-        unauthorized `<deprecated_path>` edits (`[BLOCKING]`), or deleted fence
-        paths (`[DRIFT] Stale Legacy Fence`). Surface via `ask_question`
-        (`armature_cdd_protocols.md`).
+    -   *Tier B (Semantic / Architectural Contradictions & Doc Authoring —
+        Interactive):* Code violating an approved `ADR` or `spec.md`, breaking
+        API removals vs. `.api_surface_cache.json` (`[ERROR]`),
+        `[WARNING] Diff-to-Tag Mismatch`, unauthorized `<deprecated_path>` edits
+        (`[BLOCKING]`), deleted fence paths (`[DRIFT] Stale Legacy Fence`), and
+        grouped undocumented teammate code comments/docstrings or human doc
+        (`docs/`/`README.md`) prose updates (`ADR 0023`). Surface via
+        `ask_question` (`armature_cdd_protocols.md`).
 -   **Approval Gate, Explicit-Sign-Off Fast-Forward & Cross-Session
     Resumption:** Never skip the interview or write application code on Turn 1
     of a new feature request before open architectural questions settle and

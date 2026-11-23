@@ -297,12 +297,16 @@ an exported symbol, alters a CLI parameter, or updates a package dependency, the
 corresponding documentation often remains unchanged. Over time, specs and guides
 become inaccurate, misleading both human contributors and future AI sessions.
 
-`/arm-drift` acts as an automated tripwire by extracting AST symbols and public
-API surfaces directly from the source code and comparing them against project
-documentation, ADRs, and packaging manifests. It detects mechanical and semantic
-discrepancies before changes are committed, automatically reconciling
-straightforward documentation drift and alerting developers to deeper
-divergences.
+`/arm-drift` acts as an automated self-healing tripwire by scanning all owned
+project directories since the saved commit watermark (`drift_watermark` in
+`.api_surface_cache.json`) to catch changes teammates landed without Armature,
+extracting public API surfaces, and comparing code against both Armature context
+(`tracks.md`, `index.md`, ADRs) and human docs (`docs/`, `README.md`). Tier A
+mechanical drift (stale track statuses, missing index/sitemap links, additive
+glossary/cache updates, and watermark advances) auto-updates in place, while
+Tier B semantic ADR/spec contradictions, breaking API removals, and grouped
+undocumented code-comment or human-doc prose updates pause once at an
+interactive confirmation gate (`ADR 0023`).
 
 ### Quick-Fix Bypass (*Bypass*)
 
@@ -335,8 +339,8 @@ Once installed, the `/arm-*` commands are available globally in chat:
 :                  : tracks (auto-updates mechanical drift)                  :
 | `/arm-review`    | Multi-expert iterative review-and-repair loop against   |
 :                  : living runbooks and ADRs                                :
-| `/arm-drift`     | Continuous 3-tier drift tripwire with automatic Tier 1  |
-:                  : mechanical auto-update and Tier 2 semantic gating       :
+| `/arm-drift`     | Multi-directory fixpoint auditor (`--full`, `--since`)  |
+:                  : catching non-Armature commits and syncing code/doc gaps :
 | `/arm-chat`      | Ceremony-free context ingestion with automatic glossary |
 :                  : sync                                                    :
 | `/arm-undo`      | VCS-aware surgical task, phase, or track rollback       |
@@ -721,4 +725,4 @@ Armature preserves **transparent dual-discovery**:
 
 ## Version
 
-Current: **v0.42.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.
+Current: **v0.43.0** — See [CHANGELOG.md](CHANGELOG.md) for release notes.

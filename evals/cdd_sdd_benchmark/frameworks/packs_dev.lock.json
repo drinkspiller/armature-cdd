@@ -12,10 +12,10 @@
       "files": {
         "rules/armature_adr_preflight.md": "bb9c6085835194f94eec0345ada88f0ff4f8d32310a486d5f67516f533ec125b",
         "rules/armature_antigravity.md": "a44c0175ec86348a9e735dcb1bfa8d74769497306337b457f8bf44ce480da624",
-        "rules/armature_cdd_protocols.md": "b8f7b6b52ede11df8b320188a4e33618bfdcd9849937839c67c12bf17b4066a6",
-        "rules/armature_protocol.md": "1770035dd55b9b1eb447b95c5c4ead13449ce473dfc6a47d0bdb7a622eb7b0c3",
+        "rules/armature_cdd_protocols.md": "51cc21f953c13c56ce84222d289563d4bc39bd0bf9fcb1427080b7abf11a1b2c",
+        "rules/armature_protocol.md": "8b9884fc52cb00c049e28532bf997b189be60e32c44f681a443cfcd59f3194af",
         "skills/arm-chat/SKILL.md": "6b78a5663535cb4d3b470da3d7490722fec5d09839dab31eb8e9f3927b6e6605",
-        "skills/arm-drift/SKILL.md": "41d657b2c09f4625ed1cc6917b15907ab95a695e8187f1a44ca317153c2d5836",
+        "skills/arm-drift/SKILL.md": "9b9f9f481e82d6de75a69cedab56ea1246297c0e42e4e2e09440e53401840807",
         "skills/arm-implement/SKILL.md": "7b1a5abac6e302ff89e05dcd61be459bdecfcf7910ae497882c31d80cd291c05",
         "skills/arm-implement/references/async_delegation.md": "cf094a4452a58acaeb04a0bbf4d6ae169382d4d3ae59dd0cc0c06fca02a3af71",
         "skills/arm-new-track/SKILL.md": "048a2acc3bf8ef002e25e979156af4e37ed91b4918a33f1fc63310c79962cd42",
@@ -24,7 +24,7 @@
         "skills/arm-new-track/scripts/validate_flow_specs.py": "819e8e628d0324729d81503308fa2318579e2082e014cf637e4899715c23b11c",
         "skills/arm-review/SKILL.md": "fbc8bad59acd55368f22cb3234101996a411b116df866590d63330ae6fd9eda9",
         "skills/arm-review/references/screencast_adapter.md": "09b9f00e8532356d7fd9e90d6a4b67556cc4b92d0751f6d235320c446f885af4",
-        "skills/arm-setup/SKILL.md": "5ecd200eacbc65193058730f1db571e6616eced9c3e5caa929060f2a9db8b24c",
+        "skills/arm-setup/SKILL.md": "8398fa5d8604b4e7261c654b57415ac3f1c4d4db16d47c061b012e5f5b960c7a",
         "skills/arm-setup/assets/adr_template.md": "7b33352d0b3f6af4b730fab44b6453b166decced8fa127fe708dfaa4c85d295a",
         "skills/arm-setup/assets/design_template.md": "f2e53201c14a0a1f5812696a2c64e57f70358add9e22286d6a72167e10931e91",
         "skills/arm-setup/assets/manual_testing_template.md": "3c29d1a3488a57fe6aa59865a2c6c3b8713121cdc505ee1fa06d09cd7e518aca",
@@ -34,17 +34,17 @@
       },
       "tools": {},
       "stats": {
-        "always_on_chars": 26795,
-        "system_prompt_addition_chars": 29605,
-        "always_on_tokens_est": 6698,
-        "system_prompt_addition_tokens_est": 7401,
-        "total_pack_chars": 386622,
-        "total_pack_tokens_est": 96655,
+        "always_on_chars": 27001,
+        "system_prompt_addition_chars": 29811,
+        "always_on_tokens_est": 6750,
+        "system_prompt_addition_tokens_est": 7452,
+        "total_pack_chars": 391967,
+        "total_pack_tokens_est": 97991,
         "files": 21,
         "skills": 8
       },
-      "git_head": "91f6485fe7ef40e501e19475c7f1d42b89754553",
-      "dirty_files": 19
+      "git_head": "65e252a6d6efaad0faa898cbefc8bdcc05b2f9e0",
+      "dirty_files": 13
     }
   },
   "excluded": {}

@@ -323,11 +323,14 @@ pure backend/CLI repos), initialize
 Draft `{PROJECT_ROOT}/{PROJECT_CONTEXT_DIR}/tech-stack.md`:
 
 -   **Brownfield Batch Mode**: Document languages, frameworks, databases, and
-    CI/CD tools inferred from manifests. When Deep Retroactive Archaeology is
-    active, explicitly mine VCS commit history (`refactor:`, `deprecate:`,
-    migration PRs/commits) and past transcripts to identify deprecated modules
-    or in-flight migrations, pre-populating `## Legacy & Deprecated Boundaries`
-    (Legacy Fences).
+    CI/CD tools inferred from manifests, and populate an `## Owned Project
+    Directories` table (`Path`, `Kind` in `code|docs|config|tests`, `Notes`)
+    listing every owned code and documentation root (`docs/`, frontend, backend)
+    so `/arm-drift` scans teammate changes across all project trees
+    (`ADR 0023`). When Deep Retroactive Archaeology is active, explicitly mine
+    VCS commit history (`refactor:`, `deprecate:`, migration PRs/commits) and
+    past transcripts to identify deprecated modules or in-flight migrations,
+    pre-populating `## Legacy & Deprecated Boundaries` (Legacy Fences).
 -   **Greenfield / Interactive Step-by-Step Mode**: Use `ask_question`
     (`"Interactive"` vs. `"Autogenerate"`) or confirm scanned stack before
     writing.

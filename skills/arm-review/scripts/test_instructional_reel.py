@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import tempfile
 import threading
+import time
 import unittest
 
 import cdp_screencast_recorder
@@ -619,6 +620,219 @@ class ReelIntegrationTest(unittest.TestCase):
           capture_interval_s=0.2,
       )
       self.assertLess(elapsed, 5)
+    finally:
+      rec.close()
+
+  def test_drag_and_record_realtime_validation(self):
+    """Validates drag and record_realtime schemas and copy hygiene."""
+    spec = {
+        "reel": {
+            "title": "Live interactions",
+            "summary": "Verify drag and realtime playback.",
+            "scenarios": [{
+                "id": "live",
+                "title": "Drag and play",
+                "goal": "Drag a handle and record live playback.",
+                "watch_for": "smooth motion.",
+                "url": "http://localhost:1/",
+                "steps": [
+                    {
+                        "action": "drag",
+                        "selector": "#handle",
+                        "dx": 80,
+                        "dy": -40,
+                        "duration_s": 0.6,
+                        "beat": "Dragging the curve handle",
+                        "narrate": {"text": "The curve reshapes live."},
+                    },
+                    {
+                        "action": "record_realtime",
+                        "duration_s": 1.2,
+                        "label": "Live playback",
+                        "selector": "#stage",
+                    },
+                ],
+            }],
+            "outro": {"items": ["Drag and playback work"]},
+        }
+    }
+    errors, warnings = reel.validate_reel_spec(spec)
+    self.assertEqual(errors, [])
+    self.assertEqual(warnings, [])
+    self.assertEqual(
+        reel.coach_step_total(spec["reel"]["scenarios"][0]["steps"]), 1
+    )
+
+    bad = {
+        "reel": {
+            "title": "Bad",
+            "summary": "Bad shapes.",
+            "scenarios": [{
+                "id": "bad",
+                "title": "Bad",
+                "goal": "Goal.",
+                "watch_for": "Watch.",
+                "url": "http://localhost:1/",
+                "steps": [
+                    {"action": "drag", "selector": "#h"},
+                    {"action": "drag", "selector": "#h", "dx": "nope"},
+                    {
+                        "action": "drag",
+                        "selector": "#h",
+                        "to_selector": "   ",
+                        "dx": 50,
+                    },
+                    {"action": "drag", "selector": "#h", "dx": float("nan")},
+                    {"action": "record_realtime", "duration_s": 0.05},
+                    {
+                        "action": "record_realtime",
+                        "duration_s": 1.0,
+                        "label": "",
+                    },
+                ],
+            }],
+            "outro": {"items": ["Done"]},
+        }
+    }
+    bad_errors, _ = reel.validate_reel_spec(bad)
+    self.assertGreaterEqual(len(bad_errors), 6, bad_errors)
+
+    # duration_s: None is allowed on drag and falls back to default in _run_variant.
+    null_dur = {
+        "reel": {
+            "title": "Null dur",
+            "summary": "Verify default drag duration.",
+            "scenarios": [{
+                "id": "nd",
+                "title": "Drag default",
+                "goal": "Drag with default duration.",
+                "watch_for": "smooth motion.",
+                "url": "http://localhost:1/",
+                "steps": [{
+                    "action": "drag",
+                    "selector": "#h",
+                    "dx": 20,
+                    "duration_s": None,
+                }],
+            }],
+            "outro": {"items": ["Done"]},
+        }
+    }
+    nd_errors, _ = reel.validate_reel_spec(null_dur)
+    self.assertEqual(nd_errors, [])
+    self.assertFalse(reel._is_number(float("nan")))
+    self.assertFalse(reel._is_number(float("inf")))
+
+  def test_drag_and_record_realtime_execution(self):
+    """Drag dispatches pointer events and record_realtime captures live frames."""
+    rec = reel.ReelRecorder(
+        name="live_exec",
+        out_dir=os.path.join(self.tmp, "live_exec"),
+        width=1280,
+        height=720,
+    )
+    try:
+      rec.begin_segment("live")
+      rec.open_fresh_tab()
+      rec.navigate(self.cur)
+      rec.eval_js(
+          "(() => { window.__dragLog = []; const el ="
+          " document.getElementById('filter');"
+          " el.addEventListener('pointerdown', (e) =>"
+          " window.__dragLog.push('down:' + Math.round(e.clientX)));"
+          " window.addEventListener('pointermove', (e) => { if (e.buttons ==="
+          " 1) window.__dragLog.push('move:' + Math.round(e.clientX)); });"
+          " window.addEventListener('pointerup', (e) =>"
+          " window.__dragLog.push('up:' + Math.round(e.clientX))); })()"
+      )
+      rec.drag(
+          "#filter",
+          None,
+          1,
+          1,
+          to_selector="#count",
+          from_offset=(2, 0),
+          to_offset=(-2, 0),
+          duration_s=0.4,
+          observe=False,
+      )
+      log = rec.eval_js("window.__dragLog")
+      self.assertTrue(any(e.startswith("down:") for e in log), log)
+      self.assertTrue(any(e.startswith("move:") for e in log), log)
+      self.assertTrue(any(e.startswith("up:") for e in log), log)
+      # Verify mouseReleased cleanup runs even if a mid-drag mouseMoved fails.
+      rec.eval_js("window.__dragLog = [];")
+      orig_call = rec.call
+
+      def _boom_mid_drag(method, params=None):
+        if (
+            method == "Input.dispatchMouseEvent"
+            and isinstance(params, dict)
+            and params.get("type") == "mouseMoved"
+            and params.get("buttons") == 1
+        ):
+          raise RuntimeError("simulated mid-drag failure")
+        return orig_call(method, params)
+
+      rec.call = _boom_mid_drag
+      with self.assertRaises(RuntimeError):
+        rec.drag(
+            "#filter", None, 1, 1, dx=40, dy=0, duration_s=0.3, observe=False
+        )
+      rec.call = orig_call
+      cleanup_log = rec.eval_js("window.__dragLog")
+      self.assertTrue(
+          any(e.startswith("down:") for e in cleanup_log), cleanup_log
+      )
+      self.assertTrue(
+          any(e.startswith("up:") for e in cleanup_log), cleanup_log
+      )
+      # Verify wall-clock 1x pacing stays bounded even under slow captures.
+      t0 = time.monotonic()
+      frames = rec.record_realtime(
+          0.5, label="Live playback", selector="#count"
+      )
+      elapsed = time.monotonic() - t0
+      self.assertEqual(frames, max(2, int(round(0.5 * rec.fps))))
+      self.assertLess(elapsed, 1.5)
+      self.assertEqual(reel.readability_violations(rec.frame_log), [])
+      with self.assertRaises(ValueError):
+        rec.drag("#filter", None, 1, 1, dx=10, dy=0, duration_s=0)
+      with self.assertRaises(ValueError):
+        rec.record_realtime(0)
+    finally:
+      rec.close()
+
+  def test_overlay_promotes_above_modal_dialog(self):
+    """Overlay root uses manual popover to stay above top-layer <dialog>."""
+    rec = reel.ReelRecorder(
+        name="modal_top_layer",
+        out_dir=os.path.join(self.tmp, "modal_top_layer"),
+        width=1280,
+        height=720,
+    )
+    try:
+      rec.begin_segment("modal")
+      rec.open_fresh_tab()
+      rec.navigate(self.cur)
+      rec.eval_js(
+          "(() => { const d = document.createElement('dialog');"
+          " d.id = 'test-modal'; d.textContent = 'Modal body';"
+          " d.style.cssText = 'width:320px;height:160px;';"
+          " document.body.appendChild(d); d.showModal(); })()"
+      )
+      rec.show_coach(
+          "#test-modal", "Coach stays sharp over modal.", None, 1, 1, None
+      )
+      state = rec.eval_js(
+          "(() => { const r = document.getElementById('armature-rec-root');"
+          " return {popover: r && r.getAttribute('popover'), open: Boolean(r &&"
+          " r.matches && r.matches(':popover-open')), modalOpen:"
+          " Boolean(document.getElementById('test-modal')?.open)}; })()"
+      )
+      self.assertEqual(state["popover"], "manual")
+      self.assertTrue(state["open"], state)
+      self.assertTrue(state["modalOpen"], state)
     finally:
       rec.close()
 
